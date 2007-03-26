@@ -1,0 +1,10 @@
+README for $package_name
+
+abakuc portal has been built on top of itools' (http://ikaaro.org) python
+framework and is a project designed to implement the internal workings of a
+business-to-business magazine publisher.
+
+The basics:
+
+We have 3 entities, Advertisers, Enquiries, Users; all of these are mangled into
+the publication which in turn has: Aricles, Images (media objects)

@@ -1,0 +1,120 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<form name="addadvertform" action=";new_advertiser" method="post">
+      <h1> To advertise here </h1>
+      <p>
+         You can create your own advertisement to appear within the Flybe 
+         Destinations website. It's easy. <br />
+         Simply fill in the form below and follow the instructions. 
+         On the following pages you will see pre-set options of how an 
+         advertisement can look. Just make your choice, insert the text/images,
+         and submit for validation...
+      </p>
+<hr width="75%" />
+  <table class="form" border="0">
+    <tr>
+      <th class="title">YOUR NAME *</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="username" size="59" value="${username}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">YOUR ADVERTISEMENT NAME *</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="advertname" size="59" value="${advertname}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">YOUR EMAIL *</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:email" size="59"
+               value="${flybe:email}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">TELEPHONE</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:phone" size="59" value="${flybe:phone}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">FAX</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:fax" size="59" value="${flybe:fax}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">STREET</th>
+    </tr>
+    <tr>
+      <td>
+        <textarea name="flybe:street" cols="51"
+          rows="2">${flybe:street}</textarea>
+      </td>
+    </tr>
+    <tr>
+      <th class="title">POSTAL CODE</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:postal_code" size="59"
+               value="${flybe:postal_code}" />
+               
+      </td>
+    </tr>
+    <tr>
+      <th class="title">CITY</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:city" size="59"
+               value="${flybe:city}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">STATE / PROVINCE</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:state" size="59"
+               value="${flybe:state}" />
+      </td>
+    </tr>
+    <tr>
+      <th class="title">COUNTRY / REGION</th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" name="flybe:country" size="59"
+               value="${flybe:country}" />
+      </td>
+    </tr>
+    <tr>
+       <td><img src="images/px.png" height="1" width="305" /></td>
+    </tr>
+    <tr>
+      <td class="submit">
+        <input type="submit" value="Submit" />
+      </td>
+    </tr> 
+    </table>
+    <input type="hidden" name="destination" stl:if="destination"
+           value="${destination}" />
+  </form>
+
+<script language="javascript">
+  document.addform.username.focus();
+</script>
+
+</stl:block>

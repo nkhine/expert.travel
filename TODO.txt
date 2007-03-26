@@ -1,0 +1,49 @@
+1) Import of abakuc_import_companies.csv
+
+The abakuc_import_companies.csv is the entire http://uktravellist.info database
+with each Company full postal address and related to the actual topic.
+
+It consists of the following fields:
+
+"topic_id";"topic_name";"region";"county";"post_town";"company_name";"address";"telephone";"fax_number";"email";"url";"licences";"logo URL"
+
+Please note:
+
+a) address - currently the address filed is all in one field - if possible, I
+would like to strip out the Post Code field out and remove the Region. For
+example
+
+The first record in the csv has an address filed, as:
+
+Beauport House
+L'Avenue de la Commune
+St. Peter
+Jersey
+JE3 7BY
+Channel Islands
+
+
+where the last 3 rows are:
+
+post_town
+post_code
+county
+
+this is true for most addresse, where there are exceptions, I would manually
+change them when the addresses have been loaded.
+
+b) email - as the email is used to generate the ownership of the company, in
+cases where there is no email, please make the enquiries@uktravellist.info the
+owner of these. Or maybe there is a better way, as I am not sure a user can
+belong to more then one company? If not then perhaps we can leave these without
+users and the first user who attaches themselves to the company will become the
+'owner' of it.
+
+c) the structural navigation of the site:
+
+topic_name
++region
+++county
++++post_town
+
+

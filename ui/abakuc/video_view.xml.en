@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <table cellpadding="0" cellspacing="0" id="view_banner">
+    <tr>
+    <td>
+      <a target="_blank" href="${website_url}">
+        <img src=".logo" border="0" stl:if="not is_flash" />
+        <object stl:if="is_flash">
+          <param name="movie" value=".logo" />
+          <embed src=".logo" type="application/x-shockwave-flash"
+                 width="160" height="80" />
+        </object>
+      </a>
+    </td>
+      <td>
+        <ul>
+          <li>
+            Name: <b>${title}</b>
+          </li>
+          <li>
+            Description: <b>${description}</b>
+          </li>
+          <li>
+            Max clicks: <b>${max_click}</b>
+            Weight: <b>${weight}</b>
+          </li>
+          <li>
+            WebSite:  <a href="${website_url}">${website}</a>
+          </li>
+          <li>
+            State: <b>${state}</b>
+          </li>
+
+        </ul>
+      </td>
+    </tr>
+  </table>
+</stl:block>
+

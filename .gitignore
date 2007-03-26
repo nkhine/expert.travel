@@ -1,0 +1,10 @@
+*.swp
+build
+MANIFEST
+version.txt
+locale/*.mo
+ui/abakuc/*.fr
+ui/uktravel/*.fr
+.DS_Store
+dist
+*~

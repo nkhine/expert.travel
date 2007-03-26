@@ -1,0 +1,93 @@
+body 					{ font-family: Verdana, Arial, Helvetica, sans-serif; margin: 0; font-size: 12px; }
+td, p 					{ font-size: 12px; }
+h1						{ font-size: 23px; margin: 0; margin-top: 3px; }
+h1 span					{ font-size: 14px; }
+h2						{ font-size: 14px; }
+a						{  }
+a:hover					{ color: #ED1C24; }
+input.btn				{ color:#FFFFFF; font-family: Arial, Verdana, Helvetica, sans-serif; font-size: 11px; font-weight: bold; background-color: #177AC3; padding-top: 3px; padding-bottom: 3px; padding-left: 2px; padding-right: 2px; border-left: #85ACE6 1px solid; border-top: #85ACE6 1px solid; border-right: #000000 1px solid; border-bottom: #000000 1px solid; }
+ul						{ margin-top: 2; margin-left: 17; }
+hr						{ margin-top: 5px; color:#888888; height: 1px;}
+form					{ margin: 0; }
+
+.BannerBox				{
+	width: 100%;
+	background: #177AC3;
+}
+.LoginBox				{
+	width: 20%;
+	background: #177AC3 no-repeat;
+	padding: 2.5px;
+}
+.BulletList 			{ background-image: url(/images/bullet.gif); background-repeat: no-repeat; padding-left: 17px; }
+.BulletList:Hover 		{ background-image: url(/images/bullet_hover.gif)}
+.Button					{
+	border: 1px solid #124FB8;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	padding-left: 24px;
+	padding-right: 24px;
+	color: #FFFFFF;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+	background-color: #177AC3;
+}
+.Button:hover			{
+	border: 1px solid #124FB8;
+}
+.FormButton					{
+	border: 1px solid #05BA05;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	padding-left: 24px;
+	padding-right: 24px;
+	color: #FFFFFF;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+	background-color: #05BA05;
+}
+.FormButton:hover			{
+	border: 1px solid #05BA05;
+}
+.EmailSentMsg			{ font-size: 14px; color: #EF1839; font-weight: bold; }
+.GoogleWide				{ border-bottom: 1px solid #ECECEC; }
+.GoogleNarrow			{ padding-left: 12px; }
+.Green					{ color: #008000; text-decoration: none; }
+.HomeBox				{ width: 734px; margin: 1px; font-size: 7px; }
+.HomeBox span           { position: absolute; margin-left: 93px; margin-top: -5px; }
+.Letter					{ padding: 3px; padding-left: 5px; padding-right: 5px; margin-right: 2px; background-color: #1B78EF; color: #FFFFFF; font-weight: bold; line-height: 24px; }
+.Letter:Hover			{ color: #ED1C24; }
+.LetterSelected			{ padding: 3px; padding-left: 6px; padding-right: 6px; padding-left: 6px; margin-right: 2px; background-color: #C61111; color: #FFFFFF; font-weight: bold; line-height: 24px; }
+.LinkBox				{
+	margin: 1px;
+	font-size: 7px;
+}
+.UserNav				{
+	margin: 2px;
+	font-size: 6px;
+}
+.ListItemNormal			{ padding: 8px; border-bottom: 1px dashed #CCCCCC;}
+.ListItemNormal_Hover	{ padding: 8px; border-bottom: 1px dashed #CCCCCC; background-color: #F5F5F5; }
+.ListItemBold			{ padding: 16px; padding-left: 8px; padding-right: 8px; border-bottom: 1px dashed #BBBBBB; background-color: #FFFFE1; }
+.ListItemBold_Hover		{ padding: 16px; padding-left: 8px; padding-right: 8px; border-bottom: 1px dashed #CCCCCC; background-color: #FFFFCC; }
+.ListItemBold a			{ font-size: 13px; font-weight: bold; }
+.ListItemBold_Hover a	{ font-size: 13px; font-weight: bold; }
+.SmallText				{ font-size: 11px; color: #666666; } 
+
+#Areas					{ margin-top: 4px; padding: 8px; background-color: #F5F5F5; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #CCCCCC; }
+#Branding               { margin: 6px; margin-left: 8px; }
+#Branding span          { margin-left: 70px; }
+#BreadCrumb				{ margin: 12px; }
+#ListStart				{ border-bottom: 5px dashed #CCCCCC; }
+#LogoBox				{ margin-bottom: 12px; }
+#Main					{ margin: 14px; }
+#Navigation             { margin-top: 16px; }
+#SeachBox				{
+	border: 1px solid #800000;
+	padding: 10px;
+	font-size: 12px;
+	background-color: #177AC3;
+}
+#Tagline				{ width: 654px; padding: 10px; text-align: left; font-size: 18px; color: #666666; }

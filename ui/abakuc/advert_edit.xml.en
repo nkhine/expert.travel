@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+<table class="form" border="0">
+  <form name="edit" action=";edit" method="post" enctype="multipart/form-data">
+    <!-- TITLE AND LINK-->
+    <tr>
+      <th class="title" colspan="2">
+        Title and Link to your advertisement page
+      </th>
+    </tr>
+    <tr>
+      <td>Title</td>
+      <td>Link</td>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" size="35" name="dc:title" 
+               value="${title}" />
+      </td>
+      <td>
+        <input type="text" size="35" name="flybe:link" 
+               value="${link}" />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <input type="submit" value="Change" />
+      </td>
+    </tr>
+    <!-- TEMPLATE STYLE -->
+    <tr>
+      <th class="title" colspan="2">Style</th>
+    </tr>
+    <tr>
+        <td stl:repeat="style template_style">
+          <center>
+            <img id="picture" src="${style/exemple}" />
+          </center>
+        </td>
+    </tr>
+      <tr>
+        <td stl:repeat="style template_style">
+        <center>
+          <input type="radio" name="style" 
+                 value="${style/name}"
+                 checked="$style/checked}" /> 
+          ${style/name} 
+          </center>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="submit" value="Change" />
+        </td>
+      </tr>
+    <!-- LOGO -->
+    <tr>
+      <th class="title" colspan="2">Logo</th>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <center>
+          <img id="picture" src="${logo}" />
+        </center>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <center>
+          <input name="logo" type="file" size="35"/>
+        </center>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <center>
+          <input name="remove_logo" type="checkbox"/>Remove the logo
+        </center>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <input type="submit" value="Change" />
+      </td>
+    </tr>
+    <!-- BODY -->
+    <tr>
+      <th class="title" colspan="2">Body</th>
+    </tr>
+    <tr>
+      <td colspan="2">
+          ${rte}
+          <br /><br />
+          <input type="submit" value="Change" />
+      </td>
+    </tr>
+    <!-- PICTURES -->
+    <tr>
+      <th class="title" colspan="2">${p_title}</th>
+    </tr>
+
+    <!-- Template style 1 -->
+    <stl:block stl:if="style">
+        <tr>
+          <td colspan="2">
+              <center>
+                <img id="picture" src="${picture1}" />
+              </center>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <center>
+              <input name="picture1" type="file" size="35" />
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <center>
+              <input name="remove_p1" type="checkbox" />Remove this picture 
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td class="hide" colspan="2">
+            <img src="images/px.png" height="1" width= "500" alt="" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="submit" value="Change" />
+          </td>
+        </tr>
+    </stl:block>
+
+    <!-- Template style 2 -->    
+    <stl:block stl:if="not style">
+        <tr>
+          <td>
+            <center>
+              <img id="picture" src="${picture1}" />
+            </center>
+          </td>
+          <td>
+            <center>
+              <img id="picture" src="${picture2}" />
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <center><input name="picture1" type="file" size="35" /></center>
+          </td>
+          <td>
+              <center><input name="picture2" type="file" size="35" /></center>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <center>
+              <input name="remove_p1" type="checkbox"/>Remove this picture
+            </center>
+          </td>
+          <td>
+            <center>
+              <input name="remove_p2" type="checkbox"/>Remove this picture
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <center>
+              <img id="picture" src="${picture3}" />
+            </center>
+          </td>
+          <td>
+            <center>
+              <img id="picture" src="${picture4}" />
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <center><input name="picture3" type="file" size="35"/></center>
+          </td>
+          <td>
+            <center><input name="picture4" type="file" size="35"/></center>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <center>
+              <input name="remove_p3" type="checkbox"/>Remove this picture
+            </center>
+          </td>
+          <td>
+            <center>
+              <input name="remove_p4" type="checkbox"/>Remove this picture
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="submit" value="Change" />
+          </td>
+        </tr>
+    </stl:block>
+  </form>
+</table>
+</stl:block>

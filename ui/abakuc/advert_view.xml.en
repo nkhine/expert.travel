@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h3>${name}</h3>
+
+  <img id="cover" src="${logo}" />
+  <p id="cover">${body}</p>
+  <br />
+  <stl:block if="is_normal_or_advanced">
+    ${street}<br stl:if="street" />
+    ${city}<br stl:if="city" />
+    ${state}<br stl:if="state" />
+    ${postal_code}<br stl:if="postal_code" />
+    ${country}<br stl:if="country" />
+    <stl:block if="phone">
+      <strong>Phone:</strong> ${phone}<br />
+    </stl:block>
+    <stl:block if="fax">
+      <strong>Fax:</strong> ${fax}<br />
+    </stl:block>
+  </stl:block>
+  <br />
+  <a href="./;enquiry_form">Make an enquiry</a><br />
+  <a stl:if="is_normal_or_advanced" href="${link}">${name}</a>
+  <br />
+  <br />
+  <center>
+  <img stl:if="style" src="${picture1}" />
+  </center>
+  <table stl:if="not style">
+  <tr>
+  <td><center><img src="${picture1}" /></center></td>
+  <td><center><img src="${picture2}" /></center></td>
+  </tr>
+  <tr>
+  <td><center><img src="${picture3}" /></center></td>
+  <td><center><img src="${picture4}" /></center></td>
+  </tr>
+  </table>
+
+</stl:block>

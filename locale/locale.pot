@@ -1,0 +1,1376 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2007-03-19 11:03+CET\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "${abakuc/address},"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "${abakuc/post_code}"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "${abakuc/post_town},"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "${abakuc/street},"
+msgstr ""
+
+#: ui/abakuc/address_view.xml.en:0
+msgid "${address}"
+msgstr ""
+
+#: ui/abakuc/search.xml.en:0
+msgid "${batch}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${body}"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "${dc_description}"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "${description}"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "${flybe:street}"
+msgstr ""
+
+#: ui/abakuc/search.xml.en:0
+msgid "${item/address}, ${item/town}, ${item/postcode}<br/> ${item/county}, ${item/region}<br/> Phone:"
+msgstr ""
+
+#: ui/abakuc/search.xml.en:0
+msgid "${item/fax}<br/>"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "${item/label}"
+msgstr ""
+
+#: ui/abakuc/search.xml.en:0
+msgid "${item/phone}, Fax:"
+msgstr ""
+
+#: ui/abakuc/search.xml.en:0
+msgid "${item/title}"
+msgstr ""
+
+#: ui/abakuc/user_edit.xml.en:0
+msgid "${language/name}"
+msgstr ""
+
+#: ui/abakuc/advert_metadata.xml.en:0
+msgid "${m/name}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${menu/label}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${message}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${metadata/title}"
+msgstr ""
+
+#: ui/abakuc/advert_view.xml.en:0
+msgid "${name}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${option/label}"
+msgstr ""
+
+#: ui/abakuc/city.xml.en:0
+msgid "${p/content}"
+msgstr ""
+
+#: ui/abakuc/city.xml.en:0
+msgid "${p/picture/credit}"
+msgstr ""
+
+#: ui/abakuc/city.xml.en:0
+msgid "${p/title}"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "${p_title}"
+msgstr ""
+
+#: ui/abakuc/search.xml.en:0
+msgid "${region/title}"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "${rte} <br/><br/> <input type=\"submit\" value=\"Change\"/>"
+msgstr ""
+
+#: ui/abakuc/advert_view.xml.en:0
+msgid "${street}<br stl:if=\"street\"/> ${city}<br stl:if=\"city\"/> ${state}<br stl:if=\"state\"/> ${postal_code}<br stl:if=\"postal_code\"/> ${country}<br stl:if=\"country\"/>"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "${sub_continent}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${title}"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "${topic/title}"
+msgstr ""
+
+#: ui/abakuc/advert_metadata.xml.en:0
+msgid "${user/name}"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "${weight/name}"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "${x/label}"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "${x/name}"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "(C) <a class=\"WhiteText\" href=\"http://www.abakuc.com\">Abakuc Limited</a> 2006"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "(Your actual branch)"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "(Your actual company)"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "(logged in as ${user/info/title}) <a id=\"top_menu_logout\" href=\"/;logout\">Log out</a>"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "(not logged in) <a id=\"top_menu_login\" href=\"/;login_form\">Log in</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;register_form\">Register</a>"
+msgstr ""
+
+#: ui/abakuc/banner_metadata.xml.en:0
+msgid ".gif, .jpg, .png, .swf"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "<a class=\"Button\" href=\"index.xhtml\">Home</a> <a class=\"Button\" href=\"about.xhtml\">Riverguides.Info</a> <a class=\"Button\" href=\"news.xhtml\">River News</a> <a class=\"Button\" href=\"jobs.xhtml\">Find River Jobs</a> <a class=\"Button\" href=\"events.xhtml\">Events</a> <a class=\"Button\" href=\"login.xhtml\">Login</a>"
+msgstr ""
+
+#: ui/abakuc/branch_list_users.xml.en:0
+msgid "<a href=\"${user/href}\">${user/name}</a> <br/>"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "<a href=\"${website_url}\">${website}</a>"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "<a href=\"./;change_company_form\">Move Company</a> | Move Branch | <a href=\"./;edit_company_form\">Update Company Name</a> | <a href=\"./;edit_branch_form\">Update Branch Details</a>"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "<a href=\"/;about\">About</a> <a href=\"/;credits\">Credits</a> <a href=\"/;license\">License</a>"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "<a href=\"/;contact_form\">News</a> <a href=\"/;contact_form\">Job Board</a> <a href=\"/;contact_form\">Events</a> <a href=\"/;contact_form\">FAQ's</a>"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "<a href=\"privacy.xhtml\">Your Privacy Policy</a> | <a href=\"terms.xhtml\">Terms and Conditions</a> | <a href=\"contact.xhtml\">Contact Us</a>"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "<a stl:if=\"item/url\" title=\"${item/name}\" href=\"${item/url}\">${item/short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "<a target=\"${target}\" href=\"${website_url}\">${website}</a>"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "<b>${abakuc/title}</b> ${abakuc/website}"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "<b>${count}</b>"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "<b>${description}</b>"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "<b>${max_click}</b> Weight:"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "<b>${state}</b>"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "<b>${target}</b>"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "<b>${title}</b>"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "<b>${type}</b>"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "<b>${weight}</b>"
+msgstr ""
+
+#: adverts.py:367
+msgid "<body>(.*)</body>"
+msgstr ""
+
+#: ui/abakuc/advert_view.xml.en:0
+msgid "<br/> <a href=\"./;enquiry_form\">Make an enquiry</a><br/> <a stl:if=\"is_normal_or_advanced\" href=\"${link}\">${name}</a> <br/> <br/>"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "<br/> Simply fill in the form below and follow the instructions."
+msgstr ""
+
+#: ui/abakuc/company_edit_metadata.xml.en:0
+msgid "<input name=\"abakuc:business_profile\" type=\"radio\" value=\"${x/name}\" checked=\"${x/selected}\"/> ${x/name}"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "<input name=\"abakuc:continent\" type=\"radio\" value=\"${x/name}\" checked=\"${x/selected}\"/> ${x/name}"
+msgstr ""
+
+#: ui/abakuc/branch_edit_metadata.xml.en:0
+msgid "<input name=\"abakuc:street\" size=\"30\" type=\"text\" value=\"${street}\"/> (* optional field)"
+msgstr ""
+
+#: ui/abakuc/branch_edit_metadata.xml.en:0
+msgid "<input name=\"abakuc:uk_or_nonuk\" type=\"radio\" value=\"${x/name}\" checked=\"${x/selected}\"/> ${x/name}"
+msgstr ""
+
+#: ui/abakuc/advert_metadata.xml.en:0
+msgid "<input name=\"city\" type=\"checkbox\" value=\"${dest/name}\" checked=\"${dest/checked}\"/> ${dest/title}"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "<input name=\"company_street\" size=\"30\"/> (* optional field)"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "<input name=\"company_uk_or_nonuk\" type=\"radio\" rel=\"address_uk\"/>UK <input name=\"company_uk_or_nonuk\" type=\"radio\" rel=\"address_non_uk\"/>Non UK"
+msgstr ""
+
+#: ui/abakuc/banner_metadata.xml.en:0
+msgid "<input name=\"logo\" size=\"35\" type=\"file\"/><br/> Acceptable formats:"
+msgstr ""
+
+#: ui/abakuc/city_metadata.xml.en:0
+msgid "<input name=\"names\" type=\"checkbox\" value=\"${topic/name}\" checked=\"${topic/checked}\"/> ${topic/title}<br/>"
+msgstr ""
+
+#: ui/abakuc/banner_metadata.xml.en:0
+msgid "<input name=\"remove_logo\" type=\"checkbox\"/>Remove image"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "<input name=\"remove_logo\" type=\"checkbox\"/>Remove image <input name=\"logo\" size=\"35\" type=\"file\"/>"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "<input name=\"remove_logo\" type=\"checkbox\"/>Remove the logo"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "<input name=\"remove_p1\" type=\"checkbox\"/>Remove this picture"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "<input name=\"remove_p2\" type=\"checkbox\"/>Remove this picture"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "<input name=\"remove_p3\" type=\"checkbox\"/>Remove this picture"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "<input name=\"remove_p4\" type=\"checkbox\"/>Remove this picture"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "<input name=\"style\" type=\"radio\" value=\"${style/name}\" checked=\"$style/checked}\"/> ${style/name}"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "<strong style=\"color: #FFFFFF;\">Search</strong> <input name=\"st\" type=\"hidden\" value=\"company-search\"/> <input name=\"tx\" size=\"24\" type=\"text\" value=\"Company name\" onClick=\"clearText();\"/> <input name=\"Submit\" class=\"btn\" type=\"submit\" value=\"GO\"/>"
+msgstr ""
+
+#: ui/abakuc/advert_view.xml.en:0
+msgid "<strong>Fax:</strong> ${fax}<br/>"
+msgstr ""
+
+#: ui/abakuc/advert_view.xml.en:0
+msgid "<strong>Phone:</strong> ${phone}<br/>"
+msgstr ""
+
+#: users.py:602
+msgid "A valid phone number must be provided."
+msgstr ""
+
+#: metadata_old.py:320
+msgid "ABTA"
+msgstr ""
+
+#: metadata_old.py:325
+msgid "ATOL"
+msgstr ""
+
+#: root.py:29
+msgid "Abakuc"
+msgstr ""
+
+#: ui/abakuc/user_edit_account.xml.en:0
+msgid "Abakuc Account Change"
+msgstr ""
+
+#: metadata_old.py:166
+msgid "Academia"
+msgstr ""
+
+#: adverts.py:51
+msgid "Add a new Advert"
+msgstr ""
+
+#: countries.py:218
+msgid "Add a new Country"
+msgstr ""
+
+#: rivers.py:55
+msgid "Add a new River"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Address"
+msgstr ""
+
+#: countries.py:98
+msgid "Administrate"
+msgstr ""
+
+#: metadata_old.py:326
+msgid "Advantage"
+msgstr ""
+
+#: adverts.py:50
+msgid "Advert"
+msgstr ""
+
+#: countries.py:151
+msgid "Adverts"
+msgstr ""
+
+#: metadata_old.py:228
+msgid "Africa"
+msgstr ""
+
+#: metadata_old.py:158
+msgid "Airline"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "All fields are mandatory!"
+msgstr ""
+
+#: metadata_old.py:229
+msgid "Americas"
+msgstr ""
+
+#: ui/abakuc/user_edit.xml.en:0
+msgid "Application Preferences"
+msgstr ""
+
+#: metadata_old.py:230
+msgid "Asia"
+msgstr ""
+
+#: metadata_old.py:176
+msgid "Assistant Manager"
+msgstr ""
+
+#: metadata_old.py:162
+msgid "Association"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Available branch details on our database:"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Available company details on our database:"
+msgstr ""
+
+#: banners.py:64
+msgid "Banner"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner Max click"
+msgstr ""
+
+#: metadata_old.py:395
+msgid "Banner Target"
+msgstr ""
+
+#: metadata_old.py:383
+msgid "Banner Type"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner URL"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner count"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner image"
+msgstr ""
+
+#: banners.py:259
+msgid "Banner modified!"
+msgstr ""
+
+#: banners.py:65
+msgid "Banner object"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner target"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner type"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Banner weight"
+msgstr ""
+
+#: countries.py:173
+msgid "Banners"
+msgstr ""
+
+#: banners.py:41
+msgid "Banners Tool"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "Body"
+msgstr ""
+
+#: metadata_old.py:317
+msgid "Branch Name"
+msgstr ""
+
+#: users.py:593
+msgid "Branch already exists"
+msgstr ""
+
+#: users.py:638
+msgid "Branch changed"
+msgstr ""
+
+#: users.py:625
+msgid "Branch created"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Branch details"
+msgstr ""
+
+#: ui/abakuc/branch_edit_metadata.xml.en:0
+msgid "Branch modification"
+msgstr ""
+
+#: company_old.py:100
+msgid "Branch modified!"
+msgstr ""
+
+#: ui/abakuc/company_edit_metadata.xml.en:0
+msgid "Business Function"
+msgstr ""
+
+#: ui/abakuc/company_edit_metadata.xml.en:0
+msgid "Business Profile"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "CITY"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "COUNTRY / REGION"
+msgstr ""
+
+#: metadata_old.py:147
+msgid "Call Centre"
+msgstr ""
+
+#: metadata_old.py:163
+msgid "Car Hire"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "Change"
+msgstr ""
+
+#: users.py:520
+msgid "Change Branch"
+msgstr ""
+
+#: users.py:378
+msgid "Change Company"
+msgstr ""
+
+#: ui/abakuc/user_edit_account.xml.en:0
+msgid "Change account"
+msgstr ""
+
+#: ui/abakuc/user_edit.xml.en:0
+msgid "Change preferences"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Change your company"
+msgstr ""
+
+#: charts.py:22
+msgid "Chart"
+msgstr ""
+
+#: charts.py:23
+msgid "Chart class to display pretty charts in a flash file"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "Choose your category"
+msgstr ""
+
+#: ui/abakuc/branch_edit_metadata.xml.en:0
+msgid "City"
+msgstr ""
+
+#: countries.py:145
+msgid "City has been modified!"
+msgstr ""
+
+#: metadata_old.py:315
+msgid "Comapny Name"
+msgstr ""
+
+#: company_old.py:229
+msgid "Companies"
+msgstr ""
+
+#: company_old.py:128
+msgid "Company"
+msgstr ""
+
+#: company_old.py:25
+msgid "Company Branch"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Company Name"
+msgstr ""
+
+#: ui/abakuc/company_edit_metadata.xml.en:0
+msgid "Company Website"
+msgstr ""
+
+#: users.py:477
+msgid "Company changed"
+msgstr ""
+
+#: users.py:513
+msgid "Company created"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Company details"
+msgstr ""
+
+#: users.py:562
+msgid "Company details not defined!"
+msgstr ""
+
+#: ui/abakuc/company_edit_metadata.xml.en:0
+msgid "Company modification"
+msgstr ""
+
+#: company_old.py:198
+msgid "Company modified!"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "Contact"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "Continent"
+msgstr ""
+
+#: countries.py:301
+msgid "Countries in the World"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Country"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "Country Name"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "Country modification"
+msgstr ""
+
+#: countries.py:286
+msgid "Country modified!"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "County"
+msgstr ""
+
+#: users.py:576
+msgid "Create Branch"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Create branch"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Create new company"
+msgstr ""
+
+#: users.py:550
+msgid "Create your branch"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Description"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "Description:"
+msgstr ""
+
+#: ui/abakuc/advert_metadata.xml.en:0
+msgid "Destinations"
+msgstr ""
+
+#: ui/abakuc/user_edit_account.xml.en:0
+msgid "E-mail"
+msgstr ""
+
+#: adverts.py:289
+msgid "Edit"
+msgstr ""
+
+#: users.py:653
+msgid "Edit Branch Details"
+msgstr ""
+
+#: users.py:667
+msgid "Edit Company Details"
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "Edit account details;"
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "Edit preferences;"
+msgstr ""
+
+#: adverts.py:195
+msgid "Enquiry"
+msgstr ""
+
+#: metadata_old.py:231
+msgid "Europe"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "FAX"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Fax Number"
+msgstr ""
+
+#: metadata_old.py:305
+msgid "First Name"
+msgstr ""
+
+#: adverts.py:38
+msgid "Folder containing all the Adverts"
+msgstr ""
+
+#: countries.py:302
+msgid "Folder containing all the Countries"
+msgstr ""
+
+#: rivers.py:23
+msgid "Folder containing all the world rivers"
+msgstr ""
+
+#: ui/abakuc/user_edit_account.xml.en:0
+msgid "Full name"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Function"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "GO"
+msgstr ""
+
+#: metadata_old.py:328
+msgid "Global Travel Group"
+msgstr ""
+
+#: metadata_old.py:146
+msgid "Homeworker"
+msgstr ""
+
+#: metadata_old.py:321
+msgid "IATA"
+msgstr ""
+
+#: metadata_old.py:145
+msgid "Independent"
+msgstr ""
+
+#: ui/abakuc/advert_metadata.xml.en:0
+msgid "Index"
+msgstr ""
+
+#: metadata_old.py:306
+msgid "Initials"
+msgstr ""
+
+#: metadata_old.py:164
+msgid "Insurance"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "It's easy."
+msgstr ""
+
+#: metadata_old.py:310
+msgid "Job Function"
+msgstr ""
+
+#: metadata_old.py:311
+msgid "Job Title"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "Just make your choice, insert the text/images, and submit for validation..."
+msgstr ""
+
+#: ui/abakuc/user_edit.xml.en:0
+msgid "Language"
+msgstr ""
+
+#: metadata_old.py:307
+msgid "Last Name"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "Link"
+msgstr ""
+
+#: company_old.py:203
+msgid "List Users"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "Location:"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "Logo"
+msgstr ""
+
+#: banners.py:42
+msgid "Manage Banners with statistics."
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "Manage personal content;"
+msgstr ""
+
+#: metadata_old.py:175
+msgid "Manager"
+msgstr ""
+
+#: metadata_old.py:179
+msgid "Managing Director"
+msgstr ""
+
+#: metadata_old.py:183
+msgid "Marketing Assistant"
+msgstr ""
+
+#: metadata_old.py:181
+msgid "Marketing Director"
+msgstr ""
+
+#: metadata_old.py:182
+msgid "Marketing Manager"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "Max clicks:"
+msgstr ""
+
+#: metadata_old.py:327
+msgid "Midconsort"
+msgstr ""
+
+#: metadata_old.py:136
+msgid "Miss"
+msgstr ""
+
+#: users.py:644
+msgid "Missing parameter"
+msgstr ""
+
+#: users.py:481
+msgid "Missing parameter: company name"
+msgstr ""
+
+#: ui/abakuc/company_edit_metadata.xml.en:0
+msgid "Modify Company"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "Modify Country"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Move company | <a href=\"./;change_branch_form\">Move Branch</a> | <a href=\"./;edit_company_form\">Update Company Name</a> | <a href=\"./;edit_branch_form\">Update Branch Details</a>"
+msgstr ""
+
+#: metadata_old.py:135
+msgid "Mrs"
+msgstr ""
+
+#: metadata_old.py:144
+msgid "Multiple"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "Name:"
+msgstr ""
+
+#: metadata_old.py:157
+msgid "National Tourist Board"
+msgstr ""
+
+#: users.py:300
+msgid "No Company defined"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "No company on our database matched your query, please perform another search or create a new company using the form below."
+msgstr ""
+
+#: metadata_old.py:211
+msgid "Non-UK"
+msgstr ""
+
+#: ui/abakuc/city_metadata.xml.en:0
+msgid "OK"
+msgstr ""
+
+#: metadata_old.py:232
+msgid "Oceania"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "On the following pages you will see pre-set options of how an advertisement can look."
+msgstr ""
+
+#: root.py:32
+msgid "One back-office to bring them all and in the darkness bind them."
+msgstr ""
+
+#: metadata_old.py:186
+msgid "Other"
+msgstr ""
+
+#: metadata_old.py:148
+msgid "Others"
+msgstr ""
+
+#: ui/abakuc/advert_metadata.xml.en:0
+msgid "Owner"
+msgstr ""
+
+#: metadata_old.py:174
+msgid "Owner/Director"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "POSTAL CODE"
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "Pending tasks."
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Phone Number"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Please check to see if your company name is already registered on our databse."
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Please narrow your search, as there are too many companies found with this query!"
+msgstr ""
+
+#: users.py:497
+msgid "Please search for this company again."
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Please select a company by using the <a href=\"./;change_company_form\">Move Company</a> form."
+msgstr ""
+
+#: ui/abakuc/user_no_company.xml.en:0
+msgid "Please update your record by visiting the <a href=\"./;change_company_form\">define company form</a>"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Post Code"
+msgstr ""
+
+#: metadata_old.py:343
+msgid "Post Town"
+msgstr ""
+
+#: users.py:666
+msgid "Preferences"
+msgstr ""
+
+#: users.py:468
+msgid "Problem, company not found in registry"
+msgstr ""
+
+#: metadata_old.py:184
+msgid "Product Manager"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Profile"
+msgstr ""
+
+#: adverts.py:444
+msgid "Properties"
+msgstr ""
+
+#: ui/abakuc/city_metadata.xml.en:0
+msgid "Properties list"
+msgstr ""
+
+#: metadata_old.py:161
+msgid "Public Relations"
+msgstr ""
+
+#: countries.py:41
+msgid "Publish a new City"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Region"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Region/State"
+msgstr ""
+
+#: metadata_old.py:160
+msgid "Representation Company"
+msgstr ""
+
+#: metadata_old.py:185
+msgid "Reservation Staff"
+msgstr ""
+
+#: rivers.py:54
+msgid "River"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Aire"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Avon"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Bann"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Clyde"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Dee"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Don"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Eden"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Great Ouse"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Nene"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Ribble"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Severn"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Spey"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Tay"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Tees"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Thames"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Trent"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Tweed"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Tyne"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "River Wye"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "Riverguides.Info"
+msgstr ""
+
+#: rivers.py:22
+msgid "Rivers"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "STATE / PROVINCE"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "STREET"
+msgstr ""
+
+#: metadata_old.py:180
+msgid "Sales Director"
+msgstr ""
+
+#: users.py:642
+msgid "Same branch : no change"
+msgstr ""
+
+#: users.py:479
+msgid "Same company: no change"
+msgstr ""
+
+#: ui/uktravel/template.xhtml.en:0
+msgid "Search"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Select"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Select and edit branch"
+msgstr ""
+
+#: users.py:548
+msgid "Select your branch"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "State:"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Street Name"
+msgstr ""
+
+#: metadata_old.py:178
+msgid "Student"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "Style"
+msgstr ""
+
+#: ui/abakuc/country_edit_metadata.xml.en:0
+msgid "Sub continent"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "Submit"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "TELEPHONE"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "Target:"
+msgstr ""
+
+#: metadata_old.py:165
+msgid "Technology"
+msgstr ""
+
+#: metadata_old.py:300
+msgid "Terms &amp Conditions"
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "This is your personal space where you can manage your own documents and publish them."
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Title"
+msgstr ""
+
+#: ui/abakuc/advert_edit.xml.en:0
+msgid "Title and Link to your advertisement page"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "To advertise here"
+msgstr ""
+
+#: ui/abakuc/user_no_company.xml.en:0
+msgid "To associate an address, please use the <a href=\"./;change_branch_form\">associate a branch form</a>"
+msgstr ""
+
+#: ui/abakuc/user_edit_account.xml.en:0
+msgid "To confirm these changes, you must type your actual password."
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "To create a new branch fill the form below"
+msgstr ""
+
+#: ui/abakuc/city_metadata.xml.en:0
+msgid "Topics"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "Total clicks:"
+msgstr ""
+
+#: metadata_old.py:155
+msgid "Tour Operator"
+msgstr ""
+
+#: countries.py:237
+msgid "Tourist Office"
+msgstr ""
+
+#: countries.py:240
+msgid "Tourist Office(Manager)"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "Town/City"
+msgstr ""
+
+#: metadata_old.py:154
+msgid "Travel Agent"
+msgstr ""
+
+#: countries.py:234
+msgid "Travel Agent(Manager)"
+msgstr ""
+
+#: metadata_old.py:177
+msgid "Travel Consultant"
+msgstr ""
+
+#: metadata_old.py:323
+msgid "Travel Trust Association"
+msgstr ""
+
+#: ui/abakuc/banner_view.xml.en:0
+msgid "Type:"
+msgstr ""
+
+#: uktravel.py:21
+msgid "UK Travel List"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "UK or Non UK"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Update"
+msgstr ""
+
+#: ui/abakuc/video_metadata.xml.en:0
+msgid "Upload/update image"
+msgstr ""
+
+#: company_old.py:105
+msgid "Users"
+msgstr ""
+
+#: ui/abakuc/user_change_branch_form.xml.en:0
+msgid "We do not have any branch details for this company on our database, please create a new branch using the form below!"
+msgstr ""
+
+#: ui/abakuc/video_view.xml.en:0
+msgid "WebSite:"
+msgstr ""
+
+#: ui/abakuc/user_change_company_form.xml.en:0
+msgid "Website"
+msgstr ""
+
+#: metadata_old.py:333
+msgid "Website Address"
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "Welcome to your folder."
+msgstr ""
+
+#: metadata_old.py:322
+msgid "World Choice"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "YOUR ADVERTISEMENT NAME *"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "YOUR EMAIL *"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "YOUR NAME *"
+msgstr ""
+
+#: ui/abakuc/user_add.xml.en:0
+msgid "You can create your own advertisement to appear within the Flybe Destinations website."
+msgstr ""
+
+#: ui/abakuc/user_profile.xml.en:0
+msgid "You can do the following actions:"
+msgstr ""
+
+#: ui/abakuc/user_no_company.xml.en:0
+msgid "You don't seem to have an address associated with your account!"
+msgstr ""
+
+#: ui/abakuc/user_no_company.xml.en:0
+msgid "You have not defined your company details!"
+msgstr ""
+
+#: adverts.py:421
+msgid "Your advert has been edited."
+msgstr ""
+
+#: users.py:640
+msgid "Your company doesn't match this branch"
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "more..."
+msgstr ""
+
+#: ui/abakuc/template.xhtml.en:0
+msgid "spacer"
+msgstr ""

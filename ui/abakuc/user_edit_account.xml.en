@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+          
+  <h2>Abakuc Account Change</h2>
+
+  <form action=";edit_account" method="post">
+    <dl>
+      <dt><label for="dc:title">Full name</label></dt>
+      <dd>
+        <input type="text" id="dc:title" name="dc:title" value="${fullname}" />
+      </dd>
+      <dt><label for="email">E-mail</label></dt>
+      <dd>
+        <input type="text" id="email" name="email" value="${email}" />
+      </dd>
+      <stl:block if="must_confirm">
+        <dt><strong>To confirm these changes, you must type your actual
+            password.</strong></dt>
+        <dd>
+          <input type="password" id="password" name="password" />
+        </dd>
+      </stl:block>
+    </dl>
+    <p>
+      <input type="submit" value="Change account" class="button_ok" />
+    </p>
+  </form>
+
+  <script type="text/javascript">
+    focus("dc:title");
+  </script>
+
+</stl:block>

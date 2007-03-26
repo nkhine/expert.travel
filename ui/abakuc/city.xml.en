@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h1>${title}</h1>
+<stl:block stl:repeat="p pages">
+  <span style="color: #f26521; font-weight: bold; font-size: 14px;"
+    id="${p/name}">${p/title}</span>
+  <table stl:if='p/picture' style="float: right;" border="0">
+    <tr>
+      <td>
+        <img style="padding: 2px;" src="${p/picture/name}" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <h5 style="margin: 2px 0 2px 0;">${p/picture/credit}</h5>
+      </td>
+    </tr>
+  </table>
+  <p>${p/content}</p><br />
+</stl:block>
+</stl:block>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+    <h1>Country modification</h1>
+      <form action=";edit_metadata" method="post">
+            <dl>
+              <dt><label for="dc:title">Country Name</label></dt>
+              <dd>
+                  <input type="text" size="50" name="dc:title"
+                         value="${title}" />
+              </dd>
+            </dl>
+            <dl>
+              <dt><label for="dc:description">Description</label></dt>
+              <dd>
+                  <textarea cols="50" rows="8" id="dc:description"
+                       name="dc:description">${description}</textarea>
+              </dd>
+              </dl>
+            <dl>
+            <dt><label for="abakuc:continent">Continent</label></dt>
+            <dd>
+                  <stl:block repeat="x continent">
+                    <input type="radio" name="abakuc:continent"
+                           value="${x/name}" checked="${x/selected}" />
+                           ${x/name}
+                  </stl:block>
+            </dd>
+            </dl>
+            <dl>
+            <dt><label for="abakuc:sub_continent">Sub continent</label></dt>
+            <dd>
+                  ${sub_continent}
+            </dd>
+            </dl>
+            <p><input type="submit" value="Modify Country" class="button_ok" /></p>
+      </form>
+  </stl:block>

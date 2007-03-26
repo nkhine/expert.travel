@@ -1,0 +1,69 @@
+<chart>
+    <chart_type>3d pie</chart_type>
+    <chart_rect x='60' y='250' width='150' height='150' positive_alpha='0' />
+    <chart_pref rotation_x='60' />
+    <chart_value as_percentage='1' size='9' color='ffffff' alpha='85' />
+    <chart_transition type='dissolve' delay='0.1' duration='0.3' order='category' />
+    <legend_label layout='vertical' bullet='circle' size='11' color='ffffff' alpha='85' />
+    <legend_rect x='240' y='250' width='20' height='40' fill_alpha='0' />
+    <chart_data>
+        <row>
+            <null/>
+            <string>South East</string>
+            <string>North West</string>
+            <string>Wales</string>
+            <string>London</string>
+            <string>South West</string>
+            <string>East Midlands</string>
+            <string>Scotland</string>
+            <string>Yorkshire Humberside</string>
+            <string>Northern Ireland</string>
+            <string>Midland</string>
+            <string>East Anglia</string>
+            <string>Northern</string>
+        </row>
+        <row>
+            <string></string>
+            <number>28</number>
+            <number>15</number>
+            <number>2</number>
+            <number>9</number>
+            <number>8</number>
+            <number>9</number>
+            <number>5</number>
+            <number>6</number>
+            <number>0</number>
+            <number>3</number>
+            <number>2</number>
+            <number>3</number>
+        </row>
+    </chart_data>
+    <series_color>
+        <color>4466ff</color>
+        <color>ff22dd</color>
+        <color>eeee00</color>
+        <color>008811</color>
+        <color>00aadd</color>
+        <color>9900cc</color>
+        <color>aa1100</color>
+        <color>22eeff</color>
+        <color>ddaa00</color>
+        <color>660099</color>
+        <color>ff8866</color>
+        <color>dd99ff</color>
+    </series_color>
+    <series_explode>
+        <number>0</number>
+        <number>20</number>
+        <number>30</number>
+        <number>40</number>
+        <number>0</number>
+        <number>30</number>
+        <number>30</number>
+        <number>30</number>
+        <number>90</number>
+        <number>50</number>
+        <number>40</number>
+        <number>50</number>
+    </series_explode>
+</chart>

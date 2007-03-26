@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <form enctype="multipart/form-data" action=";edit_metadata" method="post">
+    <table class="form">
+      <tr>
+        <th>Title</th>
+        <td colspan="4">
+          <input type="text" size="50" name="dc:title"
+                 value="${title}" />
+        </td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td colspan="4">
+          <textarea cols="50" rows="8"
+            name="dc:description">${description}</textarea>
+        </td>
+      </tr>
+    <!-- LOGO 
+    <tr>
+      <th>Banner image</th>
+      <td>
+        <center>
+          <img src=".logo" id="picture" stl:if="not is_flash" />
+          <object stl:if="is_flash">
+            <param name="movie" value=".logo" />
+            <embed src=".logo" type="application/x-shockwave-flash"
+                   width="160" height="80" />
+          </object>
+        </center>
+      </td>
+    </tr> -->
+    <tr>
+      <th>Upload/update image</th>
+      <td>
+        <input name="remove_logo" type="checkbox"/>Remove image
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td>  
+        <input name="logo" type="file" size="35"/><br />
+         Acceptable formats: .gif, .jpg, .png, .swf
+      </td>
+    </tr>
+    <!-- If the user is an admin -->
+
+      <!-- <tr>
+        <th>Banner Image</th>
+        <td>
+          <input type="text" id="banner_image" name="abakuc:banner_image" size="50"
+                 value="${banner_image}" />
+          <a href="#" onclick="window.open(';edit_image?bc_id=banner_image', 'xxx',
+                                           'toolbar=no, location=no, status=no,
+                                            menubar=no, scrollbars=yes,
+                                            width=640, height=480');
+                               return 0;">Edit...</a>
+        </td>
+      </tr>-->
+   
+    <tr>
+        <th>Banner URL</th>
+        <td>
+          <input type="text" size="30" name="abakuc:banner_website"
+                 value="${banner_website}" />
+        </td>
+      </tr>
+      <tr>
+        <th>Banner type</th>
+        <td>
+          <select name="abakuc:banner_type">
+           <option stl:repeat="item banner_type" value="${item/name}"
+             selected="${item/selected}">${item/label}</option>
+           </select>
+        </td>
+      </tr>
+
+      <!-- Target window -->
+      <tr>
+        <th>Banner target</th>
+        <td>
+          <select name="abakuc:banner_target">
+            <option stl:repeat="item banner_target" value="${item/name}"
+              selected="${item/selected}">${item/label}</option>
+          </select>
+        </td>
+      </tr>
+
+      <!-- Banner slot placement-->
+    <!-- max_click -->
+    <tr>
+      <th>Banner Max click</th>
+      <td>
+        <input type="text" size="5" name="abakuc:banner_max_click"
+          value="${banner_max_click}" />
+      </td>
+    </tr>
+    <!-- weight -->
+    <tr>
+      <th> Banner weight </th>
+      <td colspan="2">
+        <select name="abakuc:banner_weight">
+          <option stl:repeat="weight all_weight"
+            selected="${weight/is_selected}">${weight/name}</option>
+        </select>
+      </td>
+    </tr>
+    <!-- count -->
+    <tr>
+      <th> Banner count </th>
+      <td>
+        <input type="text" size="4" name="abakuc:banner_count"
+          value="${banner_count}" />
+      </td>
+    </tr>
+
+    <!-- Banner maximum clicks -->
+      <tr>
+        <td>
+          <input type="submit" value="Update" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</stl:block>
+

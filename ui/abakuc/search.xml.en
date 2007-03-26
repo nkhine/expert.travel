@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <div id="categories" stl:if="regions">
+    <stl:block stl:repeat="region regions">
+      <a href="${region/href}">${region/title}</a>
+    </stl:block> 
+  </div>
+  ${batch}
+  <div id="List">
+    <stl:block repeat="item companies"> 
+      <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+        onmouseout="this.className='ListItem';">  
+        <dt>
+          <a href="${item/href}">${item/title}</a>
+        </dt>
+        <dd>
+          ${item/address}, ${item/town}, ${item/postcode}<br/>
+          ${item/county}, ${item/region}<br/>
+          Phone: ${item/phone}, Fax: ${item/fax}<br />
+        </dd>
+      </dl>       
+    </stl:block>
+  </div>
+
+</stl:block>
