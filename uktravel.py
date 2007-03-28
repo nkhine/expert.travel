@@ -98,6 +98,7 @@ class UKTravel(Handler, WebSite):
                     if root.search(**q).get_n_documents():
                         regions.append({'href': uri.replace(town=town),
                                         'title': town})
+            regions.sort(key=lambda x: x['title'])
             namespace['regions'] = regions
 
         # Search
