@@ -36,26 +36,13 @@ class UKTravel(Handler, WebSite):
     search__access__ = True
     def search(self, context):
         root = context.root
+        uri = context.uri
+
         topic = context.get_form_value('topic')
         region = context.get_form_value('region')
+        county = context.get_form_value('county')
+        town = context.get_form_value('town')
         text = context.get_form_value('search_text')
-
-        # The namespace
-        namespace = {}
-        namespace['title'] = None
-        namespace['regions'] = []
-
-        # Topic
-        if topic is not None:
-            namespace['title'] = root.get_topic_title(topic)
-            # Regions
-            regions = []
-            csv = root.get_handler('regions.csv')
-            uri = context.uri
-            for region_id, region_title in csv.get_rows():
-                regions.append({'href': uri.replace(region=region_id),
-                                'title': region_title})
-            namespace['regions'] = regions
 
         # Build the query
         query = {'format': 'address'}
@@ -63,8 +50,55 @@ class UKTravel(Handler, WebSite):
             query['topic'] = topic
         if region is not None:
             query['region'] = region
+        if county is not None:
+            query['county'] = county
+        if town is not None:
+            query['town'] = town
         if text:
             query['title'] = text
+
+        # The namespace
+        namespace = {}
+        namespace['title'] = None
+        namespace['regions'] = []
+
+        # Topic
+        csv = root.get_handler('regions.csv')
+        if topic is not None:
+            namespace['title'] = root.get_topic_title(topic)
+            regions = []
+            if region is None:
+                # Regions
+                for region in csv.get_unique_values('region'):
+                    q = query.copy()
+                    q['region'] = region
+                    if root.search(**q).get_n_documents():
+                        regions.append({'href': uri.replace(region=region),
+                                        'title': region})
+            elif county is None:
+                # Counties
+                for n in csv.search(region=region):
+                    county_id = str(n)
+                    q = query.copy()
+                    q['county'] = county_id
+                    if root.search(**q).get_n_documents():
+                        row = csv.get_row(n)
+                        county = row[2]
+                        regions.append({'href': uri.replace(county=county_id),
+                                        'title': county})
+            else:
+                # Towns
+                results = root.search(region=region, county=county)
+                towns = [ x.town for x in results.get_documents() ]
+                towns = list(set(towns))
+                towns.sort()
+                for town in towns:
+                    q = query.copy()
+                    q['town'] = town
+                    if root.search(**q).get_n_documents():
+                        regions.append({'href': uri.replace(town=town),
+                                        'title': town})
+            namespace['regions'] = regions
 
         # Search
         results = root.search(**query)
@@ -73,10 +107,9 @@ class UKTravel(Handler, WebSite):
         start = context.get_form_value('batchstart', type=Integer, default=0)
         size = 5
         total = results.get_n_documents()
-        namespace['batch'] = widgets.batch(context.uri, start, size, total)
+        namespace['batch'] = widgets.batch(uri, start, size, total)
 
         # Search
-        regions = root.get_handler('regions.csv')
         companies = root.get_handler('companies')
         addresses = []
         documents = results.get_documents(sort_by='title')
@@ -84,16 +117,16 @@ class UKTravel(Handler, WebSite):
             address = root.get_handler(address.abspath)
             get_property = address.metadata.get_property
             company = address.parent
-            region_id = get_property('abakuc:region')
-            region_id = int(region_id)
-            region = regions.get_row(region_id)[1]
+            county_id = get_property('abakuc:county')
+            row = csv.get_row(county_id)
+            country, region, county = row
             addresses.append(
                 {'href': '%s/;view' % self.get_pathto(address),
                  'title': company.title,
                  'town': get_property('abakuc:town'),
                  'address': get_property('abakuc:address'),
                  'postcode': get_property('abakuc:postcode'),
-                 'county': get_property('abakuc:county'),
+                 'county': county,
                  'region': region,
                  'phone': get_property('abakuc:phone'),
                  'fax': get_property('abakuc:fax'),

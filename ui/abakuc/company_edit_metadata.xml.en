@@ -1,44 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-    <h1>Company modification</h1>
-      <form action=";edit_metadata" method="post">
-            <dl>
-              <dt><label for="dc:title">Company Name</label></dt>
-              <dd>
-                  <input type="text" size="50" name="dc:title"
-                         value="${title}" />
-              </dd>
-            </dl>
-            <dl>
-              <dt><label for="abakuc:website">Company Website</label></dt>
-              <dd>
-                  <input type="text" size="50" name="abakuc:website"
-                         value="${website}" />
-              </dd>
-              </dl>
-            <dl>
-            <dt><label for="abakuc:business_profile">Business Profile</label></dt>
-            <dd>
-                  <stl:block repeat="x business_profile">
-                    <input type="radio" name="abakuc:business_profile"
-                           value="${x/name}" checked="${x/selected}" />
-                           ${x/name}
-                  </stl:block>
-            </dd>
-            </dl>
-            <dl>
-            <dt><label for="abakuc:business_function">Business Function</label></dt>
-            <dd>
-                  <select id="abakuc:business_function" name="abakuc:business_function">
-                    <option stl:repeat="x business_function" 
-                            value="${x/name}" selected="${x/selected}">
-                            ${x/name}
-                    </option> 
-                  </select>
-            </dd>
-            </dl>
-            <p><input type="submit" value="Modify Company" class="button_ok" /></p>
-      </form>
-  </stl:block>
+<h1>Company modification</h1>
+<form action=";edit_metadata" method="post" enctype="multipart/form-data">
+  <dl>
+    <dt><label for="dc:title">Company Name</label></dt>
+    <dd>
+      <input type="text" size="50" name="dc:title" value="${title}" />
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="abakuc:website">Company Website</label></dt>
+    <dd>
+      <input type="text" size="50" name="abakuc:website" value="${website}" />
+    </dd>
+  </dl>
+  <!--
+  <dl>
+    <dt><label for="abakuc:business_profile">Business Profile</label></dt>
+    <dd>
+      <stl:block repeat="x business_profile">
+        <input type="radio" name="abakuc:business_profile"
+          value="${x/name}" checked="${x/selected}" />${x/name}</stl:block>
+    </dd>
+  </dl>
+  -->
+  <dl>
+    <dt><label for="abakuc:topic">Business Function</label></dt>
+    <dd>
+      <select id="abakuc:topic" name="abakuc:topic" style="width: 60%">
+        <option value=""></option>
+        <option stl:repeat="topic topics" value="${topic/id}"
+          selected="${topic/is_selected}">${topic/title}</option> 
+      </select>
+    </dd>
+  </dl>
+  <dl>
+    <dt>
+      <label for="logo">Logo</label><br/>
+      <img src="logo" />
+    </dt>
+    <dd>
+      <input type="file" name="logo" size="40" />
+      <stl:block if="logo">
+        <br/>
+        <input type="checkbox" name="remove_logo" value="1" /> Check to remove
+        the logo.
+      </stl:block>
+    </dd>
+  </dl>
+  <p><input type="submit" value="Modify Company" class="button_ok" /></p>
+</form>
+
+</stl:block>

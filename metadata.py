@@ -19,7 +19,8 @@ class Schema(BaseSchema):
         # Address
         'address': Unicode,
         'postcode': String,
-        'town': Integer,
+        'county': Integer,
+        'town': Unicode,
         'phone': String,
         'fax': String,
         'license': Unicode,

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<script type="text/javascript" src="/ui/abakuc/abakuc.js"></script>
+
+<h1>Address modification</h1>
+<form action=";edit_metadata" method="post">
+  <dl>
+    <dt><label for="abakuc:address">Address</label></dt>
+    <dd>
+      <textarea cols="60" rows="3" name="abakuc:address">${address}</textarea>
+    </dd>
+  </dl>
+  <!--
+  <dl>
+    <dt><label for="abakuc:street">Street Name</label></dt>
+    <dd>
+      <input type="text" size="30" name="abakuc:street" value="${street}" />
+      (* optional field)
+    </dd>
+  </dl>
+  -->
+  <dl>
+    <dt>Region</dt>
+    <dd>
+      <select style="width: 40%" onchange="select_region(this.value)">
+        <option value="none"></option>
+        <option stl:repeat="region regions" selected="${region/is_selected}"
+          value="${region/rel}">${region/title}</option> 
+      </select>
+
+      <select name="abakuc:county" style="width: 35%">
+        <option value=""></option>
+        <optgroup stl:repeat="region regions" id="${region/rel}"
+          style="display: ${region/display}">
+          <option stl:repeat="county region/counties" value="${county/id}"
+            selected="${county/is_selected}">${county/title}</option> 
+        </optgroup>
+      </select>
+    </dd>
+  </dl>
+  <dl>
+    <dt>City</dt>
+    <dd>
+      <input type="text" size="40" name="abakuc:town" value="${town}" />
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="abakuc:postcode">Post Code</label></dt>
+    <dd>
+      <input type="text" size="10" name="abakuc:postcode"
+        value="${postcode}" />
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="abakuc:phone">Phone Number</label></dt>
+    <dd>
+      <input type="text" size="40" name="abakuc:phone" value="${phone}" />
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="abakuc:fax">Fax Number</label></dt>
+    <dd>
+      <input type="text" size="40" name="abakuc:fax" value="${fax}" />
+    </dd>
+  </dl>
+  <p><input type="submit" value="Modify Company" class="button_ok" /></p>
+</form>
+
+</stl:block>

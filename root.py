@@ -36,11 +36,14 @@ class Regions(Handler, CSV):
     class_id = 'regions'
     class_title = u'Regions'
 
-    columns = ['country', 'region', 'county', 'town']
+    columns = ['country', 'region', 'county']
     schema = {'country': String(index='keyword'),
               'region': String(index='keyword'),
-              'county': String(index='keyword'),
-              'town': String(index='keyword')}
+              'county': String(index='keyword')}
+
+
+register_object_class(Regions)
+
 
 
 
@@ -59,7 +62,9 @@ class Root(Handler, BaseRoot):
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
             ('topic', 'keyword', True, False),
-            ('region', 'keyword', True, False)]
+            ('region', 'keyword', True, False),
+            ('county', 'keyword', True, False),
+            ('town', 'keyword', True, True)]
 
 
     #######################################################################
@@ -75,7 +80,7 @@ class Root(Handler, BaseRoot):
 
         # Regions
         regions = Regions()
-        path = get_abspath(globals(), 'data/csv/towns2.csv')
+        path = get_abspath(globals(), 'data/csv/counties.csv')
         regions.load_state_from(path)
         cache['regions.csv'] = regions
         cache['regions.csv.metadata'] = self.build_metadata(regions)
@@ -89,7 +94,7 @@ class Root(Handler, BaseRoot):
         topics = {}
         rows = handler.get_rows()
         rows = list(rows)
-        rows = rows[1:]
+        rows = rows[1:1000]
         for count, row in enumerate(rows):
             # User
             email = row[10]
@@ -104,18 +109,18 @@ class Root(Handler, BaseRoot):
             topics.setdefault(topic_id, row[1])
             # Regions
             results = regions.search(country='gb', region=str(row[2]),
-                                     county=str(row[3]), town=str(row[4]))
+                                     county=str(row[3]))
             n_results = len(results)
             if n_results == 0:
-                town = None
-                msg = 'No town found for "%s", "%s", "%s" '
-                print count, msg % (row[2], row[3], row[4])
-            elif  n_results == 1:
-                town = results[0]
+                county = None
+                msg = 'No county found for "%s", "%s"'
+                print count, msg % (row[2], row[3])
+            elif n_results == 1:
+                county = results[0]
             else:
-                town = None
-                msg = 'Several towns found for "%s", "%s", "%s" '
-                print count, msg % (row[2], row[3],row[4])
+                county = None
+                msg = 'Several counties found for "%s", "%s" '
+                print count, msg % (row[2], row[3])
  
             # Company
             company_title = row[5].strip()
@@ -147,8 +152,9 @@ class Root(Handler, BaseRoot):
             postcode = row[7]
             if postcode:
                 kw['abakuc:postcode'] = str(postcode)
-            if town:
-                kw['abakuc:town'] = town
+            if county:
+                kw['abakuc:county'] = county
+                kw['abakuc:town'] = row[4]
             kw['abakuc:phone'] = str(row[8])
             kw['abakuc:fax'] = str(row[9])
             ##kw['abakuc:license'] = row[]
@@ -210,7 +216,7 @@ class Root(Handler, BaseRoot):
 
 
     #######################################################################
-    # API
+    # API / Topics
     #######################################################################
     def get_topic_title(self, id):
         topics = self.get_handler('topics.csv')
@@ -219,6 +225,17 @@ class Root(Handler, BaseRoot):
                 return row[1]
 
         raise KeyError
+
+
+    def get_topics_namespace(self, id=None):
+        topics = self.get_handler('topics.csv')
+        namespace = []
+        for row in topics.get_rows():
+            namespace.append({'id': row[0], 'title': row[1],
+                              'is_selected': row[0] == id})
+
+        return namespace
+
 
 
 register_object_class(Root)
