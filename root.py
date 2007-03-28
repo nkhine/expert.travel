@@ -17,6 +17,7 @@ from itools.web import get_context
 from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
 from itools.cms.root import Root as BaseRoot
+from itools.cms.html import XHTMLFile
 
 # Import from our package
 from adverts import Adverts
@@ -72,7 +73,7 @@ class Root(Handler, BaseRoot):
     def new(self, username=None, password=None):
         BaseRoot.new(self, username=username, password=password)
         cache = self.cache
-
+        
         # Companies
         companies = Companies()
         cache['companies'] = companies
@@ -176,6 +177,10 @@ class Root(Handler, BaseRoot):
               'ikaaro:website_is_open': True}
         cache['uktravel'] = uktravel
         cache['uktravel.metadata'] = self.build_metadata(uktravel, **kw)
+
+        help = XHTMLFile()
+        cache['help.xhtml'] = help
+        cache['help.xhtml.metadata'] = self.build_metadata(help)
 
         # Adverts 
 ##        adverts = Adverts()

@@ -10,6 +10,7 @@ from itools.cms.csv import CSV
 from itools.cms.WebSite import WebSite
 from itools.cms import widgets
 from itools.cms.registry import register_object_class
+from itools.cms.html import XHTMLFile
 
 # Import from abakuc
 from base import Handler
@@ -28,7 +29,6 @@ class UKTravel(Handler, WebSite):
         if name == 'companies':
             return self.get_handler('/companies')
         return WebSite._get_virtual_handler(self, segment)
-
 
     #######################################################################
     # User Interface
