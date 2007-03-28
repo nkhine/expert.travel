@@ -99,10 +99,11 @@ class Address(Folder):
         company = self.parent
         indexes['topic'] = company.get_property('abakuc:topic')
         county_id = self.get_property('abakuc:county')
-        csv = self.get_handler('/regions.csv')
-        country, region, county = csv.get_row(county_id)
-        indexes['region'] = region
-        indexes['county'] = str(county_id)
+        if county_id:
+            csv = self.get_handler('/regions.csv')
+            country, region, county = csv.get_row(county_id)
+            indexes['region'] = region
+            indexes['county'] = str(county_id)
         indexes['town'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
         return indexes
