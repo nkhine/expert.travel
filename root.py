@@ -180,7 +180,8 @@ class Root(Handler, BaseRoot):
 
         help = XHTMLFile()
         cache['help.xhtml'] = help
-        cache['help.xhtml.metadata'] = self.build_metadata(help)
+        cache['help.xhtml.metadata'] = self.build_metadata(help,
+                                            **{'dc:title': {'en': u'Help me'}})
 
         # Adverts 
 ##        adverts = Adverts()
