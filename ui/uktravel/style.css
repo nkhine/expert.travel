@@ -276,7 +276,7 @@ td, th { padding: 3px; }
   padding: 0.3em;
   font-size: 1.4em;
 }
-#body h1, #body h2, #body h3, #body h4, #body h5, #body h6 { border-bottom: 1px solid #d3d7cf; }
+#body h1, #body h3, #body h4, #body h5, #body h6 { border-bottom: 1px solid #d3d7cf; }
 #body h1 { margin: 0.5em; }
 #body h2 { margin: 0.4em; }
 #body h3 { margin: 0.3em; }

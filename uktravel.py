@@ -23,6 +23,31 @@ class UKTravel(Handler, WebSite):
     class_id = 'uktravel'
     class_title = u'UK Travel List'
 
+    def new(self, **kw):
+        WebSite.new(self, **kw)
+        cache = self.cache
+        # Add extra handlers here 
+        news = XHTMLFile()
+        cache['news.xhtml'] = news 
+        cache['news.xhtml.metadata'] = self.build_metadata(news,
+                                            **{'dc:title': {'en': u'News Folder List'}})
+        jobs = XHTMLFile()
+        cache['jobs.xhtml'] = jobs 
+        cache['jobs.xhtml.metadata'] = self.build_metadata(jobs,
+                                            **{'dc:title': {'en': u'Job Board'}})
+        events = XHTMLFile()
+        cache['events.xhtml'] = events
+        cache['events.xhtml.metadata'] = self.build_metadata(events,
+                                            **{'dc:title': {'en': u'Events'}})
+        faq = XHTMLFile()
+        cache['faq.xhtml'] = faq 
+        cache['faq.xhtml.metadata'] = self.build_metadata(faq,
+                                            **{'dc:title': {'en': u'FAQs'}})
+        help = XHTMLFile()
+        cache['help.xhtml'] = help
+        cache['help.xhtml.metadata'] = self.build_metadata(help,
+                                            **{'dc:title': {'en': u'Help'}})
+
 
     def _get_virtual_handler(self, segment):
         name = segment.name

@@ -47,10 +47,11 @@
     <div id="wrapper">
       <div id="center" class="column">
        <div id="main_menu">
-       <a href="/;contact_form">News</a>
-       <a href="/;contact_form">Job Board</a>
-       <a href="/;contact_form">Events</a>
-       <a href="/;contact_form">FAQ's</a>
+       <a href="/news.xhtml">News</a>
+       <a href="/jobs.xhtml">Job Board</a>
+       <a href="/events.xhtml">Events</a>
+       <a href="/faq.xhtml">FAQ's</a>
+       <a href="/help.xhtml">Help</a>
        </div>
         <div id="maintitle">
           <div id="breadcrumbs">
