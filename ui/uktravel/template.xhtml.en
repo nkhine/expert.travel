@@ -67,7 +67,7 @@
         </div>
         <!-- The Body -->
         <div id="body">
-          <h1>${metadata/title}</h1>
+          <!--<h1>${metadata/title}</h1>-->
           <div id="message" stl:if="message">${message}</div>
           <div id="content">${body}</div>
         </div>

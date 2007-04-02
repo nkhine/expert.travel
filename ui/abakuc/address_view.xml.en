@@ -4,6 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h1>${address}</h1>
+  <address>
+    ${address}<br/>
+    ${town} ${postcode}
+  </address>
+
+  <a href=";enquiry_form">Make an enquiry</a>
 
 </stl:block>

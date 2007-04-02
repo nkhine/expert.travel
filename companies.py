@@ -124,6 +124,8 @@ class Address(Folder):
     def view(self, context):
         namespace = {}
         namespace['address'] = self.get_property('abakuc:address')
+        namespace['town'] = self.get_property('abakuc:town')
+        namespace['postcode'] = self.get_property('abakuc:postcode')
  
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)
@@ -175,6 +177,17 @@ class Address(Folder):
 
         message = u'Changes Saved.'
         return context.come_back(message)
+
+
+    #######################################################################
+    # User Interface / Enquiries
+    enquiry_form__access__ = True
+    def enquiry_form(self, context):
+        return 'toto'
+
+
+    def enquiry(self, context):
+        pass
 
 
 register_object_class(Companies)
