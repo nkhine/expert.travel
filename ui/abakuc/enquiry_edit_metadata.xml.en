@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h1>Enquiry form</h1>
+<form action=";edit_metadata" method="post">
+  <dl>
+    <dt><label for="abakuc:enquiry">Enquiry</label></dt>
+    <dd>
+      <textarea cols="60" rows="3" name="abakuc:enquiry">{enquiry}</textarea>
+    </dd>
+  </dl>
+  <dl>
+    <dt>Type of Enquiry</dt>
+    <dd>
+      <select style="width: 40%">
+        <option value="none"></option>
+        <option value="Information">Request Information</option> 
+        <option value="Complaint">Complaint</option> 
+      </select>
+    </dd>
+  </dl>
+  <dl>
+    <dt>Full Name</dt>
+    <dd>
+      <input type="text" size="40" name="abakuc:fullname" value="" />
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="abakuc:phone">Email</label></dt>
+    <dd>
+      <input type="text" size="40" name="abakuc:email" value="" />
+    </dd>
+  </dl>
+  <dl>
+    <dt><label for="abakuc:tel">Tel Number</label></dt>
+    <dd>
+      <input type="text" size="40" name="abakuc:tel" value="" />
+    </dd>
+  </dl>
+  <p><input type="submit" value="Make Enquiry" class="button_ok" /></p>
+</form>
+
+</stl:block>
