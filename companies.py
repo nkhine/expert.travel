@@ -21,6 +21,15 @@ class Companies(Folder):
         return [Company]
 
 
+    #######################################################################
+    # User Interface
+    #######################################################################
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    def view(self, context):
+        return 'bobo'
+
 
 class Company(Folder):
 
@@ -34,6 +43,17 @@ class Company(Folder):
     #######################################################################
     # User Interface
     #######################################################################
+    
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    def view(self, context):
+        namespace = {}
+        namespace['title'] = self.get_property('dc:title')
+        namespace['website'] = self.get_property('abakuc:website')
+ 
+        handler = self.get_handler('/ui/abakuc/company_view.xml')
+        return stl(handler, namespace)
+
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
@@ -183,8 +203,10 @@ class Address(Folder):
     # User Interface / Enquiries
     enquiry_form__access__ = True
     def enquiry_form(self, context):
-        return 'toto'
+        namespace = {}
 
+        handler = self.get_handler('/ui/abakuc/enquiry_edit_metadata.xml')
+        return stl(handler, namespace)
 
     def enquiry(self, context):
         pass

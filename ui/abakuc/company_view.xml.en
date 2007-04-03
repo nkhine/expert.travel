@@ -4,15 +4,19 @@
 
 <h1>${title}</h1>
   <dl>
-    <dt><label for="dc:title">${title}</label></dt>
-    <dd>
-      ${title}
-    </dd>
+    <dt><label for="abakuc:website">${website}</label></dt>
+  </dl>
+
+  <dl>
+    <dt><h3>News List....</h3></dt>
   </dl>
   <dl>
-    <dt><label for="abakuc:website">${website}</label></dt>
-    <dd>
-      ${website}
-    </dd>
+    <dt><h3>Events List....</h3></dt>
+  </dl>
+  <dl>
+    <dt><h3>Jobs List....</h3></dt>
+  </dl>
+  <dl>
+    <dt><h3>Branch List....</h3></dt>
   </dl>
 </stl:block>
