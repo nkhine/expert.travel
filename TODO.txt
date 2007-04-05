@@ -1,3 +1,20 @@
+06-04-2007
+
+1) Need to look at the import of users in that only unique emails should be
+imported as users. Now we have many duplicates, this might cause a problem in
+that two different branches will have one email address.
+
+2) Add the Company Name to the Address view
+
+3) Fix the Change Company, Address forms on the User's Profile page.
+
+4) Add the ;view views to the Company and companies.
+
+5) Fix the ACL so that it is based on each user's Business Function.
+
+
+-------------------
+
 1) Import of abakuc_import_companies.csv
 
 The abakuc_import_companies.csv is the entire http://uktravellist.info database

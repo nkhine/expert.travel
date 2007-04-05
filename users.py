@@ -17,7 +17,7 @@ from itools.cms.users import UserFolder as iUserFolder, User as iUser
 from itools.cms.utils import get_parameters, checkid
 
 # Import from our product
-#from company import Company, Branch
+from companies import Company, Address 
 #from metadata import (BusinessProfile, BusinessFunction, PhoneNumber,
 #                      UK_or_NonUK)
 

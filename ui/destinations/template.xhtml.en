@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>${title}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <!-- CSS -->
+    <link type="text/css" rel="stylesheet" href="style.css" />
+
+    <!-- JavaScript -->
+    <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
+      />
+
+  </head>
+  <body>
+    <div id="header">
+        <table align="right" border="0">
+        <tr>
+        <td id="upper-nav-crn"></td>
+        <td>
+        <stl:block if="not user/info">
+          (not logged in)
+          <a href="/;login_form" id="top_menu_login">Log in</a>
+          <a href="/;register_form" id="top_menu_register"
+            stl:if="user/joinisopen">Register</a>
+        </stl:block>
+        <stl:block if="user/info">
+          (logged in as ${user/info/title})
+          <a href="/;logout" id="top_menu_logout">Log out</a>
+        </stl:block>
+       <a href="/;contact_form" id="top_menu_contact">Contact</a>
+       </td>
+       </tr>
+      <tr>
+      <td colspan="2" id="upper-nav-src">
+      <form action=";search" method="get">
+        <input name="search_text" type="text" value=""/>
+        <input class="button_search" type="submit" value="Search"/>
+      </form>
+      </td>
+      </tr>
+       </table>
+    </div>
+    <div id="wrapper">
+      <div id="center" class="column">
+       <div id="main_menu">
+       <a href="/news.xhtml">News</a>
+       <a href="/jobs.xhtml">Job Board</a>
+       <a href="/events.xhtml">Events</a>
+       <a href="/faq.xhtml">FAQ's</a>
+       <a href="/help.xhtml">Help</a>
+       </div>
+        <div id="maintitle">
+          <div id="breadcrumbs">
+            <label>Location:</label>
+            <span stl:repeat="item breadcrumb">
+              <a stl:if="item/url" href="${item/url}"
+                title="${item/name}">${item/short_name}</a>
+              <span stl:if="not item/url"
+                title="${item/name}">${item/short_name}</span>
+              <stl:inline if="not repeat/item/end">/</stl:inline> 
+            </span>
+          </div>
+        </div>
+        <!-- The Body -->
+        <div id="body">
+          <!--<h1>${metadata/title}</h1>-->
+          <div id="message" stl:if="message">${message}</div>
+          <div id="content">${body}</div>
+        </div>
+      </div>
+      <div id="left" class="column">
+      Left Menu
+      </div>
+    </div>
+    <div id="footer">
+      <a href="/;about">About</a>
+      <a href="/;credits">Credits</a>
+      <a href="/;license">License</a>
+    </div>
+  </body>
+</html>

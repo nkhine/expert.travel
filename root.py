@@ -29,6 +29,7 @@ from companies import Companies, Company, Address
 from uktravel import UKTravel
 #from videos import Videos 
 from users import UserFolder
+from destinations import Destinations
 
 
 
@@ -178,6 +179,15 @@ class Root(Handler, BaseRoot):
         cache['uktravel'] = uktravel
         cache['uktravel.metadata'] = self.build_metadata(uktravel, **kw)
 
+        # Destinations Guide 
+        title = u'Destinations Guide'
+        destinations = Destinations()
+        kw = {'dc:title': {'en': title},
+              'ikaaro:website_is_open': True}
+        cache['destinations'] = destinations
+        cache['destinations.metadata'] = self.build_metadata(destinations, **kw)
+
+
         help = XHTMLFile()
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = self.build_metadata(help,
@@ -216,6 +226,11 @@ class Root(Handler, BaseRoot):
         # XXX For testing purposes
         if hostname == 'uktravel':
             return self.get_handler('ui/uktravel')
+
+        # XXX For testing purposes
+        elif hostname == 'destinations':
+            return self.get_handler('ui/destinations')
+
 
         # return the default skin
         return self.get_handler('ui/aruni')
