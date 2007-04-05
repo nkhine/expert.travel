@@ -26,6 +26,7 @@ from adverts import Adverts
 #from countries import Countries
 from base import Handler
 from companies import Companies, Company, Address
+from handlers import EnquiriesLog
 from uktravel import UKTravel
 #from videos import Videos 
 from users import UserFolder
@@ -74,7 +75,7 @@ class Root(Handler, BaseRoot):
     def new(self, username=None, password=None):
         BaseRoot.new(self, username=username, password=password)
         cache = self.cache
-        
+
         # Companies
         companies = Companies()
         cache['companies'] = companies

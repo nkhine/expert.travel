@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from itools
-from itools.datatypes import Integer, String, Unicode
+from itools.datatypes import Integer, String, Unicode, Email
 from itools.schemas import Schema as BaseSchema, register_schema
 
 
@@ -24,6 +24,10 @@ class Schema(BaseSchema):
         'phone': String,
         'fax': String,
         'license': Unicode,
+        # Email
+        'fullname':Unicode,
+        'enquiry':Unicode,
+        'typeenquiry':String
         }
 
 

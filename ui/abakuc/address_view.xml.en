@@ -5,8 +5,13 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <address>
-    ${address}<br/>
-    ${town} ${postcode}
+    Address : ${address}<br/>
+    Region : ${region}&nbsp;-&nbsp;${county}<br/>
+    City : ${town}<br/>
+    Post Code: ${postcode}<br/>
+    Country: ${country}<br/>
+    Phone number : ${phone}<br/>
+    Fax number : ${fax} <br/>
   </address>
 
   <a href=";enquiry_form">Make an enquiry</a>

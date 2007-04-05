@@ -7,13 +7,13 @@
   <dl>
     <dt><label for="abakuc:enquiry">Enquiry</label></dt>
     <dd>
-      <textarea cols="60" rows="3" name="abakuc:enquiry">{enquiry}</textarea>
+      <textarea cols="60" rows="3" name="abakuc:enquiry"></textarea>
     </dd>
   </dl>
   <dl>
     <dt>Type of Enquiry</dt>
     <dd>
-      <select style="width: 40%">
+      <select style="width: 40%" name="abakuc:typeenquiry">
         <option value="none"></option>
         <option value="Information">Request Information</option> 
         <option value="Complaint">Complaint</option> 
@@ -27,15 +27,15 @@
     </dd>
   </dl>
   <dl>
-    <dt><label for="abakuc:phone">Email</label></dt>
+    <dt><label for="ikaaro:email">Email</label></dt>
     <dd>
-      <input type="text" size="40" name="abakuc:email" value="" />
+      <input type="text" size="40" name="ikaaro:email" value="" />
     </dd>
   </dl>
   <dl>
-    <dt><label for="abakuc:tel">Tel Number</label></dt>
+    <dt><label for="abakuc:phone">Phone Number</label></dt>
     <dd>
-      <input type="text" size="40" name="abakuc:tel" value="" />
+      <input type="text" size="40" name="abakuc:phone" value="" />
     </dd>
   </dl>
   <p><input type="submit" value="Make Enquiry" class="button_ok" /></p>
