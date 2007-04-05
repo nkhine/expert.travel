@@ -27,6 +27,10 @@ class UKTravel(Handler, WebSite):
         WebSite.new(self, **kw)
         cache = self.cache
         # Add extra handlers here 
+        home = XHTMLFile()
+        cache['home.xhtml'] = home 
+        cache['home.xhtml.metadata'] = self.build_metadata(home,
+                                            **{'dc:title': {'en': u'Welcome to the UK Travel List'}})
         news = XHTMLFile()
         cache['news.xhtml'] = news 
         cache['news.xhtml.metadata'] = self.build_metadata(news,
@@ -58,6 +62,12 @@ class UKTravel(Handler, WebSite):
     #######################################################################
     # User Interface
     #######################################################################
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    def view(self, context):
+        handler = self.get_handler('home.xhtml')
+        return stl(handler)
+
     search__access__ = True
     def search(self, context):
         root = context.root

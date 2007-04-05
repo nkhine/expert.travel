@@ -157,12 +157,11 @@ td, th { padding: 3px; }
  * Categories style 
  **************************************************************************/
 #categories		{
-  margin: -25px, 15px, 15px, 15px;
 	background-color: #F5F5F5;
+  margin-left: .5em;
 	border: 1px solid #a5a5a5;
 }
 #categories a { 
-  padding: 5px, 20px, 50px, 20px;
   text-decoration: none;
 	font-size: 11px;
 }
