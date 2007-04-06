@@ -34,6 +34,12 @@ from destinations import Destinations
 
 
 
+def title_to_name(title):
+    title = title.encode('ascii', 'replace')
+    name = title.lower().replace('/', '_').replace('?', '_')
+    return '_'.join(name.split())
+
+
 class Regions(Handler, CSV):
 
     class_id = 'regions'
@@ -58,7 +64,8 @@ class Root(Handler, BaseRoot):
     class_domain = 'abakuc'
     class_description = (u'One back-office to bring them all and in the'
                          u' darkness bind them.')
-    class_views = [['view']] + BaseRoot.class_views
+
+    class_views = [['view']] + BaseRoot.class_views + [['import_data_form']]
 
 
     #######################################################################
@@ -88,89 +95,12 @@ class Root(Handler, BaseRoot):
         cache['regions.csv'] = regions
         cache['regions.csv.metadata'] = self.build_metadata(regions)
 
-        # Import from the CSV file
-        users = cache['users']
-        path = get_abspath(globals(), 'data/csv/abakuc_import_companies.csv')
-        handler = get_handler(path)
-        company_index = 0
-        company_map = {}
-        topics = {}
-        rows = handler.get_rows()
-        rows = list(rows)
-        rows = rows[1:1000]
-        for count, row in enumerate(rows):
-            # User
-            email = row[10]
-            email = str(email).strip()
-            if email:
-                user = users.set_user(email)
-                key = ''.join([ choice(ascii_letters) for x in range(30) ])
-                user.set_property('ikaaro:user_must_confirm', key)
-
-            # Topics
-            topic_id = str(row[0])
-            topics.setdefault(topic_id, row[1])
-            # Regions
-            results = regions.search(country='gb', region=str(row[2]),
-                                     county=str(row[3]))
-            n_results = len(results)
-            if n_results == 0:
-                county = None
-                msg = 'No county found for "%s", "%s"'
-                print count, msg % (row[2], row[3])
-            elif n_results == 1:
-                county = results[0]
-            else:
-                county = None
-                msg = 'Several counties found for "%s", "%s" '
-                print count, msg % (row[2], row[3])
- 
-            # Company
-            company_title = row[5].strip()
-            if company_title in company_map:
-                company_id, address_index = company_map[company_title]
-                company = companies.cache[company_id]
-            else:
-                company_id = str(company_index)
-                address_index = 0
-                company_map[company_title] = company_id, address_index
-                company_index += 1
-                # Add to the database
-                company = Company()
-                companies.cache[company_id] = company
-                kw = {}
-                kw['dc:title'] = {'en': company_title}
-                kw['abakuc:website'] = str(row[11])
-                kw['abakuc:topic'] = topic_id
-                metadata = companies.build_metadata(company, **kw)
-                companies.cache['%s.metadata' % company_id] = metadata
-
-            # Address
-            address_id = str(address_index)
-            # Add to the database
-            address = Address()
-            company.cache[address_id] = address
-            kw = {}
-            kw['abakuc:address'] = row[6]
-            postcode = row[7]
-            if postcode:
-                kw['abakuc:postcode'] = str(postcode)
-            if county:
-                kw['abakuc:county'] = county
-                kw['abakuc:town'] = row[4]
-            kw['abakuc:phone'] = str(row[8])
-            kw['abakuc:fax'] = str(row[9])
-            ##kw['abakuc:license'] = row[]
-            metadata = company.build_metadata(address, **kw)
-            company.cache['%s.metadata' % address_id] = metadata
-
         # Topics
-        csv = CSV()
-        for id, title in topics.items():
-            id = unicode(id)
-            csv.add_row([id, title])
-        cache['topics.csv'] = csv
-        cache['topics.csv.metadata'] = self.build_metadata(csv)
+        topics = CSV()
+        path = get_abspath(globals(), 'data/csv/topics.csv')
+        topics.load_state_from(path)
+        cache['topics.csv'] = topics
+        cache['topics.csv.metadata'] = self.build_metadata(topics)
 
         # UK Travel List
         title = u'UK Travel List'
@@ -249,15 +179,112 @@ class Root(Handler, BaseRoot):
         raise KeyError
 
 
-    def get_topics_namespace(self, id=None):
+    def get_topics_namespace(self, ids=None):
         topics = self.get_handler('topics.csv')
         namespace = []
         for row in topics.get_rows():
             namespace.append({'id': row[0], 'title': row[1],
-                              'is_selected': row[0] == id})
+                              'is_selected': row[0] in ids})
 
         return namespace
 
+
+    #######################################################################
+    # User Interface / Import
+    #######################################################################
+    import_data_form__access__ = 'is_admin'
+    import_data_form__label__ = u'Import'
+    def import_data_form(self, context):
+        handler = self.get_handler('ui/abakuc/import_data.xml')
+        return stl(handler)
+
+
+    import_data__access__ = 'is_admin'
+    def import_data(self, context):
+        # Read the input CSV file
+        path = get_abspath(globals(), 'data/csv/abakuc_import_companies.csv')
+        handler = get_handler(path)
+        rows = handler.get_rows()
+        rows = list(rows)
+        rows = rows[1:1000]
+
+        # Load handlers
+        users = self.get_handler('users')
+        companies = self.get_handler('companies')
+        regions = self.get_handler('regions.csv')
+        topics = self.get_handler('topics.csv')
+
+        # Import from the CSV file
+        for count, row in enumerate(rows):
+            # User
+            email = row[10]
+            email = str(email).strip()
+            if email:
+                user = users.set_user(email)
+                key = ''.join([ choice(ascii_letters) for x in range(30) ])
+                user.set_property('ikaaro:user_must_confirm', key)
+            else:
+                user = None
+
+            # Regions
+            results = regions.search(country='gb', region=str(row[2]),
+                                     county=str(row[3]))
+            n_results = len(results)
+            if n_results == 0:
+                county = None
+                msg = 'No county found for "%s", "%s"'
+                print count, msg % (row[2], row[3])
+            elif n_results == 1:
+                county = results[0]
+            else:
+                county = None
+                msg = 'Several counties found for "%s", "%s" '
+                print count, msg % (row[2], row[3])
+ 
+            # Add Company
+            topic_id = str(row[0])
+            company_title = row[5].strip()
+            company_name = title_to_name(company_title)
+            if not company_name:
+                continue
+            print company_name
+            if companies.has_handler(company_name):
+                company = companies.get_handler(company_name)
+                # Update the topics
+                topics = company.get_property('abakuc:topic')
+                if topic_id not in topics:
+                    topics += (topic_id,)
+                    company.set_property('abakuc:topic', topics)
+            else:
+                company = companies.set_handler(company_name, Company())
+                company.set_property('dc:title', company_title, language='en')
+                company.set_property('abakuc:website', str(row[11]))
+                company.set_property('abakuc:topic', (topic_id,))
+
+            # Add Address
+            address_title = row[6].strip()
+            address_name = title_to_name(address_title)
+            if not address_name:
+                continue
+            print address_name
+            if company.has_handler(address_name):
+                print 'Warning'
+            else:
+                address = company.set_handler(address_name, Address())
+                address.set_property('abakuc:address', address_title)
+                postcode = row[7]
+                if postcode:
+                    address.set_property('abakuc:postcode', str(postcode))
+                if county:
+                    address.set_property('abakuc:county', county)
+                    address.set_property('abakuc:town', row[4])
+                address.set_property('abakuc:phone', str(row[8]))
+                address.set_property('abakuc:fax', str(row[9]))
+                ##address.set_property('abakuc:license', row[])
+                if user is not None:
+                    address.set_user_role(user.name, 'ikaaro:members')
+
+        return 'OK'
 
 
 register_object_class(Root)

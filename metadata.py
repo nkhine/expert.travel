@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from itools
-from itools.datatypes import Integer, String, Unicode, Email
+from itools.datatypes import Integer, String, Unicode, Email, Tokens
 from itools.schemas import Schema as BaseSchema, register_schema
 
 
@@ -15,7 +15,7 @@ class Schema(BaseSchema):
     datatypes = {
         # Company
         'website': String,
-        'topic': String,
+        'topic': Tokens,
         # Address
         'address': Unicode,
         'postcode': String,

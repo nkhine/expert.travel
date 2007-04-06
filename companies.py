@@ -7,6 +7,7 @@ from datetime import datetime
 # Import from itools
 from itools.datatypes import String, Unicode, Email
 from itools.stl import stl
+from itools.cms.access import RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
@@ -28,11 +29,11 @@ class Companies(Folder):
     #######################################################################
     # User Interface
     #######################################################################
-
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
         return 'bobo'
+
 
 
 class Company(Folder):
@@ -48,7 +49,6 @@ class Company(Folder):
     #######################################################################
     # User Interface
     #######################################################################
-    
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
@@ -63,9 +63,9 @@ class Company(Folder):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
         namespace['website'] = self.get_property('abakuc:website')
-        topic = self.get_property('abakuc:topic')
+        topics = self.get_property('abakuc:topic')
         root = context.root
-        namespace['topics'] = root.get_topics_namespace(topic)
+        namespace['topics'] = root.get_topics_namespace(topics)
 
         namespace['logo'] = self.has_handler('logo')
 
@@ -76,12 +76,12 @@ class Company(Folder):
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         website = context.get_form_value('abakuc:website')
-        topic = context.get_form_value('abakuc:topic')
+        topics = context.get_form_values('topic')
         logo = context.get_form_value('logo')
 
         self.set_property('dc:title', title, language='en')
         self.set_property('abakuc:website', website)
-        self.set_property('abakuc:topic', topic)
+        self.set_property('abakuc:topic', tuple(topics))
 
         # The logo
         if context.has_form_value('remove_logo'):
@@ -104,19 +104,32 @@ class Company(Folder):
                 else:
                     self.set_handler('logo', logo)
 
+        # Reindex
+        root = context.root
+        for address in self.search_handlers(format='address'):
+            root.reindex_handler(address)
 
         message = u'Changes Saved.'
         return context.come_back(message)
 
 
 
-class Address(Folder):
+class Address(RoleAware, Folder):
 
     class_id = 'address'
     class_title = u'Address'
-    class_views = [['view']] + Folder.class_views
+    class_views = [
+        ['view'],
+        ['browse_content?mode=list'],
+        ['new_resource_form'],
+        ['edit_metadata_form'],
+        ['permissions_form', 'new_user_form']]
 
     __fixed_handlers__ = ['log_enquiry.csv']
+
+
+    __roles__ = [
+        {'name': 'ikaaro:members', 'title': u"Members", 'unit': u"Member"}]
 
 
     def new(self, **kw):
@@ -125,6 +138,7 @@ class Address(Folder):
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = self.build_metadata(handler)
+
 
     def get_document_types(self):
         return []
@@ -239,7 +253,6 @@ class Address(Folder):
 
     enquiry__access__ = True
     def enquiry(self, context):
-
         # who is the recipient ?
         contact='sylvain@itaapy.com'
         keys = ['email','fullname','enquiry','phone','typeenquiry']
@@ -255,7 +268,7 @@ class Address(Folder):
             value = context.get_form_value(myKey)
             tab[key]=value
 
-        subject = '[%s]' % tab['typeenquiry']
+        subject = u'[%s]' % tab['typeenquiry']
         body = 'Name: %(fullname)s - Phone: %(phone)s - %(enquiry)s' % tab
 
         #Check the input data

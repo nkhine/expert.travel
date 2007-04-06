@@ -29,8 +29,8 @@
   <dl>
     <dt><label for="abakuc:topic">Business Function</label></dt>
     <dd>
-      <select id="abakuc:topic" name="abakuc:topic" style="width: 60%">
-        <option value=""></option>
+      <select id="abakuc:topic" name="topic" multiple="multiple"
+        style="width: 60%">
         <option stl:repeat="topic topics" value="${topic/id}"
           selected="${topic/is_selected}">${topic/title}</option> 
       </select>
