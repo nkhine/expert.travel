@@ -98,7 +98,7 @@ class User(iUser, Handler):
         is_owner = user is not None and user.name == self.name
         namespace['is_owner'] = is_owner
         # Owner or Admin
-        namespace['is_owner_or_admin'] = is_owner or root.is_admin(user)
+        namespace['is_owner_or_admin'] = is_owner or root.is_admin(user, self)
 
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
