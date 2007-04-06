@@ -154,8 +154,13 @@ class UKTravel(Handler, WebSite):
             get_property = address.metadata.get_property
             company = address.parent
             county_id = get_property('abakuc:county')
-            row = csv.get_row(county_id)
-            country, region, county = row
+            if county_id is None:
+                # XXX Every address should have a county
+                region = ''
+                county = ''
+            else:
+                row = csv.get_row(county_id)
+                country, region, county = row
             addresses.append(
                 {'href': '%s/;view' % self.get_pathto(address),
                  'title': company.title,

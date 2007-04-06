@@ -18,6 +18,6 @@ __version__ = get_version(globals())
 path = get_abspath(globals(), 'ui/abakuc')
 register_skin('abakuc', path)
 
-for name in ['uktravel']:
+for name in ['uktravel', 'destinations']:
     path = get_abspath(globals(), 'ui/%s' % name)
     register_skin(name, FrontOffice(path))

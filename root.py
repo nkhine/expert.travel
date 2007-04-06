@@ -157,11 +157,8 @@ class Root(Handler, BaseRoot):
         # XXX For testing purposes
         if hostname == 'uktravel':
             return self.get_handler('ui/uktravel')
-
-        # XXX For testing purposes
         elif hostname == 'destinations':
             return self.get_handler('ui/destinations')
-
 
         # return the default skin
         return self.get_handler('ui/aruni')
