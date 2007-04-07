@@ -37,7 +37,8 @@
       <tr>
       <td colspan="2" id="upper-nav-src">
       <form action=";search" method="get">
-        <input name="search_text" type="text" value=""/>
+        <input class="searchinput" name="search_text" type="text" 
+          value="Company name" size="20" onFocus="this.value=''" />
         <input class="button_search" type="submit" value="Search"/>
       </form>
       </td>

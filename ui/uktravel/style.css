@@ -666,3 +666,11 @@ ul#contact_to li {
   margin: 0;
   list-style-type: none;
 }
+
+.searchinput {
+    font:normal 11px Tahoma, Arial;
+    color:#000;
+    margin:0px 8px 0px 0px;
+    background:#fff url(images/mag_glass.gif) no-repeat;
+    padding:2px 2px 2px 17px
+}

@@ -177,8 +177,14 @@ class Address(RoleAware, Folder):
 
         county_id = self.get_property('abakuc:county')
         csv = self.get_handler('/regions.csv')
-        country, region, county = csv.get_row(county_id)
-      
+        if county_id is None:
+            # XXX Every address should have a county
+            region = '-'
+            county = '-'
+        else:
+            row = csv.get_row(county_id)
+            country, region, county = row
+
         namespace = {}
         namespace['address'] = self.get_property('abakuc:address')
         namespace['town'] = self.get_property('abakuc:town')
