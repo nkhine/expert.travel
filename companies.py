@@ -20,8 +20,9 @@ from handlers import EnquiriesLog
 class Companies(Folder):
 
     class_id = 'companies'
-    class_title = u'Companies'
-
+    class_title = u'Companies Directory'
+    class_icon16 = 'abakuc/images/Resources16.png'
+    class_icon48 = 'abakuc/images/Resources48.png'
 
     def get_document_types(self):
         return [Company]
@@ -40,7 +41,8 @@ class Company(Folder):
 
     class_id = 'company'
     class_title = u'Company'
-
+    class_icon16 = 'abakuc/images/Resources16.png'
+    class_icon48 = 'abakuc/images/Resources48.png'
   
     def get_document_types(self):
         return [Address]
@@ -118,6 +120,8 @@ class Address(RoleAware, Folder):
 
     class_id = 'address'
     class_title = u'Address'
+    class_icon16 = 'abakuc/images/Employees16.png'
+    class_icon48 = 'abakuc/images/Employees48.png'
     class_views = [
         ['view'],
         ['browse_content?mode=list'],
@@ -174,7 +178,7 @@ class Address(RoleAware, Folder):
     view__label__ = u'Address'
     view__access__ = True
     def view(self, context):
-
+        
         county_id = self.get_property('abakuc:county')
         csv = self.get_handler('/regions.csv')
         if county_id is None:
@@ -186,6 +190,7 @@ class Address(RoleAware, Folder):
             country, region, county = row
 
         namespace = {}
+        #namespace['company'] = company.get_property('dc:title')
         namespace['address'] = self.get_property('abakuc:address')
         namespace['town'] = self.get_property('abakuc:town')
         namespace['postcode'] = self.get_property('abakuc:postcode')

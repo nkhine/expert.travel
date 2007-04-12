@@ -29,7 +29,7 @@
   <dl>
     <dt><label for="abakuc:topic">Business Function</label></dt>
     <dd>
-      <select id="abakuc:topic" name="topic" multiple="multiple"
+      <select id="abakuc:topic" name="topic" size="8" multiple="multiple"
         style="width: 60%">
         <option stl:repeat="topic topics" value="${topic/id}"
           selected="${topic/is_selected}">${topic/title}</option> 
