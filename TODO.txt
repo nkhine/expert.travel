@@ -1,3 +1,35 @@
+16-04-2007
+
+Following my email, here are some supporting notes.
+
+1) Added countries_new.csv file to the data/csv/ directory, this now includes
+the Regions and Counties for the UK.
+
+The UK Travel List should only have UK addresses, so the address select box
+should only list the UK Region and County. I would like to pull this data from
+this file rather than generate it from the abakuc_companies_import.csv file.
+
+2) Fix the Registration process for users when there is no company and no
+address, i.e. the ability for users to create new company and address.
+
+3) Add the Company Name to the Address view.
+
+4) Add the Company Name to the Enquiry Form as is in the existing
+http://travellist.info site.
+
+5) Move the enquiries.csv file to the Company rather than the address, hopefully
+this will reduce the number of csv files.
+
+6) ENHANCEMENT - if possible, I would like to validate the Enquirer's email
+before the Enquiry is processed. So that a user will submit the Enquiry, on
+submit, a message should say, "Please check your email and follow the
+instructions within the email in order for your Enquiry to be processed."
+
+Once the email is validated, only then should the Enquiry be added to the csv
+file.
+
+---------------------------------
+
 06-04-2007
 
 1) Need to look at the import of users in that only unique emails should be

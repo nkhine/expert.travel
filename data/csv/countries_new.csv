@@ -1,0 +1,916 @@
+"id";"continent";"sub-id";"sub-continent";"country-id";"country";"region";"county"
+002;"Africa";;;;;;
+;;014;"Eastern Africa";;;;
+;;;;108;"Burundi";;
+;;;;174;"Comoros";;
+;;;;262;"Djibouti";;
+;;;;232;"Eritrea";;
+;;;;231;"Ethiopia";;
+;;;;404;"Kenya";;
+;;;;450;"Madagascar";;
+;;;;454;"Malawi";;
+;;;;480;"Mauritius";;
+;;;;175;"Mayotte";;
+;;;;508;"Mozambique";;
+;;;;638;"Reunion";;
+;;;;646;"Rwanda";;
+;;;;690;"Seychelles";;
+;;;;706;"Somalia";;
+;;;;800;"Uganda";;
+;;;;834;"United Republic of Tanzania";;
+;;;;894;"Zambia";;
+;;;;716;"Zimbabwe";;
+;;017;"Middle Africa";;;;
+;;;;024;"Angola";;
+;;;;120;"Cameroon";;
+;;;;140;"Central African Republic";;
+;;;;148;"Chad";;
+;;;;178;"Congo";;
+;;;;180;"Democratic Republic of the Congo";;
+;;;;226;"Equatorial Guinea";;
+;;;;266;"Gabon";;
+;;;;678;"Sao Tome and Principe";;
+;;015;"Northern Africa";;;;
+;;;;012;"Algeria";;
+;;;;818;"Egypt";;
+;;;;434;"Libyan Arab Jamahiriya";;
+;;;;504;"Morocco";;
+;;;;736;"Sudan";;
+;;;;788;"Tunisia";;
+;;;;732;"Western Sahara";;
+;;018;"Southern Africa";;;;
+;;;;072;"Botswana";;
+;;;;426;"Lesotho";;
+;;;;516;"Namibia";;
+;;;;710;"South Africa";;
+;;;;748;"Swaziland";;
+;;11;"Western Africa";;;;
+;;;;204;"Benin";;
+;;;;854;"Burkina Faso";;
+;;;;132;"Cape Verde";;
+;;;;384;"Cote d'Ivoire";;
+;;;;270;"Gambia";;
+;;;;288;"Ghana";;
+;;;;324;"Guinea";;
+;;;;624;"Guinea-Bissau";;
+;;;;430;"Liberia";;
+;;;;466;"Mali";;
+;;;;478;"Mauritania";;
+;;;;562;"Niger";;
+;;;;566;"Nigeria";;
+;;;;654;"Saint Helena";;
+;;;;686;"Senegal";;
+;;;;694;"Sierra Leone";;
+;;;;768;"Togo";;
+019;"Americas";;;;;;
+;;419;"Latin America and the Caribbean";;;;
+;;;;029;"Caribbean";;
+;;;;660;"Anguilla";;
+;;;;028;"Antigua and Barbuda";;
+;;;;533;"Aruba";;
+;;;;044;"Bahamas";;
+;;;;052;"Barbados";;
+;;;;92;"British Virgin Islands";;
+;;;;136;"Cayman Islands";;
+;;;;192;"Cuba";;
+;;;;212;"Dominica";;
+;;;;214;"Dominican Republic";;
+;;;;308;"Grenada";;
+;;;;312;"Guadeloupe";;
+;;;;332;"Haiti";;
+;;;;388;"Jamaica";;
+;;;;474;"Martinique";;
+;;;;500;"Montserrat";;
+;;;;530;"Netherlands Antilles";;
+;;;;630;"Puerto Rico";;
+;;;;659;"Saint Kitts and Nevis";;
+;;;;662;"Saint Lucia";;
+;;;;670;"Saint Vincent and the Grenadines";;
+;;;;780;"Trinidad and Tobago";;
+;;;;796;"Turks and Caicos Islands";;
+;;;;850;"United States Virgin Islands";;
+;;013;"Central America";;;;
+;;;;084;"Belize";;
+;;;;188;"Costa Rica";;
+;;;;222;"El Salvador";;
+;;;;320;"Guatemala";;
+;;;;340;"Honduras";;
+;;;;484;"Mexico";;
+;;;;558;"Nicaragua";;
+;;;;591;"Panama";;
+;;;;5;"South America";;
+;;;;032;"Argentina";;
+;;;;068;"Bolivia";;
+;;;;076;"Brazil";;
+;;;;152;"Chile";;
+;;;;170;"Colombia";;
+;;;;218;"Ecuador";;
+;;;;238;"Falkland Islands (Malvinas)";;
+;;;;254;"French Guiana";;
+;;;;328;"Guyana";;
+;;;;600;"Paraguay";;
+;;;;604;"Peru";;
+;;;;740;"Suriname";;
+;;;;858;"Uruguay";;
+;;;;862;"Venezuela (Bolivarian Republic of)";;
+;;012;"North America";;;;
+;;;;060;"Bermuda";;
+;;;;124;"Canada";;
+;;;;304;"Greenland";;
+;;;;666;"Saint Pierre and Miquelon";;
+;;;;840;"United States of America";;
+;;;;;;"Alabama";
+;;;;;;;"Black Belt"
+;;;;;;;"Central Alabama"
+;;;;;;;"Greater Birmingham"
+;;;;;;;"Lower Alabama"
+;;;;;;;"Mobile Bay"
+;;;;;;;"North Alabama"
+;;;;;;;"Northeast Alabama"
+;;;;;;;"South Alabama"
+;;;;;;"Alaska";
+;;;;;;;"Aleutian Islands"
+;;;;;;;"Arctic Alaska"
+;;;;;;;"Bush Alaska"
+;;;;;;;"Interior"
+;;;;;;;"Kenai Peninsula"
+;;;;;;;"Mat-Su Valley"
+;;;;;;;"North Slope"
+;;;;;;;"Panhandle"
+;;;;;;;"Seward Peninsula"
+;;;;;;;"Southcentral"
+;;;;;;;"Southwest"
+;;;;;;;"Tanana Valley"
+;;;;;;;"Yukon-Kuskokwim Delta"
+;;;;;;"Arizona";
+;;;;;;;"Arizona Strip"
+;;;;;;;"Coconino Plateau"
+;;;;;;;"Grand Canyon"
+;;;;;;;"Mojave Desert"
+;;;;;;;"North Central Arizona"
+;;;;;;;"Northeast Arizona"
+;;;;;;;"Northern Arizona"
+;;;;;;;"Phoenix Metropolitan Area"
+;;;;;;;"Southern Arizona"
+;;;;;;"Arkansas";
+;;;;;;;"Arkansas River Valley"
+;;;;;;;"Ark-La-Tex"
+;;;;;;;"Crowley's Ridge"
+;;;;;;;"Central Arkansas"
+;;;;;;;"Delta"
+;;;;;;;"Ouachita Mountains"
+;;;;;;;"Ozarks"
+;;;;;;;"Timberlands"
+;;;;;;;"Western Arkansas"
+;;;;;;"California";
+;;;;;;;"Antelope Valley"
+;;;;;;;"Big Sur"
+;;;;;;;"Central Coast"
+;;;;;;;"Central Valley"
+;;;;;;;"Channel Islands"
+;;;;;;;"Coachella Valley"
+;;;;;;;"Conejo Valley"
+;;;;;;;"Cucamonga Valley"
+;;;;;;;"Death Valley"
+;;;;;;;"East Bay (SF)"
+;;;;;;;"Eastern California"
+;;;;;;;"Emerald Triangle"
+;;;;;;;"Gold Country"
+;;;;;;;"Greater Los Angeles"
+;;;;;;;"Inland Empire"
+;;;;;;;"Los Angeles Basin"
+;;;;;;;"Mojave"
+;;;;;;;"North Bay (SF)"
+;;;;;;;"North Coast"
+;;;;;;;"Northern California"
+;;;;;;;"Owens Valley"
+;;;;;;;"The Peninsula"
+;;;;;;;"Pomona Valley"
+;;;;;;;"Redwood Empire"
+;;;;;;;"Russian River"
+;;;;;;;"Sacramento Valley"
+;;;;;;;"San Francisco Bay Area"
+;;;;;;;"San Joaquin Valley"
+;;;;;;;"SanSan"
+;;;;;;;"Santa Clarita Valley"
+;;;;;;;"Shasta Cascade"
+;;;;;;;"Sierra Nevada"
+;;;;;;;"Silicon Valley"
+;;;;;;;"Southern California"
+;;;;;;;"Tech Coast"
+;;;;;;;"Tri-Valley"
+;;;;;;;"Wine Country"
+;;;;;;;"Yosemite"
+;;;;;;"Colorado";
+;;;;;;;"Central Colorado"
+;;;;;;;"Colorado Piedmont"
+;;;;;;;"Denver-Aurora Metropolitan Area"
+;;;;;;;"Eastern Plains"
+;;;;;;;"Front Range"
+;;;;;;;"Grand Valley"
+;;;;;;;"High Rockies"
+;;;;;;;"Mineral Belt"
+;;;;;;;"Roaring Fork Valley"
+;;;;;;;"San Luis Valley"
+;;;;;;;"South-Central Colorado"
+;;;;;;;"Southwestern Colorado"
+;;;;;;;"Western Slope"
+;;;;;;"Connecticut";
+;;;;;;;"Gold Coast"
+;;;;;;;"Greater Bridgeport"
+;;;;;;;"Greater Danbury"
+;;;;;;;"Greater Hartford"
+;;;;;;;"Greater New Haven"
+;;;;;;;"Litchfield Hills"
+;;;;;;;"Lower Connecticut River Valley"
+;;;;;;;"Naugatuck River Valley"
+;;;;;;;"Quiet Corner"
+;;;;;;;"Southeastern Connecticut"
+;;;;;;;"Southwestern Connecticut"
+;;;;;;"Delaware";
+;;;;;;;"Kent County"
+;;;;;;;"New Castle County"
+;;;;;;;"Sussex County"
+;;;;;;"Florida";
+;;;;;;;"Big Bend"
+;;;;;;;"Central Florida"
+;;;;;;;"Emerald Coast"
+;;;;;;;"First Coast"
+;;;;;;;"Florida Keys"
+;;;;;;;"Florida Panhandle"
+;;;;;;;"Gold Coast"
+;;;;;;;"Nature Coast"
+;;;;;;;"North Central Florida"
+;;;;;;;"South Florida"
+;;;;;;;"Southwest Florida"
+;;;;;;;"Space Coast"
+;;;;;;;"Sun Coast"
+;;;;;;;"Tampa Bay Area"
+;;;;;;;"Treasure Coast"
+;;;;;;"Georgia";
+;;;;;;;"Colonial Coast"
+;;;;;;;"The Golden Isles"
+;;;;;;;"Historic South"
+;;;;;;;"Inland Empire"
+;;;;;;;"Metro Atlanta"
+;;;;;;;"North Georgia Mountains"
+;;;;;;;"Southern Rivers"
+;;;;;;"Hawaii";
+;;;;;;;"Hawaiʻi"
+;;;;;;;"Kahoʻolawe"
+;;;;;;;"Kauaʻi"
+;;;;;;;"Lānaʻi"
+;;;;;;;"Maui"
+;;;;;;;"Molokaʻi"
+;;;;;;;"Niʻihau"
+;;;;;;;"Northwestern Hawaiʻian Islands"
+;;;;;;;"Oʻahu"
+;;;;;;"Idaho";
+;;;;;;;"Boise metropolitan area"
+;;;;;;;"Central Idaho"
+;;;;;;;"Eastern Idaho"
+;;;;;;;"Idaho Panhandle"
+;;;;;;;"Magic Valley"
+;;;;;;;"North Central Idaho"
+;;;;;;;"Northern Idaho"
+;;;;;;;"Southern Idaho"
+;;;;;;;"Treasure Valley"
+;;;;;;;"Wood River Valley"
+;;;;;;"Illinois";
+;;;;;;;"American Bottom"
+;;;;;;;"Central Illinois"
+;;;;;;;"Champaign-Urbana"
+;;;;;;;"Chicagoland"
+;;;;;;;"Coulee Region"
+;;;;;;;"Forgottonia"
+;;;;;;;"Fox Valley"
+;;;;;;;"Little Egypt"
+;;;;;;;"St. Louis Metro-East"
+;;;;;;;"Northern Illinois"
+;;;;;;;"Northwestern Illinois"
+;;;;;;;"Quad Cities"
+;;;;;;;"River Bend"
+;;;;;;;"Wabash Valley"
+;;;;;;"Indiana";
+;;;;;;;"East Central Indiana"
+;;;;;;;"Michiana"
+;;;;;;;"Nine-County Region"
+;;;;;;;"Northern Indiana"
+;;;;;;;"Northwest Indiana"
+;;;;;;;"Southern Indiana"
+;;;;;;;"Wabash Valley"
+;;;;;;"Iowa";
+;;;;;;;"Coulee Region"
+;;;;;;;"Des Moines metropolitan area"
+;;;;;;;"Great River Road"
+;;;;;;;"Iowa Great Lakes"
+;;;;;;;"Loess Hills"
+;;;;;;;"Omaha-Council Bluffs metropolitan area"
+;;;;;;;"Quad Cities"
+;;;;;;;"Siouxland"
+;;;;;;"Kansas";
+;;;;;;;"Cherokee Strip"
+;;;;;;;"East Central"
+;;;;;;;"Flint Hills"
+;;;;;;;"High Plains"
+;;;;;;;"Kansas City Metropolitan Area"
+;;;;;;;"The Ozarks"
+;;;;;;;"Red Hills"
+;;;;;;;"Santa Fe Trail Region"
+;;;;;;;"Smoky Hills"
+;;;;;;;"Southeast"
+;;;;;;"Kentucky";
+;;;;;;;"The Bluegrass"
+;;;;;;;"Central Kentucky"
+;;;;;;;"Cincinnati metropolitan area"
+;;;;;;;"Cumberland Plateau"
+;;;;;;;"Eastern Mountain Coal Fields"
+;;;;;;;"The Knobs"
+;;;;;;;"Louisville metropolitan area"
+;;;;;;;"Northern Kentucky"
+;;;;;;;"Pennyroyal Plateau"
+;;;;;;;"The Purchase"
+;;;;;;;"Western Coal Fields"
+;;;;;;"Louisiana";
+;;;;;;;"Acadiana"
+;;;;;;;"Central Louisiana"
+;;;;;;;"Florida Parishes"
+;;;;;;;"Greater New Orleans"
+;;;;;;;"North Louisiana"
+;;;;;;"Maine";
+;;;;;;;"Acadia"
+;;;;;;;"Down East"
+;;;;;;;"Maine Atlantic Coast"
+;;;;;;;"Maine Highlands"
+;;;;;;;"Maine Lake Country"
+;;;;;;;"North Woods"
+;;;;;;;"Penobscot Bay"
+;;;;;;;"Southern Coast"
+;;;;;;;"Western Maine Mountains"
+;;;;;;"Maryland";
+;;;;;;;"Baltimore-Washington Metro Area"
+;;;;;;;"Chesapeake"
+;;;;;;;"Delaware Valley"
+;;;;;;;"Eastern Shore"
+;;;;;;;"Southern"
+;;;;;;;"Western"
+;;;;;;"Massachusetts";
+;;;;;;;"The Berkshires"
+;;;;;;;"Blackstone Valley"
+;;;;;;;"Cape Ann"
+;;;;;;;"Cape Cod and the Islands"
+;;;;;;;"Greater Boston"
+;;;;;;;"Merrimack Valley"
+;;;;;;;"MetroWest"
+;;;;;;;"North Shore"
+;;;;;;;"Pioneer Valley"
+;;;;;;;"Quabbin Valley"
+;;;;;;;"South Coast"
+;;;;;;;"South Shore"
+;;;;;;;"Western Massachusetts"
+;;;;;;"Michigan";
+;;;;;;;"Copper Country"
+;;;;;;;"Keweenaw Peninsula"
+;;;;;;;"Central Michigan"
+;;;;;;;"Southeast Michigan (including Metro Detroit)"
+;;;;;;;"Michiana"
+;;;;;;;"Northern Michigan"
+;;;;;;;"The Thumb"
+;;;;;;;"Southern Michigan"
+;;;;;;;"Western Michigan"
+;;;;;;"Minnesota";
+;;;;;;;"Arrowhead"
+;;;;;;;"Boundary Waters"
+;;;;;;;"Buffalo Ridge"
+;;;;;;;"Central"
+;;;;;;;"Coulee Region"
+;;;;;;;"Greater Minnesota"
+;;;;;;;"Iron Range"
+;;;;;;;"Minnesota River Valley"
+;;;;;;;"North Shore"
+;;;;;;;"Northwest Angle"
+;;;;;;;"Pipestone"
+;;;;;;;"Red River Valley"
+;;;;;;;"Southeast"
+;;;;;;;"Twin Cities metropolitan area"
+;;;;;;"Mississippi";
+;;;;;;;"Pine Belt"
+;;;;;;;"The Delta"
+;;;;;;;"Golden Triangle"
+;;;;;;;"Gulf Coast"
+;;;;;;;"Jackson Metro"
+;;;;;;;"Natchez District"
+;;;;;;;"Memphis Metro"
+;;;;;;"Missouri";
+;;;;;;;"Bootheel"
+;;;;;;;"Dissected Till Plains"
+;;;;;;;"Greater St. Louis"
+;;;;;;;"Greater Kansas City"
+;;;;;;;"Lead Belt"
+;;;;;;;"Lincoln Hills"
+;;;;;;;"Little Dixie"
+;;;;;;;"Loess Hills"
+;;;;;;;"Mississippi Alluvial Plain"
+;;;;;;;"Missouri Rhineland"
+;;;;;;;"Northern Plains"
+;;;;;;;"Osage Plains"
+;;;;;;;"Platte Purchase"
+;;;;;;;"St. Francois Mountains"
+;;;;;;;"Ozark Plateau"
+;;;;;;"Montana";
+;;;;;;;"Eastern Montana"
+;;;;;;;"Western Montana"
+;;;;;;;"Inland Empire"
+;;;;;;;"Glacier National Park"
+;;;;;;;"Southwestern Montana"
+;;;;;;;"Bighorn Country"
+;;;;;;"Nebraska";
+;;;;;;;"Omaha metropolitian area"
+;;;;;;;"Panhandle"
+;;;;;;;"Pine Ridge"
+;;;;;;;"Rainwater Basin"
+;;;;;;;"Sand Hills"
+;;;;;;;"Wildcat Hills"
+;;;;;;"Nevada";
+;;;;;;;"Great Basin"
+;;;;;;;"Mojave Desert"
+;;;;;;;"Lake Tahoe"
+;;;;;;;"Las Vegas Valley"
+;;;;;;"New Hampshire";
+;;;;;;;"Dartmouth-Lake Sunapee"
+;;;;;;;"Great North Woods"
+;;;;;;;"Lakes Region"
+;;;;;;;"Merrimack Valley"
+;;;;;;;"Monadnock"
+;;;;;;;"Seacoast"
+;;;;;;;"White Mountains"
+;;;;;;"New Jersey";
+;;;;;;;"Central Jersey"
+;;;;;;;"Delaware Valley"
+;;;;;;;"Jersey Shore"
+;;;;;;;"Meadowlands"
+;;;;;;;"North Jersey"
+;;;;;;;"Pine Barrens"
+;;;;;;;"Shore Region"
+;;;;;;;"Skylands Region"
+;;;;;;;"South Jersey"
+;;;;;;;"New York metro area"
+;;;;;;;"Tri-State Region"
+;;;;;;"New Mexico";
+;;;;;;;"Central New Mexico"
+;;;;;;;"Eastern New Mexico"
+;;;;;;;"Llano Estacado"
+;;;;;;;"Northern New Mexico"
+;;;;;;;"Sangre de Cristo Mountains"
+;;;;;;;"Southwestern New Mexico"
+;;;;;;"New York";
+;;;;;;;"Adirondack Mountains"
+;;;;;;;"Capital District"
+;;;;;;;"Catskill Mountains"
+;;;;;;;"Central"
+;;;;;;;"City of New York"
+;;;;;;;"Finger Lakes"
+;;;;;;;"The Holland Purchase"
+;;;;;;;"Hudson Valley"
+;;;;;;;"Long Island"
+;;;;;;;"Mohawk Valley"
+;;;;;;;"North Country"
+;;;;;;;"Saint Lawrence Seaway"
+;;;;;;;"Shawangunks"
+;;;;;;;"Southern Tier"
+;;;;;;;"Thousand Islands"
+;;;;;;;"Upstate"
+;;;;;;;"Western"
+;;;;;;"North Carolina";
+;;;;;;;"Mountain"
+;;;;;;;"Foothills"
+;;;;;;;"Piedmont"
+;;;;;;;"Metro Charlotte"
+;;;;;;;"Piedmont Triad"
+;;;;;;;"Triangle"
+;;;;;;;"Sandhills"
+;;;;;;;"Coastal Plain"
+;;;;;;;"Inner Banks"
+;;;;;;;"Outer Banks"
+;;;;;;"North Dakota";
+;;;;;;;"Badlands"
+;;;;;;;"Drift Prairie"
+;;;;;;;"Missouri Plateau"
+;;;;;;;"Red River Valley"
+;;;;;;;"Turtle Mountains"
+;;;;;;"Ohio";
+;;;;;;;"Unglaciated Allegheny Plateau"
+;;;;;;;"Glaciated Allegheny Plateau"
+;;;;;;;"Glacial till plains"
+;;;;;;;"Lake Erie"
+;;;;;;;"Lake Erie Islands"
+;;;;;;;"Black Swamp"
+;;;;;;;"Miami Valley"
+;;;;;;;"Western Reserve"
+;;;;;;;"Northwest Ohio"
+;;;;;;"Oklahoma";
+;;;;;;;"Arklatex"
+;;;;;;;"Central"
+;;;;;;;"Cherokee Outlet"
+;;;;;;;"Flint Hills"
+;;;;;;;"Green Country"
+;;;;;;;"Little Dixie"
+;;;;;;;"Northeastern"
+;;;;;;;"Panhandle"
+;;;;;;;"Ouachita Mountains"
+;;;;;;;"The Ozarks"
+;;;;;;;"Southeastern"
+;;;;;;;"Southwestern"
+;;;;;;"Oregon";
+;;;;;;;"The Cascades"
+;;;;;;;"Central Oregon"
+;;;;;;;"Columbia River Gorge"
+;;;;;;;"Columbia River Plateau"
+;;;;;;;"Eastern Oregon"
+;;;;;;;"Harney Basin"
+;;;;;;;"Mount Hood Corridor"
+;;;;;;;"Oregon Coast"
+;;;;;;;"Portland Metro"
+;;;;;;;"Rogue Valley"
+;;;;;;;"Southern Oregon"
+;;;;;;;"Tualatin Valley"
+;;;;;;;"Western Oregon"
+;;;;;;;"Willamette Valley"
+;;;;;;"Pennsylvania";
+;;;;;;;"Allegheny National Forest"
+;;;;;;;"Coal Region"
+;;;;;;;"Cumberland Valley"
+;;;;;;;"Delaware Valley"
+;;;;;;;"Dutch Country"
+;;;;;;;"Endless Mountains"
+;;;;;;;"Happy Valley"
+;;;;;;;"Pennsylvania Highlands"
+;;;;;;;"Laurel Highlands"
+;;;;;;;"Lehigh Valley"
+;;;;;;;"Northeast"
+;;;;;;;"Northern Tier"
+;;;;;;;"Northwest Region"
+;;;;;;;"The Poconos"
+;;;;;;;"Susquehanna Valley"
+;;;;;;;"Wyoming Valley"
+;;;;;;;"Western Pennsylvania"
+;;;;;;"Rhode Island";
+;;;;;;;"Blackstone Valley"
+;;;;;;;"Block Island"
+;;;;;;;"East Bay"
+;;;;;;;"Newport County"
+;;;;;;;"Providence"
+;;;;;;;"South County"
+;;;;;;;"Warwick/West Bay"
+;;;;;;"South Carolina";
+;;;;;;;"Capital City/Lake Murray Country"
+;;;;;;;"Grand Strand"
+;;;;;;;"Historic Charleston"
+;;;;;;;"Midlands"
+;;;;;;;"Old 96 District"
+;;;;;;;"Olde English District"
+;;;;;;;"Pee Dee"
+;;;;;;;"Piedmont"
+;;;;;;;"Sandhills"
+;;;;;;;"Santee Cooper Country"
+;;;;;;;"South Carolina Low Country"
+;;;;;;;"Metrolina"
+;;;;;;;"The Upstate"
+;;;;;;"South Dakota";
+;;;;;;;"Badlands"
+;;;;;;;"Black Hills"
+;;;;;;;"Coteau des Prairies"
+;;;;;;"Tennessee";
+;;;;;;;"Blue Ridge Mountains"
+;;;;;;;"Ridge-and-valley Appalachians"
+;;;;;;;"Cumberland Plateau"
+;;;;;;;"Highland Rim"
+;;;;;;;"Nashville Basin"
+;;;;;;;"Mississippi Delta"
+;;;;;;"Texas";
+;;;;;;;"Ark-La-Tex"
+;;;;;;;"Big Bend"
+;;;;;;;"Brazos Valley"
+;;;;;;;"Central Texas"
+;;;;;;;"Dallas/Fort Worth Metroplex"
+;;;;;;;"Deep East Texas"
+;;;;;;;"East Texas"
+;;;;;;;"Edwards Plateau"
+;;;;;;;"Galveston Bay"
+;;;;;;;"Golden Triangle"
+;;;;;;;"Greater Houston"
+;;;;;;;"Llano Estacado"
+;;;;;;;"North Texas"
+;;;;;;;"Northeast Texas"
+;;;;;;;"Permian Basin"
+;;;;;;;"Piney Woods"
+;;;;;;;"Rio Grande Valley"
+;;;;;;;"South Texas"
+;;;;;;;"South Plains"
+;;;;;;;"Southeast Texas"
+;;;;;;;"Texas Hill Country"
+;;;;;;;"Texas Panhandle"
+;;;;;;;"West Texas"
+;;;;;;"Utah";
+;;;;;;;"Cache Valley"
+;;;;;;;"Colorado Plateau"
+;;;;;;;"Dixie"
+;;;;;;;"Great Salt Lake"
+;;;;;;;"Great Salt Lake Desert"
+;;;;;;;"Mojave Desert"
+;;;;;;;"Uinta Mountains"
+;;;;;;;"Wasatch Back"
+;;;;;;;"Wasatch Front"
+;;;;;;;"Wasatch Range"
+;;;;;;"Vermont";
+;;;;;;;"Champlain Valley"
+;;;;;;;"Green Mountains"
+;;;;;;;"Mount Mansfield"
+;;;;;;;"Northeast Kingdom"
+;;;;;;"Virginia";
+;;;;;;;"Appomattox Basin"
+;;;;;;;"Eastern Shore"
+;;;;;;;"Middle Peninsula"
+;;;;;;;"Northern Neck"
+;;;;;;;"Northern Virginia"
+;;;;;;;"Piedmont"
+;;;;;;;"Ridge-and-valley Appalachians"
+;;;;;;;"Shenandoah Valley"
+;;;;;;;"Southside Virginia"
+;;;;;;;"Southwest Virginia"
+;;;;;;;"Tidewater"
+;;;;;;"Washington";
+;;;;;;;"Central Washington"
+;;;;;;;"Columbia River Plateau"
+;;;;;;;"Eastern Washington"
+;;;;;;;"Inland Empire"
+;;;;;;;"Kitsap Peninsula"
+;;;;;;;"Long Beach Peninsula"
+;;;;;;;"Olympic Peninsula"
+;;;;;;;"Okanogan Country"
+;;;;;;;"Palouse"
+;;;;;;;"Puget Sound"
+;;;;;;;"San Juan Islands"
+;;;;;;;"Western Washington"
+;;;;;;;"Yakima Valley"
+;;;;;;"West Virginia";
+;;;;;;;"Allegheny Mountains"
+;;;;;;;"Allegheny Plateau"
+;;;;;;;"Baltimore-Washington Metropolitan Area"
+;;;;;;;"Charleston Metropolitan Area"
+;;;;;;;"Cumberland Plateau"
+;;;;;;;"Eastern Panhandle"
+;;;;;;;"North-Central West Virginia"
+;;;;;;;"Northern Panhandle"
+;;;;;;;"Potomac Highlands"
+;;;;;;;"Ridge-and-valley Appalachians"
+;;;;;;;"Southern West Virginia"
+;;;;;;"Wisconsin";
+;;;;;;;"Central Plain"
+;;;;;;;"Chicagoland"
+;;;;;;;"Chippewa Valley"
+;;;;;;;"Coulee Region"
+;;;;;;;"Eastern Ridges and Lowlands"
+;;;;;;;"Fox River"
+;;;;;;;"Lake Superior Lowland"
+;;;;;;;"Metro Milwaukee"
+;;;;;;;"Northern Highland"
+;;;;;;;"Western Upland"
+;;;;;;"Wyoming";
+;;;;;;;"Grand Teton"
+;;;;;;;"Powder River Country"
+;;;;;;;"Yellowstone"
+142;"Asia";;;;;;
+;;143;"Central Asia";;;;
+;;;;398;"Kazakhstan";;
+;;;;417;"Kyrgyzstan";;
+;;;;762;"Tajikistan";;
+;;;;795;"Turkmenistan";;
+;;;;860;"Uzbekistan";;
+;;030;"Eastern Asia";;;;
+;;;;156;"China";;
+;;;;344;"Hong Kong Special Administrative Region of China";;
+;;;;446;"Macao Special Administrative Region of China";;
+;;;;408;"Democratic People's Republic of Korea";;
+;;;;392;"Japan";;
+;;;;496;"Mongolia";;
+;;;;410;"Republic of Korea";;
+;;034;"Southern Asia";;;;
+;;;;004;"Afghanistan";;
+;;;;050;"Bangladesh";;
+;;;;064;"Bhutan";;
+;;;;356;"India";;
+;;;;364;"Iran Islamic Republic of";;
+;;;;462;"Maldives";;
+;;;;524;"Nepal";;
+;;;;586;"Pakistan";;
+;;;;144;"Sri Lanka";;
+;;035;"South-Eastern Asia";;;;
+;;;;096;"Brunei Darussalam";;
+;;;;116;"Cambodia";;
+;;;;360;"Indonesia";;
+;;;;418;"Lao People's Democratic Republic";;
+;;;;458;"Malaysia";;
+;;;;104;"Myanmar";;
+;;;;608;"Philippines";;
+;;;;702;"Singapore";;
+;;;;764;"Thailand";;
+;;;;626;"Timor-Leste";;
+;;;;704;"Viet Nam";;
+;;145;"Western Asia";;;;
+;;;;051;"Armenia";;
+;;;;031;"Azerbaijan";;
+;;;;048;"Bahrain";;
+;;;;196;"Cyprus";;
+;;;;268;"Georgia";;
+;;;;368;"Iraq";;
+;;;;376;"Israel";;
+;;;;400;"Jordan";;
+;;;;014;"Kuwait";;
+;;;;022;"Lebanon";;
+;;;;075;"Occupied Palestinian Territory";;
+;;;;012;"Oman";;
+;;;;034;"Qatar";;
+;;;;082;"Saudi Arabia";;
+;;;;060;"Syrian Arab Republic";;
+;;;;092;"Turkey";;
+;;;;084;"United Arab Emirates";;
+;;;;087;"Yemen";;
+150;"Europe";;;;;;
+;;151;"Eastern Europe";;;;
+;;;;112;"Belarus";;
+;;;;100;"Bulgaria";;
+;;;;203;"Czech Republic";;
+;;;;348;"Hungary";;
+;;;;616;"Poland";;
+;;;;498;"Republic of Moldova";;
+;;;;642;"Romania";;
+;;;;643;"Russian Federation";;
+;;;;703;"Slovakia";;
+;;;;804;"Ukraine";;
+;;154;"Northern Europe";;;;
+;;;;248;"Oland Islands";;
+;;;;830;"Channel Islands";;
+;;;;208;"Denmark";;
+;;;;233;"Estonia";;
+;;;;234;"Faeroe Islands";;
+;;;;246;"Finland";;
+;;;;831;"Guernsey";;
+;;;;352;"Iceland";;
+;;;;372;"Ireland";;
+;;;;833;"Isle of Man";;
+;;;;832;"Jersey";;
+;;;;428;"Latvia";;
+;;;;440;"Lithuania";;
+;;;;578;"Norway";;
+;;;;744;"Svalbard and Jan Mayen Islands";;
+;;;;752;"Sweden";;
+;;;;826;"United Kingdom of Great Britain and Northern Ireland";;
+;;;;;;"East Anglia";
+;;;;;;;"Cambridgeshire"
+;;;;;;;"Norfolk"
+;;;;;;;"Suffolk"
+;;;;;;"East Midlands";
+;;;;;;;"Derbyshire"
+;;;;;;;"Leicestershire"
+;;;;;;;"Lincolnshire"
+;;;;;;;"Northamptonshire"
+;;;;;;;"Nottinghamshire"
+;;;;;;"Midland";
+;;;;;;;"Hereford Worcester"
+;;;;;;;"Salop"
+;;;;;;;"Staffordshire"
+;;;;;;;"Warwickshire"
+;;;;;;;"West Midlands"
+;;;;;;"London";
+;;;;;;;"London EC DO"
+;;;;;;;"London East DO"
+;;;;;;;"London North DO"
+;;;;;;;"London NW DO"
+;;;;;;;"London Paddington"
+;;;;;;;"London SE DO"
+;;;;;;;"London SW1"
+;;;;;;;"London WC DO"
+;;;;;;"Northern";
+;;;;;;;"Cleveland"
+;;;;;;;"Cumbria"
+;;;;;;;"Durham"
+;;;;;;;"Northumberland"
+;;;;;;;"Tyne Wear"
+;;;;;;"Northern Ireland";
+;;;;;;;"Antrim"
+;;;;;;;"Armagh"
+;;;;;;;"Down"
+;;;;;;;"Fermanagh"
+;;;;;;;"Londonderry"
+;;;;;;;"Tyrone"
+;;;;;;"North West";
+;;;;;;;"Cheshire"
+;;;;;;;"Isle Of Man"
+;;;;;;;"Lancashire"
+;;;;;;;"Merseyside"
+;;;;;;"Scotland";
+;;;;;;;"Borders"
+;;;;;;;"Central"
+;;;;;;;"Dumfries Gallowa"
+;;;;;;;"Fife"
+;;;;;;;"Grampian"
+;;;;;;;"Highland"
+;;;;;;;"Lothians"
+;;;;;;;"Strathclyde"
+;;;;;;;"Tayside"
+;;;;;;"South East";
+;;;;;;;"Bedfordshire"
+;;;;;;;"Berkshire"
+;;;;;;;"Buckinghamshire"
+;;;;;;;"East Sussex"
+;;;;;;;"Essex"
+;;;;;;;"Hampshire"
+;;;;;;;"Hertfordshire"
+;;;;;;;"Isle Of Wight"
+;;;;;;;"Kent"
+;;;;;;;"Middlesex"
+;;;;;;;"Oxfordshire"
+;;;;;;;"Surrey"
+;;;;;;;"West Sussex"
+;;;;;;"South West";
+;;;;;;;"Avon"
+;;;;;;;"Channel Islands"
+;;;;;;;"Cornwall"
+;;;;;;;"Devon"
+;;;;;;;"Dorset"
+;;;;;;;"Gloucestershire"
+;;;;;;;"Isles Of Scilly"
+;;;;;;;"Somerset"
+;;;;;;;"Wiltshire"
+;;;;;;"Wales";
+;;;;;;;"Clywd"
+;;;;;;;"Dyfed"
+;;;;;;;"Gwent"
+;;;;;;;"Gwynedd"
+;;;;;;;"Mid Glamorgan"
+;;;;;;;"Powys"
+;;;;;;;"South Glamorgan"
+;;;;;;;"West Glamorgan"
+;;;;;;"Yorkshire Humberside";
+;;;;;;;"Humberside"
+;;;;;;;"North Yorkshire"
+;;;;;;;"South Yorkshire"
+;;;;;;;"West Yorkshire"
+;;039;"Southern Europe";;;;
+;;;;008;"Albania";;
+;;;;020;"Andorra";;
+;;;;070;"Bosnia and Herzegovina";;
+;;;;191;"Croatia";;
+;;;;292;"Gibraltar";;
+;;;;300;"Greece";;
+;;;;336;"Holy See";;
+;;;;380;"Italy";;
+;;;;470;"Malta";;
+;;;;499;"Montenegro";;
+;;;;620;"Portugal";;
+;;;;674;"San Marino";;
+;;;;688;"Serbia";;
+;;;;705;"Slovenia";;
+;;;;724;"Spain";;
+;;;;807;"The former Yugoslav Republic of Macedonia";;
+;;155;"Western Europe";;;;
+;;;;040;"Austria";;
+;;;;056;"Belgium";;
+;;;;250;"France";;
+;;;;276;"Germany";;
+;;;;438;"Liechtenstein";;
+;;;;442;"Luxembourg";;
+;;;;492;"Monaco";;
+;;;;528;"Netherlands";;
+;;;;756;"Switzerland";;
+009;"Oceania";;;;;;
+;;053;"Australia and New Zealand";;;;
+;;;;036;"Australia";;
+;;;;554;"New Zealand";;
+;;;;574;"Norfolk Island";;
+;;054;"Melanesia";;;;
+;;;;242;"Fiji";;
+;;;;540;"New Caledonia";;
+;;;;598;"Papua New Guinea";;
+;;;;090;"Solomon Islands";;
+;;;;548;"Vanuatu";;
+;;057;"Micronesia";;;;
+;;;;316;"Guam";;
+;;;;296;"Kiribati";;
+;;;;584;"Marshall Islands";;
+;;;;583;"Micronesia Federated States of";;
+;;;;520;"Nauru";;
+;;;;580;"Northern Mariana Islands";;
+;;;;585;"Palau";;
+;;061;"Polynesia";;;;
+;;;;016;"American Samoa";;
+;;;;184;"Cook Islands";;
+;;;;258;"French Polynesia";;
+;;;;570;"Niue";;
+;;;;612;"Pitcairn";;
+;;;;882;"Samoa";;
+;;;;772;"Tokelau";;
+;;;;776;"Tonga";;
+;;;;798;"Tuvalu";;
+;;;;876;"Wallis and Futuna Islands";;
