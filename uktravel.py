@@ -7,50 +7,46 @@ from itools.datatypes import Integer
 from itools.handlers import get_handler
 from itools.stl import stl
 from itools.cms.csv import CSV
-from itools.cms.WebSite import WebSite
 from itools.cms import widgets
 from itools.cms.registry import register_object_class
 from itools.cms.html import XHTMLFile
 
 # Import from abakuc
-from base import Handler
 from companies import Companies
+from website import WebSite
 
 
 
-class UKTravel(Handler, WebSite):
+class UKTravel(WebSite):
  
     class_id = 'uktravel'
     class_title = u'UK Travel List'
+
 
     def new(self, **kw):
         WebSite.new(self, **kw)
         cache = self.cache
         # Add extra handlers here 
-        home = XHTMLFile()
-        cache['home.xhtml'] = home 
-        cache['home.xhtml.metadata'] = self.build_metadata(home,
-                                            **{'dc:title': {'en': u'Welcome to the UK Travel List'}})
         news = XHTMLFile()
         cache['news.xhtml'] = news 
         cache['news.xhtml.metadata'] = self.build_metadata(news,
-                                            **{'dc:title': {'en': u'News Folder List'}})
+            **{'dc:title': {'en': u'News Folder List'}})
         jobs = XHTMLFile()
         cache['jobs.xhtml'] = jobs 
         cache['jobs.xhtml.metadata'] = self.build_metadata(jobs,
-                                            **{'dc:title': {'en': u'Job Board'}})
+            **{'dc:title': {'en': u'Job Board'}})
         events = XHTMLFile()
         cache['events.xhtml'] = events
         cache['events.xhtml.metadata'] = self.build_metadata(events,
-                                            **{'dc:title': {'en': u'Events'}})
+            **{'dc:title': {'en': u'Events'}})
         faq = XHTMLFile()
         cache['faq.xhtml'] = faq 
         cache['faq.xhtml.metadata'] = self.build_metadata(faq,
-                                            **{'dc:title': {'en': u'FAQs'}})
+            **{'dc:title': {'en': u'FAQs'}})
         help = XHTMLFile()
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = self.build_metadata(help,
-                                            **{'dc:title': {'en': u'Help'}})
+            **{'dc:title': {'en': u'Help'}})
 
 
     def _get_virtual_handler(self, segment):
@@ -59,15 +55,10 @@ class UKTravel(Handler, WebSite):
             return self.get_handler('/companies')
         return WebSite._get_virtual_handler(self, segment)
 
+
     #######################################################################
     # User Interface
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    def view(self, context):
-        handler = self.get_handler('home.xhtml')
-        return stl(handler)
-
     search__access__ = True
     def search(self, context):
         root = context.root

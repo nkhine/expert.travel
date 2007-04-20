@@ -164,6 +164,13 @@ class Root(Handler, BaseRoot):
         return self.get_handler('ui/aruni')
 
 
+    def send_email(self, from_addr, to_addr, subject, body, **kw):
+        # XXX While testing, uncomment the right line
+        #to_addr = 'jdavid@itaapy.com'
+        #to_addr = 'norman@khine.net'
+        BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
+
+
     #######################################################################
     # API / Topics
     #######################################################################
@@ -281,7 +288,9 @@ class Root(Handler, BaseRoot):
                 if user is not None:
                     address.set_user_role(user.name, 'ikaaro:members')
 
-        return 'OK'
+        message = ('Remember to reindex the database now:'
+                   ' <a href=";catalog_form">reindex</a>.')
+        return message
 
 
 register_object_class(Root)

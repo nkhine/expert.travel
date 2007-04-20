@@ -3,8 +3,7 @@ build
 MANIFEST
 version.txt
 locale/*.mo
-ui/abakuc/*.fr
-ui/uktravel/*.fr
+*.fr
 .DS_Store
 dist
 *~
