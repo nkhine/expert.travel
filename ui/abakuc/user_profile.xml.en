@@ -62,7 +62,14 @@
       <td>${fax}</td>
     </tr>
   </table>
+  <p>
+  <a href=";edit_company_form">Modify company details</a>
+  </p>
+  <p>
+  <a href=";edit_branch_form">Modify address details</a>
+  </p>
+  <h2>Enquiries</h2>
+  <p>
   <a href="${address_path}/log_enquiry.csv/;view">Check enquiries (${enquiries})</a>
-
-
+  </p>
 </stl:block>
