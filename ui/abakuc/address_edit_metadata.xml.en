@@ -24,15 +24,25 @@
   <dl>
     <dt>Region</dt>
     <dd>
-      <select style="width: 40%" onchange="select_region(this.value)">
+      <select style="width: 10%" onchange="select_country(this.value)">
         <option value="none"></option>
-        <option stl:repeat="region regions" selected="${region/is_selected}"
-          value="${region/rel}">${region/title}</option> 
+        <option stl:repeat="country countries" value="country_${country/id}"
+          selected="${country/is_selected}">${country/title}</option> 
       </select>
 
-      <select name="abakuc:county" style="width: 35%">
+      <select style="width: 30%" onchange="select_region(this.value)">
+        <option value="none"></option>
+        <optgroup stl:repeat="country countries" id="country_${country/id}"
+          style="display: ${country/display}">
+          <option stl:repeat="region country/regions"
+            value="region_${region/id}"
+            selected="${region/is_selected}">${region/title}</option> 
+        </optgroup>
+      </select>
+
+      <select name="abakuc:county" style="width: 30%">
         <option value=""></option>
-        <optgroup stl:repeat="region regions" id="${region/rel}"
+        <optgroup stl:repeat="region regions" id="region_${region/id}"
           style="display: ${region/display}">
           <option stl:repeat="county region/counties" value="${county/id}"
             selected="${county/is_selected}">${county/title}</option> 

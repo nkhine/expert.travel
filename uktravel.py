@@ -62,7 +62,6 @@ class UKTravel(WebSite):
     search__access__ = True
     def search(self, context):
         root = context.root
-        uri = context.uri
 
         topic = context.get_form_value('topic')
         region = context.get_form_value('region')
@@ -91,6 +90,7 @@ class UKTravel(WebSite):
         # Topic
         csv = root.get_handler('regions.csv')
         if topic is not None:
+            base = context.uri
             namespace['title'] = root.get_topic_title(topic)
             regions = []
             if region is None:
@@ -99,8 +99,8 @@ class UKTravel(WebSite):
                     q = query.copy()
                     q['region'] = region
                     if root.search(**q).get_n_documents():
-                        regions.append({'href': uri.replace(region=region),
-                                        'title': region})
+                        uri = base.replace(region=region, batchstart=None)
+                        regions.append({'href': uri, 'title': region})
             elif county is None:
                 # Counties
                 for n in csv.search(region=region):
@@ -110,8 +110,8 @@ class UKTravel(WebSite):
                     if root.search(**q).get_n_documents():
                         row = csv.get_row(n)
                         county = row[2]
-                        regions.append({'href': uri.replace(county=county_id),
-                                        'title': county})
+                        uri = base.replace(county=county_id, batchstart=None)
+                        regions.append({'href': uri, 'title': county})
             else:
                 # Towns
                 results = root.search(region=region, county=county)
@@ -122,8 +122,8 @@ class UKTravel(WebSite):
                     q = query.copy()
                     q['town'] = town
                     if root.search(**q).get_n_documents():
-                        regions.append({'href': uri.replace(town=town),
-                                        'title': town})
+                        uri = base.replace(town=town, batchstart=None)
+                        regions.append({'href': uri, 'title': town})
             regions.sort(key=lambda x: x['title'])
             namespace['regions'] = regions
 
@@ -134,7 +134,7 @@ class UKTravel(WebSite):
         start = context.get_form_value('batchstart', type=Integer, default=0)
         size = 5
         total = results.get_n_documents()
-        namespace['batch'] = widgets.batch(uri, start, size, total)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
 
         # Search
         companies = root.get_handler('companies')

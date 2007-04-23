@@ -166,13 +166,13 @@ class Root(Handler, BaseRoot):
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         # XXX While testing, uncomment the right line
-        #to_addr = 'jdavid@itaapy.com'
+        to_addr = 'jdavid@itaapy.com'
         #to_addr = 'norman@khine.net'
         BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
 
 
     #######################################################################
-    # API / Topics
+    # API
     #######################################################################
     def get_topic_title(self, id):
         topics = self.get_handler('topics.csv')
@@ -187,8 +187,9 @@ class Root(Handler, BaseRoot):
         topics = self.get_handler('topics.csv')
         namespace = []
         for row in topics.get_rows():
-            namespace.append({'id': row[0], 'title': row[1],
-                              'is_selected': row[0] in ids})
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
 
         return namespace
 

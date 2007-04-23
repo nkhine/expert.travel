@@ -29,6 +29,7 @@
         </stl:block>
         <stl:block if="user/info">
           (logged in as ${user/info/title})
+          <a href="${user/info/home}" id="top_menu_home">Manage Your Profile</a>
           <a href="/;logout" id="top_menu_logout">Log out</a>
         </stl:block>
        <a href="/;contact_form" id="top_menu_contact">Contact</a>
@@ -36,7 +37,7 @@
        </tr>
       <tr>
       <td colspan="2" id="upper-nav-src">
-      <form action=";search" method="get">
+      <form action="/;search" method="get">
         <input class="searchinput" name="search_text" type="text" 
           value="Company name" size="20" onFocus="this.value=''" />
         <input class="button_search" type="submit" value="Search"/>

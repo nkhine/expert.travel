@@ -89,16 +89,33 @@ class User(iUser, Handler):
     profile__access__ = 'is_allowed_to_view'
     profile__label__ = u'Profile'
     def profile(self, context):
-        root = context.root
-        user = context.user
-
         namespace = {}
-        namespace['title'] = self.get_property('dc:title') or self.name
-        # Owner
-        is_owner = user is not None and user.name == self.name
-        namespace['is_owner'] = is_owner
-        # Owner or Admin
-        namespace['is_owner_or_admin'] = is_owner or root.is_admin(user, self)
+        namespace['firstname'] = self.get_property('ikaaro:firstname')
+        namespace['lastname'] = self.get_property('ikaaro:lastname')
+        namespace['email'] = self.get_property('ikaaro:email')
+        # Company
+        root = context.root
+        regions = root.get_handler('regions.csv')
+        results = root.search(format='address', members=self.name)
+        for address in results.get_documents():
+            address = root.get_handler(address.abspath)
+            company = address.parent
+            namespace['company_name'] = company.get_property('dc:title')
+            namespace['website'] = company.get_website()
+            namespace['address'] = address.get_property('abakuc:address')
+            namespace['town'] = address.get_property('abakuc:town')
+            county = address.get_property('abakuc:county')
+            namespace['county'] = regions.get_row(county)[2]
+            namespace['postcode'] = address.get_property('abakuc:postcode')
+            namespace['phone'] = address.get_property('abakuc:phone')
+            namespace['fax'] = address.get_property('abakuc:fax')
+
+            namespace['address_path'] = self.get_pathto(address)
+            # Enquiries
+            enquiries = address.get_handler('log_enquiry.csv')
+            namespace['enquiries'] = enquiries.get_nrows()
+
+##        namespace['title'] = self.get_property('dc:title') or self.name
 
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)

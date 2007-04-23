@@ -49,6 +49,16 @@ class Company(Folder):
 
 
     #######################################################################
+    # API
+    #######################################################################
+    def get_website(self):
+        website = self.get_property('abakuc:website')
+        if website.startswith('http://'):
+            return website
+        return 'http://' + website
+
+
+    #######################################################################
     # User Interface
     #######################################################################
     view__access__ = 'is_allowed_to_view'
@@ -56,10 +66,18 @@ class Company(Folder):
     def view(self, context):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
-        namespace['website'] = self.get_property('abakuc:website')
+        namespace['website'] = self.get_website()
+
+        addresses = []
+        for address in self.search_handlers():
+            addresses.append({
+                'name': address.name,
+                'address': address.get_property('abakuc:address')})
+        namespace['addresses'] = addresses
  
         handler = self.get_handler('/ui/abakuc/company_view.xml')
         return stl(handler, namespace)
+
 
     def edit_metadata_form(self, context):
         namespace = {}
@@ -178,19 +196,19 @@ class Address(RoleAware, Folder):
     view__label__ = u'Address'
     view__access__ = True
     def view(self, context):
-        
         county_id = self.get_property('abakuc:county')
-        csv = self.get_handler('/regions.csv')
         if county_id is None:
             # XXX Every address should have a county
             region = '-'
             county = '-'
+            country = '-'
         else:
+            csv = self.get_handler('/regions.csv')
             row = csv.get_row(county_id)
             country, region, county = row
 
         namespace = {}
-        #namespace['company'] = company.get_property('dc:title')
+        namespace['company'] = self.parent.get_property('dc:title')
         namespace['address'] = self.get_property('abakuc:address')
         namespace['town'] = self.get_property('abakuc:town')
         namespace['postcode'] = self.get_property('abakuc:postcode')
@@ -216,22 +234,51 @@ class Address(RoleAware, Folder):
         rows = self.get_handler('/regions.csv').get_rows()
         address_county = self.get_property('abakuc:county')
 
+        countries = {}
         regions = {}
         for index, row in enumerate(rows):
             country, region, county = row
             is_selected = (index == address_county)
+            id = str(index)
 
-            region = regions.setdefault(region, {'title': region})
-            region.setdefault('is_selected', False)
-            region.setdefault('display', 'none')
+            # Add the country if not yet added
+            if country in countries:
+                country_ns = countries[country]
+            else:
+                country_ns = {'id': index, 'title': country,
+                              'is_selected': False, 'display': 'none',
+                              'regions': []}
+                countries[country] = country_ns
+
+            # Add the region if not yet added
+            if region in regions:
+                region_ns = regions[region]
+            else:
+                region_ns = {'id': index, 'title': region,
+                             'is_selected': False, 'display': 'none',
+                             'counties': []}
+                regions[region] = region_ns
+                # Add to the country
+                country_ns['regions'].append(
+                    {'id': id, 'title': region, 'is_selected': False})
+
+            region_ns['counties'].append({'id': id, 'title': county,
+                                          'is_selected': is_selected})
+
+            # If this county is selected, activate the right blocks
             if is_selected:
-                region['is_selected'] = True
-                region['display'] = 'inherit'
-            region.setdefault('rel', index)
-            counties = region.setdefault('counties', [])
-            counties.append({'id': str(index),
-                          'title': county,
-                          'is_selected': is_selected})
+                country_ns['is_selected'] = True
+                country_ns['display'] = 'inherit'
+                region_ns['is_selected'] = True
+                region_ns['display'] = 'inherit'
+                for x in country_ns['regions']:
+                    if x['title'] == region:
+                        x['is_selected'] = True
+                        break
+
+        countries = countries.values()
+        countries.sort(key=lambda x: x['title'])
+        namespace['countries'] = countries
 
         regions = regions.values()
         regions.sort(key=lambda x: x['title'])
@@ -262,48 +309,38 @@ class Address(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
 
+
     enquiry__access__ = True
     def enquiry(self, context):
-        # who is the recipient ?
-        contact='sylvain@itaapy.com'
-        keys = ['email','fullname','enquiry','phone','typeenquiry']
-        
         tab = {}
-
-        for key in keys:
-            if key == 'email':
-                myKey = 'ikaaro:%s' % key
-            else:
-                myKey = 'abakuc:%s' % key
-
-            value = context.get_form_value(myKey)
-            tab[key]=value
+        tag['email'] = context.get_form_value('ikaaro:email')
+        for key in 'fullname', 'enquiry', 'phone', 'typeenquiry':
+            tab[key] = context.get_form_value('abakuc:%s' % key)
 
         subject = u'[%s]' % tab['typeenquiry']
         body = 'Name: %(fullname)s - Phone: %(phone)s - %(enquiry)s' % tab
 
-        #Check the input data
+        # Check the input data
         if not tab['email'] or not tab['fullname'] or not tab['typeenquiry']:
-          return context.come_back(u'Please fill the missing fields.')
+            return context.come_back(u'Please fill the missing fields.')
 
         # Check the from address
         if not Email.is_valid(tab['email']):
-          return context.come_back(u'A valid email address must be provided.')
-        
+            message = u'A valid email address must be provided.'
+            return context.come_back(message)
+
         # Sent the mail
         root = self.get_root()
-        root.send_email(tab['email'], contact, subject, body)
-  
-        
+        users = root.get_handler('users')
+        for name in self.get_property('ikaaro:members'):
+            to_addr = users.get_handler(name).get_property('ikaaro:email')
+            root.send_email(tab['email'], to_addr, subject, body)
+ 
         # Save the mail in csv
-        row = [datetime.now(),tab['typeenquiry'],tab['fullname'],tab['email']
-        ,tab['phone'],tab['enquiry']]
-
+        row = [datetime.now(), tab['typeenquiry'], tab['fullname'],
+               tab['email'], tab['phone'], tab['enquiry']]
 
         # check if the handler exist
-        #if not self.has_handler('log_enquiry.csv'):
-        #    handler = EnquiriesLog()
-        #    self.set_handler('log_enquiry.csv', handler)
         handler = self.get_handler('log_enquiry.csv')
         handler.add_row(row)
 

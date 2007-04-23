@@ -4,28 +4,65 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>${title}</h2>
-
-  <p stl:if="is_owner">
-    Welcome to your folder. This is your personal space where you can
-    manage your own documents and publish them.
+  <h2>Personal Information</h2>
+  <table>
+    <tr>
+      <th align="right">Firstname</th>
+      <td>${firstname}</td>
+    </tr>
+    <tr>
+      <th align="right">Lastname</th>
+      <td>${lastname}</td>
+    </tr>
+    <tr>
+      <th align="right">Email</th>
+      <td>${email}</td>
+    </tr>
+  </table>
+  <p>
+  <a href=";edit_account_form">Edit account details.</a>
   </p>
-  <stl:block if="is_owner_or_admin">
-    <p>You can do the following actions:</p>
-    <ul>
-      <li>
-        <a href=";edit_form">Edit preferences;</a>
-      </li>
-      <li>
-        <a href=";edit_account_form">Edit account details;</a>
-      </li>
-      <li>
-        <a href=";browse_thumbnails?mode=thumbnails">Manage personal content;</a>
-      </li>
-      <li>
-        <a href=";tasks_list">Pending tasks.</a>
-      </li>
-    </ul>
-  </stl:block>
+  <p>
+  <a href=";edit_password_form">Change password.</a>
+  </p>
+
+
+  <h2>Company Information</h2>
+  <table>
+    <tr>
+      <th align="right">Name</th>
+      <td>${company_name}</td>
+    </tr>
+    <tr>
+      <th align="right">Website</th>
+      <td><a href="${website}">${website}</a></td>
+    </tr>
+    <tr>
+      <th align="right">Address</th>
+      <td>${address}</td>
+    </tr>
+    <tr>
+      <th align="right">Town</th>
+      <td>${town}</td>
+    </tr>
+    <tr>
+      <th align="right">County</th>
+      <td>${county}</td>
+    </tr>
+    <tr>
+      <th align="right">Postcode</th>
+      <td>${postcode}</td>
+    </tr>
+    <tr>
+      <th align="right">Phone</th>
+      <td>${phone}</td>
+    </tr>
+    <tr>
+      <th align="right">Fax</th>
+      <td>${fax}</td>
+    </tr>
+  </table>
+  <a href="${address_path}/log_enquiry.csv/;view">Check enquiries (${enquiries})</a>
+
 
 </stl:block>
