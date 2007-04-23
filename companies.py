@@ -313,7 +313,7 @@ class Address(RoleAware, Folder):
     enquiry__access__ = True
     def enquiry(self, context):
         tab = {}
-        tag['email'] = context.get_form_value('ikaaro:email')
+        tab['email'] = context.get_form_value('ikaaro:email')
         for key in 'fullname', 'enquiry', 'phone', 'typeenquiry':
             tab[key] = context.get_form_value('abakuc:%s' % key)
 
