@@ -287,7 +287,7 @@ class Root(Handler, BaseRoot):
                 address.set_property('abakuc:fax', str(row[9]))
                 ##address.set_property('abakuc:license', row[])
                 if user is not None:
-                    address.set_user_role(user.name, 'ikaaro:members')
+                    address.set_user_role(user.name, 'ikaaro:reviewers')
 
         message = ('Remember to reindex the database now:'
                    ' <a href=";catalog_form">reindex</a>.')

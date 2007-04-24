@@ -28,48 +28,54 @@
 
 
   <h2>Company Information</h2>
-  <table>
-    <tr>
-      <th align="right">Name</th>
-      <td>${company_name}</td>
-    </tr>
-    <tr>
-      <th align="right">Website</th>
-      <td><a href="${website}">${website}</a></td>
-    </tr>
-    <tr>
-      <th align="right">Address</th>
-      <td>${address}</td>
-    </tr>
-    <tr>
-      <th align="right">Town</th>
-      <td>${town}</td>
-    </tr>
-    <tr>
-      <th align="right">County</th>
-      <td>${county}</td>
-    </tr>
-    <tr>
-      <th align="right">Postcode</th>
-      <td>${postcode}</td>
-    </tr>
-    <tr>
-      <th align="right">Phone</th>
-      <td>${phone}</td>
-    </tr>
-    <tr>
-      <th align="right">Fax</th>
-      <td>${fax}</td>
-    </tr>
-  </table>
-  <p>
-  <a href=";edit_company_form">Modify company details</a>
-  </p>
-  <p>
-  <a href=";edit_branch_form">Modify address details</a>
-  </p>
-  <h2>Enquiries</h2>
-  <p>
-  <a href="${address_path}/log_enquiry.csv/;view">Check enquiries (${enquiries})</a>
-  </p>
+  <stl:block if="not address">
+    <a href="/companies/;setup_company_form">Set up your company</a>
+  </stl:block>
+  <stl:block if="address">
+    <table>
+      <tr>
+        <th align="right">Name</th>
+        <td>${company_name}</td>
+      </tr>
+      <tr>
+        <th align="right">Website</th>
+        <td><a href="${website}">${website}</a></td>
+      </tr>
+      <tr>
+        <th align="right">Address</th>
+        <td>${address}</td>
+      </tr>
+      <tr>
+        <th align="right">Town</th>
+        <td>${town}</td>
+      </tr>
+      <tr>
+        <th align="right">County</th>
+        <td>${county}</td>
+      </tr>
+      <tr>
+        <th align="right">Postcode</th>
+        <td>${postcode}</td>
+      </tr>
+      <tr>
+        <th align="right">Phone</th>
+        <td>${phone}</td>
+      </tr>
+      <tr>
+        <th align="right">Fax</th>
+        <td>${fax}</td>
+      </tr>
+    </table>
+    <p>
+    <a href=";edit_company_form">Modify company details</a>
+    </p>
+    <p>
+    <a href=";edit_branch_form">Modify address details</a>
+    </p>
+    <h2>Enquiries</h2>
+    <p>
+    <a href="${address_path}/log_enquiry.csv/;view">Check enquiries
+      (${enquiries})</a>
+    </p>
+  </stl:block>
 </stl:block>

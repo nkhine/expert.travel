@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Setup your company</h2>
+
+<p>
+Please first search whether your company information is already
+in the database.
+</p>
+
+<p>
+Type the name of your company:
+</p>
+
+<form action=";setup_company" method="get">
+  <input type="text" name="dc:title" value="${name}" size="40" />
+  <input type="submit" value="Search" />
+</form>
+
+<stl:block if="found">
+<form action=";setup_company_select" method="post">
+  <table>
+    <tr stl:repeat="item found">
+      <td>
+        <input type="radio" name="" value="" />
+        ${item}
+      </td>
+    </tr>
+  </table>
+  <input type="submit" value="Select" />
+</form>
+</stl:block>
+
+
+
+
+</stl:block>

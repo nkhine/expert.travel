@@ -40,8 +40,8 @@ class UserFolder(iUserFolder):
 register_object_class(UserFolder)
 
 
-class User(iUser, Handler):
 
+class User(iUser, Handler):
 
     class_id = 'user'
     class_version = '20040625'
@@ -97,6 +97,7 @@ class User(iUser, Handler):
         root = context.root
         regions = root.get_handler('regions.csv')
         results = root.search(format='address', members=self.name)
+        namespace['address'] = None
         for address in results.get_documents():
             address = root.get_handler(address.abspath)
             company = address.parent
@@ -114,8 +115,6 @@ class User(iUser, Handler):
             # Enquiries
             enquiries = address.get_handler('log_enquiry.csv')
             namespace['enquiries'] = enquiries.get_nrows()
-
-##        namespace['title'] = self.get_property('dc:title') or self.name
 
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)

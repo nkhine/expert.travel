@@ -36,6 +36,29 @@ class Companies(Folder):
         return 'bobo'
 
 
+    #######################################################################
+    # User Interface / Set up company
+    setup_company__access__ = True
+    def setup_company(self, context):
+        name = context.get_form_value('dc:title')
+
+        namespace = {}
+        namespace['name'] = name
+
+        found = []
+        name = name.strip().lower()
+        if name:
+            for company in self.search_handlers():
+                title = company.get_property('dc:title')
+                if name in title.lower():
+                    found.append(title)
+        found.sort()
+        namespace['found'] = found
+
+        handler = self.get_handler('/ui/abakuc/companies_setup_company.xml')
+        return stl(handler, namespace)
+ 
+
 
 class Company(Folder):
 
@@ -148,10 +171,6 @@ class Address(RoleAware, Folder):
         ['permissions_form', 'new_user_form']]
 
     __fixed_handlers__ = ['log_enquiry.csv']
-
-
-    __roles__ = [
-        {'name': 'ikaaro:members', 'title': u"Members", 'unit': u"Member"}]
 
 
     def new(self, **kw):
