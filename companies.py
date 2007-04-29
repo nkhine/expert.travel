@@ -59,6 +59,9 @@ class Companies(Folder):
         return stl(handler, namespace)
  
 
+    setup_company_select__access__ = True
+    def setup_company_select(self, context):
+        return 'company selected' 
 
 class Company(Folder):
 

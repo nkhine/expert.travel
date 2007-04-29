@@ -29,7 +29,7 @@
 
   <h2>Company Information</h2>
   <stl:block if="not address">
-    <a href="/companies/;setup_company_form">Set up your company</a>
+    <a href="/companies/;setup_company">Set up your company</a>
   </stl:block>
   <stl:block if="address">
     <table>

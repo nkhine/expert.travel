@@ -1,3 +1,61 @@
+Tue Apr 24 15:01:18 CEST 2007
+
+Fix the issue in regards to imported users as their acounts are not activated.
+
+Currently on the itools.cms this process simply regenerates the key and sends a
+new validation email. The problem that the forms are not very intuative and
+should give the user the option to re-register automatically.
+
+Also, changing my email address and allowing another user to register with the
+old email address produces a Warning, advising that there already is a user with
+that email.
+
+The ACL for Companies and Addresses is now somewhat flakey, in that no
+consideration has been taken to deal with the fact that for example a user can
+join a company and modify, view its enquiries and then join out -- if we are to
+follow the initial requirement. With this in mind, we need to consider a much
+stricter Company joining scheme in that only a 'Manager' can allow users to
+join. By 'Manager' I mean the user who has been elected to manage the
+Company/Address details.
+
+If we have a company with 2 addresses for example and they both have 'Managers'
+then both users can edit the Company details.
+
+They can also allow other Members to become Managers.
+
+There are three issues in the existing system as far as I can see:
+
+1) After the importation of the addresses, we do not know who the 'Manager' is.
+2) The email address we have in same cases is just the general email.
+for example, sales@itaapy.com
+3) We have some companies and addresses without any emails.
+
+A Company/Branch manager is the first user who registers/logs into the
+Company/Branch this will sort most of the issues in that once a user succesfully
+registers and 'attaches' themselves to a Company/Branch then they will be able
+to add other Members to their Branch.
+
+Enquiries Spams
+---------------
+
+Currently I get some spam on the existing uktravellist.info application. We will
+need to fix this either by implementing the 'captcha' on the Enquiry Form or
+better still verify the User's email thus giving them an account on the
+application from which they can for now only manage enquiries.
+
+The Enquiry Form thus becomes also a Registration Form, in that the Name and
+Email will be used to create the account and then once it has been validated the
+enquiry is written into the database.
+
+On the user's profile page, we will have a link to the Enquiries made, with the
+status i.e. whether it has been processed etc...
+
+If a user does not login and they try to post an enquiry with an email that is
+already in the system and has been validated then we should be able to process
+the request without the user having to login.
+
+Enquiries that have no valid email address should be removed after a set period.
+
 16-04-2007
 
 Following my email, here are some supporting notes.
