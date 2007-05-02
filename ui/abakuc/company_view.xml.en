@@ -11,7 +11,7 @@
 
 <h3>Jobs List....</h3>
 
-<h3>Branch List</h3>
+<h3>Locations/Branches</h3>
 <ul>
   <li stl:repeat="address addresses">
     <a href="${address/name}">${address/address}</a>

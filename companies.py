@@ -21,8 +21,8 @@ class Companies(Folder):
 
     class_id = 'companies'
     class_title = u'Companies Directory'
-    class_icon16 = 'abakuc/images/Resources16.png'
-    class_icon48 = 'abakuc/images/Resources48.png'
+    class_icon16 = 'abakuc/images/AddressBook16.png'
+    class_icon48 = 'abakuc/images/AddressBook48.png'
 
     def get_document_types(self):
         return [Company]
@@ -67,8 +67,8 @@ class Company(Folder):
 
     class_id = 'company'
     class_title = u'Company'
-    class_icon16 = 'abakuc/images/Resources16.png'
-    class_icon48 = 'abakuc/images/Resources48.png'
+    class_icon16 = 'abakuc/images/AddressBook16.png'
+    class_icon48 = 'abakuc/images/AddressBook48.png'
   
     def get_document_types(self):
         return [Address]

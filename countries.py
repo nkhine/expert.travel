@@ -192,22 +192,6 @@ register_object_class(City)
 
 
 ############################################################################
-# Country List 
-############################################################################
-
-class CountryList(CSV):
-    columns = ['id', 'continent', 'sub-id', 'sub-continent',
-               'country-id', 'country', 'region', 'county']
-    schema = {'id': Integer,
-              'continent': Unicode(index='text'),
-              'sub-id': Integer,
-              'sub-continent': Unicode(index='text'),
-              'country-id': Integer,
-              'country': Unicode(index='text'),
-              'region': Unicode(index='text'),
-              'county': Unicode(index='text')}
-
-############################################################################
 # Country 
 ############################################################################
 
@@ -295,7 +279,7 @@ register_object_class(Country)
 # Countries 
 ############################################################################
 
-class Countries(Handler, ikaaroFolder):
+class Countries(Handler, CSV, ikaaroFolder):
 
     class_id = 'countries'
     class_title = u'Countries in the World'

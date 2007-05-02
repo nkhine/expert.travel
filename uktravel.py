@@ -21,7 +21,8 @@ class UKTravel(WebSite):
  
     class_id = 'uktravel'
     class_title = u'UK Travel List'
-
+    class_icon48 = 'abakuc/images/Import48.png'
+    class_icon16 = 'abakuc/images/Import16.png'
 
     def new(self, **kw):
         WebSite.new(self, **kw)

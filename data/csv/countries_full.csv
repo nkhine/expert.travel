@@ -1,111 +1,110 @@
-"id";"continent";"sub-id";"sub-continent";"country-id";"iana-root-zone";"country";"region";"county"
-2;"Africa";14;"Eastern Africa";108;"bi";"Burundi";;
-2;"Africa";14;"Eastern Africa";174;"km";"Comoros";;
-2;"Africa";14;"Eastern Africa";262;"dj";"Djibouti";;
-2;"Africa";14;"Eastern Africa";232;"er";"Eritrea";;
-2;"Africa";14;"Eastern Africa";231;"et";"Ethiopia";;
-2;"Africa";14;"Eastern Africa";404;"ke";"Kenya";;
-2;"Africa";14;"Eastern Africa";450;"mg";"Madagascar";;
-2;"Africa";14;"Eastern Africa";454;"mw";"Malawi";;
-2;"Africa";14;"Eastern Africa";480;"mu";"Mauritius";;
-2;"Africa";14;"Eastern Africa";175;"yt";"Mayotte";;
-2;"Africa";14;"Eastern Africa";508;"mz";"Mozambique";;
-2;"Africa";14;"Eastern Africa";638;"re";"Reunion";;
-2;"Africa";14;"Eastern Africa";646;"rw";"Rwanda";;
-2;"Africa";14;"Eastern Africa";690;"sc";"Seychelles";;
-2;"Africa";14;"Eastern Africa";706;"so";"Somalia";;
-2;"Africa";14;"Eastern Africa";800;"ug";"Uganda";;
-2;"Africa";14;"Eastern Africa";834;"tz";"United Republic of Tanzania";;
-2;"Africa";14;"Eastern Africa";894;"zm";"Zambia";;
-2;"Africa";14;"Eastern Africa";716;"zw";"Zimbabwe";;
-2;"Africa";17;"Middle Africa";24;"ao";"Angola";;
-2;"Africa";17;"Middle Africa";120;"cm";"Cameroon";;
-2;"Africa";17;"Middle Africa";140;"cf";"Central African Republic";;
-2;"Africa";17;"Middle Africa";148;"td";"Chad";;
-2;"Africa";17;"Middle Africa";178;"cg";"Congo";;
-2;"Africa";17;"Middle Africa";180;"cd";"Democratic Republic of the Congo";;
-2;"Africa";17;"Middle Africa";226;"gq";"Equatorial Guinea";;
-2;"Africa";17;"Middle Africa";266;"ga";"Gabon";;
-2;"Africa";17;"Middle Africa";678;"st";"Sao Tome and Principe";;
-2;"Africa";15;"Northern Africa";12;"dz";"Algeria";;
-2;"Africa";15;"Northern Africa";818;"eg";"Egypt";;
-2;"Africa";15;"Northern Africa";434;"ly";"Libyan Arab Jamahiriya";;
-2;"Africa";15;"Northern Africa";504;"ma";"Morocco";;
-2;"Africa";15;"Northern Africa";736;"sd";"Sudan";;
-2;"Africa";15;"Northern Africa";788;"tn";"Tunisia";;
-2;"Africa";15;"Northern Africa";732;"eh";"Western Sahara";;
-2;"Africa";18;"Southern Africa";72;"bw";"Botswana";;
-2;"Africa";18;"Southern Africa";426;"ls";"Lesotho";;
-2;"Africa";18;"Southern Africa";516;"na";"Namibia";;
-2;"Africa";18;"Southern Africa";710;"za";"South Africa";;
-2;"Africa";18;"Southern Africa";748;"sz";"Swaziland";;
-2;"Africa";11;"Western Africa";204;"bj";"Benin";;
-2;"Africa";11;"Western Africa";854;"bf";"Burkina Faso";;
-2;"Africa";11;"Western Africa";132;"cv";"Cape Verde";;
-2;"Africa";11;"Western Africa";384;"ci";"Cote d'Ivoire";;
-2;"Africa";11;"Western Africa";270;"gm";"Gambia";;
-2;"Africa";11;"Western Africa";288;"gh";"Ghana";;
-2;"Africa";11;"Western Africa";324;"gn";"Guinea";;
-2;"Africa";11;"Western Africa";624;"gw";"Guinea-Bissau";;
-2;"Africa";11;"Western Africa";430;"lr";"Liberia";;
-2;"Africa";11;"Western Africa";466;"ml";"Mali";;
-2;"Africa";11;"Western Africa";478;"mr";"Mauritania";;
-2;"Africa";11;"Western Africa";562;"ne";"Niger";;
-2;"Africa";11;"Western Africa";566;"ng";"Nigeria";;
-2;"Africa";11;"Western Africa";654;"sh";"Saint Helena";;
-2;"Africa";11;"Western Africa";686;"sn";"Senegal";;
-2;"Africa";11;"Western Africa";694;"sl";"Sierra Leone";;
-2;"Africa";11;"Western Africa";768;"tg";"Togo";;
-19;"Americas";13;"Central America";32;"ar";"Argentina";;
-19;"Americas";13;"Central America";84;"bz";"Belize";;
-19;"Americas";13;"Central America";68;"bo";"Bolivia";;
-19;"Americas";13;"Central America";76;"br";"Brazil";;
-19;"Americas";13;"Central America";152;"cl";"Chile";;
-19;"Americas";13;"Central America";170;"co";"Colombia";;
-19;"Americas";13;"Central America";188;"cr";"Costa Rica";;
-19;"Americas";13;"Central America";218;"ec";"Ecuador";;
-19;"Americas";13;"Central America";222;"sv";"El Salvador";;
-19;"Americas";13;"Central America";238;"fk";"Falkland Islands (Malvinas)";;
-19;"Americas";13;"Central America";254;"gf";"French Guiana";;
-19;"Americas";13;"Central America";320;"gt";"Guatemala";;
-19;"Americas";13;"Central America";328;"gy";"Guyana";;
-19;"Americas";13;"Central America";340;"hn";"Honduras";;
-19;"Americas";13;"Central America";484;"mx";"Mexico";;
-19;"Americas";13;"Central America";558;"ni";"Nicaragua";;
-19;"Americas";13;"Central America";591;"pa";"Panama";;
-19;"Americas";13;"Central America";600;"py";"Paraguay";;
-19;"Americas";13;"Central America";604;"pe";"Peru";;
-19;"Americas";13;"Central America";740;"sr";"Suriname";;
-19;"Americas";13;"Central America";858;"uy";"Uruguay";;
-19;"Americas";13;"Central America";862;"ve";"Venezuela (Bolivarian Republic of)";;
-19;"Americas";419;"Latin America and the Caribbean";660;"ai";"Anguilla";;
-19;"Americas";419;"Latin America and the Caribbean";28;"ag";"Antigua and Barbuda";;
-19;"Americas";419;"Latin America and the Caribbean";533;"aw";"Aruba";;
-19;"Americas";419;"Latin America and the Caribbean";44;"bs";"Bahamas";;
-19;"Americas";419;"Latin America and the Caribbean";52;"bb";"Barbados";;
-19;"Americas";419;"Latin America and the Caribbean";92;"io";"British Virgin Islands";;
-19;"Americas";419;"Latin America and the Caribbean";136;"ky";"Cayman Islands";;
-19;"Americas";419;"Latin America and the Caribbean";192;"cu";"Cuba";;
-19;"Americas";419;"Latin America and the Caribbean";212;"dm";"Dominica";;
-19;"Americas";419;"Latin America and the Caribbean";214;"do";"Dominican Republic";;
-19;"Americas";419;"Latin America and the Caribbean";308;"gd";"Grenada";;
-19;"Americas";419;"Latin America and the Caribbean";312;"gp";"Guadeloupe";;
-19;"Americas";419;"Latin America and the Caribbean";332;"ht";"Haiti";;
-19;"Americas";419;"Latin America and the Caribbean";388;"jm";"Jamaica";;
-19;"Americas";419;"Latin America and the Caribbean";474;"mq";"Martinique";;
-19;"Americas";419;"Latin America and the Caribbean";500;"ms";"Montserrat";;
-19;"Americas";419;"Latin America and the Caribbean";530;"an";"Netherlands Antilles";;
-19;"Americas";419;"Latin America and the Caribbean";630;"pr";"Puerto Rico";;
-19;"Americas";419;"Latin America and the Caribbean";659;"kn";"Saint Kitts and Nevis";;
-19;"Americas";419;"Latin America and the Caribbean";662;"lc";"Saint Lucia";;
-19;"Americas";419;"Latin America and the Caribbean";670;"vc";"Saint Vincent and the Grenadines";;
-19;"Americas";419;"Latin America and the Caribbean";780;"tt";"Trinidad and Tobago";;
-19;"Americas";419;"Latin America and the Caribbean";796;"tc";"Turks and Caicos Islands";;
-19;"Americas";419;"Latin America and the Caribbean";850;"vi";"United States Virgin Islands";;
-19;"Americas";12;"North America";60;"bm";"Bermuda";;
-19;"Americas";12;"North America";124;"ca";"Canada";;
-19;"Americas";12;"North America";304;"gl";"Greenland";;
-19;"Americas";12;"North America";666;"pm";"Saint Pierre and Miquelon";;
+2;"Africa";14;"Eastern Africa";108;"bi";"Burundi";"none";"none"
+2;"Africa";14;"Eastern Africa";174;"km";"Comoros";"none";"none"
+2;"Africa";14;"Eastern Africa";262;"dj";"Djibouti";"none";"none"
+2;"Africa";14;"Eastern Africa";232;"er";"Eritrea";"none";"none"
+2;"Africa";14;"Eastern Africa";231;"et";"Ethiopia";"none";"none"
+2;"Africa";14;"Eastern Africa";404;"ke";"Kenya";"none";"none"
+2;"Africa";14;"Eastern Africa";450;"mg";"Madagascar";"none";"none"
+2;"Africa";14;"Eastern Africa";454;"mw";"Malawi";"none";"none"
+2;"Africa";14;"Eastern Africa";480;"mu";"Mauritius";"none";"none"
+2;"Africa";14;"Eastern Africa";175;"yt";"Mayotte";"none";"none"
+2;"Africa";14;"Eastern Africa";508;"mz";"Mozambique";"none";"none"
+2;"Africa";14;"Eastern Africa";638;"re";"Reunion";"none";"none"
+2;"Africa";14;"Eastern Africa";646;"rw";"Rwanda";"none";"none"
+2;"Africa";14;"Eastern Africa";690;"sc";"Seychelles";"none";"none"
+2;"Africa";14;"Eastern Africa";706;"so";"Somalia";"none";"none"
+2;"Africa";14;"Eastern Africa";800;"ug";"Uganda";"none";"none"
+2;"Africa";14;"Eastern Africa";834;"tz";"United Republic of Tanzania";"none";"none"
+2;"Africa";14;"Eastern Africa";894;"zm";"Zambia";"none";"none"
+2;"Africa";14;"Eastern Africa";716;"zw";"Zimbabwe";"none";"none"
+2;"Africa";17;"Middle Africa";24;"ao";"Angola";"none";"none"
+2;"Africa";17;"Middle Africa";120;"cm";"Cameroon";"none";"none"
+2;"Africa";17;"Middle Africa";140;"cf";"Central African Republic";"none";"none"
+2;"Africa";17;"Middle Africa";148;"td";"Chad";"none";"none"
+2;"Africa";17;"Middle Africa";178;"cg";"Congo";"none";"none"
+2;"Africa";17;"Middle Africa";180;"cd";"Democratic Republic of the Congo";"none";"none"
+2;"Africa";17;"Middle Africa";226;"gq";"Equatorial Guinea";"none";"none"
+2;"Africa";17;"Middle Africa";266;"ga";"Gabon";"none";"none"
+2;"Africa";17;"Middle Africa";678;"st";"Sao Tome and Principe";"none";"none"
+2;"Africa";15;"Northern Africa";12;"dz";"Algeria";"none";"none"
+2;"Africa";15;"Northern Africa";818;"eg";"Egypt";"none";"none"
+2;"Africa";15;"Northern Africa";434;"ly";"Libyan Arab Jamahiriya";"none";"none"
+2;"Africa";15;"Northern Africa";504;"ma";"Morocco";"none";"none"
+2;"Africa";15;"Northern Africa";736;"sd";"Sudan";"none";"none"
+2;"Africa";15;"Northern Africa";788;"tn";"Tunisia";"none";"none"
+2;"Africa";15;"Northern Africa";732;"eh";"Western Sahara";"none";"none"
+2;"Africa";18;"Southern Africa";72;"bw";"Botswana";"none";"none"
+2;"Africa";18;"Southern Africa";426;"ls";"Lesotho";"none";"none"
+2;"Africa";18;"Southern Africa";516;"na";"Namibia";"none";"none"
+2;"Africa";18;"Southern Africa";710;"za";"South Africa";"none";"none"
+2;"Africa";18;"Southern Africa";748;"sz";"Swaziland";"none";"none"
+2;"Africa";11;"Western Africa";204;"bj";"Benin";"none";"none"
+2;"Africa";11;"Western Africa";854;"bf";"Burkina Faso";"none";"none"
+2;"Africa";11;"Western Africa";132;"cv";"Cape Verde";"none";"none"
+2;"Africa";11;"Western Africa";384;"ci";"Cote d'Ivoire";"none";"none"
+2;"Africa";11;"Western Africa";270;"gm";"Gambia";"none";"none"
+2;"Africa";11;"Western Africa";288;"gh";"Ghana";"none";"none"
+2;"Africa";11;"Western Africa";324;"gn";"Guinea";"none";"none"
+2;"Africa";11;"Western Africa";624;"gw";"Guinea-Bissau";"none";"none"
+2;"Africa";11;"Western Africa";430;"lr";"Liberia";"none";"none"
+2;"Africa";11;"Western Africa";466;"ml";"Mali";"none";"none"
+2;"Africa";11;"Western Africa";478;"mr";"Mauritania";"none";"none"
+2;"Africa";11;"Western Africa";562;"ne";"Niger";"none";"none"
+2;"Africa";11;"Western Africa";566;"ng";"Nigeria";"none";"none"
+2;"Africa";11;"Western Africa";654;"sh";"Saint Helena";"none";"none"
+2;"Africa";11;"Western Africa";686;"sn";"Senegal";"none";"none"
+2;"Africa";11;"Western Africa";694;"sl";"Sierra Leone";"none";"none"
+2;"Africa";11;"Western Africa";768;"tg";"Togo";"none";"none"
+19;"Americas";13;"Central America";32;"ar";"Argentina";"none";"none"
+19;"Americas";13;"Central America";84;"bz";"Belize";"none";"none"
+19;"Americas";13;"Central America";68;"bo";"Bolivia";"none";"none"
+19;"Americas";13;"Central America";76;"br";"Brazil";"none";"none"
+19;"Americas";13;"Central America";152;"cl";"Chile";"none";"none"
+19;"Americas";13;"Central America";170;"co";"Colombia";"none";"none"
+19;"Americas";13;"Central America";188;"cr";"Costa Rica";"none";"none"
+19;"Americas";13;"Central America";218;"ec";"Ecuador";"none";"none"
+19;"Americas";13;"Central America";222;"sv";"El Salvador";"none";"none"
+19;"Americas";13;"Central America";238;"fk";"Falkland Islands (Malvinas)";"none";"none"
+19;"Americas";13;"Central America";254;"gf";"French Guiana";"none";"none"
+19;"Americas";13;"Central America";320;"gt";"Guatemala";"none";"none"
+19;"Americas";13;"Central America";328;"gy";"Guyana";"none";"none"
+19;"Americas";13;"Central America";340;"hn";"Honduras";"none";"none"
+19;"Americas";13;"Central America";484;"mx";"Mexico";"none";"none"
+19;"Americas";13;"Central America";558;"ni";"Nicaragua";"none";"none"
+19;"Americas";13;"Central America";591;"pa";"Panama";"none";"none"
+19;"Americas";13;"Central America";600;"py";"Paraguay";"none";"none"
+19;"Americas";13;"Central America";604;"pe";"Peru";"none";"none"
+19;"Americas";13;"Central America";740;"sr";"Suriname";"none";"none"
+19;"Americas";13;"Central America";858;"uy";"Uruguay";"none";"none"
+19;"Americas";13;"Central America";862;"ve";"Venezuela (Bolivarian Republic of)";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";660;"ai";"Anguilla";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";28;"ag";"Antigua and Barbuda";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";533;"aw";"Aruba";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";44;"bs";"Bahamas";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";52;"bb";"Barbados";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";92;"io";"British Virgin Islands";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";136;"ky";"Cayman Islands";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";192;"cu";"Cuba";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";212;"dm";"Dominica";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";214;"do";"Dominican Republic";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";308;"gd";"Grenada";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";312;"gp";"Guadeloupe";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";332;"ht";"Haiti";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";388;"jm";"Jamaica";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";474;"mq";"Martinique";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";500;"ms";"Montserrat";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";530;"an";"Netherlands Antilles";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";630;"pr";"Puerto Rico";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";659;"kn";"Saint Kitts and Nevis";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";662;"lc";"Saint Lucia";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";670;"vc";"Saint Vincent and the Grenadines";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";780;"tt";"Trinidad and Tobago";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";796;"tc";"Turks and Caicos Islands";"none";"none"
+19;"Americas";419;"Latin America and the Caribbean";850;"vi";"United States Virgin Islands";"none";"none"
+19;"Americas";12;"North America";60;"bm";"Bermuda";"none";"none"
+19;"Americas";12;"North America";124;"ca";"Canada";"none";"none"
+19;"Americas";12;"North America";304;"gl";"Greenland";"none";"none"
+19;"Americas";12;"North America";666;"pm";"Saint Pierre and Miquelon";"none";"none"
 19;"Americas";12;"North America";840;"us";"United States of America";"Alabama";"Black Belt"
 19;"Americas";12;"North America";840;"us";"United States of America";"Alabama";"Central Alabama"
 19;"Americas";12;"North America";840;"us";"United States of America";"Alabama";"Greater Birmingham"
@@ -617,82 +616,82 @@
 19;"Americas";12;"North America";840;"us";"United States of America";"Wyoming";"Grand Teton"
 19;"Americas";12;"North America";840;"us";"United States of America";"Wyoming";"Powder River Country"
 19;"Americas";12;"North America";840;"us";"United States of America";"Wyoming";"Yellowstone"
-142;"Asia";143;"Central Asia";398;"kz";"Kazakhstan";;
-142;"Asia";143;"Central Asia";417;"kg";"Kyrgyzstan";;
-142;"Asia";143;"Central Asia";762;"tj";"Tajikistan";;
-142;"Asia";143;"Central Asia";795;"tm";"Turkmenistan";;
-142;"Asia";143;"Central Asia";860;"uz";"Uzbekistan";;
-142;"Asia";30;"Eastern Asia";156;"cn";"China";;
-142;"Asia";30;"Eastern Asia";408;"kp";"Democratic People's Republic of Korea";;
-142;"Asia";30;"Eastern Asia";344;"hk";"Hong Kong Special Administrative Region of China";;
-142;"Asia";30;"Eastern Asia";392;"jp";"Japan";;
-142;"Asia";30;"Eastern Asia";446;"mo";"Macao Special Administrative Region of China";;
-142;"Asia";30;"Eastern Asia";496;"mn";"Mongolia";;
-142;"Asia";30;"Eastern Asia";410;"kr";"Republic of Korea";;
-142;"Asia";35;"South-Eastern Asia";96;"bn";"Brunei Darussalam";;
-142;"Asia";35;"South-Eastern Asia";116;"kh";"Cambodia";;
-142;"Asia";35;"South-Eastern Asia";360;"id";"Indonesia";;
-142;"Asia";35;"South-Eastern Asia";418;"la";"Lao People's Democratic Republic";;
-142;"Asia";35;"South-Eastern Asia";458;"my";"Malaysia";;
-142;"Asia";35;"South-Eastern Asia";104;"mm";"Myanmar";;
-142;"Asia";35;"South-Eastern Asia";608;"ph";"Philippines";;
-142;"Asia";35;"South-Eastern Asia";702;"sg";"Singapore";;
-142;"Asia";35;"South-Eastern Asia";764;"th";"Thailand";;
-142;"Asia";35;"South-Eastern Asia";626;"tl";"Timor-Leste";;
-142;"Asia";35;"South-Eastern Asia";704;"vn";"Viet Nam";;
-142;"Asia";34;"Southern Asia";4;"af";"Afghanistan";;
-142;"Asia";34;"Southern Asia";50;"bd";"Bangladesh";;
-142;"Asia";34;"Southern Asia";64;"bt";"Bhutan";;
-142;"Asia";34;"Southern Asia";356;"in";"India";;
-142;"Asia";34;"Southern Asia";364;"ir";"Iran Islamic Republic of";;
-142;"Asia";34;"Southern Asia";462;"mv";"Maldives";;
-142;"Asia";34;"Southern Asia";524;"np";"Nepal";;
-142;"Asia";34;"Southern Asia";586;"pk";"Pakistan";;
-142;"Asia";34;"Southern Asia";144;"lk";"Sri Lanka";;
-142;"Asia";145;"Western Asia";51;"am";"Armenia";;
-142;"Asia";145;"Western Asia";31;"az";"Azerbaijan";;
-142;"Asia";145;"Western Asia";48;"bh";"Bahrain";;
-142;"Asia";145;"Western Asia";196;"cy";"Cyprus";;
-142;"Asia";145;"Western Asia";268;"ge";"Georgia";;
-142;"Asia";145;"Western Asia";368;"iq";"Iraq";;
-142;"Asia";145;"Western Asia";376;"il";"Israel";;
-142;"Asia";145;"Western Asia";400;"jo";"Jordan";;
-142;"Asia";145;"Western Asia";14;"kw";"Kuwait";;
-142;"Asia";145;"Western Asia";22;"lb";"Lebanon";;
-142;"Asia";145;"Western Asia";75;"ps";"Occupied Palestinian Territory";;
-142;"Asia";145;"Western Asia";12;"om";"Oman";;
-142;"Asia";145;"Western Asia";34;"qa";"Qatar";;
-142;"Asia";145;"Western Asia";82;"sa";"Saudi Arabia";;
-142;"Asia";145;"Western Asia";60;"sy";"Syrian Arab Republic";;
-142;"Asia";145;"Western Asia";92;"tr";"Turkey";;
-142;"Asia";145;"Western Asia";84;"ae";"United Arab Emirates";;
-142;"Asia";145;"Western Asia";87;"ye";"Yemen";;
-150;"Europe";151;"Eastern Europe";112;"by";"Belarus";;
-150;"Europe";151;"Eastern Europe";100;"bg";"Bulgaria";;
-150;"Europe";151;"Eastern Europe";203;"cz";"Czech Republic";;
-150;"Europe";151;"Eastern Europe";348;"hu";"Hungary";;
-150;"Europe";151;"Eastern Europe";616;"pl";"Poland";;
-150;"Europe";151;"Eastern Europe";498;"md";"Republic of Moldova";;
-150;"Europe";151;"Eastern Europe";642;"ro";"Romania";;
-150;"Europe";151;"Eastern Europe";643;"ru";"Russian Federation";;
-150;"Europe";151;"Eastern Europe";703;"sk";"Slovakia";;
-150;"Europe";151;"Eastern Europe";804;"ua";"Ukraine";;
-150;"Europe";154;"Northern Europe";830;"gg";"Channel Islands";;
-150;"Europe";154;"Northern Europe";208;"dk";"Denmark";;
-150;"Europe";154;"Northern Europe";233;"ee";"Estonia";;
-150;"Europe";154;"Northern Europe";234;"fo";"Faeroe Islands";;
-150;"Europe";154;"Northern Europe";246;"fi";"Finland";;
-150;"Europe";154;"Northern Europe";831;"gg";"Guernsey";;
-150;"Europe";154;"Northern Europe";352;"is";"Iceland";;
-150;"Europe";154;"Northern Europe";372;"ie";"Ireland";;
-150;"Europe";154;"Northern Europe";833;"im";"Isle of Man";;
-150;"Europe";154;"Northern Europe";832;"je";"Jersey";;
-150;"Europe";154;"Northern Europe";428;"lv";"Latvia";;
-150;"Europe";154;"Northern Europe";440;"lt";"Lithuania";;
-150;"Europe";154;"Northern Europe";578;"no";"Norway";;
-150;"Europe";154;"Northern Europe";248;"se";"Oland Islands";;
-150;"Europe";154;"Northern Europe";744;"sj";"Svalbard and Jan Mayen Islands";;
-150;"Europe";154;"Northern Europe";752;"se";"Sweden";;
+142;"Asia";143;"Central Asia";398;"kz";"Kazakhstan";"none";"none"
+142;"Asia";143;"Central Asia";417;"kg";"Kyrgyzstan";"none";"none"
+142;"Asia";143;"Central Asia";762;"tj";"Tajikistan";"none";"none"
+142;"Asia";143;"Central Asia";795;"tm";"Turkmenistan";"none";"none"
+142;"Asia";143;"Central Asia";860;"uz";"Uzbekistan";"none";"none"
+142;"Asia";30;"Eastern Asia";156;"cn";"China";"none";"none"
+142;"Asia";30;"Eastern Asia";408;"kp";"Democratic People's Republic of Korea";"none";"none"
+142;"Asia";30;"Eastern Asia";344;"hk";"Hong Kong Special Administrative Region of China";"none";"none"
+142;"Asia";30;"Eastern Asia";392;"jp";"Japan";"none";"none"
+142;"Asia";30;"Eastern Asia";446;"mo";"Macao Special Administrative Region of China";"none";"none"
+142;"Asia";30;"Eastern Asia";496;"mn";"Mongolia";"none";"none"
+142;"Asia";30;"Eastern Asia";410;"kr";"Republic of Korea";"none";"none"
+142;"Asia";35;"South-Eastern Asia";96;"bn";"Brunei Darussalam";"none";"none"
+142;"Asia";35;"South-Eastern Asia";116;"kh";"Cambodia";"none";"none"
+142;"Asia";35;"South-Eastern Asia";360;"id";"Indonesia";"none";"none"
+142;"Asia";35;"South-Eastern Asia";418;"la";"Lao People's Democratic Republic";"none";"none"
+142;"Asia";35;"South-Eastern Asia";458;"my";"Malaysia";"none";"none"
+142;"Asia";35;"South-Eastern Asia";104;"mm";"Myanmar";"none";"none"
+142;"Asia";35;"South-Eastern Asia";608;"ph";"Philippines";"none";"none"
+142;"Asia";35;"South-Eastern Asia";702;"sg";"Singapore";"none";"none"
+142;"Asia";35;"South-Eastern Asia";764;"th";"Thailand";"none";"none"
+142;"Asia";35;"South-Eastern Asia";626;"tl";"Timor-Leste";"none";"none"
+142;"Asia";35;"South-Eastern Asia";704;"vn";"Viet Nam";"none";"none"
+142;"Asia";34;"Southern Asia";4;"af";"Afghanistan";"none";"none"
+142;"Asia";34;"Southern Asia";50;"bd";"Bangladesh";"none";"none"
+142;"Asia";34;"Southern Asia";64;"bt";"Bhutan";"none";"none"
+142;"Asia";34;"Southern Asia";356;"in";"India";"none";"none"
+142;"Asia";34;"Southern Asia";364;"ir";"Iran Islamic Republic of";"none";"none"
+142;"Asia";34;"Southern Asia";462;"mv";"Maldives";"none";"none"
+142;"Asia";34;"Southern Asia";524;"np";"Nepal";"none";"none"
+142;"Asia";34;"Southern Asia";586;"pk";"Pakistan";"none";"none"
+142;"Asia";34;"Southern Asia";144;"lk";"Sri Lanka";"none";"none"
+142;"Asia";145;"Western Asia";51;"am";"Armenia";"none";"none"
+142;"Asia";145;"Western Asia";31;"az";"Azerbaijan";"none";"none"
+142;"Asia";145;"Western Asia";48;"bh";"Bahrain";"none";"none"
+142;"Asia";145;"Western Asia";196;"cy";"Cyprus";"none";"none"
+142;"Asia";145;"Western Asia";268;"ge";"Georgia";"none";"none"
+142;"Asia";145;"Western Asia";368;"iq";"Iraq";"none";"none"
+142;"Asia";145;"Western Asia";376;"il";"Israel";"none";"none"
+142;"Asia";145;"Western Asia";400;"jo";"Jordan";"none";"none"
+142;"Asia";145;"Western Asia";14;"kw";"Kuwait";"none";"none"
+142;"Asia";145;"Western Asia";22;"lb";"Lebanon";"none";"none"
+142;"Asia";145;"Western Asia";75;"ps";"Occupied Palestinian Territory";"none";"none"
+142;"Asia";145;"Western Asia";12;"om";"Oman";"none";"none"
+142;"Asia";145;"Western Asia";34;"qa";"Qatar";"none";"none"
+142;"Asia";145;"Western Asia";82;"sa";"Saudi Arabia";"none";"none"
+142;"Asia";145;"Western Asia";60;"sy";"Syrian Arab Republic";"none";"none"
+142;"Asia";145;"Western Asia";92;"tr";"Turkey";"none";"none"
+142;"Asia";145;"Western Asia";84;"ae";"United Arab Emirates";"none";"none"
+142;"Asia";145;"Western Asia";87;"ye";"Yemen";"none";"none"
+150;"Europe";151;"Eastern Europe";112;"by";"Belarus";"none";"none"
+150;"Europe";151;"Eastern Europe";100;"bg";"Bulgaria";"none";"none"
+150;"Europe";151;"Eastern Europe";203;"cz";"Czech Republic";"none";"none"
+150;"Europe";151;"Eastern Europe";348;"hu";"Hungary";"none";"none"
+150;"Europe";151;"Eastern Europe";616;"pl";"Poland";"none";"none"
+150;"Europe";151;"Eastern Europe";498;"md";"Republic of Moldova";"none";"none"
+150;"Europe";151;"Eastern Europe";642;"ro";"Romania";"none";"none"
+150;"Europe";151;"Eastern Europe";643;"ru";"Russian Federation";"none";"none"
+150;"Europe";151;"Eastern Europe";703;"sk";"Slovakia";"none";"none"
+150;"Europe";151;"Eastern Europe";804;"ua";"Ukraine";"none";"none"
+150;"Europe";154;"Northern Europe";830;"gg";"Channel Islands";"none";"none"
+150;"Europe";154;"Northern Europe";208;"dk";"Denmark";"none";"none"
+150;"Europe";154;"Northern Europe";233;"ee";"Estonia";"none";"none"
+150;"Europe";154;"Northern Europe";234;"fo";"Faeroe Islands";"none";"none"
+150;"Europe";154;"Northern Europe";246;"fi";"Finland";"none";"none"
+150;"Europe";154;"Northern Europe";831;"gg";"Guernsey";"none";"none"
+150;"Europe";154;"Northern Europe";352;"is";"Iceland";"none";"none"
+150;"Europe";154;"Northern Europe";372;"ie";"Ireland";"none";"none"
+150;"Europe";154;"Northern Europe";833;"im";"Isle of Man";"none";"none"
+150;"Europe";154;"Northern Europe";832;"je";"Jersey";"none";"none"
+150;"Europe";154;"Northern Europe";428;"lv";"Latvia";"none";"none"
+150;"Europe";154;"Northern Europe";440;"lt";"Lithuania";"none";"none"
+150;"Europe";154;"Northern Europe";578;"no";"Norway";"none";"none"
+150;"Europe";154;"Northern Europe";248;"se";"Oland Islands";"none";"none"
+150;"Europe";154;"Northern Europe";744;"sj";"Svalbard and Jan Mayen Islands";"none";"none"
+150;"Europe";154;"Northern Europe";752;"se";"Sweden";"none";"none"
 150;"Europe";154;"Northern Europe";826;"gb";"United Kingdom of Great Britain and Northern Ireland";"East Anglia";"Cambridgeshire"
 150;"Europe";154;"Northern Europe";826;"gb";"United Kingdom of Great Britain and Northern Ireland";"East Anglia";"Norfolk"
 150;"Europe";154;"Northern Europe";826;"gb";"United Kingdom of Great Britain and Northern Ireland";"East Anglia";"Suffolk"
@@ -772,24 +771,24 @@
 150;"Europe";154;"Northern Europe";826;"gb";"United Kingdom of Great Britain and Northern Ireland";"Yorkshire Humberside";"North Yorkshire"
 150;"Europe";154;"Northern Europe";826;"gb";"United Kingdom of Great Britain and Northern Ireland";"Yorkshire Humberside";"South Yorkshire"
 150;"Europe";154;"Northern Europe";826;"gb";"United Kingdom of Great Britain and Northern Ireland";"Yorkshire Humberside";"West Yorkshire"
-150;"Europe";39;"Southern Europe";8;"al";"Albania";;
-150;"Europe";39;"Southern Europe";20;"ad";"Andorra";;
-150;"Europe";39;"Southern Europe";70;"ba";"Bosnia and Herzegovina";;
-150;"Europe";39;"Southern Europe";191;"hr";"Croatia";;
-150;"Europe";39;"Southern Europe";292;"gi";"Gibraltar";;
-150;"Europe";39;"Southern Europe";300;"gr";"Greece";;
-150;"Europe";39;"Southern Europe";336;"va";"Holy See";;
-150;"Europe";39;"Southern Europe";380;"it";"Italy";;
-150;"Europe";39;"Southern Europe";470;"mt";"Malta";;
-150;"Europe";39;"Southern Europe";499;"me";"Montenegro";;
-150;"Europe";39;"Southern Europe";620;"pt";"Portugal";;
-150;"Europe";39;"Southern Europe";674;"sm";"San Marino";;
-150;"Europe";39;"Southern Europe";688;"rs";"Serbia";;
-150;"Europe";39;"Southern Europe";705;"si";"Slovenia";;
-150;"Europe";39;"Southern Europe";724;"es";"Spain";;
-150;"Europe";39;"Southern Europe";807;"mk";"The former Yugoslav Republic of Macedonia";;
-150;"Europe";155;"Western Europe";40;"at";"Austria";;
-150;"Europe";155;"Western Europe";56;"be";"Belgium";;
+150;"Europe";39;"Southern Europe";8;"al";"Albania";"none";"none"
+150;"Europe";39;"Southern Europe";20;"ad";"Andorra";"none";"none"
+150;"Europe";39;"Southern Europe";70;"ba";"Bosnia and Herzegovina";"none";"none"
+150;"Europe";39;"Southern Europe";191;"hr";"Croatia";"none";"none"
+150;"Europe";39;"Southern Europe";292;"gi";"Gibraltar";"none";"none"
+150;"Europe";39;"Southern Europe";300;"gr";"Greece";"none";"none"
+150;"Europe";39;"Southern Europe";336;"va";"Holy See";"none";"none"
+150;"Europe";39;"Southern Europe";380;"it";"Italy";"none";"none"
+150;"Europe";39;"Southern Europe";470;"mt";"Malta";"none";"none"
+150;"Europe";39;"Southern Europe";499;"me";"Montenegro";"none";"none"
+150;"Europe";39;"Southern Europe";620;"pt";"Portugal";"none";"none"
+150;"Europe";39;"Southern Europe";674;"sm";"San Marino";"none";"none"
+150;"Europe";39;"Southern Europe";688;"rs";"Serbia";"none";"none"
+150;"Europe";39;"Southern Europe";705;"si";"Slovenia";"none";"none"
+150;"Europe";39;"Southern Europe";724;"es";"Spain";"none";"none"
+150;"Europe";39;"Southern Europe";807;"mk";"The former Yugoslav Republic of Macedonia";"none";"none"
+150;"Europe";155;"Western Europe";40;"at";"Austria";"none";"none"
+150;"Europe";155;"Western Europe";56;"be";"Belgium";"none";"none"
 150;"Europe";155;"Western Europe";250;"fr";"France";"Alsace";"Bas-Rhin"
 150;"Europe";155;"Western Europe";250;"fr";"France";"Alsace";"Haut-Rhin"
 150;"Europe";155;"Western Europe";250;"fr";"France";"Aquitaine";"Dordogne"
@@ -886,34 +885,34 @@
 150;"Europe";155;"Western Europe";250;"fr";"France";"Rhône-Alpes";"Loire"
 150;"Europe";155;"Western Europe";250;"fr";"France";"Rhône-Alpes";"Rhône"
 150;"Europe";155;"Western Europe";250;"fr";"France";"Rhône-Alpes";"Savoie"
-150;"Europe";155;"Western Europe";276;"de";"Germany";;
-150;"Europe";155;"Western Europe";438;"li";"Liechtenstein";;
-150;"Europe";155;"Western Europe";442;"lu";"Luxembourg";;
-150;"Europe";155;"Western Europe";492;"mc";"Monaco";;
-150;"Europe";155;"Western Europe";528;"nl";"Netherlands";;
-150;"Europe";155;"Western Europe";756;"ch";"Switzerland";;
-9;"Oceania";53;"Australia and New Zealand";36;"au";"Australia";;
-9;"Oceania";53;"Australia and New Zealand";554;"nz";"New Zealand";;
-9;"Oceania";53;"Australia and New Zealand";574;"nf";"Norfolk Island";;
-9;"Oceania";54;"Melanesia";242;"fj";"Fiji";;
-9;"Oceania";54;"Melanesia";540;"nc";"New Caledonia";;
-9;"Oceania";54;"Melanesia";598;"pg";"Papua New Guinea";;
-9;"Oceania";54;"Melanesia";90;"sb";"Solomon Islands";;
-9;"Oceania";54;"Melanesia";548;"vu";"Vanuatu";;
-9;"Oceania";57;"Micronesia";316;"gu";"Guam";;
-9;"Oceania";57;"Micronesia";296;"ki";"Kiribati";;
-9;"Oceania";57;"Micronesia";584;"mh";"Marshall Islands";;
-9;"Oceania";57;"Micronesia";583;"fm";"Micronesia Federated States of";;
-9;"Oceania";57;"Micronesia";520;"nr";"Nauru";;
-9;"Oceania";57;"Micronesia";580;"mp";"Northern Mariana Islands";;
-9;"Oceania";57;"Micronesia";585;"pw";"Palau";;
-9;"Oceania";61;"Polynesia";16;"as";"American Samoa";;
-9;"Oceania";61;"Polynesia";184;"ck";"Cook Islands";;
-9;"Oceania";61;"Polynesia";258;"pf";"French Polynesia";;
-9;"Oceania";61;"Polynesia";570;"nu";"Niue";;
-9;"Oceania";61;"Polynesia";612;"pn";"Pitcairn";;
-9;"Oceania";61;"Polynesia";882;"ws";"Samoa";;
-9;"Oceania";61;"Polynesia";772;"tk";"Tokelau";;
-9;"Oceania";61;"Polynesia";776;"to";"Tonga";;
-9;"Oceania";61;"Polynesia";798;"tv";"Tuvalu";;
-9;"Oceania";61;"Polynesia";876;"wf";"Wallis and Futuna Islands";;
+150;"Europe";155;"Western Europe";276;"de";"Germany";"none";"none"
+150;"Europe";155;"Western Europe";438;"li";"Liechtenstein";"none";"none"
+150;"Europe";155;"Western Europe";442;"lu";"Luxembourg";"none";"none"
+150;"Europe";155;"Western Europe";492;"mc";"Monaco";"none";"none"
+150;"Europe";155;"Western Europe";528;"nl";"Netherlands";"none";"none"
+150;"Europe";155;"Western Europe";756;"ch";"Switzerland";"none";"none"
+9;"Oceania";53;"Australia and New Zealand";36;"au";"Australia";"none";"none"
+9;"Oceania";53;"Australia and New Zealand";554;"nz";"New Zealand";"none";"none"
+9;"Oceania";53;"Australia and New Zealand";574;"nf";"Norfolk Island";"none";"none"
+9;"Oceania";54;"Melanesia";242;"fj";"Fiji";"none";"none"
+9;"Oceania";54;"Melanesia";540;"nc";"New Caledonia";"none";"none"
+9;"Oceania";54;"Melanesia";598;"pg";"Papua New Guinea";"none";"none"
+9;"Oceania";54;"Melanesia";90;"sb";"Solomon Islands";"none";"none"
+9;"Oceania";54;"Melanesia";548;"vu";"Vanuatu";"none";"none"
+9;"Oceania";57;"Micronesia";316;"gu";"Guam";"none";"none"
+9;"Oceania";57;"Micronesia";296;"ki";"Kiribati";"none";"none"
+9;"Oceania";57;"Micronesia";584;"mh";"Marshall Islands";"none";"none"
+9;"Oceania";57;"Micronesia";583;"fm";"Micronesia Federated States of";"none";"none"
+9;"Oceania";57;"Micronesia";520;"nr";"Nauru";"none";"none"
+9;"Oceania";57;"Micronesia";580;"mp";"Northern Mariana Islands";"none";"none"
+9;"Oceania";57;"Micronesia";585;"pw";"Palau";"none";"none"
+9;"Oceania";61;"Polynesia";16;"as";"American Samoa";"none";"none"
+9;"Oceania";61;"Polynesia";184;"ck";"Cook Islands";"none";"none"
+9;"Oceania";61;"Polynesia";258;"pf";"French Polynesia";"none";"none"
+9;"Oceania";61;"Polynesia";570;"nu";"Niue";"none";"none"
+9;"Oceania";61;"Polynesia";612;"pn";"Pitcairn";"none";"none"
+9;"Oceania";61;"Polynesia";882;"ws";"Samoa";"none";"none"
+9;"Oceania";61;"Polynesia";772;"tk";"Tokelau";"none";"none"
+9;"Oceania";61;"Polynesia";776;"to";"Tonga";"none";"none"
+9;"Oceania";61;"Polynesia";798;"tv";"Tuvalu";"none";"none"
+9;"Oceania";61;"Polynesia";876;"wf";"Wallis and Futuna Islands";"none";"none"

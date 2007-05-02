@@ -10,7 +10,7 @@ from string import ascii_letters
 
 # Import from itools
 from itools import get_abspath
-from itools.datatypes import String
+from itools.datatypes import Integer, String
 from itools.handlers import get_handler
 from itools.stl import stl
 from itools.web import get_context
@@ -31,6 +31,7 @@ from uktravel import UKTravel
 #from videos import Videos 
 from users import UserFolder
 from destinations import Destinations
+from jobs import Jobs
 
 
 
@@ -38,6 +39,28 @@ def title_to_name(title):
     title = title.encode('ascii', 'replace')
     name = title.lower().replace('/', '_').replace('?', '_')
     return '_'.join(name.split())
+
+
+class World(Handler, CSV):
+
+    class_id = 'world'
+    class_title = u'Ontolgical categorisation of the World'
+
+    columns = ['id', 'continent', 'sub-id', 
+              'sub-continent', 'country-id', 
+              'iana-root-zone', 'country', 
+              'region', 'county']
+    schema = {'id': Integer,
+              'continent': String(index='keyword'),
+              'sub-id': Integer,
+              'sub-continent': String(index='keyword'),
+              'country-id': Integer,
+              'iana-root-zone': String(index='keyword'),
+              'country': String(index='keyword'),
+              'region': String,
+              'county': String}
+
+register_object_class(World)
 
 
 class Regions(Handler, CSV):
@@ -72,6 +95,7 @@ class Root(Handler, BaseRoot):
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
             ('topic', 'keyword', True, False),
+            ('iana-root-zone', 'keyword', True, False),
             ('region', 'keyword', True, False),
             ('county', 'keyword', True, False),
             ('town', 'keyword', True, True)]
@@ -84,9 +108,18 @@ class Root(Handler, BaseRoot):
         cache = self.cache
 
         # Companies
+        title = u'Companies Directory'
+        kw = {'dc:title': {'en': title}}
         companies = Companies()
         cache['companies'] = companies
-        cache['companies.metadata'] = self.build_metadata(companies)
+        cache['companies.metadata'] = self.build_metadata(companies, **kw)
+
+        # World 
+        world = World()
+        path = get_abspath(globals(), 'data/csv/countries_full.csv')
+        world.load_state_from(path)
+        cache['world.csv'] = world
+        cache['world.csv.metadata'] = self.build_metadata(world)
 
         # Regions
         regions = Regions()
@@ -117,6 +150,13 @@ class Root(Handler, BaseRoot):
               'ikaaro:website_is_open': True}
         cache['destinations'] = destinations
         cache['destinations.metadata'] = self.build_metadata(destinations, **kw)
+
+        # Job Board 
+        title = u'Job Board'
+        jobs = Jobs()
+        kw = {'dc:title': {'en': title}}
+        cache['jobs'] = jobs
+        cache['jobs.metadata'] = self.build_metadata(jobs, **kw)
 
 
         help = XHTMLFile()
@@ -231,6 +271,9 @@ class Root(Handler, BaseRoot):
             else:
                 user = None
 
+            # Filter the UK Regions and Counties
+            #results = countries.search(iana-root-zone='gb', region=str(row[8]),
+            #                           county=str(row[9])) 
             # Regions
             results = regions.search(country='gb', region=str(row[2]),
                                      county=str(row[3]))

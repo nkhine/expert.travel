@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-   <h1>Company Name: ${company}</h1>
+   <h1>${company}</h1>
   <address>
     Address : ${address}<br/>
     Region : ${region}&nbsp;-&nbsp;${county}<br/>
