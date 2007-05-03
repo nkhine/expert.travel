@@ -5,20 +5,59 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <h2>Personal Information</h2>
-  <table>
-    <tr>
-      <th align="right">Firstname</th>
-      <td>${firstname}</td>
-    </tr>
-    <tr>
-      <th align="right">Lastname</th>
-      <td>${lastname}</td>
-    </tr>
-    <tr>
-      <th align="right">Email</th>
-      <td>${email}</td>
-    </tr>
-  </table>
+  <table width="100%"  border="1">
+  <tr>
+    <td colspan="3" align="right">My Content | Job Applications | My Tasks </td>
+  </tr>
+  <tr>
+    <td rowspan="2" width="1%">
+        <table>
+          <tr>
+            <th align="right">Firstname</th>
+            <td>${firstname}</td>
+          </tr>
+          <tr>
+            <th align="right">Lastname</th>
+            <td>${lastname}</td>
+          </tr>
+          <tr>
+            <th align="right">Email</th>
+            <td>${email}</td>
+          </tr>
+        </table>
+    </td>
+    <td colspan="2">
+    <div id="dhtmlgoodies_tabView1">
+  <div class="dhtmlgoodies_aTab">
+    Content of tab 1
+  
+  </div>
+  <div class="dhtmlgoodies_aTab">
+    Content of tab 2
+  
+  </div>
+  <div class="dhtmlgoodies_aTab">
+    Content of tab 3
+  
+  </div>
+  <div class="dhtmlgoodies_aTab">
+    Content of tab 4
+  
+  </div>
+</div>
+<script type="text/javascript">
+initTabs(Array('Menu scripts','Calender',
+'Menus','About us'),1,500,400);
+</script>
+    
+    
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
   <p>
   <a href=";edit_account_form">Edit account details.</a>
   </p>
