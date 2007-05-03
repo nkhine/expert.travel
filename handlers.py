@@ -21,5 +21,18 @@ class EnquiriesLog(CSV):
 
     columns = ['dateTime','typeEnquiry','fullname','email','phone','enquiry']
 
+class ApplicationsLog(CSV):
+
+    class_id = 'EnquiriesLog'
+  
+    schema = {'dateTime':DateTime,
+              'fullname':Unicode,
+              'email':Email,
+              'phone':String}
+
+
+    columns = ['dateTime','fullname','email','phone']
+
 
 register_object_class(EnquiriesLog)
+register_object_class(ApplicationsLog)
