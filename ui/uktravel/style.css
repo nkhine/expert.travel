@@ -674,3 +674,116 @@ ul#contact_to li {
     background:#fff url(images/mag_glass.gif) no-repeat;
     padding:2px 2px 2px 17px
 }
+
+/* Profile Styles */
+
+#profile table {
+    background:#6899FF url(images/table_background_uklist.png) left top no-repeat;
+}
+
+
+
+/* Tabbar CSS */
+
+.dhx_tabbar_zoneV{
+   position:relative;
+}
+
+.dhx_tabbar_zoneVB{
+    position:relative;
+}
+.dhx_tabbar_zone .dhx_tablist_zone{
+  padding:5px 0px 0px 0px;
+}
+
+.dhx_tabcontent_zone{
+  overflow:hidden;
+  position:relative;
+  background-color:#F0F8FF;
+}
+
+.dhx_tabbar_zone .dhx_tabcontent_zone{
+  border-bottom:1px solid #91A7B4;
+  border-left:1px solid #91A7B4;
+  border-right:1px solid #91A7B4;
+  border-top:0px solid #91A7B4;  
+}
+
+
+.dhx_tab_element div{
+    font-family:Tahoma;
+    font-size:8pt;
+}
+
+.dhx_tab_element{
+    font-family:Tahoma;
+    font-size:8pt;
+    text-align:center;
+    cursor:pointer;
+    position:absolute;
+    overflow:hidden;
+}
+
+.dhx_tabbar_zone .dhx_tab_element{
+    padding:3px 0px 3px 0px;
+}
+
+
+.dhx_tab_element_inactive{
+    font-weight:normal;
+    z-Index:4;
+}
+
+.dhx_tabbar_zone .dhx_tab_element_inactive{
+    margin-top:3px;
+    margin-left:0px;
+}
+
+.dhx_tab_element_active{
+    background-color: #F0F8FF;
+    font-weight:bold;
+    z-Index:5;
+}
+
+.dhx_tab_element_disabled{
+	color:silver;
+	cursor:default;
+}
+
+.dhx_tabbar_row{
+    overflow:hidden;
+}
+
+.dhx_tabbar_zone .dhx_tabbar_row{
+    margin-top:-5px;
+    position:relative;
+    }
+
+.dhx_tablist_scroll{
+    position:absolute;
+    top:5px;
+    right:4px;
+    height:15px;
+    width:32px;
+    z-Index:6;
+    cursor:pointer;
+}
+
+.dhx_tablist_line{
+    height:1px;
+    overflow:hidden;
+    background-color:#91A7B4;
+    width:100%;
+    position:absolute;
+    left:0px;
+    z-Index:4;
+}
+
+.dhx_ajax_loader{
+    margin-top:20px;
+    margin-left:10px;    
+    font-size:10pt;
+    font-family:Arial,Tahoma;
+    font-weight:bold;
+    vertical-align: absmiddle;
+}

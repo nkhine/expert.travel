@@ -3,12 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-  <h2>Personal Information</h2>
-  <table width="100%"  border="1">
-  <tr>
-    <td colspan="3" align="right">My Content | Job Applications | My Tasks </td>
-  </tr>
+  <table width="100%" border="1">
   <tr>
     <td rowspan="2" width="1%">
         <table>
@@ -27,30 +22,74 @@
         </table>
     </td>
     <td colspan="2">
-    <div id="dhtmlgoodies_tabView1">
-  <div class="dhtmlgoodies_aTab">
-    Content of tab 1
-  
-  </div>
-  <div class="dhtmlgoodies_aTab">
-    Content of tab 2
-  
-  </div>
-  <div class="dhtmlgoodies_aTab">
-    Content of tab 3
-  
-  </div>
-  <div class="dhtmlgoodies_aTab">
-    Content of tab 4
-  
-  </div>
-</div>
-<script type="text/javascript">
-initTabs(Array('Menu scripts','Calender',
-'Menus','About us'),1,500,400);
-</script>
-    
-    
+    <script type="text/javascript" src="/ui/abakuc/tab-view.js"></script>
+		<!-- used to display the results of the asyncronous request -->
+<table>
+		<tbody><tr>
+			<td>
+				<div id="a_tabbar" style="width: 612px; height: 150px;">
+					<div class="dhx_tabbar_zone">
+					<div style="height: 18px;" class="dhx_tablist_zone">
+					<div style="height: 23px; width: 612px;" class="dhx_tabbar_row">
+          <!-- First Active TAB -->
+					<div style="background-color: transparent; width: 106px; height: 23px; left: 20px; margin-left: -3px;" class="dhx_tab_element dhx_tab_element_active">
+					<div style="position: absolute; top: 0px; left: 0px; width: 3px; height: 23px;">
+					<img src="/ui/uktravel/images/a_left.gif" /></div>
+					<div style="position: absolute; top: 0px; right: 0px; width: 18px; height: 23px;"><img src="/ui/uktravel/images/a_right_skos.gif" />
+					</div>
+					<div style="position: absolute; background-repeat: repeat-x; background-image: url(/ui/uktravel/images/a_middle.gif); height: 23px; top: 0px; left: 3px; width: 85px;">
+					<div style="padding-top: 3px;">My tasks</div>
+					</div>
+					</div>
+          <!-- First Active TAB -->
+          <!-- Second TAB -->
+					<div style="background-color: transparent; width: 100px; height: 21px; left: 110px; margin-left: 0px;" class="dhx_tab_element dhx_tab_element_inactive">
+					<div style="position: absolute; top: 0px; left: 0px; width: 3px; height: 23px;"><img src="/ui/uktravel/images/p_left.gif" /></div>
+					<div style="position: absolute; top: 0px; right: 0px; width: 18px; height: 23px;"><img src="/ui/uktravel/images/p_right_skos.gif" /></div>
+					<div style="position: absolute; background-repeat: repeat-x; background-image: url(/ui/uktravel/images/p_middle.gif); height: 23px; top: 0px; left: 3px; width: 79px;">
+					<div style="padding-top: 3px;">Preferences</div>
+          </div>
+          </div>
+          <!-- Second TAB -->
+          <!-- Second TAB -->
+					<div style="background-color: transparent; width: 100px; height: 21px; left: 110px; margin-left: 0px;" class="dhx_tab_element dhx_tab_element_inactive">
+					<div style="position: absolute; top: 0px; left: 0px; width: 3px; height: 23px;"><img src="/ui/uktravel/images/p_left.gif" /></div>
+					<div style="position: absolute; top: 0px; right: 0px; width: 18px; height: 23px;"><img src="/ui/uktravel/images/p_right_skos.gif" /></div>
+					<div style="position: absolute; background-repeat: repeat-x; background-image: url(/ui/uktravel/images/p_middle.gif); height: 23px; top: 0px; left: 3px; width: 79px;">
+					<div style="padding-top: 3px;">Preferences</div>
+          </div>
+          </div>
+          <!-- Second TAB -->
+          <div style="background-color: transparent; width: 100px; height: 21px; left: 200px; margin-left: 0px;" class="dhx_tab_element dhx_tab_element_inactive">
+					<div style="position: absolute; top: 0px; left: 0px; width: 3px; height: 23px;"><img src="/ui/uktravel/images/p_left.gif" /></div>
+					<div style="position: absolute; top: 0px; right: 0px; width: 18px; height: 23px;"><img src="/ui/uktravel/images/p_right_skos.gif" /></div>
+					<div style="position: absolute; background-repeat: repeat-x; background-image: url(/ui/uktravel/images/p_middle.gif); height: 23px; top: 0px; left: 3px; width: 79px;">
+					<div style="padding-top: 3px;">Edit account</div>
+					</div>
+					</div>
+					<div style="background-color: transparent; width: 100px; height: 21px; left: 290px; margin-left: 0px;" class="dhx_tab_element dhx_tab_element_inactive">
+					<div style="position: absolute; top: 0px; left: 0px; width: 3px; height: 23px;"><img src="/ui/uktravel/images/p_left.gif" /></div>
+					<div style="position: absolute; top: 0px; right: 0px; width: 18px; height: 23px;"><img src="/ui/uktravel/images/p_right_skos.gif" /></div>
+					<div style="position: absolute; background-repeat: repeat-x; background-image: url(/ui/uktravel/images/p_middle.gif); height: 23px; top: 0px; left: 3px; width: 79px;">
+					<div style="padding-top: 3px;">
+    		<!-- Clicking this link initiates the asyncronous request -->
+          <a href="javascript:sayHello();">Change password</a>
+          </div>
+          </div>
+          </div>
+          <div style="display: none;"></div>
+          <div style="top: 22px; width: 412px;" class="dhx_tablist_line"></div>
+					</div>
+					</div>
+					<div style="width: 410px; height: 126px;" class="dhx_tabcontent_zone">
+		<span id="span_result"></span>
+          </div>
+					</div>
+				</div>
+				</td>
+				</tr>
+				</tbody>
+				</table>
     </td>
   </tr>
   <tr>
@@ -58,14 +97,6 @@ initTabs(Array('Menu scripts','Calender',
     <td>&nbsp;</td>
   </tr>
 </table>
-  <p>
-  <a href=";edit_account_form">Edit account details.</a>
-  </p>
-  <p>
-  <a href=";edit_password_form">Change password.</a>
-  </p>
-
-
   <h2>Company Information</h2>
   <stl:block if="not address">
     <a href="/companies/;setup_company">Set up your company</a>
