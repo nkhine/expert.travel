@@ -13,6 +13,7 @@ from itools.cms.html import XHTMLFile
 
 # Import from abakuc
 from companies import Companies
+from jobs import Jobs
 from website import WebSite
 
 
@@ -32,10 +33,6 @@ class UKTravel(WebSite):
         cache['news.xhtml'] = news 
         cache['news.xhtml.metadata'] = self.build_metadata(news,
             **{'dc:title': {'en': u'News Folder List'}})
-        jobs = XHTMLFile()
-        cache['jobs.xhtml'] = jobs 
-        cache['jobs.xhtml.metadata'] = self.build_metadata(jobs,
-            **{'dc:title': {'en': u'Job Board'}})
         events = XHTMLFile()
         cache['events.xhtml'] = events
         cache['events.xhtml.metadata'] = self.build_metadata(events,
@@ -54,6 +51,8 @@ class UKTravel(WebSite):
         name = segment.name
         if name == 'companies':
             return self.get_handler('/companies')
+        elif name == 'jobs':
+            return self.get_handler('/jobs')
         return WebSite._get_virtual_handler(self, segment)
 
 

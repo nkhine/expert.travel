@@ -4,15 +4,14 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <div id="List">
+  <div>
     <stl:block> 
-      <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
-        onmouseout="this.className='ListItem';">  
+      <dl>  
         <dt>
           <a href=""></a>
         </dt>
         <dd>
-          Description<br />
+          Search for Jobs interface!!! 
         </dd>
       </dl>       
     </stl:block>

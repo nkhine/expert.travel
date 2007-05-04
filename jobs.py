@@ -4,6 +4,7 @@
 # Import from itools
 from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class
+from itools.stl import stl
 
 # Import from abakuc
 from base import Handler, Folder
@@ -25,8 +26,10 @@ class Jobs(Folder):
     view__access__ = True
     view__label__ = u'Job Board'
     def view(self, context):
-        return 'Job Board View'
+        namespace = {}
 
+        handler = self.get_handler('/ui/abakuc/jobs_view.xml')
+        return stl(handler, namespace)
 class Job(RoleAware, Folder):
 
     class_id = 'job'
