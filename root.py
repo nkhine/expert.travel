@@ -10,8 +10,9 @@ from string import ascii_letters
 
 # Import from itools
 from itools import get_abspath
-from itools.datatypes import Integer, String
+from itools.datatypes import Integer, String, Unicode
 from itools.handlers import get_handler
+from itools.csv.csv import CSV as BaseCSV
 from itools.stl import stl
 from itools.web import get_context
 from itools.cms.csv import CSV
@@ -41,41 +42,24 @@ def title_to_name(title):
     return '_'.join(name.split())
 
 
-class World(Handler, CSV):
+class World(BaseCSV):
 
-    class_id = 'world'
-    class_title = u'Ontolgical categorisation of the World'
+    columns = ['id', 'continent', 'sub_id', 'sub_continent', 'country_id', 
+              'iana_root_zone', 'country', 'region', 'county']
 
-    columns = ['id', 'continent', 'sub-id', 
-              'sub-continent', 'country-id', 
-              'iana-root-zone', 'country', 
-              'region', 'county']
     schema = {'id': Integer,
-              'continent': String(index='keyword'),
-              'sub-id': Integer,
-              'sub-continent': String(index='keyword'),
-              'country-id': Integer,
-              'iana-root-zone': String(index='keyword'),
-              'country': String(index='keyword'),
-              'region': String,
-              'county': String}
-
-register_object_class(World)
+              'continent': String,
+              'sub_id': Integer,
+              'sub_continent': String,
+              'country_id': Integer,
+              'iana_root_zone': String(index='keyword'),
+              'country': String,
+              'region': Unicode(index='keyword'),
+              'county': Unicode(index='keyword')}
 
 
-class Regions(Handler, CSV):
-
-    class_id = 'regions'
-    class_title = u'Regions'
-
-    columns = ['country', 'region', 'county']
-    schema = {'country': String(index='keyword'),
-              'region': String(index='keyword'),
-              'county': String(index='keyword')}
-
-
-register_object_class(Regions)
-
+path = get_abspath(globals(), 'data/csv/countries_full.csv')
+world = World(path)
 
 
 
@@ -95,7 +79,7 @@ class Root(Handler, BaseRoot):
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
             ('topic', 'keyword', True, False),
-            ('iana-root-zone', 'keyword', True, False),
+            ('country', 'keyword', True, False),
             ('region', 'keyword', True, False),
             ('county', 'keyword', True, False),
             ('town', 'keyword', True, True)]
@@ -113,20 +97,6 @@ class Root(Handler, BaseRoot):
         companies = Companies()
         cache['companies'] = companies
         cache['companies.metadata'] = self.build_metadata(companies, **kw)
-
-        # World 
-        world = World()
-        path = get_abspath(globals(), 'data/csv/countries_full.csv')
-        world.load_state_from(path)
-        cache['world.csv'] = world
-        cache['world.csv.metadata'] = self.build_metadata(world)
-
-        # Regions
-        regions = Regions()
-        path = get_abspath(globals(), 'data/csv/counties.csv')
-        regions.load_state_from(path)
-        cache['regions.csv'] = regions
-        cache['regions.csv.metadata'] = self.build_metadata(regions)
 
         # Topics
         topics = CSV()
@@ -256,10 +226,10 @@ class Root(Handler, BaseRoot):
         # Load handlers
         users = self.get_handler('users')
         companies = self.get_handler('companies')
-        regions = self.get_handler('regions.csv')
         topics = self.get_handler('topics.csv')
 
         # Import from the CSV file
+        good = 0
         for count, row in enumerate(rows):
             # User
             email = row[10]
@@ -272,11 +242,8 @@ class Root(Handler, BaseRoot):
                 user = None
 
             # Filter the UK Regions and Counties
-            #results = countries.search(iana-root-zone='gb', region=str(row[8]),
-            #                           county=str(row[9])) 
-            # Regions
-            results = regions.search(country='gb', region=str(row[2]),
-                                     county=str(row[3]))
+            results = world.search(iana_root_zone='gb', region=str(row[2]),
+                                   county=str(row[3]))
             n_results = len(results)
             if n_results == 0:
                 county = None
@@ -284,6 +251,7 @@ class Root(Handler, BaseRoot):
                 print count, msg % (row[2], row[3])
             elif n_results == 1:
                 county = results[0]
+                good += 1
             else:
                 county = None
                 msg = 'Several counties found for "%s", "%s" '
@@ -295,7 +263,6 @@ class Root(Handler, BaseRoot):
             company_name = title_to_name(company_title)
             if not company_name:
                 continue
-            print company_name
             if companies.has_handler(company_name):
                 company = companies.get_handler(company_name)
                 # Update the topics
@@ -314,7 +281,6 @@ class Root(Handler, BaseRoot):
             address_name = title_to_name(address_title)
             if not address_name:
                 continue
-            print address_name
             if company.has_handler(address_name):
                 print 'Warning'
             else:
@@ -332,6 +298,7 @@ class Root(Handler, BaseRoot):
                 if user is not None:
                     address.set_user_role(user.name, 'ikaaro:reviewers')
 
+        print '%s/%s' % (good, count)
         message = ('Remember to reindex the database now:'
                    ' <a href=";catalog_form">reindex</a>.')
         return message

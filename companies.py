@@ -7,6 +7,7 @@ from datetime import datetime
 # Import from itools
 from itools.datatypes import String, Unicode, Email
 from itools.stl import stl
+from itools.web import get_context
 from itools.cms.access import RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV
@@ -15,6 +16,8 @@ from itools.cms.registry import register_object_class
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog
+
+
 
 
 class Companies(Folder):
@@ -36,32 +39,6 @@ class Companies(Folder):
         return 'bobo'
 
 
-    #######################################################################
-    # User Interface / Set up company
-    setup_company__access__ = True
-    def setup_company(self, context):
-        name = context.get_form_value('dc:title')
-
-        namespace = {}
-        namespace['name'] = name
-
-        found = []
-        name = name.strip().lower()
-        if name:
-            for company in self.search_handlers():
-                title = company.get_property('dc:title')
-                if name in title.lower():
-                    found.append(title)
-        found.sort()
-        namespace['found'] = found
-
-        handler = self.get_handler('/ui/abakuc/companies_setup_company.xml')
-        return stl(handler, namespace)
- 
-
-    setup_company_select__access__ = True
-    def setup_company_select(self, context):
-        return 'company selected' 
 
 class Company(Folder):
 
@@ -85,7 +62,7 @@ class Company(Folder):
 
 
     #######################################################################
-    # User Interface
+    # User Interface / View
     #######################################################################
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
@@ -105,15 +82,30 @@ class Company(Folder):
         return stl(handler, namespace)
 
 
+    #######################################################################
+    # User Interface / Edit
+    #######################################################################
+    @staticmethod
+    def get_form(name=None, website=None, topics=None, logo=None):
+        root = get_context().root
+
+        namespace = {}
+        namespace['title'] = name
+        namespace['website'] = website
+        namespace['topics'] = root.get_topics_namespace(topics)
+        namespace['logo'] = logo
+
+        handler = root.get_handler('ui/abakuc/company_form.xml')
+        return stl(handler, namespace)
+
+
     def edit_metadata_form(self, context):
         namespace = {}
-        namespace['title'] = self.get_property('dc:title')
-        namespace['website'] = self.get_property('abakuc:website')
+        title = self.get_property('dc:title')
+        website = self.get_property('abakuc:website')
         topics = self.get_property('abakuc:topic')
-        root = context.root
-        namespace['topics'] = root.get_topics_namespace(topics)
-
-        namespace['logo'] = self.has_handler('logo')
+        logo = self.has_handler('logo')
+        namespace['form'] = self.get_form(title, website, topics, logo)
 
         handler = self.get_handler('/ui/abakuc/company_edit_metadata.xml')
         return stl(handler, namespace)
@@ -189,14 +181,16 @@ class Address(RoleAware, Folder):
 
 
     def get_catalog_indexes(self):
+        from root import world
+
         indexes = Folder.get_catalog_indexes(self)
         company = self.parent
         indexes['topic'] = company.get_property('abakuc:topic')
         county_id = self.get_property('abakuc:county')
         if county_id:
-            csv = self.get_handler('/regions.csv')
-            country, region, county = csv.get_row(county_id)
-            indexes['region'] = region
+            row = world.get_row(county_id)
+            indexes['country'] = row[5]
+            indexes['region'] = row[7]
             indexes['county'] = str(county_id)
         indexes['town'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
@@ -212,12 +206,14 @@ class Address(RoleAware, Folder):
 
 
     #######################################################################
-    # User Interface
+    # User Interface / View
     #######################################################################
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'Address'
     view__access__ = True
     def view(self, context):
+        from root import world
+
         county_id = self.get_property('abakuc:county')
         if county_id is None:
             # XXX Every address should have a county
@@ -225,9 +221,10 @@ class Address(RoleAware, Folder):
             county = '-'
             country = '-'
         else:
-            csv = self.get_handler('/regions.csv')
-            row = csv.get_row(county_id)
-            country, region, county = row
+            row = world.get_row(county_id)
+            country = row[6]
+            region = row[7]
+            county = row[8]
 
         namespace = {}
         namespace['company'] = self.parent.get_property('dc:title')
@@ -245,21 +242,31 @@ class Address(RoleAware, Folder):
         return stl(handler, namespace)
 
 
-    def edit_metadata_form(self, context):
-        keys = ['address', 'postcode', 'town', 'phone', 'fax']
+    #######################################################################
+    # User Interface / Edit
+    #######################################################################
+    @staticmethod
+    def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
+                 address_county=None):
+        from root import world
+
+        root = get_context().root
 
         namespace = {}
-        for key in keys:
-            namespace[key] = self.get_property('abakuc:%s' % key)
+        namespace['address'] = address
+        namespace['postcode'] = postcode
+        namespace['town'] = town 
+        namespace['phone'] = phone
+        namespace['fax'] = fax
 
-        # Towns
-        rows = self.get_handler('/regions.csv').get_rows()
-        address_county = self.get_property('abakuc:county')
+        rows = world.get_rows()
 
         countries = {}
         regions = {}
         for index, row in enumerate(rows):
-            country, region, county = row
+            country = row[6]
+            region = row[7]
+            county = row[8]
             is_selected = (index == address_county)
             id = str(index)
 
@@ -305,6 +312,22 @@ class Address(RoleAware, Folder):
         regions = regions.values()
         regions.sort(key=lambda x: x['title'])
         namespace['regions'] = regions
+
+        handler = root.get_handler('ui/abakuc/address_form.xml.en')
+        return stl(handler, namespace)
+
+
+    def edit_metadata_form(self, context):
+        address = self.get_property('abakuc:address')
+        postcode = self.get_property('abakuc:postcode')
+        town = self.get_property('abakuc:town')
+        phone = self.get_property('abakuc:phone')
+        fax = self.get_property('abakuc:fax')
+        address_county = self.get_property('abakuc:county')
+
+        namespace = {}
+        namespace['form'] = self.get_form(address, postcode, town, phone, fax,
+                                          address_county)
 
         handler = self.get_handler('/ui/abakuc/address_edit_metadata.xml')
         return stl(handler, namespace)

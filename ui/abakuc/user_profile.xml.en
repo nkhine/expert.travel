@@ -66,15 +66,16 @@ initTabs(Array('Menu scripts','Calender',
   </p>
 
 
-  <h2>Company Information</h2>
+  <h2>Company/Address Information</h2>
   <stl:block if="not address">
-    <a href="/companies/;setup_company">Set up your company</a>
+    <em>You are not attached to any company</em>, please
+    <a href=";setup_company_form">set up your company</a>.
   </stl:block>
   <stl:block if="address">
     <table>
       <tr>
         <th align="right">Name</th>
-        <td>${company_name}</td>
+        <td>${company_title}</td>
       </tr>
       <tr>
         <th align="right">Website</th>
@@ -106,10 +107,15 @@ initTabs(Array('Menu scripts','Calender',
       </tr>
     </table>
     <p>
-    <a href=";edit_company_form">Modify company details</a>
+      <a href="/companies/${company_name}/;edit_metadata_form"
+        >Modify company details</a>
     </p>
     <p>
-    <a href=";edit_branch_form">Modify address details</a>
+      <a href="/companies/${company_name}/${address_name}/;edit_metadata_form"
+        >Modify address details</a>
+    </p>
+    <p>
+    <a href=";setup_company_form">Switch to another company</a>.
     </p>
     <h2>Enquiries</h2>
     <p>

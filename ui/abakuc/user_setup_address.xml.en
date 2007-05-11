@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Setup your Company/Address</h2>
+
+<h4>Company: ${company_title}</h4>
+
+<p>
+Select the address you are attached to, or create a new one:
+</p>
+
+<form action=";setup_address_select" method="post" style="margin-left: 2em">
+  <input type="hidden" name="company_name" value="${company_name}" />
+  <select name="address_name">
+    <option value=""></option>
+    <option stl:repeat="item addresses" value="${item/name}"
+      >${item/postcode} -- ${item/title}</option>
+  </select>
+  <input type="submit" value="Select" />
+</form>
+
+<p>Or create your own:</p>
+<form action="" method="post" style="margin-left: 2em">
+  ${form}
+  <input type="submit" value="Create" />
+</form>
+
+</stl:block>

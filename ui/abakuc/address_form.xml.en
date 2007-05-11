@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<script type="text/javascript" src="/ui/abakuc/abakuc.js"></script>
+
+  <table>
+    <tr>
+      <td colspan="2">
+        <label for="address">Address</label><br/>
+        <textarea cols="60" rows="3" name="abakuc:address" id="address"
+          >${address}</textarea>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        Region<br/>
+        <select onchange="select_country(this.value)" style="width: 100%">
+          <option value="none"></option>
+          <option stl:repeat="country countries" value="country_${country/id}"
+            selected="${country/is_selected}">${country/title}</option> 
+        </select>
+        <br/>
+        <select onchange="select_region(this.value)" style="width: 100%">
+          <option value="none"></option>
+          <optgroup stl:repeat="country countries" id="country_${country/id}"
+            style="display: ${country/display}">
+            <option stl:repeat="region country/regions"
+              value="region_${region/id}"
+              selected="${region/is_selected}">${region/title}</option> 
+          </optgroup>
+        </select>
+        <br/>
+        <select name="abakuc:county" style="width: 100%">
+          <option value=""></option>
+          <optgroup stl:repeat="region regions" id="region_${region/id}"
+            style="display: ${region/display}">
+            <option stl:repeat="county region/counties" value="${county/id}"
+              selected="${county/is_selected}">${county/title}</option> 
+          </optgroup>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="town">Town</label><br/>
+        <input type="text" size="20" name="abakuc:town" id="town"
+          value="${town}" />
+      </td>
+      <td>
+        <label for="postcode">Post Code</label><br/>
+        <input type="text" size="10" name="abakuc:postcode" id="postcode"
+          value="${postcode}" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="phone">Phone Number</label><br/>
+        <input type="text" size="20" name="abakuc:phone" id="phone"
+          value="${phone}" />
+      </td>
+      <td>
+        <label for="fax">Fax Number</label><br/>
+        <input type="text" size="20" name="abakuc:fax" id="fax"
+          value="${fax}" />
+      </td>
+    </tr>
+  </table>
+
+</stl:block>
