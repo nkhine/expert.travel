@@ -39,7 +39,7 @@
       <td colspan="2" id="upper-nav-src">
       <form action="/;search" method="get">
         <input class="searchinput" name="search_text" type="text" 
-          value="Company name" size="20" onFocus="this.value=''" />
+          value="Abakuc Limited" size="20" onFocus="this.value=''" />
         <input class="button_search" type="submit" value="Search"/>
       </form>
       </td>
@@ -48,13 +48,32 @@
     </div>
     <div id="wrapper">
       <div id="center" class="column">
-       <div id="main_menu">
-       <a href="/news.xhtml">News</a>
-       <a href="/jobs/;view">Job Board</a>
-       <a href="/events.xhtml">Events</a>
-       <a href="/faq.xhtml">FAQ's</a>
-       <a href="/help.xhtml">Help</a>
-       </div>
+      <!-- Object Menu (aka Tabs) -->
+       <stl:block if="user/info">
+        <div id="tabs" align="right">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="${menu/class}" stl:repeat="menu tabs"
+                onmouseover="show('menu_${menu/id}')"
+                onmouseout="hide('menu_${menu/id}')">
+                <div class="menu">
+                  <a href="${menu/name}" id="${menu/id}">
+                    <span>${menu/label}</span></a>
+                </div>
+                <div class="submenu" stl:if="menu/options"
+                  id="menu_${menu/id}">
+                  <ul>
+                    <li stl:repeat="option menu/options">
+                      <a href="${option/name}">${option/label}</a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        </stl:block>
+        <div class="clear"></div>
         <div id="maintitle">
           <div id="breadcrumbs">
             <label>Location:</label>
@@ -66,6 +85,7 @@
               <stl:inline if="not repeat/item/end">/</stl:inline> 
             </span>
           </div>
+                    <div class="clear"></div>
         </div>
         <!-- The Body -->
         <div id="body">
