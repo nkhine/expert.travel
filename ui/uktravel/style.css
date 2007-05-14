@@ -190,7 +190,6 @@ td, th { padding: 3px; }
 
 #tabs {
   border-bottom: 1px solid #babdb6;
-  border-top: 1px solid #babdb6;
   padding: 0px 1em 0px 1em;
 }
 
@@ -204,7 +203,7 @@ td, th { padding: 3px; }
 }
 
 #tabs td {
-  padding: 4px 0px 4px 0px;
+  padding: 0px 0px 4px 0px;
 }
 
 #tabs .menu a {

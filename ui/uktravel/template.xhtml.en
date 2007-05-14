@@ -22,8 +22,9 @@
         <td id="upper-nav-crn"></td>
         <td>
         <stl:block if="not user/info">
-          (not logged in)
+          <a href="/" id="top_menu_home">Home</a>
           <a href="/;login_form" id="top_menu_login">Log in</a>
+          (not logged in)
           <a href="/;register_form" id="top_menu_register"
             stl:if="user/joinisopen">Register</a>
         </stl:block>
