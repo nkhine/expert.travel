@@ -18,21 +18,27 @@ Type the name of your company:
   <input type="submit" value="Search" />
 </form>
 
-<stl:block if="found">
-<p>${n_found} companies found. Select one:</p>
-<form action=";setup_address_form" method="get" style="margin-left: 2em">
-  <select name="company">
-    <option value=""></option>
-    <option stl:repeat="item found" value="${item/name}">${item/title}</option>
-  </select>
-  <input type="submit" value="Select" />
-</form>
-<p>Or create your own:</p>
-<form action="" method="post" style="margin-left: 2em">
-  ${form}
-  <input type="submit" value="Create" />
-</form>
+<stl:block if="name">
+  <stl:block if="found">
+    <p>${n_found} companies found. Select one:</p>
+    <form action=";setup_address_form" method="get" style="margin-left: 2em">
+      <select name="company">
+        <option value=""></option>
+        <option stl:repeat="item found" value="${item/name}"
+          >${item/title}</option>
+      </select>
+      <input type="submit" value="Select" />
+    </form>
+    <p>Or create your own:</p>
+  </stl:block>
+  <stl:block if="not found">
+    <p>No companies found. Create your own:</p>
+  </stl:block>
+  <form action=";setup_company" method="post" enctype="multipart/form-data"
+    style="margin-left: 2em">
+    ${form}
+    <input type="submit" value="Create" />
+  </form>
 </stl:block>
-
 
 </stl:block>

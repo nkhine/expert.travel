@@ -6,22 +6,28 @@
 
 <h4>Company: ${company_title}</h4>
 
-<p>
-Select the address you are attached to, or create a new one:
-</p>
+<stl:block if="addresses">
+  <p>
+  Select the address you are attached to, or create a new one:
+  </p>
+  <form action=";setup_address_select" method="post" style="margin-left: 2em">
+    <input type="hidden" name="company_name" value="${company_name}" />
+    <select name="address_name">
+      <option value=""></option>
+      <option stl:repeat="item addresses" value="${item/name}"
+        >${item/postcode} -- ${item/title}</option>
+    </select>
+    <input type="submit" value="Select" />
+  </form>
+  <p>Or create your own:</p>
+</stl:block>
 
-<form action=";setup_address_select" method="post" style="margin-left: 2em">
+<stl:block if="not addresses">
+  <p>Create your address:</p>
+</stl:block>
+
+<form action=";setup_address" method="post" style="margin-left: 2em">
   <input type="hidden" name="company_name" value="${company_name}" />
-  <select name="address_name">
-    <option value=""></option>
-    <option stl:repeat="item addresses" value="${item/name}"
-      >${item/postcode} -- ${item/title}</option>
-  </select>
-  <input type="submit" value="Select" />
-</form>
-
-<p>Or create your own:</p>
-<form action="" method="post" style="margin-left: 2em">
   ${form}
   <input type="submit" value="Create" />
 </form>

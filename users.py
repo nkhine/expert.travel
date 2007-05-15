@@ -9,6 +9,7 @@ from itools.stl import stl
 from itools.uri import Path, get_reference
 from itools.web import get_context
 from itools.cms.access import AccessControl
+from itools.cms.binary import Image
 from itools.cms.Folder import Folder
 from itools.cms.Handler import Handler
 from itools.cms.metadata import Password
@@ -18,8 +19,7 @@ from itools.cms.utils import get_parameters, checkid
 
 # Import from our product
 from companies import Company, Address 
-#from metadata import (BusinessProfile, BusinessFunction, PhoneNumber,
-#                      UK_or_NonUK)
+from utils import title_to_name
 
 
 
@@ -128,12 +128,13 @@ class User(iUser, Handler):
     setup_company_form__access__ = 'is_self_or_admin'
     def setup_company_form(self, context):
         name = context.get_form_value('dc:title')
+        name = name.strip()
 
         namespace = {}
         namespace['name'] = name
 
-        name = name.strip().lower()
         if name:
+            name = name.lower()
             found = []
             companies = self.get_handler('/companies')
             for company in companies.search_handlers():
@@ -152,6 +153,37 @@ class User(iUser, Handler):
         handler = self.get_handler('/ui/abakuc/user_setup_company.xml')
         return stl(handler, namespace)
  
+
+    setup_company__access__ = 'is_self_or_admin'
+    def setup_company(self, context):
+        # Add Company
+        title = context.get_form_value('dc:title')
+        name = title_to_name(title)
+        company = self.set_handler('/companies/%s' % name, Company())
+
+        # Set Properties
+        website = context.get_form_value('abakuc:website')
+        topics = context.get_form_values('abakuc:topic')
+
+        company.set_property('dc:title', title)
+        company.set_property('abakuc:website', website)
+        company.set_property('abakuc:topic', topics)
+
+        # Logo
+        logo = context.get_form_value('logo')
+        if logo is not None:
+            filename, mimetype, data = logo
+            logo = Image()
+            try:
+                logo.load_state_from_string(data)
+            except:
+                pass
+            else:
+                self.set_handler('logo', logo)
+
+        # Set the Address..
+        return context.uri.resolve(';setup_address_form?company=%s' % name)
+
 
     setup_address_form__access__ = 'is_self_or_admin'
     def setup_address_form(self, context):
@@ -190,7 +222,34 @@ class User(iUser, Handler):
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
 
-        
+
+    setup_address__access__ = 'is_self_or_admin'
+    def setup_address(self, context):
+        name = context.get_form_value('company_name')
+        company = self.get_handler('/companies/%s' % name)
+
+        # Add Address
+        address = context.get_form_value('abakuc:address')
+        name = title_to_name(address)
+        address = company.set_handler(name, Address())
+
+        # Set Properties
+        for name in ['address', 'county', 'town', 'postcode', 'phone', 'fax']:
+            name = 'abakuc:%s' % name
+            value = context.get_form_value(name)
+            address.set_property(name, value)
+
+        # Link the User to the Address
+        address.set_user_role(self.name, 'ikaaro:members')
+
+        # Reindex
+        context.root.reindex_handler(address)        
+
+        message = u'Company/Address setup done.'
+        goto = context.uri.resolve(';profile')
+        return context.come_back(message, goto=goto)
+
+
     #######################################################################
     # Edit branch 
     edit_branch_form__access__ = 'is_allowed_to_edit'

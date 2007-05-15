@@ -33,13 +33,8 @@ from uktravel import UKTravel
 from users import UserFolder
 from destinations import Destinations
 from jobs import Jobs
+from utils import title_to_name
 
-
-
-def title_to_name(title):
-    title = title.encode('ascii', 'replace')
-    name = title.lower().replace('/', '_').replace('?', '_')
-    return '_'.join(name.split())
 
 
 class World(BaseCSV):
