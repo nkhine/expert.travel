@@ -9,7 +9,9 @@
       <a href="${region/href}">${region/title}</a>
     </stl:block> 
   </div>
+  <div align="right">
   ${batch}
+  </div>
   <div id="List">
     <stl:block repeat="item companies"> 
       <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
