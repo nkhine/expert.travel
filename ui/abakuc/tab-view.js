@@ -19,7 +19,7 @@ function sayHello() {
   if (receiveReq.readyState == 4 || receiveReq.readyState == 0) {
     //Setup the connection as a GET call to SayHello.html.
     //True explicity sets the request to asyncronous (default).
-    receiveReq.open("GET", 'tt.html.txt.en', true);
+    receiveReq.open("GET", 'test.xhtml.en', true);
     //Set the function that will be called when the XmlHttpRequest objects state changes.
     receiveReq.onreadystatechange = handleSayHello; 
     //Make the actual request.
