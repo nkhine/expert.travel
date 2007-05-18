@@ -5,32 +5,36 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <h2>Personal Information</h2>
-        <table>
-          <tr>
-            <th align="right">Firstname</th>
-            <td>${firstname}</td>
-          </tr>
-          <tr>
-            <th align="right">Lastname</th>
-            <td>${lastname}</td>
-          </tr>
-          <tr>
-            <th align="right">Email</th>
-            <td>${email}</td>
-          </tr>
-        </table>
-  <p>
-  <a href=";edit_account_form">Edit account details.</a>
-  </p>
-  <p>
-  <a href=";edit_password_form">Change password.</a>
-  </p>
+  <table>
+    <tr>
+      <th align="right">Firstname</th>
+      <td>${firstname}</td>
+    </tr>
+    <tr>
+      <th align="right">Lastname</th>
+      <td>${lastname}</td>
+    </tr>
+    <tr>
+      <th align="right">Email</th>
+      <td>${email}</td>
+    </tr>
+  </table>
+  <stl:block if="is_self_or_admin">
+    <p>
+    <a href=";edit_account_form">Edit account details.</a>
+    </p>
+    <p>
+    <a href=";edit_password_form">Change password.</a>
+    </p>
+  </stl:block>
 
 
   <h2>Company/Address Information</h2>
   <stl:block if="not address">
-    <em>You are not attached to any company</em>, please
-    <a href=";setup_company_form">set up your company</a>.
+    <em>You are not attached to any company</em>.
+    <stl:block if="is_self_or_admin">
+      Please <a href=";setup_company_form">set up your company</a>.
+    </stl:block>
   </stl:block>
   <stl:block if="address">
     <table>
@@ -58,30 +62,32 @@
         <th align="right">Postcode</th>
         <td>${postcode}</td>
       </tr>
-      <tr>
+      <tr stl:if="phone">
         <th align="right">Phone</th>
         <td>${phone}</td>
       </tr>
-      <tr>
+      <tr stl:if="fax">
         <th align="right">Fax</th>
         <td>${fax}</td>
       </tr>
     </table>
-    <p>
+    <stl:block if="is_self_or_admin">
+      <p>
       <a href="/companies/${company_name}/;edit_metadata_form"
         >Modify company details</a>
-    </p>
-    <p>
+      </p>
+      <p>
       <a href="/companies/${company_name}/${address_name}/;edit_metadata_form"
         >Modify address details</a>
-    </p>
-    <p>
-    <a href=";setup_company_form">Switch to another company</a>.
-    </p>
-    <h2>Enquiries</h2>
-    <p>
-    <a href="${address_path}/log_enquiry.csv/;view">Check enquiries
-      (${enquiries})</a>
-    </p>
+      </p>
+      <p>
+      <a href=";setup_company_form">Switch to another company</a>.
+      </p>
+      <h2>Enquiries</h2>
+      <p>
+      <a href="${address_path}/log_enquiry.csv/;view">Check enquiries
+        (${enquiries})</a>
+      </p>
+    </stl:block>
   </stl:block>
 </stl:block>

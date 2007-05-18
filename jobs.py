@@ -10,6 +10,7 @@ from itools.stl import stl
 from base import Handler, Folder
 from handlers import ApplicationsLog
 
+
 class Jobs(Folder):
  
     class_id = 'jobs'

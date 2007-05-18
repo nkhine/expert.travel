@@ -91,12 +91,18 @@ class User(iUser, Handler):
     def profile(self, context):
         from root import world
 
+        user = context.user
+        root = context.root
+
         namespace = {}
+        # Personal
+        is_self = user is not None and user.name == self.name
+        is_admin = root.is_admin(user, self)
+        namespace['is_self_or_admin'] = is_self or is_admin
         namespace['firstname'] = self.get_property('ikaaro:firstname')
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
         # Company
-        root = context.root
         results = root.search(format='address', members=self.name)
         namespace['address'] = None
         for address in results.get_documents():
@@ -163,11 +169,11 @@ class User(iUser, Handler):
 
         # Set Properties
         website = context.get_form_value('abakuc:website')
-        topics = context.get_form_values('abakuc:topic')
+        topics = context.get_form_values('topic')
 
-        company.set_property('dc:title', title)
+        company.set_property('dc:title', title, language='en')
         company.set_property('abakuc:website', website)
-        company.set_property('abakuc:topic', topics)
+        company.set_property('abakuc:topic', tuple(topics))
 
         # Logo
         logo = context.get_form_value('logo')
@@ -240,7 +246,7 @@ class User(iUser, Handler):
             address.set_property(name, value)
 
         # Link the User to the Address
-        address.set_user_role(self.name, 'ikaaro:members')
+        address.set_user_role(self.name, 'ikaaro:reviewers')
 
         # Reindex
         context.root.reindex_handler(address)        
