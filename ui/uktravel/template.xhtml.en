@@ -49,35 +49,6 @@
     </div>
     <div id="wrapper">
       <div id="center" class="column">
-      <!-- Object Menu (aka Tabs) -->
-       <stl:block if="user/info">
-        <div id="tabs" align="right">
-          <table border="0" cellpadding="0" cellspacing="0">
-            <tr>
-              <td class="${menu/class}" stl:repeat="menu tabs"
-                onmouseover="show('menu_${menu/id}')"
-                onmouseout="hide('menu_${menu/id}')">
-                <div class="menu">
-                  <a href="${menu/name}" id="${menu/id}">
-                    <span>${menu/label}</span></a>
-                </div>
-                <div class="submenu" stl:if="menu/options"
-                  id="menu_${menu/id}">
-                  <ul>
-                    <li stl:repeat="option menu/options">
-                      <a href="${option/name}">${option/label}</a>
-                    </li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
-        </stl:block>
-        <div class="clear"></div>
-        <div id="maintitle">
-
-        </div>
         <!-- The Body -->
         <div id="body">
           <!--<h1>${metadata/title}</h1>-->

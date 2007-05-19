@@ -53,9 +53,7 @@ class User(iUser, Handler):
                     'browse_content?mode=list',
                     'browse_content?mode=image'],
                    ['new_resource_form'],
-                   ['edit_form', 'edit_account_form', 'edit_password_form',
-                    'edit_company_form', 'edit_branch_form',
-                    'change_company_form', 'change_branch_form'],
+                   ['edit_form', 'edit_account_form', 'edit_password_form'],
                    ['tasks_list']]
 
     ########################################################################
@@ -132,6 +130,7 @@ class User(iUser, Handler):
     ########################################################################
     # Setup Company/Address
     setup_company_form__access__ = 'is_self_or_admin'
+    setup_company_form__sublabel__ = u'Switch to another company'
     def setup_company_form(self, context):
         name = context.get_form_value('dc:title')
         name = name.strip()
@@ -254,44 +253,5 @@ class User(iUser, Handler):
         message = u'Company/Address setup done.'
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
-
-
-    #######################################################################
-    # Edit branch 
-    edit_branch_form__access__ = 'is_allowed_to_edit'
-    edit_branch_form__label__ = u'Preferences'
-    edit_branch_form__sublabel__ = u'Edit Branch Details'
-    def edit_branch_form(self, context):
-        branch = self.get_branch()
-        if branch is None:
-            return get_reference("./;no_company?no_branch=1")
-
-        my_branch = self.get_pathto(branch)
-        return get_reference('%s/;edit_metadata_form' % my_branch)
-        
-    
-    #######################################################################
-    # Edit company 
-    edit_company_form__access__ = 'is_allowed_to_edit'
-    edit_company_form__label__ = u'Preferences'
-    edit_company_form__sublabel__ = u'Edit Company Details'
-    def edit_company_form(self, context):
-        company = self.get_company()
-        if company is None:
-            return get_reference("./;no_company")
-
-        my_company = self.get_pathto(company)
-        return get_reference('%s/;edit_metadata_form' % my_company)
-
-
-    #######################################################################
-    # No Comapny Information 
-    no_company__access__ = 'is_self_or_admin'
-    def no_company(self, context):
-        namespace = {}
-        namespace['no_branch'] = context.get_form_value('no_branch')
-        handler = self.get_handler('/ui/abakuc/user_no_company.xml')
-        return stl(handler, namespace)
-
 
 register_object_class(User)
