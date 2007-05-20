@@ -237,6 +237,13 @@ class Address(RoleAware, Folder):
         namespace['region'] = region
         namespace['county'] = county
         
+        addresses = []
+        for address in self.parent.search_handlers():
+            addresses.append({
+                'name': address.name,
+                'address': address.get_property('abakuc:address')})
+        namespace['addresses'] = addresses
+ 
 
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)
