@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h1>Enquiry form</h1>
+<h1>Submit your enquiry to ${company}</h1>
 <form action=";enquiry" method="post">
   <dl>
     <dt><label for="abakuc:enquiry">Enquiry</label></dt>
@@ -11,11 +11,11 @@
     </dd>
   </dl>
   <dl>
-    <dt>Type of Enquiry</dt>
+    <dt>Enquiry type</dt>
     <dd>
       <select style="width: 40%" name="abakuc:typeenquiry">
         <option value="none"></option>
-        <option value="Information">Request Information</option> 
+        <option value="Information">Information request</option> 
         <option value="Complaint">Complaint</option> 
       </select>
     </dd>
@@ -38,7 +38,8 @@
       <input type="text" size="40" name="abakuc:phone" value="" />
     </dd>
   </dl>
-  <p><input type="submit" value="Make Enquiry" class="button_ok" /></p>
+  <p>Only genuine enquiries will be sent to ${company}. <input type="submit" value="Make Enquiry" class="button_ok" />
+  </p>
 </form>
 
 </stl:block>

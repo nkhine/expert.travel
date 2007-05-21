@@ -357,7 +357,7 @@ class Address(RoleAware, Folder):
     enquiry_form__access__ = True
     def enquiry_form(self, context):
         namespace = {}
-
+        namespace['company'] = self.parent.get_property('dc:title')
         handler = self.get_handler('/ui/abakuc/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
 
