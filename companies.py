@@ -393,10 +393,15 @@ class Address(RoleAware, Folder):
                tab['email'], tab['phone'], tab['enquiry']]
 
         # check if the handler exist
+        # XXX
+        # Disable the ability for users to delete this file.
         handler = self.get_handler('log_enquiry.csv')
         handler.add_row(row)
-
-        message = u'Mail sent.'
+        company = self.parent.get_property('dc:title')
+        message = (u"Your enquiry to %s needs to be validated.\n"
+                   u" An email has been sent to you, to finish the enquiry"
+                   u" process follow the instructions detailed in it."
+                   % company)
         return context.come_back(message)
 
 
