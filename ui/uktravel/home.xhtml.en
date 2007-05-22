@@ -32,6 +32,19 @@
 						<h2>Latest travel industry news</h2>
 					</td>
 				</tr>
+        <tr>
+              <td id="List">
+                  <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                    onmouseout="this.className='ListItem';">  
+                    <dt>
+                      <a href="{item/href}">{item/title}</a>
+                    </dt>
+                    <dd>
+                      Short Description<br/>
+                    </dd>
+                  </dl>       
+          </td>
+        </tr>
 			</table>
 		</td>
 		<td valign="top">
