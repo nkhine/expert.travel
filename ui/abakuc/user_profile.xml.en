@@ -76,7 +76,7 @@
         </stl:block>
         </table>
       </td>
-      <tr>
+      <tr stl:if="address">
         <td valign="top">
         <h2>Enquiries</h2>
         <p>
@@ -87,17 +87,19 @@
       </tr>
     </tr>
   </table>
-          <stl:block if="is_self_or_admin">
-            <p>
-            <a href="/companies/${company_name}/;edit_metadata_form"
-              >Modify company details</a>
-            </p>
-            <p>
-            <a href="/companies/${company_name}/${address_name}/;edit_metadata_form"
-              >Modify address details</a>
-            </p>
-            <p>
-            <a href=";setup_company_form">Switch to another company</a>.
-            </p>
-          </stl:block>
+  <stl:block if="address">
+  <stl:block if="is_self_or_admin">
+    <p>
+    <a href="/companies/${company_name}/;edit_metadata_form?referrer=1"
+      >Modify company details</a>
+    </p>
+    <p>
+    <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
+      >Modify address details</a>
+    </p>
+    <p>
+    <a href=";setup_company_form">Switch to another company</a>.
+    </p>
+  </stl:block>
+  </stl:block>
 </stl:block>

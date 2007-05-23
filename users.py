@@ -59,27 +59,12 @@ class User(iUser, Handler):
     ########################################################################
     # API
     ########################################################################
-    def get_company(self):
-        company_name = self.get_property('abakuc:company_name')
-
-        if company_name in (None, ''):
-            return None
-        return get_context().root.get_handler('companies/%s' % company_name)
-        
-
-    def get_branch(self):
-        company = self.get_company()
-        if company is None:
-            return None
-
-        branch_name = self.get_property('abakuc:branch_name')
-        if branch_name in (None, ''):
-            return None
-
-        try:
-            return company.get_handler(branch_name)
-        except LookupError:
-            return None
+    def get_address(self):
+        root = self.get_root()
+        results = root.search(format='address', members=self.name)
+        for address in results.get_documents():
+            return root.get_handler(address.abspath)
+        return None
 
 
     #######################################################################
@@ -103,8 +88,8 @@ class User(iUser, Handler):
         # Company
         results = root.search(format='address', members=self.name)
         namespace['address'] = None
-        for address in results.get_documents():
-            address = root.get_handler(address.abspath)
+        address = self.get_address()
+        if address is not None:
             company = address.parent
             namespace['company_name'] = company.name
             namespace['address_name'] = address.name
@@ -215,12 +200,20 @@ class User(iUser, Handler):
         company_name = context.get_form_value('company_name')
         address_name = context.get_form_value('address_name')
 
+        # Add to new address
         companies = self.get_handler('/companies')
         company = companies.get_handler(company_name)
         address = company.get_handler(address_name)
         address.set_user_role(self.name, 'ikaaro:guests')
 
         root = context.root
+        # Remove from old address
+        old_address = self.get_address()
+        if old_address is not None:
+            old_address.set_user_role(self.name, None)
+            root.reindex_handler(old_address)
+
+        # Reindex
         root.reindex_handler(address)
 
         message = u'Company/Address selected.'
@@ -247,8 +240,15 @@ class User(iUser, Handler):
         # Link the User to the Address
         address.set_user_role(self.name, 'ikaaro:reviewers')
 
+        root = context.root
+        # Remove from old address
+        old_address = self.get_address()
+        if old_address is not None:
+            old_address.set_user_role(self.name, None)
+            root.reindex_handler(old_address)
+
         # Reindex
-        context.root.reindex_handler(address)        
+        root.reindex_handler(address)        
 
         message = u'Company/Address setup done.'
         goto = context.uri.resolve(';profile')

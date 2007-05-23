@@ -6,6 +6,7 @@
 
 <h1>Address modification</h1>
 <form action=";edit_metadata" method="post">
+  <input type="hidden" name="referrer" value="${referrer}" />
   ${form}
   <p><input type="submit" value="Modify Company" class="button_ok" /></p>
 </form>

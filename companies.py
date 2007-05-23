@@ -3,6 +3,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from string import Template
 
 # Import from itools
 from itools.datatypes import String, Unicode, Email
@@ -12,10 +13,11 @@ from itools.cms.access import RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
+from itools.cms.utils import generate_password
 
 # Import from abakuc
 from base import Handler, Folder
-from handlers import EnquiriesLog
+from handlers import EnquiriesLog, EnquiryType
 
 
 
@@ -101,6 +103,10 @@ class Company(Folder):
 
     def edit_metadata_form(self, context):
         namespace = {}
+        namespace['referrer'] = None
+        if context.get_form_value('referrer'):
+            namespace['referrer'] = str(context.request.referrer)
+        # Form
         title = self.get_property('dc:title')
         website = self.get_property('abakuc:website')
         topics = self.get_property('abakuc:topic')
@@ -148,7 +154,8 @@ class Company(Folder):
             root.reindex_handler(address)
 
         message = u'Changes Saved.'
-        return context.come_back(message)
+        goto = context.get_form_value('referrer') or None
+        return context.come_back(message, goto=goto)
 
 
 
@@ -325,14 +332,17 @@ class Address(RoleAware, Folder):
 
 
     def edit_metadata_form(self, context):
+        namespace = {}
+        namespace['referrer'] = None
+        if context.get_form_value('referrer'):
+            namespace['referrer'] = str(context.request.referrer)
+        # Form
         address = self.get_property('abakuc:address')
         postcode = self.get_property('abakuc:postcode')
         town = self.get_property('abakuc:town')
         phone = self.get_property('abakuc:phone')
         fax = self.get_property('abakuc:fax')
         address_county = self.get_property('abakuc:county')
-
-        namespace = {}
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
                                           address_county)
 
@@ -349,60 +359,166 @@ class Address(RoleAware, Folder):
             self.set_property(key, value)
 
         message = u'Changes Saved.'
-        return context.come_back(message)
+        goto = context.get_form_value('referrer') or None
+        return context.come_back(message, goto=goto)
 
 
     #######################################################################
     # User Interface / Enquiries
+    enquiry_fields = [
+        ('abakuc:enquiry', True),
+        ('abakuc:enquiry_type', True),
+        ('ikaaro:firstname', True),
+        ('ikaaro:lastname', True),
+        ('ikaaro:email', True),
+        ('abakuc:phone', False)]
+
+
     enquiry_form__access__ = True
     def enquiry_form(self, context):
-        namespace = {}
+        namespace = context.build_form_namespace(self.enquiry_fields)
+        enquiry_type = context.get_form_value('abakuc:enquiry_type')
+        namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
+
         handler = self.get_handler('/ui/abakuc/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
 
 
     enquiry__access__ = True
     def enquiry(self, context):
-        tab = {}
-        tab['email'] = context.get_form_value('ikaaro:email')
-        for key in 'fullname', 'enquiry', 'phone', 'typeenquiry':
-            tab[key] = context.get_form_value('abakuc:%s' % key)
+        root = context.root
 
-        subject = u'[%s]' % tab['typeenquiry']
-        body = 'Name: %(fullname)s - Phone: %(phone)s - %(enquiry)s' % tab
+        # Check input data
+        keep = [ x for x, y in self.enquiry_fields ]
+        error = context.check_form_input(self.enquiry_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
 
-        # Check the input data
-        if not tab['email'] or not tab['fullname'] or not tab['typeenquiry']:
-            return context.come_back(u'Please fill the missing fields.')
-
-        # Check the from address
-        if not Email.is_valid(tab['email']):
-            message = u'A valid email address must be provided.'
-            return context.come_back(message)
-
-        # Sent the mail
-        root = self.get_root()
+        # Create the user
+        email = context.get_form_value('ikaaro:email')
+        firstname = context.get_form_value('ikaaro:firstname')
+        lastname = context.get_form_value('ikaaro:lastname')
         users = root.get_handler('users')
-        for name in self.get_property('ikaaro:members'):
-            to_addr = users.get_handler(name).get_property('ikaaro:email')
-            root.send_email(tab['email'], to_addr, subject, body)
- 
-        # Save the mail in csv
-        row = [datetime.now(), tab['typeenquiry'], tab['fullname'],
-               tab['email'], tab['phone'], tab['enquiry']]
+        user = users.set_user(email)
+        user.set_property('ikaaro:firstname', firstname)
+        user.set_property('ikaaro:lastname', lastname)
+        key = generate_password(30)
+        user.set_property('ikaaro:user_must_confirm', key)
+        user_id = user.name
 
-        # check if the handler exist
-        # XXX
-        # Disable the ability for users to delete this file.
+        # Save the enquiry
+        enquiry = context.get_form_value('abakuc:enquiry')
+        enquiry_type = context.get_form_value('abakuc:enquiry_type')
+        phone = context.get_form_value('abakuc:phone')
+        row = [datetime.now(), enquiry_type, user_id, phone, enquiry, False]
         handler = self.get_handler('log_enquiry.csv')
         handler.add_row(row)
+
+        # Send confirmation email
+        hostname = context.uri.authority.host
+        subject = u"[%s] Register confirmation required" % hostname
+        subject = self.gettext(subject)
+        body = self.gettext(u"To confirm your registration click the link:\n"
+                            u"\n"
+                            u"  $confirm_url")
+        url = ';enquiry_confirm_form?user=%s&key=%s' % (user_id, key)
+        url = context.uri.resolve(url)
+        body = Template(body).substitute({'confirm_url': str(url)})
+        root = context.root
+        root.send_email(None, email, subject, body)
+
+        # Back
         company = self.parent.get_property('dc:title')
-        message = (u"Your enquiry to %s needs to be validated.\n"
-                   u" An email has been sent to you, to finish the enquiry"
+        message = (u"Your enquiry to %s needs to be validated.<br/>"
+                   u"An email has been sent to you, to finish the enquiry"
                    u" process follow the instructions detailed in it."
                    % company)
-        return context.come_back(message)
+        return message.encode('utf-8')
+
+
+    enquiry_confirm_form__access__ = True
+    def enquiry_confirm_form(self, context):
+        root = context.root
+
+        user_id = context.get_form_value('user')
+        users = root.get_handler('users')
+        user = users.get_handler(user_id)
+
+        # Check register key
+        must_confirm = user.get_property('ikaaro:user_must_confirm')
+        if (must_confirm is None
+            or context.get_form_value('key') != must_confirm):
+            return self.gettext(u"Bad key.").encode('utf-8')
+
+        namespace = {}
+        namespace['user_id'] = user_id
+        namespace['key'] = must_confirm
+
+        handler = self.get_handler('/ui/abakuc/address_enquiry_confirm.xml')
+        return stl(handler, namespace)
+
+
+    enquiry_confirm__access__ = True
+    def enquiry_confirm(self, context):
+        keep = ['key']
+        register_fields = [('newpass', True),
+                           ('newpass2', True)]
+
+        # Check register key
+        user_id = self.get_property('user')
+        root = context.root
+        users = root.get_handler('users')
+        user = users.get_handler(user_id)
+        must_confirm = user.get_property('ikaaro:user_must_confirm')
+        if context.get_form_value('key') != must_confirm:
+            return self.gettext(u"Bad key.").encode('utf-8')
+
+        # Check input data
+        error = context.check_form_input(register_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+
+        # Check passwords
+        password = context.get_form_value('newpass')
+        password2 = context.get_form_value('newpass2')
+        if password != password2:
+            message = u'The passwords do not match.'
+            return context.come_back(message, keep=keep)
+
+        # Set user
+        user.set_password(password)
+        user.del_property('ikaaro:user_must_confirm')
+
+        # Set cookie
+        user.set_auth_cookie(context, password)
+
+        # Send email
+        # FIXME UK Travel is hardcoded
+        firstname = user.get_property('ikaaro:firstname')
+        lastname = user.get_property('ikaaro:lastname')
+        email = user.get_property('ikaaro:email')
+
+        enquiry_type = None
+        enquiry = None
+        phone = None
+
+        subject = u'[UK Travel] New Enquiry (%s)' % enquiry_type
+        body = (
+            'From : %s %s\n'
+            'Phone: %s\n'
+            '\n'
+            '%s')
+        body = body % (firstname, lastname, phone, enquiry)
+
+        for name in self.get_members():
+            to_addr = users.get_handler(name).get_property('ikaaro:email')
+            root.send_email(email, to_addr, subject, body)
+
+        # Back
+        message = u'Registration confirmed, welcome.'
+        goto = "./;%s" % self.get_firstview()
+        return context.come_back(message, goto=goto)
 
 
 

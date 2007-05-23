@@ -25,9 +25,8 @@ class Schema(BaseSchema):
         'fax': String,
         'license': Unicode,
         # Email
-        'fullname':Unicode,
-        'enquiry':Unicode,
-        'typeenquiry':String
+        'enquiry': Unicode,
+        'enquiry_type': String
         }
 
 
