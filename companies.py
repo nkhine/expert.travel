@@ -14,6 +14,7 @@ from itools.cms.binary import Image
 from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
 from itools.cms.utils import generate_password
+from itools.cms.tracker import Tracker
 
 # Import from abakuc
 from base import Handler, Folder
@@ -48,7 +49,17 @@ class Company(Folder):
     class_title = u'Company'
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
-  
+
+    def new(self, **kw):
+       Folder.new(self, **kw)
+       cache = self.cache 
+       # Add issue tracker to the company 
+       # this should be central to the company rather than the address
+       tracker = Tracker()
+       cache['tracker'] = tracker 
+       cache['tracker.metadata'] = self.build_metadata(tracker,
+           **{'dc:title': {'en': u'Enquiries Tracker'}}) 
+
     def get_document_types(self):
         return [Address]
 
@@ -181,7 +192,6 @@ class Address(RoleAware, Folder):
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = self.build_metadata(handler)
-
 
     def get_document_types(self):
         return []
@@ -407,33 +417,37 @@ class Address(RoleAware, Folder):
         user.set_property('ikaaro:user_must_confirm', key)
         user_id = user.name
 
-        # Save the enquiry
-        enquiry = context.get_form_value('abakuc:enquiry')
-        enquiry_type = context.get_form_value('abakuc:enquiry_type')
-        phone = context.get_form_value('abakuc:phone')
-        row = [datetime.now(), enquiry_type, user_id, phone, enquiry, False]
-        handler = self.get_handler('log_enquiry.csv')
-        handler.add_row(row)
-
         # Send confirmation email
         hostname = context.uri.authority.host
+        from_addr = 'enquiries@uktravellist.info'
         subject = u"[%s] Register confirmation required" % hostname
         subject = self.gettext(subject)
-        body = self.gettext(u"To confirm your registration click the link:\n"
+        body = self.gettext(u"This email has been generated in response to your"
+                            u" enquiry on the UK Travel List.\n"
+                            u"To submit your enquiry, click the link:\n"
                             u"\n"
-                            u"  $confirm_url")
+                            u"  $confirm_url"
+                            u"\n"
+                            u"If the text is on two lines, please copy and "
+                            u"paste the full line into your browser URL bar."
+                            u"\n"
+                            u"Thank you for visiting the UK Travel List website."
+                            u"\n"
+                            u"UK Travel List Team")
         url = ';enquiry_confirm_form?user=%s&key=%s' % (user_id, key)
         url = context.uri.resolve(url)
         body = Template(body).substitute({'confirm_url': str(url)})
         root = context.root
-        root.send_email(None, email, subject, body)
+        root.send_email(from_addr, email, subject, body)
 
         # Back
         company = self.parent.get_property('dc:title')
-        message = (u"Your enquiry to %s needs to be validated.<br/>"
-                   u"An email has been sent to you, to finish the enquiry"
-                   u" process follow the instructions detailed in it."
-                   % company)
+        message = (u"Your enquiry to <strong>%s</strong> needs to be validated.<br/>"
+                   u"An email has been sent to <strong><em>%s</em></strong>,"
+                   u" to finish the enquiry process, please follow the instructions"
+                   u" detailed in it.<br/>"
+                   u"If you don not receive the email, please check your SPAM"
+                   u" folder settings or email us." % (company, email))
         return message.encode('utf-8')
 
 
@@ -458,9 +472,16 @@ class Address(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/address_enquiry_confirm.xml')
         return stl(handler, namespace)
 
-
     enquiry_confirm__access__ = True
     def enquiry_confirm(self, context):
+        # Save the enquiry before we add the user
+        enquiry = context.get_form_value('abakuc:enquiry')
+        enquiry_type = context.get_form_value('abakuc:enquiry_type')
+        phone = context.get_form_value('abakuc:phone')
+        row = [datetime.now(), enquiry_type, user_id, phone, enquiry, False]
+        handler = self.get_handler('log_enquiry.csv')
+        handler.add_row(row)
+
         keep = ['key']
         register_fields = [('newpass', True),
                            ('newpass2', True)]
@@ -516,9 +537,11 @@ class Address(RoleAware, Folder):
             root.send_email(email, to_addr, subject, body)
 
         # Back
-        message = u'Registration confirmed, welcome.'
-        goto = "./;%s" % self.get_firstview()
-        return context.come_back(message, goto=goto)
+        message = u("'Enquiry to has been submitted.<br/>" 
+                  u"If you like to login, please choose your password")
+        #goto = "./;%s" % self.get_firstview()
+        #return context.come_back(message, goto=goto)
+        return context.come_back(message)
 
 
 
