@@ -22,7 +22,6 @@ from itools.cms.html import XHTMLFile
 
 # Import from our package
 from adverts import Adverts
-from countries import Countries, Country
 from base import Handler
 from companies import Companies, Company, Address
 from handlers import EnquiriesLog
@@ -33,7 +32,24 @@ from destinations import Destinations
 from jobs import Jobs
 from utils import title_to_name
 
+class World(BaseCSV):
 
+    columns = ['id', 'continent', 'sub_id', 'sub_continent', 'country_id',
+                'iana_root_zone', 'country', 'region', 'county']
+
+    schema = {'id': Integer,
+              'continent': String,
+              'sub_id': Integer,
+              'sub_continent': String,
+              'country_id': Integer,
+              'iana_root_zone': String(index='keyword'),
+              'country': String,
+              'region': Unicode(index='keyword'),
+              'county': Unicode(index='keyword')}
+
+
+path = get_abspath(globals(), 'data/csv/countries_full.csv')
+world = World(path)
 
 class Root(Handler, BaseRoot):
 
@@ -62,13 +78,6 @@ class Root(Handler, BaseRoot):
     def new(self, username=None, password=None):
         BaseRoot.new(self, username=username, password=password)
         cache = self.cache
-
-        # Countries
-        title = u'Countries'
-        kw = {'dc:title': {'en': title}}
-        countries = Countries()
-        cache['countries'] = countries
-        cache['countries.metadata'] = self.build_metadata(countries, **kw)
 
         # Companies
         title = u'Companies Directory'
@@ -196,29 +205,6 @@ class Root(Handler, BaseRoot):
     import_data__access__ = 'is_admin'
     def import_data(self, context):
         ###################################################################
-        # Import Countries
-        path = get_abspath(globals(), 'data/csv/countries_full.csv')
-        handler = get_handler(path)
-
-        map = {}
-        for row in handler.get_rows():
-            kk, kk, kk, kk, kk, name, title, region, county = row
-            if name in map:
-                title, country = map[name]
-            else:
-                country = Country()
-                map[name] = (title, Country())
-            regions = country.get_handler('.regions')
-            regions.add_row([region, county])
-
-        countries = self.get_handler('countries')
-        for name in map:
-            title, country = map[name]
-            country = countries.set_handler(name, country)
-            country.set_property('dc:title', title, language='en')
-
-
-        ###################################################################
         # Import Companies
 
         # Read the input CSV file
@@ -235,7 +221,6 @@ class Root(Handler, BaseRoot):
 
         # Import from the CSV file
         good = 0
-        uk_regions = countries.get_handler('gb/.regions')
         for count, row in enumerate(rows):
             # User
             email = row[10]
@@ -248,7 +233,8 @@ class Root(Handler, BaseRoot):
                 user = None
 
             # Filter the UK Regions and Counties
-            results = uk_regions.search(region=str(row[2]), county=str(row[3]))
+            results = world.search(iana_root_zone='gb', region=str(row[2]),
+                               county=str(row[3]))
             n_results = len(results)
             if n_results == 0:
                 county = None
@@ -295,7 +281,6 @@ class Root(Handler, BaseRoot):
                 if postcode:
                     address.set_property('abakuc:postcode', str(postcode))
                 if county:
-                    address.set_property('abakuc:country', 'gb')
                     address.set_property('abakuc:county', county)
                     address.set_property('abakuc:town', row[4])
                 address.set_property('abakuc:phone', str(row[8]))

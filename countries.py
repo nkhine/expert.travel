@@ -218,34 +218,20 @@ class Country(Handler, RoleAware, ikaaroFolder):
         ['permissions_form', 'new_user_form'], 
         ['edit_metadata_form']]
 
-#    __roles__ = BaseRoot.__roles__ + [
-#        {'name': 'abakuc:travel_agent_member',
-#         'title': u'Travel Agent',
-#         'unit': u'Travel Agent'},
-#        {'name': 'abakuc:travel_agent_manager',
-#         'title': u'Travel Agent(Manager)',
-#         'unit': u'Travel Agent(Manager)'},
-#        {'name': 'abakuc:tourist_office_member',
-#         'title': u'Tourist Office',
-#         'unit': u'Tourist Office'},
-#        {'name': 'abakuc:tourist_office_manager',
-#         'title': u'Tourist Office(Manager)',
-#         'unit': u'Tourist Office(Manager)'}
-#       ]
-
-
-    def new(self):
-        ikaaroFolder.new(self)
-        cache = self.cache
-        cache['.regions'] = Regions()
-
-
-    def _get_handler(self, segment, uri):
-        name = segment.name
-        if name == '.regions':
-            return Regions(uri)
-        return ikaaroFolder._get_handler(self, segment, uri)
-
+    __roles__ = BaseRoot.__roles__ + [
+        {'name': 'abakuc:travel_agent_member',
+         'title': u'Travel Agent',
+         'unit': u'Travel Agent'},
+        {'name': 'abakuc:travel_agent_manager',
+         'title': u'Travel Agent(Manager)',
+         'unit': u'Travel Agent(Manager)'},
+        {'name': 'abakuc:tourist_office_member',
+         'title': u'Tourist Office',
+         'unit': u'Tourist Office'},
+        {'name': 'abakuc:tourist_office_manager',
+         'title': u'Tourist Office(Manager)',
+         'unit': u'Tourist Office(Manager)'}
+       ]
 
     ########################################################################
     # Metadata
@@ -309,6 +295,24 @@ class Countries(Handler, ikaaroFolder):
     class_description = u'Folder containing all the Countries'
     class_icon48 = 'abakuc/images/Destination48.png'
     class_icon16 = 'abakuc/images/Destination16.png'
+
+    def new(self, **kw):
+        ikaaroFolder.new(self, **kw)
+        cache = self.cache
+        path = get_abspath(globals(), 'data/csv/country.csv')
+        handler = get_handler(path)
+        for row in handler.get_rows():
+            id, continent_name, region_id, region, country_id, name = row
+            name = name.lower().strip().replace(' ', '-')
+            title = name.title().replace('-', ' ')
+            country = Country()
+            metadata = self.build_metadata(country,
+                                        **{'dc:title': title,
+                                        'abakuc:continent': continent_name,
+                                        'abakuc:sub_continent': region})
+            cache[name] = country
+            cache['%s.metadata' % name] = metadata
+
 
 
     def get_document_types(self):

@@ -190,17 +190,16 @@ class Address(RoleAware, Folder):
 
 
     def get_catalog_indexes(self):
+        from root import world
+
         indexes = Folder.get_catalog_indexes(self)
         company = self.parent
         indexes['topic'] = company.get_property('abakuc:topic')
-        country = self.get_property('abakuc:country')
-        indexes['country'] = country
-
         county_id = self.get_property('abakuc:county')
         if county_id:
-            csv = self.get_handler('/countries/%s/.regions' % country)
-            row = csv.get_row(county_id)
-            indexes['region'] = row[0]
+            row = world.get_row(county_id)
+            indexes['country'] = row[5]
+            indexes['region'] = row[7]
             indexes['county'] = str(county_id)
         indexes['town'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
@@ -222,15 +221,17 @@ class Address(RoleAware, Folder):
     view__label__ = u'Address'
     view__access__ = True
     def view(self, context):
-        country = self.get_property('abakuc:country')
-        country = self.get_handler('/countries/%s' % country)
+        from root import world
+
         county_id = self.get_property('abakuc:county')
         if county_id is None:
             # XXX Every address should have a county
-            region = county = '-'
+            country = region = county = '-'
         else:
-            regions = country.get_handler('.regions')
-            region, county = regions.get_row(county_id)
+            row = world.get_row(county_id)
+            country = row[6]
+            region = row[7]
+            county = row[8]
 
         namespace = {}
         namespace['company'] = self.parent.get_property('dc:title')
@@ -239,7 +240,7 @@ class Address(RoleAware, Folder):
         namespace['postcode'] = self.get_property('abakuc:postcode')
         namespace['phone'] = self.get_property('abakuc:phone')
         namespace['fax'] = self.get_property('abakuc:fax')
-        namespace['country'] = country.get_property('dc:title')
+        namespace['country'] = country
         namespace['region'] = region
         namespace['county'] = county
         
@@ -259,57 +260,65 @@ class Address(RoleAware, Folder):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_form(aux, address=None, postcode=None, town=None,
-                 phone=None, fax=None, country_name=None, address_county=None):
+    def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
+                 address_county=None):
+        from root import world
         root = get_context().root
-
+        
         namespace = {}
         namespace['address'] = address
         namespace['postcode'] = postcode
         namespace['town'] = town 
         namespace['phone'] = phone
         namespace['fax'] = fax
-
-        countries = []
+        
+        rows = world.get_rows()
+        
+        countries = {}
         regions = {}
-        for country in aux.search_handlers():
-            country_ns = {'id': country.name,
-                          'title': country.get_property('dc:title'),
-                          'is_selected': country.name == country_name,
-                          'display': 'none',
-                          'regions': []}
-            countries.append(country_ns)
-            rows = country.get_handler('.regions').get_rows()
-            for index, row in enumerate(rows):
-                region, county = row
-                is_selected = (index == address_county)
-                id = str(index)
+        for index, row in enumerate(rows):
+            country = row[6]
+            region = row[7]
+            county = row[8]
+            is_selected = (index == address_county)
+            id = str(index)
 
-                # Add the region if not yet added
-                if region in regions:
-                    region_ns = regions[region]
-                else:
-                    region_ns = {'id': index, 'title': region,
-                                 'is_selected': False, 'display': 'none',
-                                 'counties': []}
-                    regions[region] = region_ns
-                    # Add to the country
-                    country_ns['regions'].append(
-                        {'id': id, 'title': region, 'is_selected': False})
+            # Add the country if not yet added
+            if country in countries:
+                country_ns = countries[country]
+            else:
+                country_ns = {'id': index, 'title': country,
+                              'is_selected': False, 'display': 'none',
+                              'regions': []}
+                countries[country] = country_ns
 
-                region_ns['counties'].append({'id': id, 'title': county,
-                                              'is_selected': is_selected})
+            # Add the region if not yet added
+            if region in regions:
+                region_ns = regions[region]
+            else:
+                region_ns = {'id': index, 'title': region,
+                              'is_selected': False, 'display': 'none',
+                              'counties': []}
+                regions[region] = region_ns
+                # Add to the country
+                country_ns['regions'].append(
+                    {'id': id, 'title': region, 'is_selected': False})
 
-                # If this county is selected, activate the right blocks
-                if is_selected:
-                    country_ns['display'] = 'inherit'
-                    region_ns['is_selected'] = True
-                    region_ns['display'] = 'inherit'
-                    for x in country_ns['regions']:
-                        if x['title'] == region:
-                            x['is_selected'] = True
-                            break
+            region_ns['counties'].append({'id': id, 'title': county,
+                                          'is_selected': is_selected})
 
+            # If this county is selected, activate the right blocks
+            if is_selected:
+                country_ns['is_selected'] = True
+                country_ns['display'] = 'inherit'
+                region_ns['is_selected'] = True
+                region_ns['display'] = 'inherit'
+                for x in country_ns['regions']:
+                    if x['title'] == region:
+                        x['is_selected'] = True
+                        break
+
+        countries = countries.values()
         countries.sort(key=lambda x: x['title'])
         namespace['countries'] = countries
 
@@ -332,10 +341,9 @@ class Address(RoleAware, Folder):
         town = self.get_property('abakuc:town')
         phone = self.get_property('abakuc:phone')
         fax = self.get_property('abakuc:fax')
-        country = self.get_property('abakuc:country')
         address_county = self.get_property('abakuc:county')
-        namespace['form'] = self.get_form(self.get_handler('/countries'),
-            address, postcode, town, phone, fax, country, address_county)
+        namespace['form'] = self.get_form(address, postcode, town, phone, fax,
+                                          address_county)
 
         handler = self.get_handler('/ui/abakuc/address_edit_metadata.xml')
         return stl(handler, namespace)
