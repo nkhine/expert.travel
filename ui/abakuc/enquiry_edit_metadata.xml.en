@@ -19,6 +19,7 @@
   </select>
   </p>
 
+  <stl:block if="not is_authenticated">
   <p>
   First Name<br/>
   <input type="text" size="40" name="ikaaro:firstname"
@@ -36,6 +37,7 @@
   <input type="text" size="40" name="ikaaro:email"
     value="${ikaaro:email/value}" />
   </p>
+  </stl:block>
 
   <p>
   <label for="abakuc:phone">Phone Number</label><br/>

@@ -15,9 +15,10 @@
     <tr>
       <td colspan="2">
         Region<br/>
-        <select onchange="select_country(this.value)" style="width: 80%">
+        <select name="abakuc:country" onchange="select_country(this.value)"
+          style="width: 80%">
           <option value="none"></option>
-          <option stl:repeat="country countries" value="country_${country/id}"
+          <option stl:repeat="country countries" value="${country/id}"
             selected="${country/is_selected}">${country/title}</option> 
         </select>
         (Country)

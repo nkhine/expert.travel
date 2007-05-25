@@ -60,8 +60,6 @@ class UKTravel(WebSite):
     #######################################################################
     search__access__ = True
     def search(self, context):
-        from root import world
-
         root = context.root
 
         topic = context.get_form_value('topic')
@@ -89,14 +87,14 @@ class UKTravel(WebSite):
         namespace['regions'] = []
 
         # Topic
+        uk_regions = self.get_handler('/countries/gb/.regions')
         if topic is not None:
             base = context.uri
             namespace['title'] = root.get_topic_title(topic)
             regions = []
             if region is None:
                 # Regions
-                aux = [ world.get_row(x)[7]
-                        for x in world.search(iana_root_zone='gb') ]
+                aux = [ x for x, y in uk_regions.get_rows() ]
                 aux = set(aux)
                 for region in aux:
                     q = query.copy()
@@ -106,12 +104,12 @@ class UKTravel(WebSite):
                         regions.append({'href': uri, 'title': region})
             elif county is None:
                 # Counties
-                for n in world.search(region=region):
+                for n in uk_regions.search(region=region):
                     county_id = str(n)
                     q = query.copy()
                     q['county'] = county_id
                     if root.search(**q).get_n_documents():
-                        row = world.get_row(n)
+                        row = uk_regions.get_row(n)
                         county = row[8]
                         uri = base.replace(county=county_id, batchstart=None)
                         regions.append({'href': uri, 'title': county})
@@ -153,9 +151,8 @@ class UKTravel(WebSite):
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                row = uk_regions.get_row(county_id)
+                region, county = row
             addresses.append(
                 {'href': '%s/;view' % self.get_pathto(address),
                  'title': company.title,

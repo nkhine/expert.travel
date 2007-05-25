@@ -72,8 +72,6 @@ class User(iUser, Handler):
     profile__access__ = 'is_allowed_to_view'
     profile__label__ = u'Profile'
     def profile(self, context):
-        from root import world
-
         user = context.user
         root = context.root
 
@@ -97,8 +95,10 @@ class User(iUser, Handler):
             namespace['website'] = company.get_website()
             namespace['address'] = address.get_property('abakuc:address')
             namespace['town'] = address.get_property('abakuc:town')
+            country = address.get_property('abakuc:country')
             county = address.get_property('abakuc:county')
-            namespace['county'] = world.get_row(county)[8]
+            regions = self.get_handler('/countries/%s/.regions' % country)
+            namespace['county'] = regions.get_row(county)[1]
             namespace['postcode'] = address.get_property('abakuc:postcode')
             namespace['phone'] = address.get_property('abakuc:phone')
             namespace['fax'] = address.get_property('abakuc:fax')
@@ -189,7 +189,7 @@ class User(iUser, Handler):
              'postcode': x.get_property('abakuc:postcode')}
             for x in company.search_handlers() ]
         namespace['addresses'].sort(key=lambda x: x['postcode'])
-        namespace['form'] = Address.get_form()
+        namespace['form'] = Address.get_form(self.get_handler('/countries'))
 
         handler = self.get_handler('/ui/abakuc/user_setup_address.xml')
         return stl(handler, namespace)
@@ -232,7 +232,8 @@ class User(iUser, Handler):
         address = company.set_handler(name, Address())
 
         # Set Properties
-        for name in ['address', 'county', 'town', 'postcode', 'phone', 'fax']:
+        for name in ['address', 'country', 'county', 'town', 'postcode',
+                     'phone', 'fax']:
             name = 'abakuc:%s' % name
             value = context.get_form_value(name)
             address.set_property(name, value)

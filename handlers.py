@@ -25,7 +25,7 @@ class EnquiriesLog(CSV):
         'resolved']
     schema = {'datetime': DateTime,
               'enquiry_type': EnquiryType,
-              'user_id': String,
+              'user_id': String(index='keyword'),
               'phone': String,
               'enquiry': Unicode,
               'resolved': Boolean}

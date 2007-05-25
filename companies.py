@@ -7,6 +7,7 @@ from string import Template
 
 # Import from itools
 from itools.datatypes import String, Unicode, Email
+from itools.i18n.locale_ import format_datetime
 from itools.stl import stl
 from itools.web import get_context
 from itools.cms.access import RoleAware
@@ -50,15 +51,6 @@ class Company(Folder):
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
-    def new(self, **kw):
-       Folder.new(self, **kw)
-       cache = self.cache 
-       # Add issue tracker to the company 
-       # this should be central to the company rather than the address
-       tracker = Tracker()
-       cache['tracker'] = tracker 
-       cache['tracker.metadata'] = self.build_metadata(tracker,
-           **{'dc:title': {'en': u'Enquiries Tracker'}}) 
 
     def get_document_types(self):
         return [Address]
@@ -198,16 +190,17 @@ class Address(RoleAware, Folder):
 
 
     def get_catalog_indexes(self):
-        from root import world
-
         indexes = Folder.get_catalog_indexes(self)
         company = self.parent
         indexes['topic'] = company.get_property('abakuc:topic')
+        country = self.get_property('abakuc:country')
+        indexes['country'] = country
+
         county_id = self.get_property('abakuc:county')
         if county_id:
-            row = world.get_row(county_id)
-            indexes['country'] = row[5]
-            indexes['region'] = row[7]
+            csv = self.get_handler('/countries/%s/.regions' % country)
+            row = csv.get_row(county_id)
+            indexes['region'] = row[0]
             indexes['county'] = str(county_id)
         indexes['town'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
@@ -229,19 +222,15 @@ class Address(RoleAware, Folder):
     view__label__ = u'Address'
     view__access__ = True
     def view(self, context):
-        from root import world
-
+        country = self.get_property('abakuc:country')
+        country = self.get_handler('/countries/%s' % country)
         county_id = self.get_property('abakuc:county')
         if county_id is None:
             # XXX Every address should have a county
-            region = '-'
-            county = '-'
-            country = '-'
+            region = county = '-'
         else:
-            row = world.get_row(county_id)
-            country = row[6]
-            region = row[7]
-            county = row[8]
+            regions = country.get_handler('.regions')
+            region, county = regions.get_row(county_id)
 
         namespace = {}
         namespace['company'] = self.parent.get_property('dc:title')
@@ -250,7 +239,7 @@ class Address(RoleAware, Folder):
         namespace['postcode'] = self.get_property('abakuc:postcode')
         namespace['phone'] = self.get_property('abakuc:phone')
         namespace['fax'] = self.get_property('abakuc:fax')
-        namespace['country'] = country
+        namespace['country'] = country.get_property('dc:title')
         namespace['region'] = region
         namespace['county'] = county
         
@@ -270,10 +259,8 @@ class Address(RoleAware, Folder):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
-                 address_county=None):
-        from root import world
-
+    def get_form(aux, address=None, postcode=None, town=None,
+                 phone=None, fax=None, country_name=None, address_county=None):
         root = get_context().root
 
         namespace = {}
@@ -283,53 +270,46 @@ class Address(RoleAware, Folder):
         namespace['phone'] = phone
         namespace['fax'] = fax
 
-        rows = world.get_rows()
-
-        countries = {}
+        countries = []
         regions = {}
-        for index, row in enumerate(rows):
-            country = row[6]
-            region = row[7]
-            county = row[8]
-            is_selected = (index == address_county)
-            id = str(index)
+        for country in aux.search_handlers():
+            country_ns = {'id': country.name,
+                          'title': country.get_property('dc:title'),
+                          'is_selected': country.name == country_name,
+                          'display': 'none',
+                          'regions': []}
+            countries.append(country_ns)
+            rows = country.get_handler('.regions').get_rows()
+            for index, row in enumerate(rows):
+                region, county = row
+                is_selected = (index == address_county)
+                id = str(index)
 
-            # Add the country if not yet added
-            if country in countries:
-                country_ns = countries[country]
-            else:
-                country_ns = {'id': index, 'title': country,
-                              'is_selected': False, 'display': 'none',
-                              'regions': []}
-                countries[country] = country_ns
+                # Add the region if not yet added
+                if region in regions:
+                    region_ns = regions[region]
+                else:
+                    region_ns = {'id': index, 'title': region,
+                                 'is_selected': False, 'display': 'none',
+                                 'counties': []}
+                    regions[region] = region_ns
+                    # Add to the country
+                    country_ns['regions'].append(
+                        {'id': id, 'title': region, 'is_selected': False})
 
-            # Add the region if not yet added
-            if region in regions:
-                region_ns = regions[region]
-            else:
-                region_ns = {'id': index, 'title': region,
-                             'is_selected': False, 'display': 'none',
-                             'counties': []}
-                regions[region] = region_ns
-                # Add to the country
-                country_ns['regions'].append(
-                    {'id': id, 'title': region, 'is_selected': False})
+                region_ns['counties'].append({'id': id, 'title': county,
+                                              'is_selected': is_selected})
 
-            region_ns['counties'].append({'id': id, 'title': county,
-                                          'is_selected': is_selected})
+                # If this county is selected, activate the right blocks
+                if is_selected:
+                    country_ns['display'] = 'inherit'
+                    region_ns['is_selected'] = True
+                    region_ns['display'] = 'inherit'
+                    for x in country_ns['regions']:
+                        if x['title'] == region:
+                            x['is_selected'] = True
+                            break
 
-            # If this county is selected, activate the right blocks
-            if is_selected:
-                country_ns['is_selected'] = True
-                country_ns['display'] = 'inherit'
-                region_ns['is_selected'] = True
-                region_ns['display'] = 'inherit'
-                for x in country_ns['regions']:
-                    if x['title'] == region:
-                        x['is_selected'] = True
-                        break
-
-        countries = countries.values()
         countries.sort(key=lambda x: x['title'])
         namespace['countries'] = countries
 
@@ -352,9 +332,10 @@ class Address(RoleAware, Folder):
         town = self.get_property('abakuc:town')
         phone = self.get_property('abakuc:phone')
         fax = self.get_property('abakuc:fax')
+        country = self.get_property('abakuc:country')
         address_county = self.get_property('abakuc:county')
-        namespace['form'] = self.get_form(address, postcode, town, phone, fax,
-                                          address_county)
+        namespace['form'] = self.get_form(self.get_handler('/countries'),
+            address, postcode, town, phone, fax, country, address_county)
 
         handler = self.get_handler('/ui/abakuc/address_edit_metadata.xml')
         return stl(handler, namespace)
@@ -374,7 +355,8 @@ class Address(RoleAware, Folder):
 
 
     #######################################################################
-    # User Interface / Enquiries
+    # User Interface / Submit Enquiry
+    #######################################################################
     enquiry_fields = [
         ('abakuc:enquiry', True),
         ('abakuc:enquiry_type', True),
@@ -384,9 +366,20 @@ class Address(RoleAware, Folder):
         ('abakuc:phone', False)]
 
 
+    enquiry_fields_auth = [
+        ('abakuc:enquiry', True),
+        ('abakuc:enquiry_type', True),
+        ('abakuc:phone', False)]
+
+
     enquiry_form__access__ = True
     def enquiry_form(self, context):
-        namespace = context.build_form_namespace(self.enquiry_fields)
+        if context.user is None:
+            namespace = context.build_form_namespace(self.enquiry_fields)
+            namespace['is_authenticated'] = False
+        else:
+            namespace = context.build_form_namespace(self.enquiry_fields_auth)
+            namespace['is_authenticated'] = True
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
@@ -398,42 +391,63 @@ class Address(RoleAware, Folder):
     enquiry__access__ = True
     def enquiry(self, context):
         root = context.root
+        user = context.user
 
         # Check input data
-        keep = [ x for x, y in self.enquiry_fields ]
-        error = context.check_form_input(self.enquiry_fields)
+        if user is None:
+            enquiry_fields = self.enquiry_fields
+        else:
+            enquiry_fields = self.enquiry_fields_auth
+        keep = [ x for x, y in enquiry_fields ]
+        error = context.check_form_input(enquiry_fields)
         if error is not None:
             return context.come_back(error, keep=keep)
 
         # Create the user
-        email = context.get_form_value('ikaaro:email')
-        firstname = context.get_form_value('ikaaro:firstname')
-        lastname = context.get_form_value('ikaaro:lastname')
-        users = root.get_handler('users')
-        user = users.set_user(email)
-        user.set_property('ikaaro:firstname', firstname)
-        user.set_property('ikaaro:lastname', lastname)
-        key = generate_password(30)
-        user.set_property('ikaaro:user_must_confirm', key)
+        if user is None:
+            email = context.get_form_value('ikaaro:email')
+            firstname = context.get_form_value('ikaaro:firstname')
+            lastname = context.get_form_value('ikaaro:lastname')
+            users = root.get_handler('users')
+            user = users.set_user(email)
+            user.set_property('ikaaro:firstname', firstname)
+            user.set_property('ikaaro:lastname', lastname)
+            key = generate_password(30)
+            user.set_property('ikaaro:user_must_confirm', key)
         user_id = user.name
+
+        # Save the enquiry
+        enquiry = context.get_form_value('abakuc:enquiry')
+        enquiry_type = context.get_form_value('abakuc:enquiry_type')
+        phone = context.get_form_value('abakuc:phone')
+        row = [datetime.now(), enquiry_type, user_id, phone, enquiry, False]
+        handler = self.get_handler('log_enquiry.csv')
+        handler.add_row(row)
+
+        # Authenticated user, we are done
+        if context.user is not None:
+            self.enquiry_send_email(user)
+            message = u'Enquiry sent'
+            return message.encode('utf-8')
 
         # Send confirmation email
         hostname = context.uri.authority.host
         from_addr = 'enquiries@uktravellist.info'
         subject = u"[%s] Register confirmation required" % hostname
         subject = self.gettext(subject)
-        body = self.gettext(u"This email has been generated in response to your"
-                            u" enquiry on the UK Travel List.\n"
-                            u"To submit your enquiry, click the link:\n"
-                            u"\n"
-                            u"  $confirm_url"
-                            u"\n"
-                            u"If the text is on two lines, please copy and "
-                            u"paste the full line into your browser URL bar."
-                            u"\n"
-                            u"Thank you for visiting the UK Travel List website."
-                            u"\n"
-                            u"UK Travel List Team")
+        body = self.gettext(
+            u"This email has been generated in response to your"
+            u" enquiry on the UK Travel List.\n"
+            u"To submit your enquiry, click the link:\n"
+            u"\n"
+            u"  $confirm_url"
+            u"\n"
+            u"If the text is on two lines, please copy and "
+            u"paste the full line into your browser URL bar."
+            u"\n"
+            u"Thank you for visiting the UK Travel List website."
+            u"\n"
+            u"UK Travel List Team")
         url = ';enquiry_confirm_form?user=%s&key=%s' % (user_id, key)
         url = context.uri.resolve(url)
         body = Template(body).substitute({'confirm_url': str(url)})
@@ -442,13 +456,14 @@ class Address(RoleAware, Folder):
 
         # Back
         company = self.parent.get_property('dc:title')
-        message = (u"Your enquiry to <strong>%s</strong> needs to be validated."
-                   u"<p>An email has been sent to <strong><em>%s</em></strong>,"
-                   u" to finish the enquiry process, please follow the instructions"
-                   u" detailed within it.</p>"
-                   u"<p>If you don not receive the email, please check your SPAM"
-                   u" folder settings or <a href="/;contact_form">contact us.</a></p>"
-                   % (company, email))
+        message = (
+            u"Your enquiry to <strong>%s</strong> needs to be validated."
+            u"<p>An email has been sent to <strong><em>%s</em></strong>,"
+            u" to finish the enquiry process, please follow the instructions"
+            u" detailed within it.</p>"
+            u"<p>If you don not receive the email, please check your SPAM"
+            u' folder settings or <a href="/;contact_form">contact us.</a></p>'
+            % (company, email))
         return message.encode('utf-8')
 
 
@@ -473,22 +488,15 @@ class Address(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/address_enquiry_confirm.xml')
         return stl(handler, namespace)
 
+
     enquiry_confirm__access__ = True
     def enquiry_confirm(self, context):
-        # Save the enquiry before we add the user
-        enquiry = context.get_form_value('abakuc:enquiry')
-        enquiry_type = context.get_form_value('abakuc:enquiry_type')
-        phone = context.get_form_value('abakuc:phone')
-        row = [datetime.now(), enquiry_type, user_id, phone, enquiry, False]
-        handler = self.get_handler('log_enquiry.csv')
-        handler.add_row(row)
-
         keep = ['key']
         register_fields = [('newpass', True),
                            ('newpass2', True)]
 
         # Check register key
-        user_id = self.get_property('user')
+        user_id = context.get_form_value('user')
         root = context.root
         users = root.get_handler('users')
         user = users.get_handler(user_id)
@@ -516,33 +524,78 @@ class Address(RoleAware, Folder):
         user.set_auth_cookie(context, password)
 
         # Send email
-        # FIXME UK Travel is hardcoded
+        self.enquiry_send_email(user)
+
+        # Back
+        #goto = "./;%s" % self.get_firstview()
+        #return context.come_back(message, goto=goto)
+        return (u"Enquiry to has been submitted.<br/>" 
+                u"If you like to login, please choose your password")
+
+
+    def enquiry_send_email(self, user):
+        root = self.get_root()
+        users = root.get_handler('users')
+
         firstname = user.get_property('ikaaro:firstname')
         lastname = user.get_property('ikaaro:lastname')
         email = user.get_property('ikaaro:email')
+        to_addrs = [ users.get_handler(x).get_property('ikaaro:email')
+                     for x in self.get_members() ]
+        # FIXME UK Travel is hardcoded
+        subject_template = u'[UK Travel] New Enquiry (%s)'
+        body_template = ('From : %s %s\n'
+                         'Phone: %s\n'
+                         '\n'
+                         '%s')
+        csv = self.get_handler('log_enquiry.csv')
+        for row in csv.search(user_id=user.name):
+            kk, enquiry_type, kk, phone, enquiry, kk = csv.get_row(row)
+            subject = subject_template % enquiry_type
+            body = body_template % (firstname, lastname, phone, enquiry)
+            for to_addr in to_addrs:
+                root.send_email(email, to_addr, subject, body)
 
-        enquiry_type = None
-        enquiry = None
-        phone = None
 
-        subject = u'[UK Travel] New Enquiry (%s)' % enquiry_type
-        body = (
-            'From : %s %s\n'
-            'Phone: %s\n'
-            '\n'
-            '%s')
-        body = body % (firstname, lastname, phone, enquiry)
+    #######################################################################
+    # User Interface / View Enquiries
+    #######################################################################
+    view_enquiries__access__ = 'is_allowed_to_view'
+    def view_enquiries(self, context):
+        root = context.root
+        users = root.get_handler('users')
 
-        for name in self.get_members():
-            to_addr = users.get_handler(name).get_property('ikaaro:email')
-            root.send_email(email, to_addr, subject, body)
+        namespace = {}
+        csv = self.get_handler('log_enquiry.csv')
+        enquiries = []
+        for row in csv.get_rows():
+            date, type, user_id, phone, enquiry, resolved = row
+            if resolved:
+                continue
+            user = users.get_handler(user_id)
+            enquiries.append({
+                'index': row.number,
+                'date': format_datetime(date),
+                'firstname': user.get_property('ikaaro:firstname'),
+                'lastname': user.get_property('ikaaro:lastname'),
+                'email': user.get_property('ikaaro:email'),
+                'phone': phone,
+                'type': EnquiryType.get_value(type)})
+        enquiries.reverse()
+        namespace['enquiries'] = enquiries
 
-        # Back
-        message = u("'Enquiry to has been submitted.<br/>" 
-                  u"If you like to login, please choose your password")
-        #goto = "./;%s" % self.get_firstview()
-        #return context.come_back(message, goto=goto)
-        return context.come_back(message)
+        handler = self.get_handler('/ui/abakuc/address_view_enquiries.xml')
+        return stl(handler, namespace)
+
+    
+    view_enquiry__access__ = 'is_allowed_to_view'
+    def view_enquiry(self, context):
+        index = context.get_form_value('index')
+
+        namespace = {}
+
+        handler = self.get_handler('/ui/abakuc/address_view_enquiry.xml')
+        return stl(handler, namespace)
 
 
 
