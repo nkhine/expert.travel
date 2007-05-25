@@ -442,12 +442,13 @@ class Address(RoleAware, Folder):
 
         # Back
         company = self.parent.get_property('dc:title')
-        message = (u"Your enquiry to <strong>%s</strong> needs to be validated.<br/>"
-                   u"An email has been sent to <strong><em>%s</em></strong>,"
+        message = (u"Your enquiry to <strong>%s</strong> needs to be validated."
+                   u"<p>An email has been sent to <strong><em>%s</em></strong>,"
                    u" to finish the enquiry process, please follow the instructions"
-                   u" detailed in it.<br/>"
-                   u"If you don not receive the email, please check your SPAM"
-                   u" folder settings or email us." % (company, email))
+                   u" detailed within it.</p>"
+                   u"<p>If you don not receive the email, please check your SPAM"
+                   u" folder settings or <a href="/;contact_form">contact us.</a></p>"
+                   % (company, email))
         return message.encode('utf-8')
 
 
