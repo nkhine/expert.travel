@@ -1,0 +1,241 @@
+002;Africa;014;Eastern Africa;108;Burundi 
+002;Africa;014;Eastern Africa;174;Comoros 
+002;Africa;014;Eastern Africa;262;Djibouti 
+002;Africa;014;Eastern Africa;232;Eritrea 
+002;Africa;014;Eastern Africa;231;Ethiopia 
+002;Africa;014;Eastern Africa;404;Kenya 
+002;Africa;014;Eastern Africa;450;Madagascar 
+002;Africa;014;Eastern Africa;454;Malawi 
+002;Africa;014;Eastern Africa;480;Mauritius 
+002;Africa;014;Eastern Africa;175;Mayotte
+002;Africa;014;Eastern Africa;508;Mozambique 
+002;Africa;014;Eastern Africa;638;Reunion 
+002;Africa;014;Eastern Africa;646;Rwanda 
+002;Africa;014;Eastern Africa;690;Seychelles 
+002;Africa;014;Eastern Africa;706;Somalia 
+002;Africa;014;Eastern Africa;800;Uganda 
+002;Africa;014;Eastern Africa;834;United Republic of Tanzania 
+002;Africa;014;Eastern Africa;894;Zambia 
+002;Africa;014;Eastern Africa;716;Zimbabwe 
+002;Africa;017;Middle Africa;024;Angola 
+002;Africa;017;Middle Africa;120;Cameroon 
+002;Africa;017;Middle Africa;140;Central African Republic 
+002;Africa;017;Middle Africa;148;Chad 
+002;Africa;017;Middle Africa;178;Congo 
+002;Africa;017;Middle Africa;180;Democratic Republic of the Congo 
+002;Africa;017;Middle Africa;226;Equatorial Guinea 
+002;Africa;017;Middle Africa;266;Gabon 
+002;Africa;017;Middle Africa;678;Sao Tome and Principe 
+002;Africa;015;Northern Africa;012;Algeria 
+002;Africa;015;Northern Africa;818;Egypt 
+002;Africa;015;Northern Africa;434;Libyan Arab Jamahiriya 
+002;Africa;015;Northern Africa;504;Morocco 
+002;Africa;015;Northern Africa;736;Sudan 
+002;Africa;015;Northern Africa;788;Tunisia 
+002;Africa;015;Norther Africa;732;Western Sahara 
+002;Africa;018;Southern Africa;072;Botswana 
+002;Africa;018;Southern Africa;426;Lesotho 
+002;Africa;018;Southern Africa;516;Namibia 
+002;Africa;018;Southern Africa;710;South Africa 
+002;Africa;018;Southern Africa;748;Swaziland 
+002;Africa;011;Western Africa;204;Benin 
+002;Africa;011;Western Africa;854;Burkina Faso 
+002;Africa;011;Western Africa;132;Cape Verde 
+002;Africa;011;Western Africa;384;Cote d'Ivoire 
+002;Africa;011;Western Africa;270;Gambia 
+002;Africa;011;Western Africa;288;Ghana 
+002;Africa;011;Western Africa;324;Guinea 
+002;Africa;011;Western Africa;624;Guinea-Bissau 
+002;Africa;011;Western Africa;430;Liberia 
+002;Africa;011;Western Africa;466;Mali 
+002;Africa;011;Western Africa;478;Mauritania 
+002;Africa;011;Western Africa;562;Niger 
+002;Africa;011;Western Africa;566;Nigeria 
+002;Africa;011;Western Africa;654;Saint Helena 
+002;Africa;011;Western Africa;686;Senegal 
+002;Africa;011;Western Africa;694;Sierra Leone 
+002;Africa;011;Western Africa;768;Togo 
+019;Americas;419;Latin America and the Caribbean;029;Caribbean 
+019;Americas;419;Latin America and the Caribbean;660;Anguilla 
+019;Americas;419;Latin America and the Caribbean;028;Antigua and Barbuda 
+019;Americas;419;Latin America and the Caribbean;533;Aruba 
+019;Americas;419;Latin America and the Caribbean;044;Bahamas 
+019;Americas;419;Latin America and the Caribbean;052;Barbados 
+019;Americas;419;Latin America and the Caribbean;092;British Virgin Islands 
+019;Americas;419;Latin America and the Caribbean;136;Cayman Islands 
+019;Americas;419;Latin America and the Caribbean;192;Cuba 
+019;Americas;419;Latin America and the Caribbean;212;Dominica 
+019;Americas;419;Latin America and the Caribbean;214;Dominican Republic 
+019;Americas;419;Latin America and the Caribbean;308;Grenada 
+019;Americas;419;Latin America and the Caribbean;312;Guadeloupe 
+019;Americas;419;Latin America and the Caribbean;332;Haiti 
+019;Americas;419;Latin America and the Caribbean;388;Jamaica 
+019;Americas;419;Latin America and the Caribbean;474;Martinique 
+019;Americas;419;Latin America and the Caribbean;500;Montserrat 
+019;Americas;419;Latin America and the Caribbean;530;Netherlands Antilles 
+019;Americas;419;Latin America and the Caribbean;630;Puerto Rico 
+019;Americas;419;Latin America and the Caribbean;659;Saint Kitts and Nevis 
+019;Americas;419;Latin America and the Caribbean;662;Saint Lucia 
+019;Americas;419;Latin America and the Caribbean;670;Saint Vincent and the Grenadines 
+019;Americas;419;Latin America and the Caribbean;780;Trinidad and Tobago 
+019;Americas;419;Latin America and the Caribbean;796;Turks and Caicos Islands 
+019;Americas;419;Latin America and the Caribbean;850;United States Virgin Islands 
+019;Americas;013;Central America;084;Belize 
+019;Americas;013;Central America;188;Costa Rica 
+019;Americas;013;Central America;222;El Salvador 
+019;Americas;013;Central America;320;Guatemala 
+019;Americas;013;Central America;340;Honduras 
+019;Americas;013;Central America;484;Mexico 
+019;Americas;013;Central America;558;Nicaragua 
+019;Americas;013;Central America;591;Panama 
+019;Americas;013;Central America;005;South America 
+019;Americas;013;Central America;032;Argentina 
+019;Americas;013;Central America;068;Bolivia 
+019;Americas;013;Central America;076;Brazil 
+019;Americas;013;Central America;152;Chile 
+019;Americas;013;Central America;170;Colombia 
+019;Americas;013;Central America;218;Ecuador 
+019;Americas;013;Central America;238;Falkland Islands (Malvinas) 
+019;Americas;013;Central America;254;French Guiana 
+019;Americas;013;Central America;328;Guyana 
+019;Americas;013;Central America;600;Paraguay 
+019;Americas;013;Central America;604;Peru 
+019;Americas;013;Central America;740;Suriname 
+019;Americas;013;Central America;858;Uruguay 
+019;Americas;013;Central America;862;Venezuela (Bolivarian Republic of)
+019;Americas;012;North America;060;Bermuda 
+019;Americas;012;North America;124;Canada 
+019;Americas;012;North America;304;Greenland 
+019;Americas;012;North America;666;Saint Pierre and Miquelon 
+019;Americas;012;North America;840;United States of America 
+142;Asia;143;Central Asia;398;Kazakhstan 
+142;Asia;143;Central Asia;417;Kyrgyzstan 
+142;Asia;143;Central Asia;762;Tajikistan 
+142;Asia;143;Central Asia;795;Turkmenistan 
+142;Asia;143;Central Asia;860;Uzbekistan 
+142;Asia;030;Eastern Asia;156;China 
+142;Asia;030;Eastern Asia;344;Hong Kong Special Administrative Region of China 
+142;Asia;030;Eastern Asia;446;Macao Special Administrative Region of China 
+142;Asia;030;Eastern Asia;408;Democratic People's Republic of Korea 
+142;Asia;030;Eastern Asia;392;Japan 
+142;Asia;030;Eastern Asia;496;Mongolia 
+142;Asia;030;Eastern Asia;410;Republic of Korea
+142;Asia;034;Southern Asia;034;Southern Asia 
+142;Asia;034;Southern Asia;004;Afghanistan 
+142;Asia;034;Southern Asia;050;Bangladesh 
+142;Asia;034;Southern Asia;064;Bhutan 
+142;Asia;034;Southern Asia;356;India 
+142;Asia;034;Southern Asia;364;Iran, Islamic Republic of
+142;Asia;034;Southern Asia;462;Maldives 
+142;Asia;034;Southern Asia;524;Nepal 
+142;Asia;034;Southern Asia;586;Pakistan 
+142;Asia;034;Southern Asia;144;Sri Lanka 
+142;Asia;035;South-Eastern Asia;096;Brunei Darussalam 
+142;Asia;035;South-Eastern Asia;116;Cambodia 
+142;Asia;035;South-Eastern Asia;360;Indonesia 
+142;Asia;035;South-Eastern Asia;418;Lao People's Democratic Republic 
+142;Asia;035;South-Eastern Asia;458;Malaysia 
+142;Asia;035;South-Eastern Asia;104;Myanmar 
+142;Asia;035;South-Eastern Asia;608;Philippines 
+142;Asia;035;South-Eastern Asia;702;Singapore 
+142;Asia;035;South-Eastern Asia;764;Thailand 
+142;Asia;035;South-Eastern Asia;626;Timor-Leste 
+142;Asia;035;South-Eastern Asia;704;Viet Nam 
+142;Asia;145;Western Asia;051;Armenia 
+142;Asia;145;Western Asia;031;Azerbaijan 
+142;Asia;145;Western Asia;048;Bahrain 
+142;Asia;145;Western Asia;196;Cyprus 
+142;Asia;145;Western Asia;268;Georgia 
+142;Asia;145;Western Asia;368;Iraq 
+142;Asia;145;Western Asia;376;Israel 
+142;Asia;145;Western Asia;00;Jordan 
+142;Asia;145;Western Asia;14;Kuwait 
+142;Asia;145;Western Asia;22;Lebanon 
+142;Asia;145;Western Asia;75;Occupied Palestinian Territory 
+142;Asia;145;Western Asia;12;Oman 
+142;Asia;145;Western Asia;34;Qatar 
+142;Asia;145;Western Asia;82;Saudi Arabia 
+142;Asia;145;Western Asia;60;Syrian Arab Republic 
+142;Asia;145;Western Asia;92;Turkey 
+142;Asia;145;Western Asia;84;United Arab Emirates 
+142;Asia;145;Western Asia;87;Yemen 
+150;Europe;151;Eastern Europe;112;Belarus 
+150;Europe;151;Eastern Europe;100;Bulgaria 
+150;Europe;151;Eastern Europe;203;Czech Republic 
+150;Europe;151;Eastern Europe;348;Hungary 
+150;Europe;151;Eastern Europe;616;Poland 
+150;Europe;151;Eastern Europe;498;Republic of Moldova 
+150;Europe;151;Eastern Europe;642;Romania 
+150;Europe;151;Eastern Europe;643;Russian Federation 
+150;Europe;151;Eastern Europe;703;Slovakia 
+150;Europe;151;Eastern Europe;804;Ukraine 
+150;Europe;154;Northern Europe;248;Oland Islands 
+150;Europe;154;Northern Europe;830;Channel Islands 
+150;Europe;154;Northern Europe;208;Denmark 
+150;Europe;154;Northern Europe;233;Estonia 
+150;Europe;154;Northern Europe;234;Faeroe Islands 
+150;Europe;154;Northern Europe;246;Finland 
+150;Europe;154;Northern Europe;831;Guernsey 
+150;Europe;154;Northern Europe;352;Iceland 
+150;Europe;154;Northern Europe;372;Ireland 
+150;Europe;154;Northern Europe;833;Isle of Man 
+150;Europe;154;Northern Europe;832;Jersey 
+150;Europe;154;Northern Europe;428;Latvia 
+150;Europe;154;Northern Europe;440;Lithuania 
+150;Europe;154;Northern Europe;578;Norway 
+150;Europe;154;Northern Europe;744;Svalbard and Jan Mayen Islands 
+150;Europe;154;Northern Europe;752;Sweden 
+150;Europe;154;Northern Europe;826;United Kingdom of Great Britain and Northern Ireland
+150;Europe;154;Northern Europe;826;United Kingdom of Great Britain and Northern Ireland 
+150;Europe;154;Northern Europe;826;United Kingdom of Great Britain and Northern Ireland 
+150;Europe;039;Southern Europe;008;Albania 
+150;Europe;039;Southern Europe;020;Andorra 
+150;Europe;039;Southern Europe;070;Bosnia and Herzegovina 
+150;Europe;039;Southern Europe;191;Croatia 
+150;Europe;039;Southern Europe;292;Gibraltar 
+150;Europe;039;Southern Europe;300;Greece 
+150;Europe;039;Southern Europe;336;Holy See 
+150;Europe;039;Southern Europe;380;Italy 
+150;Europe;039;Southern Europe;470;Malta 
+150;Europe;039;Southern Europe;499;Montenegro 
+150;Europe;039;Southern Europe;620;Portugal
+150;Europe;039;Southern Europe;674;San Marino
+150;Europe;039;Southern Europe;688;Serbia
+150;Europe;039;Southern Europe;705;Slovenia 
+150;Europe;039;Southern Europe;724;Spain 
+150;Europe;039;Southern Europe;807;The former Yugoslav Republic of Macedonia 
+150;Europe;155;Western Europe;155;Western Europe 
+150;Europe;155;Western Europe;040;Austria 
+150;Europe;155;Western Europe;056;Belgium 
+150;Europe;155;Western Europe;250;France 
+150;Europe;155;Western Europe;276;Germany 
+150;Europe;155;Western Europe;438;Liechtenstein 
+150;Europe;155;Western Europe;442;Luxembourg 
+150;Europe;155;Western Europe;492;Monaco 
+150;Europe;155;Western Europe;528;Netherlands 
+150;Europe;155;Western Europe;756;Switzerland 
+009;Oceania;053;Australia and New Zealand;036;Australia 
+009;Oceania;053;Australia and New Zealand;554;New Zealand 
+009;Oceania;053;Australia and New Zealand;574;Norfolk Island 
+009;Oceania;054;Melanesia;242;Fiji 
+009;Oceania;054;Melanesia;540;New Caledonia 
+009;Oceania;054;Melanesia;598;Papua New Guinea 
+009;Oceania;054;Melanesia;090;Solomon Islands 
+009;Oceania;054;Melanesia;548;Vanuatu 
+009;Oceania;057;Micronesia;316;Guam 
+009;Oceania;057;Micronesia;296;Kiribati 
+009;Oceania;057;Micronesia;584;Marshall Islands 
+009;Oceania;057;Micronesia;583;Micronesia, Federated States of
+009;Oceania;057;Micronesia;520;Nauru 
+009;Oceania;057;Micronesia;580;Northern Mariana Islands 
+009;Oceania;057;Micronesia;585;Palau 
+009;Oceania;061;Polynesia;016;American Samoa 
+009;Oceania;061;Polynesia;184;Cook Islands 
+009;Oceania;061;Polynesia;258;French Polynesia 
+009;Oceania;061;Polynesia;570;Niue 
+009;Oceania;061;Polynesia;612;Pitcairn 
+009;Oceania;061;Polynesia;882;Samoa 
+009;Oceania;061;Polynesia;772;Tokelau 
+009;Oceania;061;Polynesia;776;Tonga 
+009;Oceania;061;Polynesia;798;Tuvalu 
+009;Oceania;061;Polynesia;876;Wallis and Futuna Islands 

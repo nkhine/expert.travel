@@ -17,9 +17,144 @@
     <p>
     Listing within this site is <b>FREE of Charge</b>, should you find
     that your company is not listed, please go to
-    <a href="https://uktravellist.info/shoppers/register"><i>'Manage Your
-    Profile'</i></a> and register. If your entry is incorrect please use
-    the 'Enquiry' form within the Company entry to submit your changes.
+    <a href=";register_form"><i>'Register'</i></a> and register. If your entry
+    is incorrect please login or re-register.
     </p>
+
+<!-- table one -->  
+<table width="100%" border="0" align="center" cellpadding="3" cellspacing="0">
+	<tr>
+		<td width="10" />
+		<td valign="top" width="75%">
+			<table width="100%" style="margin-bottom:5px;">
+				<tr>
+					<td>
+						<h2>Latest travel industry news</h2>
+					</td>
+				</tr>
+        <tr>
+              <td id="List">
+                  <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                    onmouseout="this.className='ListItem';">  
+                    <dt>
+                      <a href="{item/href}">{item/title}</a>
+                    </dt>
+                    <dd>
+                      Short Description<br/>
+                    </dd>
+                  </dl>       
+          </td>
+        </tr>
+			</table>
+		</td>
+		<td valign="top">
+			<table width="35px" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td><img width="1" height="1" alt="" /></td>
+				</tr>
+			</table>
+		</td> 
+		<td valign="top">
+			<!-- table two -->
+			<table width="280" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<!-- table three -->
+						<table width="100%"  border="0" cellpadding="0" cellspacing="0.5" bgcolor="#6699CC">
+							<tr>
+								<td>
+								<!-- table four -->
+								<table width="100%"  border="0" cellpadding="10" cellspacing="0" bgcolor="#FFFFFF">
+									<tr>
+										<td style="padding:3px 6px 3px 6px; background-color:#DBEDF6;">
+											<table border="0" cellpadding="0"
+												cellspacing="0"
+												width="100%">
+												<tr><td><b>Resources</b></td><td>
+												<img src="images/tearoff_icon.gif" align="right" />
+												</td></tr>
+											</table>
+										</td>
+									</tr> <!-- what is this -->	
+									<tr>
+										<td style="background-color:#cccccc;">
+											<!-- table five -->
+											<table width="100%" border="0" cellpadding="5" cellspacing="0" bgcolor="#ffffff">
+												<tr>
+													<td style="line-height:160%;">
+													<p style="line-height:130%;margin:0 0 6px 0">
+												      <div><a id="" target="_blank" href="#">Demos and Guides</a></div>
+                              <div><a id="" target="_blank" href="#">Blog</a></div>
+                              <div><a id="" target="_blank" href="#">News and Case Studies</a></div>
+                              <div><a id="" target="_blank" href="#">Glossary</a></div>
+                              <div><a id="" target="_blank" href="#">Optimization Tips</a></div>
+                              <div><a id="" target="_blank" href="#">Report a Policy Violation</a></div>
+                              <div><a id="" target="_blank" href="#">Program Policies</a></div>
+													</p>
+													</td>
+												</tr>
+											</table>
+											<!--end of table five -->
+										</td>
+									</tr>
+								</table>
+								<!-- end of table four -->
+								</td>
+							</tr>
+						</table>
+						<!-- end of table three -->
+            <br />
+							<!-- table three -->
+						<table width="100%"  border="0" cellpadding="0" cellspacing="0.5" bgcolor="#6699CC">
+							<tr>
+								<td>
+								<!-- table four -->
+								<table width="100%"  border="0" cellpadding="10" cellspacing="0" bgcolor="#FFFFFF">
+									<tr>
+										<td style="padding:3px 6px 3px 6px; background-color:#DBEDF6;">
+											<table border="0" cellpadding="0"
+												cellspacing="0"
+												width="100%">
+												<tr><td><b>Jobs</b></td><td>
+												<img src="images/tearoff_icon.gif" align="right" />
+												</td></tr>
+											</table>
+										</td>
+									</tr> <!-- what is this -->	
+									<tr>
+										<td style="background-color:#cccccc;">
+											<!-- table five -->
+											<table width="100%" border="0" cellpadding="5" cellspacing="0" bgcolor="#ffffff">
+												<tr>
+													<td style="line-height:160%;">
+													<p style="line-height:130%;margin:0 0 6px 0">
+												      <div><a id="" href="#">Customer
+                              Service Agent - Customer Relations</a></div>
+                              <div><a id="" href="#">Account
+                              Executives - Corporate and Leisure Sectors</a></div>
+													</p>
+													</td>
+												</tr>
+                        <tr>  
+                          <td align="right"><a id="" href="#">2,345 more jobs >>></a></td>
+                        </tr>  
+											</table>
+											<!--end of table five -->
+										</td>
+									</tr>
+								</table>
+								<!-- end of table four -->
+								</td>
+							</tr>
+						</table>
+						<!-- end of table three -->
+            <br />				</td>
+				</tr>
+			</table>
+			<!-- end of table two -->
+		</td>
+	</tr>
+</table> 
+<!-- end of table one -->
   </body>
 </html>

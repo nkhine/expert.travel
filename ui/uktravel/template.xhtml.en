@@ -22,8 +22,9 @@
         <td id="upper-nav-crn"></td>
         <td>
         <stl:block if="not user/info">
-          (not logged in)
+          <a href="/" id="top_menu_home">Home</a>
           <a href="/;login_form" id="top_menu_login">Log in</a>
+          (not logged in)
           <a href="/;register_form" id="top_menu_register"
             stl:if="user/joinisopen">Register</a>
         </stl:block>
@@ -39,7 +40,7 @@
       <td colspan="2" id="upper-nav-src">
       <form action="/;search" method="get">
         <input class="searchinput" name="search_text" type="text" 
-          value="Company name" size="20" onFocus="this.value=''" />
+          value="Abakuc Limited" size="20" onFocus="this.value=''" />
         <input class="button_search" type="submit" value="Search"/>
       </form>
       </td>
@@ -48,25 +49,6 @@
     </div>
     <div id="wrapper">
       <div id="center" class="column">
-       <div id="main_menu">
-       <a href="/news.xhtml">News</a>
-       <a href="/jobs/;view">Job Board</a>
-       <a href="/events.xhtml">Events</a>
-       <a href="/faq.xhtml">FAQ's</a>
-       <a href="/help.xhtml">Help</a>
-       </div>
-        <div id="maintitle">
-          <div id="breadcrumbs">
-            <label>Location:</label>
-            <span stl:repeat="item breadcrumb">
-              <a stl:if="item/url" href="${item/url}"
-                title="${item/name}">${item/short_name}</a>
-              <span stl:if="not item/url"
-                title="${item/name}">${item/short_name}</span>
-              <stl:inline if="not repeat/item/end">/</stl:inline> 
-            </span>
-          </div>
-        </div>
         <!-- The Body -->
         <div id="body">
           <!--<h1>${metadata/title}</h1>-->

@@ -171,7 +171,7 @@ td, th { padding: 3px; }
 }
 
 /**************************************************************************
- * Company Entries   
+ * Lists   
  **************************************************************************/
 #List {
     margin-left: 5px;
@@ -185,12 +185,18 @@ td, th { padding: 3px; }
 .SmallText				{ font-size: 10px; color: #666666; }
 
 /**************************************************************************
+ * Portlets
+ * ***********************************************************************/
+.portlet_title {padding:3px 6px 3px 6px; background-color:#DBEDF6;}
+.portlet_list {padding:3px 6px 3px 6px; background-color:#DBEDF6;}
+.portlet_more {padding:3px 6px 3px 6px; background-color:#DBEDF6;}
+
+/**************************************************************************
  * Tabs
  * ***********************************************************************/
 
 #tabs {
   border-bottom: 1px solid #babdb6;
-  border-top: 1px solid #babdb6;
   padding: 0px 1em 0px 1em;
 }
 
@@ -204,7 +210,7 @@ td, th { padding: 3px; }
 }
 
 #tabs td {
-  padding: 4px 0px 4px 0px;
+  padding: 0px 0px 4px 0px;
 }
 
 #tabs .menu a {
@@ -275,7 +281,7 @@ td, th { padding: 3px; }
   padding: 0.3em;
   font-size: 1.4em;
 }
-#body h1, #body h3, #body h4, #body h5, #body h6 { border-bottom: 1px solid #d3d7cf; }
+#body h1, #body h2, #body h3, #body h4, #body h5, #body h6 { border-bottom: 1px solid #d3d7cf; }
 #body h1 { margin: 0.5em; }
 #body h2 { margin: 0.4em; }
 #body h3 { margin: 0.3em; }
@@ -675,6 +681,7 @@ ul#contact_to li {
     padding:2px 2px 2px 17px
 }
 
+<<<<<<< HEAD:ui/uktravel/style.css
 /* Profile Styles */
 
 #profile table {
@@ -787,3 +794,5 @@ ul#contact_to li {
     font-weight:bold;
     vertical-align: absmiddle;
 }
+=======
+>>>>>>> 949facdafde45002ac3b9ef8ccaf8a54d4d21f2b:ui/uktravel/style.css

@@ -1,25 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+<<<<<<< HEAD:ui/abakuc/user_profile.xml.en
   <table width="100%" border="1">
+=======
+
+  <table width="100%" border="0">
+>>>>>>> 949facdafde45002ac3b9ef8ccaf8a54d4d21f2b:ui/abakuc/user_profile.xml.en
   <tr>
+<<<<<<< HEAD:ui/abakuc/user_profile.xml.en
     <td rowspan="2" width="1%">
+=======
+  <td><h2>Company/Address Information</h2></td>
+  <td><h2>Personal Information</h2></td>
+  </tr>
+    <tr>
+      <td rowspan="2">
+        <stl:block if="not address">
+          <em>You are not attached to any company</em>.
+          <stl:block if="is_self_or_admin">
+            Please <a href=";setup_company_form">set up your company</a>.
+          </stl:block>
+        </stl:block>
+        <stl:block if="address">
+          <table>
+            <tr>
+              <th align="right">Name</th>
+              <td>${company_title}</td>
+            </tr>
+            <tr>
+              <th align="right">Website</th>
+              <td><a href="${website}">${website}</a></td>
+            </tr>
+            <tr>
+              <th align="right" valign="top">Address</th>
+              <td><address>${address}</address></td>
+            </tr>
+            <tr>
+              <th align="right">Town</th>
+              <td>${town}</td>
+            </tr>
+            <tr>
+              <th align="right">County</th>
+              <td>${county}</td>
+            </tr>
+            <tr>
+              <th align="right">Postcode</th>
+              <td>${postcode}</td>
+            </tr>
+            <tr stl:if="phone">
+              <th align="right">Phone</th>
+              <td>${phone}</td>
+            </tr>
+            <tr stl:if="fax">
+              <th align="right">Fax</th>
+              <td>${fax}</td>
+            </tr>
+          </table>
+            
+        </stl:block>
+      </td>
+      <td valign="top">
+>>>>>>> 949facdafde45002ac3b9ef8ccaf8a54d4d21f2b:ui/abakuc/user_profile.xml.en
         <table>
           <tr>
-            <th align="right">Firstname</th>
-            <td>${firstname}</td>
-          </tr>
-          <tr>
-            <th align="right">Lastname</th>
-            <td>${lastname}</td>
+            <th align="right">Name</th>
+            <td>${firstname} ${lastname}</td>
           </tr>
           <tr>
             <th align="right">Email</th>
             <td>${email}</td>
           </tr>
+        <stl:block if="is_self_or_admin">
+          <tr>
+            <td></td>
+            <td>
+                <a href=";edit_account_form">Edit account details.</a>
+                <a href=";edit_password_form">Change password.</a>
+            </td>
+          </tr>
+        </stl:block>
         </table>
+<<<<<<< HEAD:ui/abakuc/user_profile.xml.en
     </td>
     <td colspan="2">
     <script type="text/javascript" src="/ui/abakuc/tab-view.js"></script>
@@ -122,30 +184,33 @@
       <tr>
         <th align="right">County</th>
         <td>${county}</td>
+=======
+      </td>
+      <tr stl:if="address">
+        <td valign="top">
+        <h2>Enquiries</h2>
+        <p>
+        <a href="${address_path}/;view_enquiries">Check enquiries
+          (${enquiries})</a>
+        </p>
+        </td>
+>>>>>>> 949facdafde45002ac3b9ef8ccaf8a54d4d21f2b:ui/abakuc/user_profile.xml.en
       </tr>
-      <tr>
-        <th align="right">Postcode</th>
-        <td>${postcode}</td>
-      </tr>
-      <tr>
-        <th align="right">Phone</th>
-        <td>${phone}</td>
-      </tr>
-      <tr>
-        <th align="right">Fax</th>
-        <td>${fax}</td>
-      </tr>
-    </table>
+    </tr>
+  </table>
+  <stl:block if="address">
+  <stl:block if="is_self_or_admin">
     <p>
-    <a href=";edit_company_form">Modify company details</a>
+    <a href="/companies/${company_name}/;edit_metadata_form?referrer=1"
+      >Modify company details</a>
     </p>
     <p>
-    <a href=";edit_branch_form">Modify address details</a>
+    <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
+      >Modify address details</a>
     </p>
-    <h2>Enquiries</h2>
     <p>
-    <a href="${address_path}/log_enquiry.csv/;view">Check enquiries
-      (${enquiries})</a>
+    <a href=";setup_company_form">Switch to another company</a>.
     </p>
+  </stl:block>
   </stl:block>
 </stl:block>

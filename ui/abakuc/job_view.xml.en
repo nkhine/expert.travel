@@ -11,7 +11,10 @@
           <a href=""></a>
         </dt>
         <dd>
-          Search for Jobs interface!!! 
+          ${title} 
+        </dd>
+        <dd>
+          ${description} 
         </dd>
       </dl>       
     </stl:block>

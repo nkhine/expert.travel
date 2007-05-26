@@ -4,7 +4,28 @@
 # Import from itools
 from itools.datatypes import Integer, String, Unicode, Email, Tokens
 from itools.schemas import Schema as BaseSchema, register_schema
+from itools.datatypes import Enumerate 
 
+class Continent(Enumerate):
+
+    options =  [
+        {'name': 'Africa', 'label': u"Africa"},
+        {'name': 'Americas', 'label': u"Americas"},
+        {'name': 'Asia', 'label': u"Asia"},
+        {'name': 'Europe', 'label': u"Europe"},
+        {'name': 'Oceania', 'label': u"Oceania"}
+    ]
+
+
+class SubContinent(Enumerate):
+
+    options =  [
+        {'name': 'Africa', 'label': u"Africa"},
+        {'name': 'Americas', 'label': u"Americas"},
+        {'name': 'Asia', 'label': u"Asia"},
+        {'name': 'Europe', 'label': u"Europe"},
+        {'name': 'Oceania', 'label': u"Oceania"}
+    ]
 
 
 class Schema(BaseSchema):
@@ -13,6 +34,12 @@ class Schema(BaseSchema):
     class_uri = 'http://xml.abakuc.com/namespaces/abakuc'
 
     datatypes = {
+        #Country Schema
+        'continent': Continent(default='Oceania',
+                              title=u'Continent',
+                              is_mandatory=True),
+
+        'sub_continent': Unicode(title=u'Sub continent', is_mandatory=True),
         # Company
         'website': String,
         'topic': Tokens,
@@ -25,9 +52,8 @@ class Schema(BaseSchema):
         'fax': String,
         'license': Unicode,
         # Email
-        'fullname':Unicode,
-        'enquiry':Unicode,
-        'typeenquiry':String
+        'enquiry': Unicode,
+        'enquiry_type': String
         }
 
 

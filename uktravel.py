@@ -6,13 +6,13 @@ from itools import get_abspath
 from itools.datatypes import Integer
 from itools.handlers import get_handler
 from itools.stl import stl
-from itools.cms.csv import CSV
 from itools.cms import widgets
 from itools.cms.registry import register_object_class
 from itools.cms.html import XHTMLFile
 
 # Import from abakuc
 from companies import Companies
+from jobs import Jobs
 from website import WebSite
 
 
@@ -32,10 +32,6 @@ class UKTravel(WebSite):
         cache['news.xhtml'] = news 
         cache['news.xhtml.metadata'] = self.build_metadata(news,
             **{'dc:title': {'en': u'News Folder List'}})
-        jobs = XHTMLFile()
-        cache['jobs.xhtml'] = jobs 
-        cache['jobs.xhtml.metadata'] = self.build_metadata(jobs,
-            **{'dc:title': {'en': u'Job Board'}})
         events = XHTMLFile()
         cache['events.xhtml'] = events
         cache['events.xhtml.metadata'] = self.build_metadata(events,
@@ -54,6 +50,8 @@ class UKTravel(WebSite):
         name = segment.name
         if name == 'companies':
             return self.get_handler('/companies')
+        elif name == 'jobs':
+            return self.get_handler('/jobs')
         return WebSite._get_virtual_handler(self, segment)
 
 
@@ -62,6 +60,8 @@ class UKTravel(WebSite):
     #######################################################################
     search__access__ = True
     def search(self, context):
+        from root import world
+
         root = context.root
 
         topic = context.get_form_value('topic')
@@ -89,14 +89,16 @@ class UKTravel(WebSite):
         namespace['regions'] = []
 
         # Topic
-        csv = root.get_handler('regions.csv')
         if topic is not None:
             base = context.uri
             namespace['title'] = root.get_topic_title(topic)
             regions = []
             if region is None:
                 # Regions
-                for region in csv.get_unique_values('region'):
+                aux = [ world.get_row(x)[7]
+                        for x in world.search(iana_root_zone='gb') ]
+                aux = set(aux)
+                for region in aux:
                     q = query.copy()
                     q['region'] = region
                     if root.search(**q).get_n_documents():
@@ -104,13 +106,13 @@ class UKTravel(WebSite):
                         regions.append({'href': uri, 'title': region})
             elif county is None:
                 # Counties
-                for n in csv.search(region=region):
+                for n in world.search(region=region):
                     county_id = str(n)
                     q = query.copy()
                     q['county'] = county_id
                     if root.search(**q).get_n_documents():
-                        row = csv.get_row(n)
-                        county = row[2]
+                        row = world.get_row(n)
+                        county = row[8]
                         uri = base.replace(county=county_id, batchstart=None)
                         regions.append({'href': uri, 'title': county})
             else:
@@ -151,8 +153,9 @@ class UKTravel(WebSite):
                 region = ''
                 county = ''
             else:
-                row = csv.get_row(county_id)
-                country, region, county = row
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
             addresses.append(
                 {'href': '%s/;view' % self.get_pathto(address),
                  'title': company.title,

@@ -1,3 +1,29 @@
+Thu May 24 16:09:49 CEST 2007
+
+Enquiries are added to the enquiries_log.csv before they have been validated.
+Perhaps move the Enquiries module to use the new itool's tracker framework
+
+Fix the destinations portal navigation so that:
+
+Left menu contains the 5 continents
+Central menu has the Sub-Continents, which drills down to the Country, which
+inturn returns any folders/topics/documents that have been added.
+
+Use the countries_full.csv to build the initial skeleton for the navigation.
+
+see http://destinationsguide.info
+
+Wed May  9 12:05:53 CEST 2007
+
+Companies Directory view - when a user clicks on the breadcrumbs' companies
+link, it should display a list of all the companies as a list with batch.
+
+Perhaps the same view as companies/;browse_content?mode=list but modify the
+style so that it is the same as the search interface.
+
+
+
+
 Tue Apr 24 15:01:18 CEST 2007
 
 Fix the issue in regards to imported users as their acounts are not activated.
