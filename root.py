@@ -20,17 +20,19 @@ from itools.cms.registry import register_object_class
 from itools.cms.root import Root as BaseRoot
 from itools.cms.html import XHTMLFile
 
-# Import from our package
-from adverts import Adverts
+# Import from abakuc our modules 
 from base import Handler
-from companies import Companies, Company, Address
 from handlers import EnquiriesLog
-from uktravel import UKTravel
-#from videos import Videos 
+from utils import title_to_name
 from users import UserFolder
+
+# Import from abakuc our products
+from adverts import Adverts
+from companies import Companies, Company, Address
+from countries import Countries, Country
 from destinations import Destinations
 from jobs import Jobs
-from utils import title_to_name
+from uktravel import UKTravel
 
 class World(BaseCSV):
 
@@ -86,6 +88,13 @@ class Root(Handler, BaseRoot):
         cache['companies'] = companies
         cache['companies.metadata'] = self.build_metadata(companies, **kw)
 
+        # Countries
+        title = u'Countries'
+        kw = {'dc:title': {'en': title}}
+        countries = Countries()
+        cache['countries'] = countries
+        cache['countries.metadata'] = self.build_metadata(countries, **kw)
+
         # Topics
         topics = CSV()
         path = get_abspath(globals(), 'data/csv/topics.csv')
@@ -121,29 +130,6 @@ class Root(Handler, BaseRoot):
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = self.build_metadata(help,
                                             **{'dc:title': {'en': u'Help me'}})
-
-        # Adverts 
-##        adverts = Adverts()
-##        self.cache['adverts'] = adverts
-##        self.cache['adverts.metadata'] = self.build_metadata(adverts,
-##                                          **{'dc:title': {'en': u'Adverts'}})
-        # Banners
-##        banners = Banners()
-##        self.cache['banners'] = banners
-##        self.cache['banners.metadata'] = self.build_metadata(banners,
-##                                          **{'dc:title': {'en': u'Banners'}})
-        # Countries
-##        countries = Countries()
-##        self.cache['countries'] = countries
-##        self.cache['countries.metadata'] = self.build_metadata(countries,
-##                                          **{'dc:title': {'en': u'Countries'}})
-
-        # Videos 
-##        videos = Videos()
-##        self.cache['videos'] = videos
-##        self.cache['videos.metadata'] = self.build_metadata(videos,
-##                                          **{'dc:title': {'en': u'Videos'}})
-
 
     #######################################################################
     # XXX
