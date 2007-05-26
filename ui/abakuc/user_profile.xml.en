@@ -9,9 +9,13 @@
 >>>>>>> 949facdafde45002ac3b9ef8ccaf8a54d4d21f2b:ui/abakuc/user_profile.xml.en
   <tr>
 <<<<<<< HEAD:ui/abakuc/user_profile.xml.en
+<<<<<<< HEAD:ui/abakuc/user_profile.xml.en
     <td rowspan="2" width="1%">
 =======
   <td><h2>Company/Address Information</h2></td>
+=======
+  <td><h2>Company/Address Informatio</h2></td>
+>>>>>>> df66de41389779a9110d5f9d3ada5267559ce966:ui/abakuc/user_profile.xml.en
   <td><h2>Personal Information</h2></td>
   </tr>
     <tr>
