@@ -69,6 +69,8 @@ class Root(Handler, BaseRoot):
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
             ('topic', 'keyword', True, False),
+            ('continent', 'keyword', True, False),
+            ('sub_continent', 'keyword', True, False),
             ('country', 'keyword', True, False),
             ('region', 'keyword', True, False),
             ('county', 'keyword', True, False),
