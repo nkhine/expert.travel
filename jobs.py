@@ -5,6 +5,7 @@
 from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class
 from itools.stl import stl
+from itools.web import get_context
 
 # Import from abakuc
 from base import Handler, Folder
@@ -63,15 +64,20 @@ class Job(RoleAware, Folder):
         return []
 
     def get_catalog_indexes(self):
+        from root import world
+
         indexes = Folder.get_catalog_indexes(self)
+        company = self.parent
+        indexes['topic'] = company.get_property('abakuc:topic')
         county_id = self.get_property('abakuc:county')
         if county_id:
-            csv = self.get_handler('/regions.csv')
-            country, region, county = csv.get_row(county_id)
-            indexes['region'] = region
+            row = world.get_row(county_id)
+            indexes['country'] = row[5]
+            indexes['region'] = row[7]
             indexes['county'] = str(county_id)
+        indexes['town'] = self.get_property('abakuc:town')
+        indexes['title'] = company.get_property('dc:title')
         return indexes
-
     #######################################################################
     # User Interface
     view__access__ = True
@@ -79,12 +85,25 @@ class Job(RoleAware, Folder):
     def view(self, context):
         root = context.root
         get_property = self.metadata.get_property
+        from root import world
+
+        county_id = self.get_property('abakuc:county')
+        if county_id is None:
+            # XXX Every address should have a county
+            country = region = county = '-'
+        else:
+            row = world.get_row(county_id)
+            country = row[6]
+            region = row[7]
+            county = row[8]
 
         #namespace
         namespace = {}
         namespace['title'] = self.title_or_name
         namespace['description'] = self.get_property('dc:description')
-
+        namespace['country'] = country
+        namespace['region'] = region
+        namespace['county'] = county
         handler = self.get_handler('/ui/abakuc/job_view.xml')
         return stl(handler, namespace)
 
@@ -93,15 +112,25 @@ class Job(RoleAware, Folder):
         namespace['title'] = self.get_property('dc:title')
         namespace['description'] = self.get_property('dc:description')
 
-        # Area where the job is located 
-        rows = self.get_handler('/regions.csv').get_rows()
-        job_county = self.get_property('abakuc:county')
-
+    #######################################################################
+    # User Interface / Edit
+    #######################################################################
+    @staticmethod
+    def get_form(address_county=None):
+        from root import world
+        root = get_context().root
+        
+        namespace = {}
+        
+        rows = world.get_rows()
+        
         countries = {}
         regions = {}
         for index, row in enumerate(rows):
-            country, region, county = row
-            is_selected = (index == job_county)
+            country = row[6]
+            region = row[7]
+            county = row[8]
+            is_selected = (index == address_county)
             id = str(index)
 
             # Add the country if not yet added
@@ -118,8 +147,8 @@ class Job(RoleAware, Folder):
                 region_ns = regions[region]
             else:
                 region_ns = {'id': index, 'title': region,
-                             'is_selected': False, 'display': 'none',
-                             'counties': []}
+                              'is_selected': False, 'display': 'none',
+                              'counties': []}
                 regions[region] = region_ns
                 # Add to the country
                 country_ns['regions'].append(
@@ -146,6 +175,23 @@ class Job(RoleAware, Folder):
         regions = regions.values()
         regions.sort(key=lambda x: x['title'])
         namespace['regions'] = regions
+
+
+        handler = root.get_handler('ui/abakuc/regions_select_form.xml.en')
+        return stl(handler, namespace)
+
+
+    def edit_metadata_form(self, context):
+        namespace = {}
+        namespace['referrer'] = None
+        if context.get_form_value('referrer'):
+            namespace['referrer'] = str(context.request.referrer)
+        # Form
+        namespace = {}
+        namespace['title'] = self.title_or_name
+        namespace['description'] = self.get_property('dc:description')
+        address_county = self.get_property('abakuc:county')
+        namespace['form'] = self.get_form(address_county)
 
         handler = self.get_handler('/ui/abakuc/job_edit_metadata.xml')
         return stl(handler, namespace)

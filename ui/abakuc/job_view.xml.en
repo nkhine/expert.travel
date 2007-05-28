@@ -16,6 +16,15 @@
         <dd>
           ${description} 
         </dd>
+        <dd>
+          ${country} 
+        </dd>
+        <dd>
+          ${region} 
+        </dd>
+        <dd>
+          ${county} 
+        </dd>
       </dl>       
     </stl:block>
   </div>
