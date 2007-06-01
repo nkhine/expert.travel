@@ -10,7 +10,7 @@ from itools.datatypes import String, Unicode, Email
 from itools.i18n.locale_ import format_datetime
 from itools.stl import stl
 from itools.web import get_context
-from itools.cms.access import RoleAware
+from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
@@ -44,7 +44,7 @@ class Companies(Folder):
 
 
 
-class Company(Folder):
+class Company(AccessControl, Folder):
 
     class_id = 'company'
     class_title = u'Company'
@@ -64,6 +64,15 @@ class Company(Folder):
         if website.startswith('http://'):
             return website
         return 'http://' + website
+
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
+    def is_allowed_to_edit(self, user, object):
+        for address in self.search_handlers(handler_class=Address):
+            if address.is_allowed_to_edit(user, address):
+                return True
+        return False
 
 
     #######################################################################
@@ -184,6 +193,7 @@ class Address(RoleAware, Folder):
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = self.build_metadata(handler)
+
 
     def get_document_types(self):
         return []
