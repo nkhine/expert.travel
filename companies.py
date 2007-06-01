@@ -537,8 +537,9 @@ class Address(RoleAware, Folder):
         # Back
         #goto = "./;%s" % self.get_firstview()
         #return context.come_back(message, goto=goto)
-        return (u"Enquiry to has been submitted.<br/>" 
-                u"If you like to login, please choose your password")
+        message = (u"Enquiry to has been submitted.<br/>" 
+                   u"If you like to login, please choose your password")
+        return message.encode('utf-8')
 
 
     def enquiry_send_email(self, user):
