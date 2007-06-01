@@ -2,7 +2,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<img stl:if="logo" border="0" src="logo" style="float: right" />
 <h1>${title}</h1>
+
+
 <a href="${website}">${website}</a>
 
 <h3>News List....</h3>

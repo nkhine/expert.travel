@@ -84,6 +84,7 @@ class Company(AccessControl, Folder):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
         namespace['website'] = self.get_website()
+        namespace['logo'] = self.has_handler('logo')
 
         addresses = []
         for address in self.search_handlers():
@@ -158,7 +159,8 @@ class Company(AccessControl, Folder):
                 except:
                     pass
                 else:
-                    self.set_handler('logo', logo)
+                    logo = self.set_handler('logo', logo)
+                    logo.set_property('state', 'public')
 
         # Reindex
         root = context.root
@@ -245,6 +247,7 @@ class Address(RoleAware, Folder):
 
         namespace = {}
         namespace['company'] = self.parent.get_property('dc:title')
+        namespace['logo'] = self.parent.has_handler('logo')
         namespace['address'] = self.get_property('abakuc:address')
         namespace['town'] = self.get_property('abakuc:town')
         namespace['postcode'] = self.get_property('abakuc:postcode')
