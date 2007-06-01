@@ -6,7 +6,7 @@ from datetime import datetime
 from string import Template
 
 # Import from itools
-from itools.datatypes import String, Unicode, Email
+from itools.datatypes import Email, Integer, String, Unicode
 from itools.i18n.locale_ import format_datetime
 from itools.stl import stl
 from itools.web import get_context
@@ -609,11 +609,23 @@ class Address(RoleAware, Folder):
     
     view_enquiry__access__ = 'is_allowed_to_view'
     def view_enquiry(self, context):
-        index = context.get_form_value('index')
+        index = context.get_form_value('index', type=Integer)
+
+        row = self.get_handler('log_enquiry.csv').get_row(index)
+        date, type, user_id, phone, enquiry, resolved = row
+
+        root = context.root
+        user = root.get_handler('users/%s' % user_id)
 
         namespace = {}
+        namespace['date'] = format_datetime(date)
+        namespace['type'] = type
+        namespace['firstname'] = user.get_property('ikaaro:firstname')
+        namespace['lastname'] = user.get_property('ikaaro:lastname')
+        namespace['email'] = user.get_property('ikaaro:email')
+        namespace['phone'] = phone
 
-        handler = self.get_handler('/ui/abakuc/address_view_enquiry.xml')
+        handler = root.get_handler('ui/abakuc/address_view_enquiry.xml')
         return stl(handler, namespace)
 
 
