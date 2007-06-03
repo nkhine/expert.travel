@@ -2,102 +2,96 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <table width="100%" border="0">
-  <tr>
-  <td><h2>Company/Address Informatio</h2></td>
-  <td><h2>Personal Information</h2></td>
-  </tr>
-    <tr>
-      <td rowspan="2">
+  <stl:block if="is_self_or_admin">
+    <table width="100%" border="0">
+      <tr>
         <stl:block if="not address">
-          <em>You are not attached to any company</em>.
-          <stl:block if="is_self_or_admin">
-            Please <a href=";setup_company_form">set up your company</a>.
-          </stl:block>
+        <td><h2>Company Name/Address</h2></td>
+        <td><h2>Personnal Details</h2></td>
         </stl:block>
         <stl:block if="address">
+        <td><h2>${company_title}</h2></td>
+        <td><h2>${firstname} ${lastname}</h2></td>
+        </stl:block>
+      </tr>
+      <tr>
+        <td rowspan="2">
+          <stl:block if="not address">
+            <em>You are not attached to any company</em>.
+              Please <a href=";setup_company_form">set up your company</a>
+              before proceeding.
+          </stl:block>
+          <stl:block if="address">
+            <table>
+              <tr>
+                <th align="right">Website</th>
+                <td><a href="${website}">${website}</a></td>
+              </tr>
+              <tr>
+                <th align="right" valign="top">Address</th>
+                <td><address>${address}</address></td>
+              </tr>
+              <tr>
+                <th align="right">Town</th>
+                <td>${town}</td>
+              </tr>
+              <tr>
+                <th align="right">County</th>
+                <td>${county}</td>
+              </tr>
+              <tr>
+                <th align="right">Postcode</th>
+                <td>${postcode}</td>
+              </tr>
+              <tr stl:if="phone">
+                <th align="right">Phone</th>
+                <td>${phone}</td>
+              </tr>
+              <tr stl:if="fax">
+                <th align="right">Fax</th>
+                <td>${fax}</td>
+              </tr>
+            </table>
+          </stl:block>
+        </td>
+        <td valign="top">
           <table>
             <tr>
-              <th align="right">Name</th>
-              <td>${company_title}</td>
+              <th align="right">Email</th>
+              <td>${email}</td>
             </tr>
             <tr>
-              <th align="right">Website</th>
-              <td><a href="${website}">${website}</a></td>
-            </tr>
-            <tr>
-              <th align="right" valign="top">Address</th>
-              <td><address>${address}</address></td>
-            </tr>
-            <tr>
-              <th align="right">Town</th>
-              <td>${town}</td>
-            </tr>
-            <tr>
-              <th align="right">County</th>
-              <td>${county}</td>
-            </tr>
-            <tr>
-              <th align="right">Postcode</th>
-              <td>${postcode}</td>
-            </tr>
-            <tr stl:if="phone">
-              <th align="right">Phone</th>
-              <td>${phone}</td>
-            </tr>
-            <tr stl:if="fax">
-              <th align="right">Fax</th>
-              <td>${fax}</td>
+              <td></td>
+              <td>
+                  <a href=";edit_account_form">Edit account details.</a>
+                  <a href=";edit_password_form">Change password.</a>
+              </td>
             </tr>
           </table>
-            
-        </stl:block>
-      </td>
-      <td valign="top">
-        <table>
-          <tr>
-            <th align="right">Name</th>
-            <td>${firstname} ${lastname}</td>
-          </tr>
-          <tr>
-            <th align="right">Email</th>
-            <td>${email}</td>
-          </tr>
-        <stl:block if="is_self_or_admin">
-          <tr>
-            <td></td>
-            <td>
-                <a href=";edit_account_form">Edit account details.</a>
-                <a href=";edit_password_form">Change password.</a>
-            </td>
-          </tr>
-        </stl:block>
-        </table>
-      </td>
-      <tr stl:if="address">
-        <td valign="top">
-        <h2>Enquiries</h2>
-        <p>
-        <a href="${address_path}/;view_enquiries">Check enquiries
-          (${enquiries})</a>
-        </p>
         </td>
+        <tr stl:if="address">
+          <td valign="top">
+            <h2>Enquiries</h2>
+            <p>
+              <a href="${address_path}/;view_enquiries">Check enquiries
+                (${enquiries})</a>
+            </p>
+          </td>
+        </tr>
       </tr>
-    </tr>
-  </table>
-  <stl:block if="address">
-  <stl:block if="is_self_or_admin">
-    <p>
-    <a href="/companies/${company_name}/;edit_metadata_form?referrer=1"
-      >Modify company details</a>
-    </p>
-    <p>
-    <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
-      >Modify address details</a>
-    </p>
-    <p>
-    <a href=";setup_company_form">Switch to another company</a>.
-    </p>
-  </stl:block>
+    </table>
+    <stl:block if="address">
+      <p>
+        <a href="/companies/${company_name}/;edit_metadata_form?referrer=1"
+          >Modify company details</a>
+      </p>
+      <p>
+        <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
+          >Modify address details</a>
+      </p>
+      <p>
+        <a href=";setup_company_form">Switch to another company</a>.
+      </p>
+    </stl:block>
   </stl:block>
 </stl:block>

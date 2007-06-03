@@ -2,50 +2,51 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h1>Submit your enquiry to ${company}</h1>
+<h1>Submit your enquiry to<br /> ${company}</h1>
 <form action=";enquiry" method="post">
   <p>
-  <label for="abakuc:enquiry">Enquiry</label><br/>
-  <textarea cols="60" rows="3" name="abakuc:enquiry"
-    >${abakuc:enquiry/value}</textarea>
+    <label for="abakuc:enquiry_subject">Subject</label><br/>
+    <input type="text" size="40" name="abakuc:enquiry_subject"
+      value="${abakuc:enquiry_subject/value}" />
   </p>
-
   <p>
-  Enquiry type<br/>
-  <select style="width: 40%" name="abakuc:enquiry_type">
-    <option value=""></option>
-    <option stl:repeat="option enquiry_type" value="${option/name}"
-      selected="${option/selected}">${option/value}</option>
-  </select>
+    <label for="abakuc:enquiry">Enquiry</label><br/>
+    <textarea cols="60" rows="3" name="abakuc:enquiry"
+      >${abakuc:enquiry/value}</textarea>
   </p>
-
+  <p>
+    Enquiry type<br/>
+    <select style="width: 40%" name="abakuc:enquiry_type">
+      <option value=""></option>
+      <option stl:repeat="option enquiry_type" value="${option/name}"
+        selected="${option/selected}">${option/value}</option>
+    </select>
+  </p>
   <stl:block if="not is_authenticated">
-  <p>
-  First Name<br/>
-  <input type="text" size="40" name="ikaaro:firstname"
-    value="${ikaaro:firstname/value}" />
-  </p>
-
-  <p>
-  Last Name<br/>
-  <input type="text" size="40" name="ikaaro:lastname"
-    value="${ikaaro:lastname/value}" />
-  </p>
-
-  <p>
-  <label for="ikaaro:email">Email</label><br/>
-  <input type="text" size="40" name="ikaaro:email"
-    value="${ikaaro:email/value}" />
-  </p>
+    <p>
+      First Name<br/>
+      <input type="text" size="40" name="ikaaro:firstname"
+        value="${ikaaro:firstname/value}" />
+    </p>
+    <p>
+      Last Name<br/>
+      <input type="text" size="40" name="ikaaro:lastname"
+        value="${ikaaro:lastname/value}" />
+    </p>
+    <p>
+      <label for="ikaaro:email">Email</label><br/>
+      <input type="text" size="40" name="ikaaro:email"
+        value="${ikaaro:email/value}" />
+    </p>
+    <p>
+      <label for="abakuc:phone">Phone Number</label><br/>
+      <input type="text" size="40" name="abakuc:phone"
+        value="${abakuc:phone/value}" />
+    </p>
   </stl:block>
-
   <p>
-  <label for="abakuc:phone">Phone Number</label><br/>
-  <input type="text" size="40" name="abakuc:phone"
-    value="${abakuc:phone/value}" />
-  </p>
-
-  <p>Only genuine enquiries will be sent to ${company}. <input type="submit" value="Make Enquiry" class="button_ok" />
+    Only genuine enquiries will be sent to ${company}.
+    <input type="submit" value="Make Enquiry" class="button_ok" />
   </p>
 </form>
 

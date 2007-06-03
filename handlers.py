@@ -21,12 +21,13 @@ class EnquiriesLog(CSV):
 
     class_id = 'EnquiriesLog'
   
-    columns = ['datetime', 'enquiry_type', 'user_id', 'phone', 'enquiry',
-        'resolved']
+    columns = ['datetime', 'user_id', 'phone', 'enquiry_type', 
+               'enquiry_subject', 'enquiry', 'resolved']
     schema = {'datetime': DateTime,
-              'enquiry_type': EnquiryType,
               'user_id': String(index='keyword'),
               'phone': String,
+              'enquiry_type': EnquiryType,
+              'enquiry_subject': Unicode,
               'enquiry': Unicode,
               'resolved': Boolean}
 

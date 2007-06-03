@@ -379,6 +379,7 @@ class Address(RoleAware, Folder):
     # User Interface / Submit Enquiry
     #######################################################################
     enquiry_fields = [
+        ('abakuc:enquiry_subject', True),
         ('abakuc:enquiry', True),
         ('abakuc:enquiry_type', True),
         ('ikaaro:firstname', True),
@@ -388,6 +389,7 @@ class Address(RoleAware, Folder):
 
 
     enquiry_fields_auth = [
+        ('abakuc:enquiry_subject', True),
         ('abakuc:enquiry', True),
         ('abakuc:enquiry_type', True),
         ('abakuc:phone', False)]
@@ -438,10 +440,11 @@ class Address(RoleAware, Folder):
         user_id = user.name
 
         # Save the enquiry
-        enquiry = context.get_form_value('abakuc:enquiry')
-        enquiry_type = context.get_form_value('abakuc:enquiry_type')
         phone = context.get_form_value('abakuc:phone')
-        row = [datetime.now(), enquiry_type, user_id, phone, enquiry, False]
+        enquiry_type = context.get_form_value('abakuc:enquiry_type')
+        enquiry_subject = context.get_form_value('abakuc:enquiry_subject')
+        enquiry = context.get_form_value('abakuc:enquiry')
+        row = [datetime.now(), user_id, phone, enquiry_type, enquiry_subject, enquiry, False]
         handler = self.get_handler('log_enquiry.csv')
         handler.add_row(row)
 
@@ -550,7 +553,7 @@ class Address(RoleAware, Folder):
         # Back
         #goto = "./;%s" % self.get_firstview()
         #return context.come_back(message, goto=goto)
-        message = (u"Enquiry to has been submitted.<br/>" 
+        message = (u"Thank you, your enquiry to has been submitted.<br/>" 
                    u"If you like to login, please choose your password")
         return message.encode('utf-8')
 
@@ -572,7 +575,7 @@ class Address(RoleAware, Folder):
                          '%s')
         csv = self.get_handler('log_enquiry.csv')
         for row in csv.search(user_id=user.name):
-            kk, enquiry_type, kk, phone, enquiry, kk = csv.get_row(row)
+            kk, kk, phone, enquiry_type, enquiry_subject, enquiry, kk = csv.get_row(row)
             subject = subject_template % enquiry_type
             body = body_template % (firstname, lastname, phone, enquiry)
             for to_addr in to_addrs:
@@ -591,7 +594,7 @@ class Address(RoleAware, Folder):
         csv = self.get_handler('log_enquiry.csv')
         enquiries = []
         for row in csv.get_rows():
-            date, type, user_id, phone, enquiry, resolved = row
+            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
             if resolved:
                 continue
             user = users.get_handler(user_id)
@@ -601,6 +604,7 @@ class Address(RoleAware, Folder):
                 'firstname': user.get_property('ikaaro:firstname'),
                 'lastname': user.get_property('ikaaro:lastname'),
                 'email': user.get_property('ikaaro:email'),
+                'enquiry_subject': enquiry_subject,
                 'phone': phone,
                 'type': EnquiryType.get_value(type)})
         enquiries.reverse()
@@ -615,13 +619,15 @@ class Address(RoleAware, Folder):
         index = context.get_form_value('index', type=Integer)
 
         row = self.get_handler('log_enquiry.csv').get_row(index)
-        date, type, user_id, phone, enquiry, resolved = row
+        date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
 
         root = context.root
         user = root.get_handler('users/%s' % user_id)
 
         namespace = {}
         namespace['date'] = format_datetime(date)
+        namespace['enquiry_subject'] = enquiry_subject 
+        namespace['enquiry'] = enquiry 
         namespace['type'] = type
         namespace['firstname'] = user.get_property('ikaaro:firstname')
         namespace['lastname'] = user.get_property('ikaaro:lastname')

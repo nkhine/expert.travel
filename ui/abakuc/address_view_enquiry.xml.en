@@ -3,10 +3,9 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h3>${date} (${type})</h3>
-<p>
-From: ${firstname} ${lastname}, ${email}
-<stl:block if="phone"><br/>Phone: ${phone}</stl:block>
-</p>
-
-
+  <p>
+    From: ${firstname} ${lastname}, ${email}
+    <stl:block if="phone"><br/>Phone: ${phone}</stl:block>
+  </p>
+  <p>${enquiry}</p>
 </stl:block>

@@ -3,7 +3,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <div stl:repeat="enquiry enquiries">
-  <h5>${enquiry/date} (${enquiry/type})</h5>
+  <h5>${enquiry/date} ${enquiry/enquiry_subject} (${enquiry/type})</h5>
   <p>
   From: ${enquiry/firstname} ${enquiry/lastname}, ${enquiry/email}
   <stl:block if="enquiry/phone"><br/>Phone: ${enquiry/phone}</stl:block>
