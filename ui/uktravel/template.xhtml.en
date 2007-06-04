@@ -49,6 +49,17 @@
     </div>
     <div id="wrapper">
       <div id="center" class="column">
+        <table width="100%" border="0" align="center" cellspacing="0" 
+        style="background-color:#DBEDF6; margin: -11px 0px 0px 0px;">
+        <tr>
+        <td style="width:55%; background: #FFF url(/ui/uktravel/images/bottom-nav-crn.gif) right top no-repeat;">
+        &nbsp;
+        </td>
+        <td>
+        News
+        </td>
+        </tr>
+        </table>
         <!-- The Body -->
         <div id="body">
           <!--<h1>${metadata/title}</h1>-->
