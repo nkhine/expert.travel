@@ -427,29 +427,42 @@ class Address(RoleAware, Folder):
             return context.come_back(error, keep=keep)
 
         # Create the user
+        confirm = None
         if user is None:
-            email = context.get_form_value('ikaaro:email')
-            firstname = context.get_form_value('ikaaro:firstname')
-            lastname = context.get_form_value('ikaaro:lastname')
             users = root.get_handler('users')
-            user = users.set_user(email)
-            user.set_property('ikaaro:firstname', firstname)
-            user.set_property('ikaaro:lastname', lastname)
-            key = generate_password(30)
-            user.set_property('ikaaro:user_must_confirm', key)
-        user_id = user.name
+            email = context.get_form_value('ikaaro:email')
+            # Check the user is not already there
+            catalog = root.get_handler('.catalog')
+            results = catalog.search(username=email)
+            print email, results.get_n_documents()
+            if results.get_n_documents() == 0:
+                firstname = context.get_form_value('ikaaro:firstname')
+                lastname = context.get_form_value('ikaaro:lastname')
+                user = users.set_user(email)
+                user.set_property('ikaaro:firstname', firstname)
+                user.set_property('ikaaro:lastname', lastname)
+                confirm = generate_password(30)
+                user.set_property('ikaaro:user_must_confirm', confirm)
+                root.reindex_handler(user)
+            else:
+                user_id = results.get_documents()[0].name
+                user = users.get_handler(user_id)
+                if user.has_property('ikaaro:user_must_confirm'):
+                    confirm = user.get_property('ikaaro:user_must_confirm')
+        user_id = str(user.name)
 
         # Save the enquiry
         phone = context.get_form_value('abakuc:phone')
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
         enquiry_subject = context.get_form_value('abakuc:enquiry_subject')
         enquiry = context.get_form_value('abakuc:enquiry')
-        row = [datetime.now(), user_id, phone, enquiry_type, enquiry_subject, enquiry, False]
+        row = [datetime.now(), user_id, phone, enquiry_type, enquiry_subject,
+               enquiry, False]
         handler = self.get_handler('log_enquiry.csv')
         handler.add_row(row)
 
         # Authenticated user, we are done
-        if context.user is not None:
+        if confirm is None:
             self.enquiry_send_email(user)
             message = u'Enquiry sent'
             return message.encode('utf-8')
@@ -472,10 +485,9 @@ class Address(RoleAware, Folder):
             u"Thank you for visiting the UK Travel List website."
             u"\n"
             u"UK Travel List Team")
-        url = ';enquiry_confirm_form?user=%s&key=%s' % (user_id, key)
+        url = ';enquiry_confirm_form?user=%s&key=%s' % (user_id, confirm)
         url = context.uri.resolve(url)
         body = Template(body).substitute({'confirm_url': str(url)})
-        root = context.root
         root.send_email(from_addr, email, subject, body)
 
         # Back
