@@ -68,13 +68,10 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
-            ('topic', 'keyword', True, False),
-            ('continent', 'keyword', True, False),
-            ('sub_continent', 'keyword', True, False),
-            ('country', 'keyword', True, False),
-            ('region', 'keyword', True, False),
-            ('county', 'keyword', True, False),
-            ('town', 'keyword', True, True)]
+        ('level1', 'keyword', True, True),
+        ('level2', 'keyword', True, True),
+        ('level3', 'keyword', True, True),
+        ('level4', 'keyword', True, True)]
 
 
     #######################################################################
@@ -160,15 +157,6 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # API
     #######################################################################
-    def get_topic_title(self, id):
-        topics = self.get_handler('topics.csv')
-        for row in topics.get_rows():
-            if id == row[0]:
-                return row[1]
-
-        raise KeyError
-
-
     def get_topics_namespace(self, ids=None):
         topics = self.get_handler('topics.csv')
         namespace = []

@@ -206,14 +206,13 @@ class Address(RoleAware, Folder):
 
         indexes = Folder.get_catalog_indexes(self)
         company = self.parent
-        indexes['topic'] = company.get_property('abakuc:topic')
+        indexes['level1'] = company.get_property('abakuc:topic') 
         county_id = self.get_property('abakuc:county')
         if county_id:
             row = world.get_row(county_id)
-            indexes['country'] = row[5]
-            indexes['region'] = row[7]
-            indexes['county'] = str(county_id)
-        indexes['town'] = self.get_property('abakuc:town')
+            indexes['level2'] = row[7]
+            indexes['level3'] = str(county_id)
+        indexes['level4'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
         return indexes
 

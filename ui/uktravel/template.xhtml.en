@@ -57,8 +57,10 @@
         </div>
       </div>
       <div id="left" class="column">
-        <div class="navigation" stl:repeat="topic topics">
-          <label><a href="${topic/href}">${topic/title}</a></label>
+        <div class="navigation" stl:repeat="option level1">
+          <label>
+            <a href="/;search?level1=${option/name}">${option/title}</a>
+          </label>
         </div>
       </div>
     </div>

@@ -60,24 +60,17 @@ class Country(WebSite):
         ['permissions_form', 'new_user_form'], 
         ['edit_metadata_form']]
 
+
     def get_document_types(self):
         return [City]
 
 
-    #__roles__ = BaseRoot.__roles__ + [
-    #    {'name': 'abakuc:travel_agent_member',
-    #     'title': u'Travel Agent',
-    #     'unit': u'Travel Agent'},
-    #    {'name': 'abakuc:travel_agent_manager',
-    #     'title': u'Travel Agent(Manager)',
-    #     'unit': u'Travel Agent(Manager)'},
-    #    {'name': 'abakuc:tourist_office_member',
-    #     'title': u'Tourist Office',
-    #     'unit': u'Tourist Office'},
-    #    {'name': 'abakuc:tourist_office_manager',
-    #     'title': u'Tourist Office(Manager)',
-    #     'unit': u'Tourist Office(Manager)'}
-    #   ]
+    def get_catalog_indexes(self):
+        indexes = WebSite.get_catalog_indexes(self)
+        indexes['level1'] = self.get_property('abakuc:continent')
+        indexes['level2'] = self.get_property('abakuc:sub_continent')
+        return indexes
+
 
     ########################################################################
     # Metadata
@@ -124,6 +117,7 @@ class Country(WebSite):
         metadata.set_property('abakuc:sub_continent', sub_continent)
         # Come back
         return context.come_back(u'Country modified!')
+
 
 ############################################################################
 # Countries 

@@ -8,6 +8,11 @@ from itools.cms.skins import Skin
 
 class FrontOffice(Skin):
 
+    def get_template(self):
+        # All front-offices share the same template
+        return self.get_handler('/ui/uktravel/template.xhtml')
+
+
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
@@ -34,18 +39,24 @@ class FrontOffice(Skin):
 
 
     def build_namespace(self, context):
-        root = context.root
-
         namespace = Skin.build_namespace(self, context)
-        # Topics
-        topics = []
-        topics_csv = root.get_handler('topics.csv')
-        for topic_id, topic_title in topics_csv.get_rows():
-            results = root.search(format='company', topic=topic_id)
-            topics.append({'href': '/;search?topic=%s' % topic_id,
-                           'title': topic_title,
-                           'adverts': results.get_n_documents()})
-        topics.sort(key=lambda x: x['title'])
-        namespace['topics'] = topics
+
+        # Navigation (level 1)
+        site_root = context.handler.get_site_root()
+        results = context.root.search(format=site_root.site_format)
+        # Flat
+        level1 = []
+        for x in results.get_documents():
+            x = x.level1
+            if isinstance(x, list):
+                level1.extend(x)
+            else:
+                level1.append(x)
+        # Unique
+        level1 = set(level1)
+        level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
+                   for x in level1 ]
+        level1.sort(key=lambda x: x['title'])
+        namespace['level1'] = level1
 
         return namespace

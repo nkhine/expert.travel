@@ -3,34 +3,33 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+
 <table width="100%" border="0">
-    <tr>
-        <td valign="top">
-  <div id="categories" stl:if="regions">
-    <stl:block stl:repeat="region regions">
-      <a href="${region/href}">${region/title}</a>
-    </stl:block> 
-  </div>
-  <div align="right">
-  ${batch}
-  </div>
-  <div id="List">
-    <stl:block repeat="item companies"> 
-      <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
-        onmouseout="this.className='ListItem';">  
-        <dt>
-          <a href="${item/href}">${item/title}</a>
-        </dt>
-        <dd>
-          ${item/address}, ${item/town}, ${item/postcode}<br/>
-          ${item/county}, ${item/region}<br/>
-          Phone: ${item/phone}, Fax: ${item/fax}<br />
-        </dd>
-      </dl>       
-    </stl:block>
-  </div>
+  <tr>
+    <td valign="top">
+      <div id="categories" stl:if="level">
+        <a stl:repeat="option level" href="${option/href}">${option/title}</a>
+      </div>
+      <div align="right">
+        ${batch}
+      </div>
+      <div id="List">
+        <stl:block repeat="item companies"> 
+          <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+            onmouseout="this.className='ListItem';">  
+            <dt>
+              <a href="${item/href}">${item/title}</a>
+            </dt>
+            <dd>
+              ${item/address}, ${item/town}, ${item/postcode}<br/>
+              ${item/county}, ${item/region}<br/>
+              Phone: ${item/phone}, Fax: ${item/fax}<br />
+            </dd>
+          </dl>       
+        </stl:block>
+      </div>
     </td>
-    <td  rowspan="2" valign="top">
+    <td rowspan="2" valign="top">
     	<script type="text/javascript"><!--
 google_ad_client = "pub-2050823514740471";
 google_ad_width = 160;
