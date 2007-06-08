@@ -206,7 +206,7 @@ class Address(RoleAware, Folder):
 
         indexes = Folder.get_catalog_indexes(self)
         company = self.parent
-        indexes['level1'] = company.get_property('abakuc:topic') 
+        indexes['level1'] = list(company.get_property('abakuc:topic'))
         county_id = self.get_property('abakuc:county')
         if county_id:
             row = world.get_row(county_id)

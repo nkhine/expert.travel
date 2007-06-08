@@ -66,7 +66,5 @@ class UKTravel(WebSite):
 
 
 
-
-
 register_object_class(UKTravel)
 

@@ -105,8 +105,20 @@ class User(iUser, Handler):
 
             namespace['address_path'] = self.get_pathto(address)
             # Enquiries
-            enquiries = address.get_handler('log_enquiry.csv')
-            namespace['enquiries'] = enquiries.get_nrows()
+            csv = address.get_handler('log_enquiry.csv')
+            results = []
+            for row in csv.get_rows():
+                date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+                if resolved:
+                    continue
+                user = root.get_handler('users/%s' % user_id)
+                results.append({
+                    'index': row.number,
+                    'email': user.get_property('ikaaro:email'),
+                    'enquiry_subject': enquiry_subject})
+            results.reverse()
+            namespace['enquiries'] = results 
+            namespace['howmany'] = len(results)
 
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)

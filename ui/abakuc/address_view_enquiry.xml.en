@@ -4,7 +4,9 @@
 
 <h3>${date} (${type})</h3>
   <p>
-    From: ${firstname} ${lastname}, ${email}
+    From: ${firstname} ${lastname},
+    <a href="mailto:${email}?Subject=RE:${enquiry_subject}">
+    ${email}</a>
     <stl:block if="phone"><br/>Phone: ${phone}</stl:block>
   </p>
   <p>${enquiry}</p>

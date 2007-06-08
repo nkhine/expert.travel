@@ -25,7 +25,7 @@
         <select onchange="select_region(this.value)" style="width: 80%">
           <option value="none"></option>
           <optgroup stl:repeat="country countries" id="country_${country/id}"
-            style="display: ${country/display}">
+            disabled="disabled" style="display: ${country/display}">
             <option stl:repeat="region country/regions"
               value="region_${region/id}"
               selected="${region/is_selected}">${region/title}</option> 
@@ -36,7 +36,7 @@
         <select name="abakuc:county" style="width: 80%">
           <option value=""></option>
           <optgroup stl:repeat="region regions" id="region_${region/id}"
-            style="display: ${region/display}">
+            disabled="disabled" style="display: ${region/display}">
             <option stl:repeat="county region/counties" value="${county/id}"
               selected="${county/is_selected}">${county/title}</option> 
           </optgroup>

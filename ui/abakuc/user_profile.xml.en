@@ -73,8 +73,12 @@
           <td valign="top">
             <h2>Enquiries</h2>
             <p>
+            <div stl:repeat="enquiry enquiries">
+              ${enquiry/enquiry_subject} ${enquiry/email}
+            <a href="${address_path}/;view_enquiry?index=${enquiry/index}">View</a>
+            </div>    
               <a href="${address_path}/;view_enquiries">Check enquiries
-                (${enquiries})</a>
+                (${howmany})</a>
             </p>
           </td>
         </tr>
