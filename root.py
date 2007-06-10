@@ -94,12 +94,19 @@ class Root(Handler, BaseRoot):
         cache['countries'] = countries
         cache['countries.metadata'] = self.build_metadata(countries, **kw)
 
-        # Topics
+        # Business Topics
         topics = CSV()
         path = get_abspath(globals(), 'data/csv/topics.csv')
         topics.load_state_from(path)
         cache['topics.csv'] = topics
         cache['topics.csv.metadata'] = self.build_metadata(topics)
+
+        # Business Types 
+        types = CSV()
+        path = get_abspath(globals(), 'data/csv/types.csv')
+        types.load_state_from(path)
+        cache['types.csv'] = types
+        cache['types.csv.metadata'] = self.build_metadata(types)
 
         # UK Travel List
         title = u'UK Travel List'
@@ -167,6 +174,15 @@ class Root(Handler, BaseRoot):
 
         return namespace
 
+    def get_types_namespace(self, ids=None):
+        types = self.get_handler('types.csv')
+        namespace = []
+        for row in types.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
 
     #######################################################################
     # User Interface / Import

@@ -43,6 +43,7 @@ class Schema(BaseSchema):
         # Company
         'website': String,
         'topic': Tokens,
+        'type': String,
         # Address
         'address': Unicode,
         'postcode': String,
