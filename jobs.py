@@ -16,8 +16,8 @@ class Jobs(Folder):
  
     class_id = 'jobs'
     class_title = u'UK Travel Jobs'
-    class_icon16 = 'abakuc/images/Automator16.png'
-    class_icon48 = 'abakuc/images/Automator48.png'
+    class_icon16 = 'abakuc/images/JobBoard16.png'
+    class_icon48 = 'abakuc/images/JobBoard48.png'
 
     def get_document_types(self):
         return [Job]
