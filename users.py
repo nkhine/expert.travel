@@ -166,10 +166,12 @@ class User(iUser, Handler):
         # Set Properties
         website = context.get_form_value('abakuc:website')
         topics = context.get_form_values('topic')
+        types = context.get_form_values('type')
 
         company.set_property('dc:title', title, language='en')
         company.set_property('abakuc:website', website)
         company.set_property('abakuc:topic', tuple(topics))
+        company.set_property('abakuc:type', types)
 
         # Logo
         logo = context.get_form_value('logo')

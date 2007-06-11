@@ -29,6 +29,15 @@
     </tr>
     <tr>
       <td>
+        <label for="type">Business Type</label><br/>
+        <stl:block stl:repeat="type types">
+          <input type="radio" name="type" value="${type/id}"
+            checked="${type/is_selected}" />${type/title} 
+        </stl:block>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <label for="logo">Logo</label><br/>
         <input type="file" name="logo" id="logo" size="36" />
         <stl:block if="logo">

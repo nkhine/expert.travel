@@ -60,6 +60,20 @@ class Country(WebSite):
         ['permissions_form', 'new_user_form'], 
         ['edit_metadata_form']]
 
+    def _get_virtual_handler(self, segment):
+        name = segment.name
+        if name == 'countries':
+            return self.get_handler('/countries')
+        return WebSite._get_virtual_handler(self, segment)
+
+
+    #######################################################################
+    # User Interface / Navigation
+    #######################################################################
+    site_format = 'country'
+
+    def get_level1_title(self, level1):
+        return level1
 
     def get_document_types(self):
         return [City]

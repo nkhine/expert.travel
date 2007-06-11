@@ -20,8 +20,7 @@ from itools.cms.tracker import Tracker
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
-
-
+from website import WebSite
 
 
 class Companies(Folder):
@@ -101,13 +100,14 @@ class Company(AccessControl, Folder):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_form(name=None, website=None, topics=None, logo=None):
+    def get_form(name=None, website=None, topics=None, types=None, logo=None):
         root = get_context().root
 
         namespace = {}
         namespace['title'] = name
         namespace['website'] = website
         namespace['topics'] = root.get_topics_namespace(topics)
+        namespace['types'] = root.get_types_namespace(types)
         namespace['logo'] = logo
 
         handler = root.get_handler('ui/abakuc/company_form.xml')
@@ -123,8 +123,9 @@ class Company(AccessControl, Folder):
         title = self.get_property('dc:title')
         website = self.get_property('abakuc:website')
         topics = self.get_property('abakuc:topic')
+        types = self.get_property('abakuc:type')
         logo = self.has_handler('logo')
-        namespace['form'] = self.get_form(title, website, topics, logo)
+        namespace['form'] = self.get_form(title, website, topics, types, logo)
 
         handler = self.get_handler('/ui/abakuc/company_edit_metadata.xml')
         return stl(handler, namespace)
@@ -134,11 +135,13 @@ class Company(AccessControl, Folder):
         title = context.get_form_value('dc:title')
         website = context.get_form_value('abakuc:website')
         topics = context.get_form_values('topic')
+        types = context.get_form_values('type')
         logo = context.get_form_value('logo')
 
         self.set_property('dc:title', title, language='en')
         self.set_property('abakuc:website', website)
         self.set_property('abakuc:topic', tuple(topics))
+        self.set_property('abakuc:type', types)
 
         # The logo
         if context.has_form_value('remove_logo'):
