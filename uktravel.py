@@ -24,19 +24,19 @@ class UKTravel(WebSite):
         # Add extra handlers here
         news = XHTMLFile()
         cache['news.xhtml'] = news
-        cache['news.xhtml.metadata'] = self.build_metadata(news,
+        cache['news.xhtml.metadata'] = news.build_metadata(
             **{'dc:title': {'en': u'News Folder List'}})
         events = XHTMLFile()
         cache['events.xhtml'] = events
-        cache['events.xhtml.metadata'] = self.build_metadata(events,
+        cache['events.xhtml.metadata'] = events.build_metadata(
             **{'dc:title': {'en': u'Events'}})
         faq = XHTMLFile()
         cache['faq.xhtml'] = faq
-        cache['faq.xhtml.metadata'] = self.build_metadata(faq,
+        cache['faq.xhtml.metadata'] = faq.build_metadata(
             **{'dc:title': {'en': u'FAQs'}})
         help = XHTMLFile()
         cache['help.xhtml'] = help
-        cache['help.xhtml.metadata'] = self.build_metadata(help,
+        cache['help.xhtml.metadata'] = help.build_metadata(
             **{'dc:title': {'en': u'Help'}})
 
 

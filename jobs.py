@@ -57,7 +57,7 @@ class Job(RoleAware, Folder):
         handler = ApplicationsLog()
         cache = self.cache
         cache['log_applications.csv'] = handler
-        cache['log_applications.csv.metadata'] = self.build_metadata(handler)
+        cache['log_applications.csv.metadata'] = handler.build_metadata(handler)
 
 
     def get_document_types(self):
@@ -84,7 +84,7 @@ class Job(RoleAware, Folder):
     view__label__ = u'Job'
     def view(self, context):
         root = context.root
-        get_property = self.metadata.get_property
+        get_property = self.get_property
         from root import world
 
         county_id = self.get_property('abakuc:county')

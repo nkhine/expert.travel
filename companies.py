@@ -197,7 +197,7 @@ class Address(RoleAware, Folder):
         handler = EnquiriesLog()
         cache = self.cache
         cache['log_enquiry.csv'] = handler
-        cache['log_enquiry.csv.metadata'] = self.build_metadata(handler)
+        cache['log_enquiry.csv.metadata'] = handler.build_metadata()
 
 
     def get_document_types(self):
@@ -434,7 +434,7 @@ class Address(RoleAware, Folder):
             users = root.get_handler('users')
             email = context.get_form_value('ikaaro:email')
             # Check the user is not already there
-            catalog = root.get_handler('.catalog')
+            catalog = context.server.catalog
             results = catalog.search(username=email)
             print email, results.get_n_documents()
             if results.get_n_documents() == 0:

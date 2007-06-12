@@ -19,10 +19,10 @@ from itools.cms.registry import register_object_class
 
 # import from ikaaro
 from itools.cms.access import AccessControl
-from itools.cms.Folder import Folder as BaseFolder
-from itools.cms.File import File as BaseFile
+from itools.cms.folder import Folder as BaseFolder
+from itools.cms.file import File as BaseFile
 from itools.cms.workflow import WorkflowAware as baseWorkflowAware
-from itools.cms.Handler import Handler as ikaaroHandler
+from itools.cms.base import Handler as ikaaroHandler
 
 # import from abakuc
 from base import Handler
@@ -90,7 +90,7 @@ class Banner(BaseFolder):
     #def get_catalog_indexes(self):
     #    indexes = ikaaroFolder.get_catalog_indexes(self)
 
-    #    get_property = self.metadata.get_property
+    #    get_property = self.get_property
     #    #indexes['destinations'] = list(get_property('abakuc:destinations'))
     #    #indexes['topics'] = list(get_property('abakuc:topics'))
     #    #indexes['banner_pos'] = get_property('abakuc:banner_pos')
@@ -142,7 +142,7 @@ class Banner(BaseFolder):
     #def view(self):
     #    namespace =  {}
     #    
-    #    m = self.metadata 
+    #    m = self 
     #    namespace['title'] = self.get_title_or_name()
     #    namespace['description'] = self.get_description()
     #    namespace['state'] = self.get_property('state')
@@ -190,7 +190,7 @@ class Banner(BaseFolder):
     def edit_metadata_form(self, context):
         context = get_context()
         root = context.root
-        get_property = self.metadata.get_property
+        get_property = self.get_property
 
         namespace = {}
 

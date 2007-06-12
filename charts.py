@@ -5,7 +5,7 @@
 from itools import get_abspath
 from itools.handlers import get_handler
 import itools.csv
-from itools.cms.Folder import Folder as ikaaroFolder
+from itools.cms.folder import Folder as ikaaroFolder
 from itools.cms.registry import register_object_class
 
 # Import from abakuc

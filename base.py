@@ -4,8 +4,8 @@
 # Import from itools
 from itools import get_abspath
 from itools.gettext.domains import register_domain
-from itools.cms.Handler import Handler as BaseHandler
-from itools.cms.Folder import Folder as BaseFolder
+from itools.cms.base import Handler as BaseHandler
+from itools.cms.folder import Folder as BaseFolder
 
 
 

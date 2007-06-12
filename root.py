@@ -19,6 +19,7 @@ from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
 from itools.cms.root import Root as BaseRoot
 from itools.cms.html import XHTMLFile
+from itools.catalog import  KeywordField
 
 # Import from abakuc our modules 
 from base import Handler
@@ -27,7 +28,6 @@ from utils import title_to_name
 from users import UserFolder
 
 # Import from abakuc our products
-from adverts import Adverts
 from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
@@ -68,10 +68,10 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
-        ('level1', 'keyword', True, True),
-        ('level2', 'keyword', True, True),
-        ('level3', 'keyword', True, True),
-        ('level4', 'keyword', True, True)]
+            KeywordField('level1', is_stored=True),
+            KeywordField('level2', is_stored=True),
+            KeywordField('level3', is_stored=True),
+            KeywordField('level4', is_stored=True)]
 
 
     #######################################################################
@@ -85,28 +85,28 @@ class Root(Handler, BaseRoot):
         kw = {'dc:title': {'en': title}}
         companies = Companies()
         cache['companies'] = companies
-        cache['companies.metadata'] = self.build_metadata(companies, **kw)
+        cache['companies.metadata'] = companies.build_metadata(**kw)
 
         # Countries
         title = u'Countries'
         kw = {'dc:title': {'en': title}}
         countries = Countries()
         cache['countries'] = countries
-        cache['countries.metadata'] = self.build_metadata(countries, **kw)
+        cache['countries.metadata'] = countries.build_metadata(**kw)
 
         # Business Topics
         topics = CSV()
         path = get_abspath(globals(), 'data/csv/topics.csv')
         topics.load_state_from(path)
         cache['topics.csv'] = topics
-        cache['topics.csv.metadata'] = self.build_metadata(topics)
+        cache['topics.csv.metadata'] = topics.build_metadata()
 
         # Business Types 
         types = CSV()
         path = get_abspath(globals(), 'data/csv/types.csv')
         types.load_state_from(path)
         cache['types.csv'] = types
-        cache['types.csv.metadata'] = self.build_metadata(types)
+        cache['types.csv.metadata'] = types.build_metadata()
 
         # UK Travel List
         title = u'UK Travel List'
@@ -114,7 +114,7 @@ class Root(Handler, BaseRoot):
         kw = {'dc:title': {'en': title},
               'ikaaro:website_is_open': True}
         cache['uktravel'] = uktravel
-        cache['uktravel.metadata'] = self.build_metadata(uktravel, **kw)
+        cache['uktravel.metadata'] = uktravel.build_metadata(**kw)
 
         # Destinations Guide 
         title = u'Destinations Guide'
@@ -122,19 +122,19 @@ class Root(Handler, BaseRoot):
         kw = {'dc:title': {'en': title},
               'ikaaro:website_is_open': True}
         cache['destinations'] = destinations
-        cache['destinations.metadata'] = self.build_metadata(destinations, **kw)
+        cache['destinations.metadata'] = destinations.build_metadata(**kw)
 
         # Job Board 
         title = u'Job Board'
         jobs = Jobs()
         kw = {'dc:title': {'en': title}}
         cache['jobs'] = jobs
-        cache['jobs.metadata'] = self.build_metadata(jobs, **kw)
+        cache['jobs.metadata'] = jobs.build_metadata(**kw)
 
 
         help = XHTMLFile()
         cache['help.xhtml'] = help
-        cache['help.xhtml.metadata'] = self.build_metadata(help,
+        cache['help.xhtml.metadata'] = help.build_metadata(
                                             **{'dc:title': {'en': u'Help me'}})
 
     #######################################################################

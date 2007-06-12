@@ -10,11 +10,11 @@ from itools.stl import stl
 from itools.csv import CSV, Row
 from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.cms.root import Root as BaseRoot
-from itools.cms.Folder import Folder as ikaaroFolder
-from itools.cms.WebSite import WebSite
+from itools.cms.folder import Folder as ikaaroFolder
+from itools.cms.website import WebSite
 from itools.cms.workflow import WorkflowAware as ikaaroWorkflowAware
 from itools.cms.access import RoleAware
-from itools.cms.File import File as ikaaroFile
+from itools.cms.file import File as ikaaroFile
 from itools.cms.html import XHTMLFile as ikaaroHTML
 from itools.cms.registry import register_object_class
 
@@ -155,8 +155,7 @@ class Countries(Handler, ikaaroFolder):
             name = name.lower().strip().replace(' ', '-')
             title = name.title().replace('-', ' ')
             country = Country()
-            metadata = self.build_metadata(country,
-                                        **{'dc:title': title,
+            metadata = country.build_metadata(**{'dc:title': title,
                                         'abakuc:continent': continent_name,
                                         'abakuc:sub_continent': region})
             cache[name] = country

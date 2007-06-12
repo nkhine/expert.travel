@@ -4,7 +4,7 @@
 # Import from itools
 from itools.datatypes import Integer
 from itools.stl import stl
-from itools.cms.WebSite import WebSite as BaseWebSite
+from itools.cms.website import WebSite as BaseWebSite
 from itools.cms import widgets
 
 # Import from abakuc

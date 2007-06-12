@@ -10,12 +10,13 @@ from itools.uri import Path, get_reference
 from itools.web import get_context
 from itools.cms.access import AccessControl
 from itools.cms.binary import Image
-from itools.cms.Folder import Folder
-from itools.cms.Handler import Handler
+from itools.cms.folder import Folder
+from itools.cms.base import Handler
 from itools.cms.metadata import Password
 from itools.cms.registry import register_object_class
 from itools.cms.users import UserFolder as iUserFolder, User as iUser
-from itools.cms.utils import get_parameters, checkid
+from itools.cms.utils import get_parameters
+from itools.rest import checkid
 
 # Import from our product
 from companies import Company, Address 
