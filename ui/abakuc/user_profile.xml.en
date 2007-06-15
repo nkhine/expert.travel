@@ -86,13 +86,26 @@
     </table>
     <stl:block if="address">
       <p>
-        <a href="/companies/${company_name}/;edit_metadata_form?referrer=1"
-          >Modify company details</a>
+        <a href="/companies/${company_name}/;edit_metadata_form?referrer=1">
+          Modify company details
+        </a>
       </p>
       <p>
         <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
           >Modify address details</a>
       </p>
+      <stl:block if="reviewer">
+        <p>
+         <a href="/companies/${company_name}/${address_name}/;permissions_form">
+           Users associate to the address
+         </a>
+        </p>
+        <p>
+          <a href="/companies/${company_name}/${address_name}/;new_user_form">
+            Associate a new user to the address
+          </a>
+        </p>
+      </stl:block>
       <p>
         <a href=";setup_company_form">Switch to another company</a>.
       </p>

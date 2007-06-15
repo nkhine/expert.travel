@@ -8,22 +8,40 @@
     <stl:block> 
       <dl>  
         <dt>
-          <a href=""></a>
+          Title :
         </dt>
         <dd>
-          ${title} 
+          ${dc:title} 
         </dd>
+        <dt>
+          Function
+        </dt>
         <dd>
-          ${description} 
+          ${abakuc:function} 
         </dd>
+        <dt>
+          Short Description :
+        </dt>
         <dd>
-          ${country} 
+          ${dc:description} 
         </dd>
+        <dt>
+          Description
+        </dt>
         <dd>
-          ${region} 
+          ${abakuc:job_text} 
         </dd>
+        <dt>
+          Closing date
+        </dt>
         <dd>
-          ${county} 
+          ${abakuc:closing_date} 
+        </dd>
+        <dt>
+          Salary Range
+        </dt>
+        <dd>
+          ${abakuc:salary} 
         </dd>
       </dl>       
     </stl:block>

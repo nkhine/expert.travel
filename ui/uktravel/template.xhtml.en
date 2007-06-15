@@ -55,8 +55,11 @@
         <td style="width:55%; background: #FFF url(/ui/uktravel/images/bottom-nav-crn.gif) right top no-repeat;">
         &nbsp;
         </td>
-        <td>
+        <td width="20">
         News
+        </td>
+        <td>
+          <a href=";view_jobs">Jobs</a>
         </td>
         </tr>
         </table>

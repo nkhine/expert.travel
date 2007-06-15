@@ -67,6 +67,27 @@ class User(iUser, Handler):
             return root.get_handler(address.abspath)
         return None
 
+    #######################################################################
+    # Edit Account 
+    account_fields = iUser.account_fields + ['abakuc:phone']
+    
+    edit_account_form__access__ = 'is_allowed_to_edit'
+    edit_account_form__label__ = u'Edit'
+    edit_account_form__sublabel__ = u'Account'
+    def edit_account_form(self, context):
+        # Build the namespace
+        namespace = {}
+        for key in self.account_fields:
+            namespace[key] = self.get_property(key)
+        # Ask for password to confirm the changes
+        if self.name != context.user.name:
+            namespace['must_confirm'] = False
+        else:
+            namespace['must_confirm'] = True
+
+        handler = self.get_handler('/ui/abakuc/user/edit_account.xml')
+        return stl(handler, namespace)
+
 
     #######################################################################
     # Profile
@@ -120,6 +141,9 @@ class User(iUser, Handler):
             results.reverse()
             namespace['enquiries'] = results 
             namespace['howmany'] = len(results)
+            # Reviewer of the adress ?
+            namespace['reviewer'] = address.has_user_role(self.name, 
+                                                          'ikaaro:reviewers')
 
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
@@ -162,7 +186,7 @@ class User(iUser, Handler):
         # Add Company
         title = context.get_form_value('dc:title')
         name = title_to_name(title)
-        company = self.set_handler('/companies/%s' % name, Company())
+        company, metadata = self.set_object('/companies/%s' % name, Company())
 
         # Set Properties
         website = context.get_form_value('abakuc:website')
@@ -184,9 +208,9 @@ class User(iUser, Handler):
             except:
                 pass
             else:
-                self.set_handler('logo', logo)
-
+                self.set_object('logo', logo)
         # Set the Address..
+        name = name.encode('utf_8').replace('&', '%26')
         return context.uri.resolve(';setup_address_form?company=%s' % name)
 
 
@@ -244,7 +268,7 @@ class User(iUser, Handler):
         # Add Address
         address = context.get_form_value('abakuc:address')
         name = title_to_name(address)
-        address = company.set_handler(name, Address())
+        address, metadata = company.set_object(name, Address())
 
         # Set Properties
         for name in ['address', 'county', 'town', 'postcode',

@@ -11,7 +11,6 @@ from itools.cms import widgets
 from base import Handler
 
 
-
 class WebSite(Handler, BaseWebSite):
  
 
@@ -43,6 +42,16 @@ class WebSite(Handler, BaseWebSite):
         level3 = context.get_form_value('level3')
         level4 = context.get_form_value('level4')
         text = context.get_form_value('search_text')
+
+        # XXX hack (fix the bug in itools ?)
+        if level1:
+            level1 = unicode(level1, 'utf-8')
+        if level2:
+            level2 = unicode(level2, 'utf-8')
+        if level3:
+            level3 = unicode(level3, 'utf-8')
+        if level4:
+            level4 = unicode(level4, 'utf-8')
 
         # Build the query
         query = {'format': 'address'}

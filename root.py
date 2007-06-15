@@ -19,7 +19,7 @@ from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
 from itools.cms.root import Root as BaseRoot
 from itools.cms.html import XHTMLFile
-from itools.catalog import  KeywordField
+from itools.catalog import  KeywordField, IntegerField
 
 # Import from abakuc our modules 
 from base import Handler
@@ -31,8 +31,8 @@ from users import UserFolder
 from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
-from jobs import Jobs
 from uktravel import UKTravel
+
 
 class World(BaseCSV):
 
@@ -71,7 +71,10 @@ class Root(Handler, BaseRoot):
             KeywordField('level1', is_stored=True),
             KeywordField('level2', is_stored=True),
             KeywordField('level3', is_stored=True),
-            KeywordField('level4', is_stored=True)]
+            KeywordField('level4', is_stored=True),
+            KeywordField('closing_date', is_stored=False),
+            KeywordField('function', is_stored=False),
+            KeywordField('description', is_stored=False)]
 
 
     #######################################################################
@@ -79,7 +82,7 @@ class Root(Handler, BaseRoot):
     def new(self, username=None, password=None):
         BaseRoot.new(self, username=username, password=password)
         cache = self.cache
-
+        
         # Companies
         title = u'Companies Directory'
         kw = {'dc:title': {'en': title}}
@@ -123,15 +126,8 @@ class Root(Handler, BaseRoot):
               'ikaaro:website_is_open': True}
         cache['destinations'] = destinations
         cache['destinations.metadata'] = destinations.build_metadata(**kw)
-
-        # Job Board 
-        title = u'Job Board'
-        jobs = Jobs()
-        kw = {'dc:title': {'en': title}}
-        cache['jobs'] = jobs
-        cache['jobs.metadata'] = jobs.build_metadata(**kw)
-
-
+        
+        # Help
         help = XHTMLFile()
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = help.build_metadata(
@@ -157,7 +153,8 @@ class Root(Handler, BaseRoot):
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         # XXX While testing, uncomment the right line
         #to_addr = 'jdavid@itaapy.com'
-        to_addr = 'norman@khine.net'
+        #to_addr = 'norman@khine.net'
+        to_addr = 'sylvain@itaapy.com'
         BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
 
 
@@ -254,10 +251,11 @@ class Root(Handler, BaseRoot):
                     topics += (topic_id,)
                     company.set_property('abakuc:topic', topics)
             else:
-                company = companies.set_handler(company_name, Company())
-                company.set_property('dc:title', company_title, language='en')
-                company.set_property('abakuc:website', str(row[11]))
-                company.set_property('abakuc:topic', (topic_id,))
+                company = Company()
+                company, metadata = companies.set_object(company_name, company)
+                metadata.set_property('dc:title', company_title, language='en')
+                metadata.set_property('abakuc:website', str(row[11]))
+                metadata.set_property('abakuc:topic', (topic_id,))
 
             # Add Address
             address_title = row[6].strip()
@@ -267,7 +265,7 @@ class Root(Handler, BaseRoot):
             if company.has_handler(address_name):
                 print 'Warning'
             else:
-                address = company.set_handler(address_name, Address())
+                address, metadata = company.set_object(address_name, Address())
                 address.set_property('abakuc:address', address_title)
                 postcode = row[7]
                 if postcode:

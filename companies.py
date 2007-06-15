@@ -21,7 +21,7 @@ from itools.cms.tracker import Tracker
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
 from website import WebSite
-
+from jobs import Job
 
 class Companies(Folder):
 
@@ -162,8 +162,8 @@ class Company(AccessControl, Folder):
                 except:
                     pass
                 else:
-                    logo = self.set_handler('logo', logo)
-                    logo.set_property('state', 'public')
+                    logo, metadata = self.set_object('logo', logo)
+                    metadata.set_property('state', 'public')
 
         # Reindex
         root = context.root
@@ -193,6 +193,7 @@ class Address(RoleAware, Folder):
 
 
     def new(self, **kw):
+        # Enquiry
         Folder.new(self, **kw)
         handler = EnquiriesLog()
         cache = self.cache
@@ -201,7 +202,7 @@ class Address(RoleAware, Folder):
 
 
     def get_document_types(self):
-        return []
+        return [Job]
 
 
     def get_catalog_indexes(self):
@@ -454,7 +455,10 @@ class Address(RoleAware, Folder):
         user_id = str(user.name)
 
         # Save the enquiry
-        phone = context.get_form_value('abakuc:phone')
+        if context.user is None:
+            phone = context.get_form_value('abakuc:phone') 
+        else:
+            phone = context.user.get_property('abakuc:phone') or ''
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
         enquiry_subject = context.get_form_value('abakuc:enquiry_subject')
         enquiry = context.get_form_value('abakuc:enquiry')
@@ -612,16 +616,17 @@ class Address(RoleAware, Folder):
             if resolved:
                 continue
             user = users.get_handler(user_id)
-            enquiries.append({
-                'index': row.number,
-                'date': format_datetime(date),
-                'firstname': user.get_property('ikaaro:firstname'),
-                'lastname': user.get_property('ikaaro:lastname'),
-                'email': user.get_property('ikaaro:email'),
-                'enquiry_subject': enquiry_subject,
-                'phone': phone,
-                'type': EnquiryType.get_value(type)})
-        enquiries.reverse()
+            if user.get_property('ikaaro:user_must_confirm') is None:
+                enquiries.append({
+                    'index': row.number,
+                    'date': format_datetime(date),
+                    'firstname': user.get_property('ikaaro:firstname'),
+                    'lastname': user.get_property('ikaaro:lastname'),
+                    'email': user.get_property('ikaaro:email'),
+                    'enquiry_subject': enquiry_subject,
+                    'phone': phone,
+                    'type': EnquiryType.get_value(type)})
+            enquiries.reverse()
         namespace['enquiries'] = enquiries
 
         handler = self.get_handler('/ui/abakuc/address_view_enquiries.xml')

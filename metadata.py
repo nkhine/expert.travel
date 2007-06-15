@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from itools
-from itools.datatypes import Integer, String, Unicode, Email, Tokens
+from itools.datatypes import Integer, String, Unicode, Email, Tokens, Date
 from itools.schemas import Schema as BaseSchema, register_schema
 from itools.datatypes import Enumerate 
 
@@ -26,6 +26,26 @@ class SubContinent(Enumerate):
         {'name': 'Europe', 'label': u"Europe"},
         {'name': 'Oceania', 'label': u"Oceania"}
     ]
+
+
+class JobTitle(Enumerate):
+    
+    options = [
+        {'name': '1', 'value': u'Job1'},
+        {'name': '2', 'value': u'Job2'},
+        {'name': '3', 'value': u'Job3'},
+        {'name': '4', 'value': u'Job4'},
+        {'name': '5', 'value': u'Job5'}]
+
+
+class SalaryRange(Enumerate):
+
+    options = [
+        {'name': '1', 'value': u'Range1'},
+        {'name': '2', 'value': u'Range2'},
+        {'name': '3', 'value': u'Range3'},
+        {'name': '4', 'value': u'Range4'},
+        {'name': '5', 'value': u'Range5'}]
 
 
 class Schema(BaseSchema):
@@ -55,7 +75,12 @@ class Schema(BaseSchema):
         # Email
         'enquiry_subject': Unicode,
         'enquiry': Unicode,
-        'enquiry_type': String
+        'enquiry_type': String,
+        # Job
+        'function': JobTitle,
+        'salary': SalaryRange,
+        'closing_date': Date, 
+        'job_text': Unicode,
         }
 
 
