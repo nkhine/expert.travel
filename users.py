@@ -20,6 +20,7 @@ from itools.rest import checkid
 
 # Import from our product
 from companies import Company, Address 
+from jobs import Job
 from utils import title_to_name
 
 
@@ -67,6 +68,12 @@ class User(iUser, Handler):
             return root.get_handler(address.abspath)
         return None
 
+    def get_job(self):
+        root = self.get_root()
+        results = root.search(format='job', members=self.name)
+        for job in results.get_documents():
+            return root.get_handler(job.abspath)
+        return None
     #######################################################################
     # Edit Account 
     account_fields = iUser.account_fields + ['abakuc:phone']
@@ -141,6 +148,8 @@ class User(iUser, Handler):
             results.reverse()
             namespace['enquiries'] = results 
             namespace['howmany'] = len(results)
+            # Jobs
+
             # Reviewer of the adress ?
             namespace['reviewer'] = address.has_user_role(self.name, 
                                                           'ikaaro:reviewers')

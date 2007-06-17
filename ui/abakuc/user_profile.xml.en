@@ -109,6 +109,14 @@
       <p>
         <a href=";setup_company_form">Switch to another company</a>.
       </p>
+        <p>
+          Jobs: {job/title} {job/closing_date} {job/job_path}
+        </p>
+        <p>
+         <a href="/companies/${company_name}/${address_name}/;new_resource_form?type=Job">
+         Add a job
+         </a>
+        </p>
     </stl:block>
   </stl:block>
 </stl:block>

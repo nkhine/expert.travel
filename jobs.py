@@ -19,8 +19,8 @@ class Job(Folder): #RoleAware, Folder):
     class_id = 'Job'
     class_title = u'Job'
     class_description = u'Add new job board entry'
-    class_icon16 = 'abakuc/images/Advert16.png'
-    class_icon48 = 'abakuc/images/Advert48.png'
+    class_icon16 = 'abakuc/images/JobBoard16.png'
+    class_icon48 = 'abakuc/images/JobBoard48.png'
     class_views = [
         ['view'],
         ['browse_content?mode=list'],

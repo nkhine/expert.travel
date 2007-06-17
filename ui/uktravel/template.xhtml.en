@@ -9,7 +9,8 @@
 
     <!-- CSS -->
     <link type="text/css" rel="stylesheet" href="style.css" />
-
+    <link type="text/css" rel="stylesheet" href="/ui/calendar/calendar-aruni.css" />
+    <link type="text/css" rel="stylesheet" href="/ui/ical/calendar.css" />
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
       />
@@ -59,7 +60,7 @@
         News
         </td>
         <td>
-          <a href=";view_jobs">Jobs</a>
+          <a href="/;view_jobs">Jobs</a>
         </td>
         </tr>
         </table>

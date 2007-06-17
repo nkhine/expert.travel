@@ -5,6 +5,6 @@
 
 def title_to_name(title):
     title = title.encode('ascii', 'replace')
-    name = title.lower().replace('/', '_').replace('?', '_')
-    return '_'.join(name.split())
+    name = title.lower().replace('/', '-').replace('?', '-').replace('.', '').replace(',', '').replace('&', '').replace('(', '').replace(')', '')
+    return '-'.join(name.split())
 

@@ -91,7 +91,7 @@ class UKTravel(WebSite):
             job = root.get_handler(job.abspath)
             get = job.get_property
             # Information about the job
-            job_to_add ={'img': '/ui/images/Text16.png',
+            job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                          'name': job.name,
                          'closing_date': get('abakuc:closing_date'),
                          'title': get('dc:title'),

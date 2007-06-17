@@ -31,21 +31,43 @@ class SubContinent(Enumerate):
 class JobTitle(Enumerate):
     
     options = [
-        {'name': '1', 'value': u'Job1'},
-        {'name': '2', 'value': u'Job2'},
-        {'name': '3', 'value': u'Job3'},
-        {'name': '4', 'value': u'Job4'},
-        {'name': '5', 'value': u'Job5'}]
-
+        {'name': 'airlines', 'value': u'Airlines'},
+        {'name': 'business_travel', 'value': u'Business Travel'},
+        {'name': 'call_centre_telesales', 'value': u'Call Centre/Telesales'},
+        {'name': 'car_hire', 'value': u'Car Hire'},
+        {'name': 'conference_incentives_events', 'value': u'Conference/Incentives/Events'},
+        {'name': 'cruises', 'value': u'Cruises'},
+        {'name': 'executive_management', 'value': u'Executive/Management'},
+        {'name': 'foreign_exchange', 'value': u'Foreign Exchange'},
+        {'name': 'hotel_leisure', 'value': u'Hotel/Leisure'},
+        {'name': 'other', 'value': u'Other'},
+        {'name': 'rail', 'value': u'Rail'},
+        {'name': 'retail', 'value': u'Retail'},
+        {'name': 'support_staff', 'value': u'Support Staff'},
+        {'name': 'temporary', 'value': u'Temporary'},
+        {'name': 'operations', 'value': u'Tour Operations'},
+        {'name': 'overseas', 'value': u'Overseas'},
+        {'name': 'reservations_ticketing', 'value': u'Reservations/Ticketing'},
+        {'name': 'it', 'value': u'IT'},
+        {'name': 'sales_marketing', 'value': u'Sales/Marketing'},
+        {'name': 'student', 'value': u'Student'}]
 
 class SalaryRange(Enumerate):
 
     options = [
-        {'name': '1', 'value': u'Range1'},
-        {'name': '2', 'value': u'Range2'},
-        {'name': '3', 'value': u'Range3'},
-        {'name': '4', 'value': u'Range4'},
-        {'name': '5', 'value': u'Range5'}]
+        {'name': '1', 'value': u'Under &#163;15K'},
+        {'name': '2', 'value': u'&#163;15K-&#163;20K'},
+        {'name': '3', 'value': u'&#163;20K-&#163;25K'},
+        {'name': '4', 'value': u'&#163;25K-&#163;30K'},
+        {'name': '5', 'value': u'&#163;30K-&#163;35K'},
+        {'name': '6', 'value': u'&#163;35K-&#163;40K'},
+        {'name': '7', 'value': u'&#163;40K-&#163;45K'},
+        {'name': '8', 'value': u'&#163;45K-&#163;50K'},
+        {'name': '9', 'value': u'&#163;50K-&#163;70K'},
+        {'name': '10', 'value': u'&#163;70K-&#163;100K'},
+        {'name': '11', 'value': u'&#163;100K+'},
+        {'name': '12', 'value': u'Unspecified'}]
+
 
 
 class Schema(BaseSchema):

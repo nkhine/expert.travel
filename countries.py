@@ -152,7 +152,7 @@ class Countries(Handler, ikaaroFolder):
         handler = get_handler(path)
         for row in handler.get_rows():
             id, continent_name, region_id, region, country_id, name = row
-            name = name.lower().strip().replace(' ', '-')
+            name = name.lower().strip().replace(' ', '-').replace('\'', '').replace(',', '')
             title = name.title().replace('-', ' ')
             country = Country()
             metadata = country.build_metadata(**{'dc:title': title,
