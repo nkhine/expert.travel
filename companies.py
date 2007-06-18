@@ -16,12 +16,14 @@ from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
 from itools.cms.utils import generate_password
 from itools.cms.tracker import Tracker
+from itools.cms.widgets import table, batch
 
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
 from website import WebSite
 from jobs import Job
+from metadata import JobTitle, SalaryRange 
 
 class Companies(Folder):
 
@@ -49,6 +51,13 @@ class Company(AccessControl, Folder):
     class_title = u'Company'
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
+
+    
+    class_views = [['view'], 
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form']]
 
 
     def get_document_types(self):
@@ -91,7 +100,6 @@ class Company(AccessControl, Folder):
                 'name': address.name,
                 'address': address.get_property('abakuc:address')})
         namespace['addresses'] = addresses
- 
         handler = self.get_handler('/ui/abakuc/company_view.xml')
         return stl(handler, namespace)
 
@@ -165,10 +173,11 @@ class Company(AccessControl, Folder):
                     logo, metadata = self.set_object('logo', logo)
                     metadata.set_property('state', 'public')
 
+        # XXX to delete
         # Reindex
-        root = context.root
-        for address in self.search_handlers(format='address'):
-            root.reindex_handler(address)
+        #root = context.root
+        #for address in self.search_handlers(format='address'):
+        #    root.reindex_handler(address)
 
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
@@ -266,8 +275,57 @@ class Address(RoleAware, Folder):
                 'name': address.name,
                 'address': address.get_property('abakuc:address')})
         namespace['addresses'] = addresses
- 
+        ########
+        # Jobs
+        namespace['batch'] = ''
+        sortby = context.get_form_value('sortby', 'closing_date')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        columns = [('name', u'Id'),
+                   ('closing_date', u'Closing Date'),
+                   ('title', u'Title'),
+                   ('function', u'Function'),
+                   ('description', u'Short description')]
 
+        # Get all Jobs
+        address_jobs = self.search_handlers(handler_class=Job)
+        # Construct the lines of the table
+        jobs = []
+        for job in list(address_jobs):
+            #job = root.get_handler(job.abspath)
+            get = job.get_property
+            # Information about the job
+            url = '%s/;view' % job.name
+            job_to_add ={'img': '/ui/images/Text16.png',
+                         'name': (job.name,url),
+                         'closing_date': get('abakuc:closing_date'),
+                         'title': get('dc:title'),
+                         'function': JobTitle.get_value(
+                                        get('abakuc:function')),
+                         'description': get('dc:description')}
+            jobs.append(job_to_add)
+        
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 20
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Namespace 
+        if jobs:
+            job_table = table(columns, jobs, [sortby], sortorder,[])
+            job_batch = batch(context.uri, batch_start, batch_size, batch_total)
+            msg = None
+        else:
+            job_table = None
+            job_batch = None
+            msg = u'Sorry but there are no jobs'
+        
+        namespace['table'] = job_table
+        namespace['batch'] = job_batch
+        namespace['msg'] = msg 
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)
 
@@ -446,7 +504,7 @@ class Address(RoleAware, Folder):
                 user.set_property('ikaaro:lastname', lastname)
                 confirm = generate_password(30)
                 user.set_property('ikaaro:user_must_confirm', confirm)
-                root.reindex_handler(user)
+                # XXX root.reindex_handler(user)
             else:
                 user_id = results.get_documents()[0].name
                 user = users.get_handler(user_id)

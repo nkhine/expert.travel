@@ -259,10 +259,10 @@ class User(iUser, Handler):
         old_address = self.get_address()
         if old_address is not None:
             old_address.set_user_role(self.name, None)
-            root.reindex_handler(old_address)
+            # XXX root.reindex_handler(old_address)
 
         # Reindex
-        root.reindex_handler(address)
+        #root.reindex_handler(address)
 
         message = u'Company/Address selected.'
         goto = context.uri.resolve(';profile')
@@ -294,10 +294,10 @@ class User(iUser, Handler):
         old_address = self.get_address()
         if old_address is not None:
             old_address.set_user_role(self.name, None)
-            root.reindex_handler(old_address)
+            # XXX root.reindex_handler(old_address)
 
         # Reindex
-        root.reindex_handler(address)        
+        # XXX root.reindex_handler(address)        
 
         message = u'Company/Address setup done.'
         goto = context.uri.resolve(';profile')

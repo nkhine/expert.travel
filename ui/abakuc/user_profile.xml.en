@@ -86,13 +86,23 @@
     </table>
     <stl:block if="address">
       <p>
+        <a href="/companies/${company_name}/;view">
+          View company details
+        </a>
+        &nbsp;|&nbsp;
         <a href="/companies/${company_name}/;edit_metadata_form?referrer=1">
           Modify company details
         </a>
       </p>
       <p>
+        <a href="/companies/${company_name}/${address_name}/;view">
+          View address details and Jobs
+        </a>
+        &nbsp;|&nbsp;
         <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
-          >Modify address details</a>
+          >
+          Modify address details
+          </a>
       </p>
       <stl:block if="reviewer">
         <p>

@@ -33,14 +33,21 @@
   </li>
 </ul>
     </td>
-    <td valign="top">List of news</td>
+    <td valign="top">Lis of news</td>
   </tr>
   <tr>
     <td colspan="2"><h2>Jobs at ${company}</h2></td>
   </tr>
-    </table>
+  <tr>
+    <td>
+      ${batch}
+      ${table}
+      <b stl:if="msg">${msg}</b>
     </td>
-    <td valign="top">
+  </tr>
+  </table>
+  </td>
+  <td valign="top">
 
 <script type="text/javascript"><!--
 google_ad_client = "pub-2050823514740471";

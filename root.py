@@ -73,6 +73,7 @@ class Root(Handler, BaseRoot):
             KeywordField('level3', is_stored=True),
             KeywordField('level4', is_stored=True),
             KeywordField('closing_date', is_stored=False),
+            KeywordField('company', is_stored=False),
             KeywordField('function', is_stored=False),
             KeywordField('description', is_stored=False)]
 

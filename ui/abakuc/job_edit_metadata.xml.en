@@ -9,25 +9,63 @@
 <h1>Job Entry modification</h1>
 <form action=";edit_metadata" method="post" enctype="multipart/form-data">
       <dl>  
-        <dt><label for="dc:title">Job Title</label></dt>
+        <dt>
+          <label for="dc:title">Title</label>
+        </dt>
         <dd>
-          <input type="text" size="50" name="dc:title" value="${title}" /> 
+          <input type="text" name="dc:title" value="${dc:title}"/>
+        </dd>
+        <dt>
+          <label for="abakuc:function">Job Function</label>
+        </dt>
+        <dd>
+            <select name="abakuc:function">
+              <option stl:repeat="function functions" value="${function/name}" 
+                  selected="${function/selected}">
+                ${function/value}&nbsp;&nbsp;&nbsp;
+              </option>
+            </select>
+        </dd>
+        <dt>
+          <label for="abakuc:salary">Salary Range</label>
+        </dt>
+        <dd>
+            <select name="abakuc:salary">
+              <option stl:repeat="s salary" value="${s/name}"
+                  selected="${s/selected}">
+                  ${s/value}&nbsp;&nbsp;&nbsp;
+              </option>
+            </select>
+        </dd>
+        <dt>
+          <label for="abakuc:closing_date">Closing Date</label>
+        </dt>
+        <dd>
+          <input id="abakuc:closing_date" name="abakuc:closing_date" 
+                  type="text" value="${abakuc:closing_date}"/>
+          <input id="trigger_date" type="button" value="..."/>
+          <script language="javascript">
+          Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
+          </script>
+        </dd>
+        <dt>
+          <label for="dc:description">Short Description</label>
+        </dt>
+        <dd>
+          <textarea  cols="50" id="dc:description" name="dc:description"
+          rows="8">${dc:description}</textarea>
+        </dd>
+        <dt>
+          <label for="abakuc:job_text">Text</label>
+        </dt>
+        <dd>
+          <textarea  cols="50" id="abakuc:job_text" name="abakuc:job_text"
+          rows="8">${abakuc:job_text}</textarea>
         </dd>
       </dl>
-      <dl>
-        <dt><label for="dc:description">Job Description</label></dt>
-        <dd>
-          <textarea cols="60" rows="5" name="dc:description">${description}</textarea> 
-        </dd>
-      </dl>       
-        <dl>
-    <dt>Region</dt>
-    <dd>
-      ${form}
-    </dd>
-  </dl>
-
-  <p><input type="submit" value="Modify job details" class="button_ok" /></p>
-</form>
-
+    <p>
+      <input type="submit" value="Modify job details" class="button_ok" />
+    </p>
+    </form>
 </stl:block>
+

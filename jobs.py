@@ -32,16 +32,6 @@ class Job(Folder): #RoleAware, Folder):
     __fixed_handlers__ = ['log_applications.csv']
 
 
-    #def new(self, **kw):
-    #    Folder.new(self, **kw)
-    #    cache = self.cache
-        #cache['log_applications.csv'] = handler
-        #cache['log_applications.csv.metadata'] = handler.build_metadata(handler)
-
-
-    #def get_document_types(self):
-    #    return []
-
     ###################################################################
     ## Create a new Job
     
@@ -52,8 +42,10 @@ class Job(Folder): #RoleAware, Folder):
         namespace['salary'] = SalaryRange.get_namespace(None) 
         namespace['functions'] =  JobTitle.get_namespace(None)
         namespace['class_id'] = Job.class_id
-        handler = context.root.get_handler('/ui/abakuc/job_new_resource_form.xml')
+        path = '/ui/abakuc/job_new_resource_form.xml'
+        handler = context.root.get_handler(path)
         return stl(handler, namespace)
+
 
     @classmethod 
     def new_instance(cls, container, context):
@@ -106,35 +98,91 @@ class Job(Folder): #RoleAware, Folder):
                     'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
         handler = self.get_handler('/ui/abakuc/job_view.xml')
+        
+        # if reviewer , show users who apply
+        reviewers = False
+        user = context.user
+        if user :
+            reviewers = self.parent.has_user_role(user.name,'ikaaro:reviewers')
+        namespace['reviewers'] = reviewers
+        namespace['table'] = None
+        if reviewers:
+            namespace['applicants'] = {}
+            for applicant in ['1', '2', '3']:
+                namespace['applicants'] = {'name': applicant}
+            namespace['table'] = ''
         return stl(handler, namespace)
 
 
-   # def edit_metadata_form(self, context):
-   #     namespace = {}
-   #     namespace['referrer'] = None
-   #     if context.get_form_value('referrer'):
-   #         namespace['referrer'] = str(context.request.referrer)
-   #     # Form
-   #     namespace = {}
-   #     namespace['title'] = self.title_or_name
-   #     namespace['description'] = self.get_property('dc:description')
-   #     address_county = self.get_property('abakuc:county')
-   #     namespace['form'] = self.get_form(address_county)
-
-   #     handler = self.get_handler('/ui/abakuc/job_edit_metadata.xml')
-   #     return stl(handler, namespace)
-
-   # 
-   # def edit_metadata(self, context):
-   #     title = context.get_form_value('dc:title')
-   #     description = context.get_form_value('dc:description')
-   #     county = context.get_form_value('abakuc:county')
-   #     self.set_property('dc:title', title)
-   #     self.set_property('dc:description', description)
-   #     self.set_property('abakuc:county', county)
+    job_fields = ['dc:title' , 'dc:description', 'abakuc:job_text',         
+                  'abakuc:closing_date', 'abakuc:salary', 'abakuc:function']
 
 
-   #     message = u'Changes Saved.'
-   #     return context.come_back(message)
+    def edit_metadata_form(self, context):
+        namespace = {}
+        for key in self.job_fields:
+            namespace[key] = self.get_property(key)
+        # Build namespace
+        salary = self.get_property('abakuc:salary')
+        namespace['salary'] = SalaryRange.get_namespace(salary)
+        function = self.get_property('abakuc:function')
+        namespace['functions'] =  JobTitle.get_namespace(function)
+        # Return stl
+        handler = self.get_handler('/ui/abakuc/job_edit_metadata.xml')
+        return stl(handler, namespace)
+
+    
+    def edit_metadata(self, context):
+        for key in self.job_fields:
+            self.set_property(key, context.get_form_value(key))
+        message = u'Changes Saved.'
+        return context.come_back(message)
+
+    ############################################################
+    # Apply for a job
+    ############################################################
+    apply_fields = [
+       # ('abakuc:enquiry_subject', True),
+       # ('abakuc:enquiry', True),
+       # ('abakuc:enquiry_type', True),
+        ('ikaaro:firstname', True),
+        ('ikaaro:lastname', True),
+        ('ikaaro:email', True),
+        ('abakuc:phone', False)]
+
+    apply_fields_auth = []
+
+    apply_form__access__ = True
+    apply_form__label__ = u'Apply to the Job'
+    def apply_form(self, context):
+        if context.user is None:
+            namespace = context.build_form_namespace(self.apply_fields)
+            namespace['is_authenticated'] = False
+        else:
+            namespace = context.build_form_namespace(self.apply_fields_auth)
+            namespace['is_authenticated'] = True
+
+        # Return stl
+        handler = self.get_handler('/ui/abakuc/Job_apply_form.xml.en')
+        return stl(handler, namespace)
+
+
+    apply__access__ = True
+    apply__label__ = u'Apply to the Job'
+    def apply(self, context):
+        root = context.root
+        user = context.user
+
+        # Check input data
+        if user is None:
+            apply_fields = self.apply_fields
+        else:
+            apply_fields = self.apply_fields_auth
+        keep = [ x for x, y in apply_fields ]
+        error = context.check_form_input(apply_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+        message = u'ok'
+        return message.encode('utf-8') 
 
 register_object_class(Job)

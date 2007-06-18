@@ -10,7 +10,7 @@ from itools.cms.widgets import table, batch
 
 # Import from abakuc
 from website import WebSite
-from metadata import JobTitle
+from metadata import JobTitle, SalaryRange
 
 
 class UKTravel(WebSite):
@@ -77,6 +77,7 @@ class UKTravel(WebSite):
         columns = [('name', u'Id'),
                    ('closing_date', u'Closing Date'),
                    ('title', u'Title'),
+                   ('company', u'Company'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
 
@@ -90,17 +91,22 @@ class UKTravel(WebSite):
         for job in documents:
             job = root.get_handler(job.abspath)
             get = job.get_property
+            # Informations about The company
+            address = job.parent
+            company = address.parent
             # Information about the job
+            url = '/companies/%s/%s/%s/;view' % (company.name,
+                                                      address.name, job.name)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                         'name': job.name,
+                         'name': (job.name,url),
                          'closing_date': get('abakuc:closing_date'),
                          'title': get('dc:title'),
+                         'company': company.get_property('dc:title'),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
                          'description': get('dc:description')}
-            # Informations about The society
-
             jobs.append(job_to_add)
+        
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 20
@@ -125,6 +131,8 @@ class UKTravel(WebSite):
         # Return the page
         handler = self.get_handler('/ui/%s/view_jobs.xhtml' % self.name)
         return stl(handler, namespace)
+
+
 
 
 register_object_class(UKTravel)
