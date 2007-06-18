@@ -70,8 +70,46 @@ input {
 a { color: #3465a4; }
 a img { border: 0; }
 
-td, th { padding: 3px; }
+td, th { padding: 0px; }
 
+
+#gheader {
+  margin-bottom: 1em;
+  color: #fff;
+  background: #6899FF;
+  height: 56px;
+  font-size: 1.1em;
+}
+#gheader table td#upper-nav-crn {
+  width: 19px;
+  background: #6899FF url(images/upper-nav-crn.gif);
+}
+#gmenu a {
+  background-position: left center;
+  background-repeat: no-repeat;
+  color: white;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0px 5px 0px 10px;
+  padding: 4px 0px 4px 20px;
+  text-decoration: none;
+}
+
+#gmenu2 {
+  margin-top: .5em;
+  margin: 5px 0px 0px 0px;
+}
+
+#gmenu2 a {
+  color: white;
+  font-size: 1em;
+  margin: 0px 5px 0px 10px;
+  text-decoration: none;
+}
+#header table td#upper-nav-src {
+  background-color: #6899FF;
+  vertical-align: middle;
+}
 #header {
   margin-bottom: 1em;
   color: #fff;
@@ -270,6 +308,9 @@ td, th { padding: 3px; }
 /**************************************************************************
  * 
  * ***********************************************************************/
+#logged {
+  text-align: right;
+}
 #message {
   margin: 0.3em;
   padding: 0.3em 0 0.3em 24px;
