@@ -21,6 +21,9 @@
   </li>
 </ul>
 
-
+<h3>Jobs</h3>
+<b stl:if="msg">${msg}</b>
+${batch}
+${table}
 
 </stl:block>

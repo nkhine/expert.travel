@@ -15,6 +15,7 @@ from itools.web import get_context
 from itools.rest import checkid
 from itools.cms.widgets import table
 from itools.cms.utils import generate_password
+from itools.catalog import EqQuery, AndQuery
 
 # Import from abakuc
 from base import Handler, Folder
@@ -22,7 +23,7 @@ from handlers import ApplicationsLog
 from metadata import JobTitle, SalaryRange
 
 
-class Job(Folder):
+class Job(RoleAware, Folder):
 
     class_id = 'Job'
     class_title = u'Job'
@@ -42,25 +43,44 @@ class Job(Folder):
         return [Candidature, File]
 
 
-
-    ###################################################################
-    ## Create a new Job
     new_resource_form__access__ = True
     new_resource__access__ = True
 
+
+    ###################################################################
+    ## Create a new Job
+
+    job_fields = [
+        ('dc:title', True),
+        ('abakuc:function', True),
+        ('abakuc:salary', True),
+        ('abakuc:closing_date', True),
+        ('dc:description', True),
+        ('abakuc:job_text', True)]
+
+
     @classmethod
     def new_instance_form(cls, context):
-        namespace = {}
-        namespace['salary'] = SalaryRange.get_namespace(None) 
-        namespace['functions'] =  JobTitle.get_namespace(None)
+        namespace = context.build_form_namespace(cls.job_fields)
         namespace['class_id'] = Job.class_id
+        # Epoz
+        job_text = context.get_form_value('abakuc:job_text') or ''
+        rte = context.root.get_rte(context, 'abakuc:job_text', job_text)
+        namespace['abakuc:job_text'] = rte  
         path = '/ui/abakuc/job_new_resource_form.xml'
+        
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
 
     @classmethod 
     def new_instance(cls, container, context):
+        # Check data
+        keep = [ x for x, y in cls.job_fields ]
+        error = context.check_form_input(cls.job_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+        #
         name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         
@@ -76,9 +96,18 @@ class Job(Folder):
                        u' choose another one.')
             return context.come_back(message)
         # Name already used?
-        if container.has_handler(name):
-            message = u'There is already another object with this name.'
-            return context.come_back(message)
+        while container.has_handler(name):
+              try:
+                  names = name.split('_')
+                  if len(names) > 1:
+                      name = '_'.join(names[:-1])
+                      number = str(int(names[-1]) + 1) 
+                      name = [name, number]
+                      name = '_'.join(name)
+                  else:
+                      name = '_'.join(names) + '_1'
+              except:
+                  name = '_'.join(names) + '_1'
         
         # Set properties
         handler = cls()
@@ -128,14 +157,20 @@ class Job(Folder):
         namespace['reviewers'] = reviewers
         namespace['table'] = None
         if reviewers:
+            users = root.get_handler('users')
+            nb_candidatures = 0
             candidatures = self.search_handlers(handler_class=Candidature)
-            namespace['nb_candidatures'] = len(list(candidatures))
-        
+            for candidature in candidatures:
+                user_id = candidature.get_property('user_id')
+                user = users.get_handler(user_id)
+                if user.has_property('ikaaro:user_must_confirm') is False:
+                    nb_candidatures += 1 
+            namespace['nb_candidatures'] = nb_candidatures
         handler = self.get_handler('/ui/abakuc/job_view.xml')
         return stl(handler, namespace)
 
     
-    view_candidatures__access__ = True
+    view_candidatures__access__ = 'is_allowed_to_edit'
     view_candidatures__label__ = u'Job Candidatures'
     def view_candidatures(self, context):
         root = context.root
@@ -175,40 +210,68 @@ class Job(Folder):
     # Edit details
     ###########################################################
     
-    job_fields = ['dc:title' , 'dc:description', 'abakuc:job_text',         
-                  'abakuc:closing_date', 'abakuc:salary', 'abakuc:function']
+    edit_job_fields = ['dc:title' , 'dc:description', 'abakuc:closing_date',
+                       'abakuc:salary', 'abakuc:function']
     
+
+    edit_metadata_form__access__ = 'is_allowed_to_edit'
     def edit_metadata_form(self, context):
         namespace = {}
-        for key in self.job_fields:
+        for key in self.edit_job_fields:
             namespace[key] = self.get_property(key)
         # Build namespace
         salary = self.get_property('abakuc:salary')
         namespace['salary'] = SalaryRange.get_namespace(salary)
         function = self.get_property('abakuc:function')
         namespace['functions'] =  JobTitle.get_namespace(function)
+        job_text = self.get_property('abakuc:job_text')
+        namespace['abakuc:job_text'] = self.get_rte(context,'abakuc:job_text',
+                                                 job_text)
         # Return stl
         handler = self.get_handler('/ui/abakuc/job_edit_metadata.xml')
         return stl(handler, namespace)
 
     
+    edit_metadata__access__ = 'is_allowed_to_edit'
     def edit_metadata(self, context):
-        for key in self.job_fields:
+        for key in self.edit_job_fields:
             self.set_property(key, context.get_form_value(key))
+        job_text = context.get_form_value('abakuc:job_text')
+        self.set_property('abakuc:job_text', job_text)
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
 
+
+    def get_epoz_data(self):
+        return self.get_property('abakuc:job_text')
+
+    
     ############################################################
     ## Indexes
+    #######################################################################
+    
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['function'] = self.get_property('abakuc:function')
         indexes['salary'] = self.get_property('abakuc:salary')
         indexes['closing_date'] = self.get_property('abakuc:closing_date')
+        address = self.parent
+        company = address.parent
+        indexes['company'] = company.name
+        indexes['address'] = address.name
         return indexes
 
+    
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
+    
+    def is_allowed_to_edit(self, user, object):
+        address = self.parent
+        return address.is_allowed_to_edit(user, object)
 
-class Candidature(Folder):
+
+class Candidature(RoleAware, Folder):
 
     class_id = 'Candidature'
     class_title = u'Job Candidature'
@@ -265,6 +328,36 @@ class Candidature(Folder):
         if error is not None:
             return context.come_back(error, keep=keep)
         
+        # Check the cv
+        file = context.get_form_value('file')
+        if file is None:
+            return context.come_back(u'Please put your CV')
+        name, mimetype, body = file
+        guessed = mimetypes.guess_type(name)[0]
+        if guessed is not None:
+            mimetype = guessed
+        if mimetype not in ['application/vnd.oasis.opendocument.text',
+                            'application/pdf',
+                            'application/msword']:
+            return context.come_back(u'Your CV must be an DOC, ODT or PDF')
+
+        # Name already used?
+        candidatures = container.search_handlers(handler_class=cls)
+        nb_candidatures =  str(len(list(candidatures))+1)
+        name = 'Candidature_%s' % nb_candidatures
+        while container.has_handler(name):
+              try:
+                  names = name.split('_')
+                  if len(names) > 1:
+                      name = '_'.join(names[:-1])
+                      number = str(int(names[-1]) + 1) 
+                      name = [name, number]
+                      name = '_'.join(name)
+                  else:
+                      name = '_'.join(names) + '_1'
+              except:
+                  name = '_'.join(names) + '_1'
+        
         # Create the User
         confirm = None
         if user is None:
@@ -282,38 +375,26 @@ class Candidature(Folder):
                 user.set_property('ikaaro:lastname', lastname)
                 confirm = generate_password(30)
                 user.set_property('ikaaro:user_must_confirm', confirm)
-                # XXX root.reindex_handler(user)
             else:
                 user_id = results.get_documents()[0].name
                 user = users.get_handler(user_id)
                 if user.has_property('ikaaro:user_must_confirm'):
                     confirm = user.get_property('ikaaro:user_must_confirm')
         user_id = str(user.name)
-
+        
         # Create the candidature
-        candidatures = container.search_handlers(handler_class=cls)
-        nb_candidatures =  str(len(list(candidatures))+1)
-        # XXX bug !!!
-        candidature_name = 'Candidature_%s' % nb_candidatures
-        handler, metadata = container.set_object(candidature_name, cls())
+        handler, metadata = container.set_object(name, cls())
         for key in ['abakuc:applicant_note']:
             metadata.set_property(key, context.get_form_value(key))
         metadata.set_property('user_id', user_id)
+        
         # Add the CV
-        file = context.get_form_value('file')
-        if file is None:
-            return context.come_back(u'Please put your CV')
-        name, mimetype, body = file
-        guessed = mimetypes.guess_type(name)[0]
-        if guessed is not None:
-            mimetype = guessed
-        cls = get_object_class(mimetype)
-        cv = cls(string=body)
-        cv, cv_metadata = handler.set_object('cv', cv) 
-
+        cv_cls = get_object_class(mimetype)
+        cv = cv_cls(string=body)
+        cv, cv_metadata = handler.set_object('cv.%s'%cv_cls.class_extension, cv)
         # Authenticated user, we are done
         if confirm is None:
-            # XXX send an email to the manager
+            handler.send_email_to_members(context, all=False)
             message = u'Your candidature has been sent'
             return message.encode('utf-8')
         
@@ -335,7 +416,8 @@ class Candidature(Folder):
             u"Thank you for visiting the UK Travel List website."
             u"\n"
             u"UK Travel List Team")
-        url = '%s/;confirm_candidature_form?user=%s&key=%s' %(candidature_name,                                                              user_id, confirm)
+        url = '%s/;confirm_candidature_form?user=%s&key=%s' % (name, user_id,
+                                                               confirm)
         url = context.uri.resolve(url)
         body = Template(body).substitute({'confirm_url': str(url)})
         root.send_email(from_addr, email, subject, body)
@@ -351,8 +433,19 @@ class Candidature(Folder):
             % (company, email))
         return message.encode('utf-8')
 
+    
     #######################################################################
-    ##  Confirm candidature
+    ## Indexes
+    #######################################################################
+    
+    def get_catalog_indexes(self):
+        indexes = Folder.get_catalog_indexes(self)
+        indexes['user_id'] = self.get_property('user_id')
+        return indexes
+    
+    #######################################################################
+    ##  Confirm candidature & send Mail
+    #######################################################################
 
     confirm_candidature_form__access__ = True
     def confirm_candidature_form(self, context):
@@ -412,16 +505,57 @@ class Candidature(Folder):
         # Set cookie
         user.set_auth_cookie(context, password)
 
-        # Send email XXX
-        #self.enquiry_send_email(user)
+        # Send email
+        self.send_email_to_members(context, all=True)
 
-        message = (u"Thank you, your XXX  has been submitted.<br/>" 
+        message = (u"Thank you, your CV  has been submitted.<br/>" 
                    u"If you like to login, please choose your password")
         return message.encode('utf-8')
 
     
+    def send_email_to_members(self, context, all=False):
+        root = context.root
+        # User information
+        users = root.get_handler('users')
+        user_id = self.get_property('user_id')
+        user = users.get_handler(user_id)
+        firstname = user.get_property('ikaaro:firstname')
+        lastname = user.get_property('ikaaro:lastname')
+        email = user.get_property('ikaaro:email')
+        # Get the names of jobs which has a response from current user
+        candidatures = []
+        if all is True:
+            catalog = context.server.catalog
+            query = []
+            query.append(EqQuery('format', 'Candidature'))
+            query.append(EqQuery('user_id', user_id ))
+            query = AndQuery(*query)
+            results = catalog.search(query)
+            documents = results.get_documents()
+            for candidature in documents:
+                candidature = root.get_handler(candidature.abspath)
+                candidatures.append(candidature)
+        else:
+            candidatures.append(self)
+           
+        # Sent an email for each candidature
+        subject_template = u'[UK Travel] New Candidature (%s)' 
+        body_template = ('A new person post his Candidature to the job : %s\n'
+                         'From : %s %s\n')
+        for candidature in candidatures:
+            job = candidature.parent
+            address = job.parent    
+            subject = subject_template % job.title
+            body = body_template % (job.title, firstname, lastname)
+            to_addrs = address.get_property('ikaaro:reviewers')
+            for to_addr in to_addrs:
+                root.send_email(email, to_addr, subject, body)   
+
+
     #######################################################################
     # View
+    #######################################################################
+    
     view__access__ = True
     view__label__ = u'View Candidature'
     def view(self, context):
@@ -440,7 +574,7 @@ class Candidature(Folder):
                              'phone': user.get_property('abakuc:phone'),
                              'email': user.get_property('ikaaro:email')}
         # CV
-        cv = self.get_handler('cv')
+        cv = list(self.search_handlers(handler_class=File))[0]
         cv_path = cv.name
         cv_icon = cv.get_path_to_icon(48, from_handler=self)
         namespace['cv'] = {'icon': cv_icon,
@@ -450,6 +584,21 @@ class Candidature(Folder):
         return stl(handler, namespace)
 
   
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
+
+    def is_allowed_to_edit(self, user, object):
+        if not user:
+            return False
+        job = self.parent
+        address = job.parent
+        return address.is_allowed_to_edit(user, object)
+    
+
+    def is_allowed_to_view(self, user, object):
+        return self.is_allowed_to_edit(user,object)
+
 
 register_object_class(Job)
 register_object_class(Candidature)

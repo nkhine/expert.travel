@@ -170,8 +170,6 @@ class User(iUser, Handler):
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
         # Company
-        # XXX note used
-        #results = root.search(format='address', members=self.name)
         namespace['address'] = None
         address = self.get_address()
         if address is None:
@@ -226,7 +224,7 @@ class User(iUser, Handler):
             get = job.get_property
             # Information about the job
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
-                                                job.name)
+                                                 job.name)
             job_to_add ={'id': job.name, 
                          'checkbox': reviewer,
                          'img': '/ui/abakuc/images/JobBoard16.png',
@@ -395,7 +393,6 @@ class User(iUser, Handler):
         old_address = self.get_address()
         if old_address is not None:
             old_address.set_user_role(self.name, None)
-            # XXX root.reindex_handler(old_address)
 
         # Reindex
         #root.reindex_handler(address)
@@ -430,10 +427,6 @@ class User(iUser, Handler):
         old_address = self.get_address()
         if old_address is not None:
             old_address.set_user_role(self.name, None)
-            # XXX root.reindex_handler(old_address)
-
-        # Reindex
-        # XXX root.reindex_handler(address)        
 
         message = u'Company/Address setup done.'
         goto = context.uri.resolve(';profile')

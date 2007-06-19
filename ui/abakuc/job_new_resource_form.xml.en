@@ -9,14 +9,15 @@
           <label for="dc:title">Job Title</label>
         </dt>
         <dd>
-          <input type="text" name="dc:title" value=""/>
+          <input type="text" name="dc:title" value="${dc:title/value}"/>
         </dd>
         <dt>
           <label for="abakuc:function">Job Function</label>
         </dt>
         <dd>
             <select name="abakuc:function">
-              <option stl:repeat="function functions" value="${function/name}">
+              <option stl:repeat="function abakuc:function/value"
+                      value="${function/name}" selected="${function/selected}">
                   ${function/value}&nbsp;&nbsp;&nbsp;
               </option>
             </select>
@@ -26,7 +27,8 @@
         </dt>
         <dd>
             <select name="abakuc:salary">
-              <option stl:repeat="s salary" value="${s/name}">
+              <option stl:repeat="s abakuc:salary/value" value="${s/name}"
+                      selected="${s/selected}">
                   ${s/value}&nbsp;&nbsp;&nbsp;
               </option>
             </select>
@@ -36,7 +38,7 @@
         </dt>
         <dd>
           <input id="abakuc:closing_date" name="abakuc:closing_date" 
-                  type="text"/>
+                    type="text" value="${abakuc:closing_date/value}"/>
           <input id="trigger_date" type="button" value="..."/>
           <script language="javascript">
           Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
@@ -47,16 +49,15 @@
         </dt>
         <dd>
           <textarea  cols="100" id="dc:description" name="dc:description"
-          rows="8"></textarea>
+          rows="8">${dc:description/value}</textarea>
         </dd>
         <dt>
           <label for="abakuc:job_text">Long Description</label>
         </dt>
-        <dd>
-          <textarea  cols="100" id="abakuc:job_text" name="abakuc:job_text"
-          rows="20"></textarea>
-        </dd>
       </dl>
+      <p>
+        ${abakuc:job_text}
+      </p>
     <p>
       <input name="name" size="40" value="" type="hidden"/>
       <input name="class_id" type="hidden" value="${class_id}"/>

@@ -10,11 +10,11 @@
       </dt>
       <dd>
       <textarea cols="90" id="abakuc:applicant_note"
-      name="abakuc:applicant_note" rows="20"></textarea>
+      name="abakuc:applicant_note" rows="20">${abakuc:applicant_note/value}</textarea>
       </dd>
       
       <dt>
-        <label>Your CV (PDF or ODT)</label>
+        <label>Your CV (Format : .doc, .pdf or .odt)</label>
       </dt>
       <dd>
         <input id="file" name="file" size="35" type="file"/>

@@ -52,15 +52,14 @@
           <label for="dc:description">Short Description</label>
         </dt>
         <dd>
-          <textarea  cols="50" id="dc:description" name="dc:description"
+          <textarea  cols="100" id="dc:description" name="dc:description"
           rows="8">${dc:description}</textarea>
         </dd>
         <dt>
           <label for="abakuc:job_text">Text</label>
         </dt>
         <dd>
-          <textarea  cols="50" id="abakuc:job_text" name="abakuc:job_text"
-          rows="8">${abakuc:job_text}</textarea>
+          ${abakuc:job_text}
         </dd>
       </dl>
     <p>

@@ -99,7 +99,7 @@ class WebSite(Handler, BaseWebSite):
                         level = []
             level.sort(key=lambda x: x['title'])
             namespace['level'] = level
-
+        
         # Batch
         start = context.get_form_value('batchstart', type=Integer, default=0)
         size = 5
