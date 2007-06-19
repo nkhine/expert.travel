@@ -85,12 +85,10 @@ td, th { padding: 0px; }
   background: #6899FF url(images/upper-nav-crn.gif);
 }
 #gmenu a {
-  background-position: left center;
-  background-repeat: no-repeat;
   color: white;
   font-size: 1.1em;
   font-weight: bold;
-  margin: 0px 5px 0px 10px;
+  margin: 0px 5px 0px 0px;
   padding: 4px 0px 4px 20px;
   text-decoration: none;
 }
@@ -102,8 +100,10 @@ td, th { padding: 0px; }
 
 #gmenu2 a {
   color: white;
-  font-size: 1em;
-  margin: 0px 5px 0px 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0px 10px 0px 0px;
+  padding: 4px 0px 4px 10px;
   text-decoration: none;
 }
 #header table td#upper-nav-src {
@@ -309,6 +309,7 @@ td, th { padding: 0px; }
  * 
  * ***********************************************************************/
 #logged {
+  margin: -0.9em 0 0.3em 24px;
   text-align: right;
 }
 #message {

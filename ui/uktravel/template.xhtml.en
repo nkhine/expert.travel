@@ -53,7 +53,7 @@ Expert.Travel Home" src="/ui/uktravel/images/logo.png" />
 <td nowrap="" align="right">
       <form action="/;search" method="get">
         <input class="searchinput" name="search_text" type="text" 
-          value="Abakuc Limited" size="20" onFocus="this.value=''" />
+          value="Abakuc Limited" size="30" onFocus="this.value=''" />
         <input class="button_search" type="submit" value="Search"/>
       </form>
 </td>
@@ -63,17 +63,18 @@ Expert.Travel Home" src="/ui/uktravel/images/logo.png" />
 <tbody>
         <tr>
         <td id="upper-nav-crn"></td>
-       <td bgcolor="#000">
+       <td bgcolor="#05ba05">
         <stl:block if="not user/info">
-          <a href="/;login_form" id="top_menu_login">Log in</a>
-          <a href="/;register_form" id="top_menu_register"
+          <a href="/;login_form">Log in</a>
+          <a href="/;register_form"
             stl:if="user/joinisopen">Register</a>
         </stl:block>
         <stl:block if="user/info">
-          <a href="${user/info/home}" id="top_menu_home">Manage Your Profile</a>
-          <a href="/;logout" id="top_menu_logout">Log out</a>
+          <a href="${user/info/home}">My Profile</a>
+          <a href="/;logout">Log out</a>
         </stl:block>
-       <a href="/;contact_form" id="top_menu_contact">Contact</a>
+       <a href="/;contact_form">Help</a>
+       <a href="/;contact_form">Contact</a>
        </td>
        </tr>
 </tbody>
