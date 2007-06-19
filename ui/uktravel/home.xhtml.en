@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title>Welcome to the UK Travel List</title>
   </head>
@@ -109,7 +110,7 @@
 							<tr>
 								<td>
 								<!-- table four -->
-								<table width="100%"  border="0" cellpadding="10" cellspacing="0" bgcolor="#FFFFFF">
+								<table stl:if="jobs" width="100%"  border="0" cellpadding="10" cellspacing="0" bgcolor="#FFFFFF">
 									<tr>
 										<td style="padding:3px 6px 3px 6px; background-color:#DBEDF6;">
 											<table border="0" cellpadding="0"
@@ -128,15 +129,18 @@
 												<tr>
 													<td style="line-height:160%;">
 													<p style="line-height:130%;margin:0 0 6px 0">
-												      <div><a id="" href="#">Customer
-                              Service Agent - Customer Relations</a></div>
-                              <div><a id="" href="#">Account
-                              Executives - Corporate and Leisure Sectors</a></div>
+												      <ul>
+                                <li stl:repeat="job jobs">
+                                  <a href="${job/url}">
+                                    ${job/title}
+                                  </a>
+                                </li>
+                              </ul>
 													</p>
 													</td>
 												</tr>
                         <tr>  
-                          <td align="right"><a id="" href="#">2,345 more jobs >>></a></td>
+                          <td align="right"><a id="" href=";view_jobs">Our ${nb_jobs} jobs >>></a></td>
                         </tr>  
 											</table>
 											<!--end of table five -->
@@ -157,4 +161,4 @@
 </table> 
 <!-- end of table one -->
   </body>
-</html>
+</stl:block>

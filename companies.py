@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
-from datetime import datetime
+from datetime import datetime, date
 from string import Template
 
 # Import from itools
@@ -17,13 +17,15 @@ from itools.cms.registry import register_object_class
 from itools.cms.utils import generate_password
 from itools.cms.tracker import Tracker
 from itools.cms.widgets import table, batch
-
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
 from website import WebSite
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
+
+
 
 class Companies(Folder):
 
@@ -59,6 +61,9 @@ class Company(AccessControl, Folder):
                    ['new_resource_form'],
                    ['edit_metadata_form']]
 
+
+    new_resource_form__access__ = 'is_allowed_to_edit'
+    new_resource__access__ = 'is_allowed_to_edit'
 
     def get_document_types(self):
         return [Address]
@@ -100,6 +105,80 @@ class Company(AccessControl, Folder):
                 'name': address.name,
                 'address': address.get_property('abakuc:address')})
         namespace['addresses'] = addresses
+        
+        # Get all Jobs
+        columns = [('title', u'Title'),
+                   ('function', u'Function'),
+                   ('address', u'Address'),
+                   ('description', u'Short description'),
+                   ('closing_date', u'Closing Date')]
+        all_jobs = []
+        for address in self.search_handlers(handler_class=Address):
+            address_jobs = list(address.search_handlers(handler_class=Job))
+            all_jobs = all_jobs + address_jobs
+
+        namespace['batch'] = ''
+        # Construct the lines of the table
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'Job'))
+        query.append(EqQuery('company', self.name))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        jobs = []
+        for job in list(documents):
+            job = root.get_handler(job.abspath)
+            get = job.get_property
+            # Information about the job
+            address = job.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                 job.name)
+            job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
+                         'closing_date': get('abakuc:closing_date'),
+                         'address': address.get_title_or_name(), 
+                         'function': JobTitle.get_value(
+                                        get('abakuc:function')),
+                         'description': get('dc:description')}
+            jobs.append(job_to_add)
+        # Sort
+          # => XXX See if it's correct
+        sortby = context.get_form_value('sortby', 'title')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            jobs.reverse()
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 20
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Namespace 
+        if jobs:
+            job_table = table(columns, jobs, [sortby], sortorder,[])
+            job_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total)
+            msg = None
+        else:
+            job_table = None
+            job_batch = None
+            msg = u'Sorry but there are no jobs'
+        
+        namespace['table'] = job_table
+        namespace['batch'] = job_batch
+        namespace['msg'] = msg 
+
+
+
         handler = self.get_handler('/ui/abakuc/company_view.xml')
         return stl(handler, namespace)
 
@@ -173,12 +252,6 @@ class Company(AccessControl, Folder):
                     logo, metadata = self.set_object('logo', logo)
                     metadata.set_property('state', 'public')
 
-        # XXX to delete
-        # Reindex
-        #root = context.root
-        #for address in self.search_handlers(format='address'):
-        #    root.reindex_handler(address)
-
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
@@ -200,6 +273,8 @@ class Address(RoleAware, Folder):
 
     __fixed_handlers__ = ['log_enquiry.csv']
 
+    new_resource_form__access__ = True # XXX Fix it
+    new_resource__access__ = True # XXX Fix it
 
     def new(self, **kw):
         # Enquiry
@@ -212,6 +287,13 @@ class Address(RoleAware, Folder):
 
     def get_document_types(self):
         return [Job]
+
+
+    def get_epoz_data(self):
+        # XXX don't works
+        context = get_context()
+        job_text = context.get_form_value('abakuc:job_text') 
+        return job_text
 
 
     def get_catalog_indexes(self):
@@ -275,36 +357,49 @@ class Address(RoleAware, Folder):
                 'name': address.name,
                 'address': address.get_property('abakuc:address')})
         namespace['addresses'] = addresses
-        ########
+        ######## 
         # Jobs
-        namespace['batch'] = ''
-        sortby = context.get_form_value('sortby', 'closing_date')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        columns = [('name', u'Id'),
-                   ('closing_date', u'Closing Date'),
-                   ('title', u'Title'),
+        columns = [('title', u'Title'),
                    ('function', u'Function'),
-                   ('description', u'Short description')]
-
-        # Get all Jobs
-        address_jobs = self.search_handlers(handler_class=Job)
+                   ('description', u'Short description'),
+                   ('closing_date', u'Closing Date')]
+        namespace['batch'] = ''
         # Construct the lines of the table
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'Job'))
+        query.append(EqQuery('company', self.parent.name))
+        query.append(EqQuery('address', self.name))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
         jobs = []
-        for job in list(address_jobs):
-            #job = root.get_handler(job.abspath)
+        for job in list(documents):
+            job = root.get_handler(job.abspath)
             get = job.get_property
             # Information about the job
-            url = '%s/;view' % job.name
-            job_to_add ={'img': '/ui/images/Text16.png',
-                         'name': (job.name,url),
+            address = job.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                 job.name)
+            job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
                          'closing_date': get('abakuc:closing_date'),
-                         'title': get('dc:title'),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
                          'description': get('dc:description')}
             jobs.append(job_to_add)
-        
+        # Sort
+          # => XXX See if it's correct
+        sortby = context.get_form_value('sortby', 'title')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            jobs.reverse()
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 20
@@ -316,7 +411,8 @@ class Address(RoleAware, Folder):
         # Namespace 
         if jobs:
             job_table = table(columns, jobs, [sortby], sortorder,[])
-            job_batch = batch(context.uri, batch_start, batch_size, batch_total)
+            job_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total)
             msg = None
         else:
             job_table = None
@@ -326,6 +422,7 @@ class Address(RoleAware, Folder):
         namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
+
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)
 
@@ -504,7 +601,6 @@ class Address(RoleAware, Folder):
                 user.set_property('ikaaro:lastname', lastname)
                 confirm = generate_password(30)
                 user.set_property('ikaaro:user_must_confirm', confirm)
-                # XXX root.reindex_handler(user)
             else:
                 user_id = results.get_documents()[0].name
                 user = users.get_handler(user_id)
@@ -527,7 +623,7 @@ class Address(RoleAware, Folder):
 
         # Authenticated user, we are done
         if confirm is None:
-            self.enquiry_send_email(user)
+            self.enquiry_send_email(user, rows=[row])
             message = u'Enquiry sent'
             return message.encode('utf-8')
 
@@ -633,8 +729,11 @@ class Address(RoleAware, Folder):
                    u"If you like to login, please choose your password")
         return message.encode('utf-8')
 
-
-    def enquiry_send_email(self, user):
+    
+    def enquiry_send_email(self, user, rows=None):
+        # TODO, The actual system allow to send enquiries
+        # to other companies before confirm registration
+        # This enquiries are not send
         root = self.get_root()
         users = root.get_handler('users')
 
@@ -645,18 +744,27 @@ class Address(RoleAware, Folder):
                      for x in self.get_members() ]
         # FIXME UK Travel is hardcoded
         subject_template = u'[UK Travel] New Enquiry (%s)'
-        body_template = ('From : %s %s\n'
+        body_template = ('Subject : %s\n'
+                         'From : %s %s\n'
                          'Phone: %s\n'
                          '\n'
                          '%s')
-        csv = self.get_handler('log_enquiry.csv')
-        for row in csv.search(user_id=user.name):
-            kk, kk, phone, enquiry_type, enquiry_subject, enquiry, kk = csv.get_row(row)
+
+        if rows is None:
+            csv = self.get_handler('log_enquiry.csv')
+            results = csv.search(user_id=user.name)
+            rows = []
+            for line in results:
+                print line
+                rows.append(csv.get_row(line))
+
+        for row in rows:
+            kk, kk, phone, enquiry_type, enquiry_subject, enquiry, kk = row
             subject = subject_template % enquiry_type
-            body = body_template % (firstname, lastname, phone, enquiry)
+            body = body_template % (enquiry_subject ,firstname, lastname,
+                                    phone, enquiry)
             for to_addr in to_addrs:
                 root.send_email(email, to_addr, subject, body)
-
 
     #######################################################################
     # User Interface / View Enquiries
@@ -713,7 +821,6 @@ class Address(RoleAware, Folder):
 
         handler = root.get_handler('ui/abakuc/address_view_enquiry.xml')
         return stl(handler, namespace)
-
 
 
 register_object_class(Companies)

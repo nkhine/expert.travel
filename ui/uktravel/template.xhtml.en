@@ -8,9 +8,16 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <!-- CSS -->
-    <link type="text/css" rel="stylesheet" href="style.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/calendar/calendar-aruni.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/ical/calendar.css" />
+    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
+    href="${style}"/>
+
+    <!-- XXX -->
+    <!--<link type="text/css" rel="stylesheet" href="style.css" />-->
+    <!--<link type="text/css" rel="stylesheet"
+    href="/ui/calendar/calendar-aruni.css" />-->
+    <!--<link type="text/css" rel="stylesheet" href="/ui/ical/calendar.css"
+    />-->
+    
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
       />

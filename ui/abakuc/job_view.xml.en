@@ -50,13 +50,31 @@
           ${abakuc:salary} 
         </dd>
         <dd>
-          <a href=";apply_form">Apply for the job</a>
+          <a href=";new_resource_form?type=Candidature">Apply for the job</a>
         </dd>
       </dl>       
     </stl:block>
     <stl:block stl:if="reviewers">
+      <h1>
+        <a href=";edit_metadata_form">
+          Edit the job
+        </a>
+      </h1>
+    </stl:block>
+    <stl:block stl:if="reviewers">
         <h1>Users who applied</h1>
-        ${table}
+        
+        <p stl:if="nb_candidatures">
+          ${nb_candidatures} candidatures, 
+          <a href=";view_candidatures">
+          &nbsp;Click it to see
+          </a>
+        </p>
+
+        <p stl:if="not nb_candidatures">
+          No candidatures
+        </p>
+
     </stl:block>
   </div>
 

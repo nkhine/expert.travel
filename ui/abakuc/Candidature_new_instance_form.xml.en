@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h1>Apply for the Job</h1>
+<form action=";new_resource" enctype="multipart/form-data" method="post">
+  <dl>
+      <dt>
+        <label>Your notes</label>
+      </dt>
+      <dd>
+      <textarea cols="90" id="abakuc:applicant_note"
+      name="abakuc:applicant_note" rows="20">${abakuc:applicant_note/value}</textarea>
+      </dd>
+      
+      <dt>
+        <label>Your CV (Format : .doc, .pdf or .odt)</label>
+      </dt>
+      <dd>
+        <input id="file" name="file" size="35" type="file"/>
+      </dd>
+  </dl>
+
+  <stl:block if="not is_authenticated">
+      <dl>
+        <dt>
+          First Name
+        </dt>
+        <dd>
+        <input type="text" size="40" name="ikaaro:firstname"
+        value="${ikaaro:firstname/value}" />
+        </dd>
+        
+        <dt>
+        Last Name
+        </dt>
+        <dd>
+      <input type="text" size="40" name="ikaaro:lastname"
+        value="${ikaaro:lastname/value}" />
+        </dd>
+        
+        <dt>
+        Email
+        </dt>
+        <dd>
+      <input type="text" size="40" name="ikaaro:email"
+        value="${ikaaro:email/value}" />
+        </dd>
+        
+        <dt>
+        Phone Number
+        </dt>
+        <dd>
+      <input type="text" size="40" name="abakuc:phone"
+        value="${abakuc:phone/value}" />
+        </dd>
+    </dl>
+  </stl:block>
+  <p>
+    Only genuine enquiries will be sent !
+    <input type="submit" value="Apply to the Job" class="button_ok" />
+    <input type="hidden" value="${class_id}" name="class_id"/>
+  </p>
+</form>
+
+</stl:block>
