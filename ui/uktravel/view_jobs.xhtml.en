@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h1>Our JOBS</h1>
 
@@ -13,5 +14,45 @@
 
 <h1>Search</h1>
 
+<form method="get" action="/;view_jobs">
 
-</html>
+<dl>
+  <dt>
+  Function 
+  </dt>
+  <dd>
+     <select name="function">
+     <option value="">None</option>
+     <option stl:repeat="f function" value="${f/name}"
+     selected="${f/selected}">
+     ${f/value}
+     </option>
+    </select>
+  </dd>
+
+  <dt>
+  Salary band
+  </dt>
+  <dd>
+    <select name="salary">
+    <option value="">None</option>
+     <option stl:repeat="j salary" value="${j/name}"
+     selected="${j/selected}">
+     ${j/value}
+     </option>
+    </select>
+  </dd>
+
+  <dt>
+  Job title
+  </dt>
+  <dd>
+    <input type="text" name="job_title" value="${job_title}"/>
+  </dd>
+</dl>
+<p>
+  <input class="button_search" type="submit" value="Search a job" name="search"/>
+</p>
+
+</form>
+</stl:block>

@@ -75,6 +75,7 @@ class Root(Handler, BaseRoot):
             KeywordField('closing_date', is_stored=False),
             KeywordField('company', is_stored=False),
             KeywordField('function', is_stored=False),
+            KeywordField('salary', is_stored=False),
             KeywordField('description', is_stored=False)]
 
 

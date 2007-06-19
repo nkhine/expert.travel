@@ -200,6 +200,8 @@ class Address(RoleAware, Folder):
 
     __fixed_handlers__ = ['log_enquiry.csv']
 
+    new_resource_form__access__ = True # XXX Fix it
+    new_resource__access__ = True # XXX Fix it
 
     def new(self, **kw):
         # Enquiry
@@ -278,12 +280,8 @@ class Address(RoleAware, Folder):
         ########
         # Jobs
         namespace['batch'] = ''
-        sortby = context.get_form_value('sortby', 'closing_date')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        columns = [('name', u'Id'),
+        columns = [('title', u'Title'),
                    ('closing_date', u'Closing Date'),
-                   ('title', u'Title'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
 
@@ -296,15 +294,21 @@ class Address(RoleAware, Folder):
             get = job.get_property
             # Information about the job
             url = '%s/;view' % job.name
-            job_to_add ={'img': '/ui/images/Text16.png',
-                         'name': (job.name,url),
+            job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
                          'closing_date': get('abakuc:closing_date'),
-                         'title': get('dc:title'),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
                          'description': get('dc:description')}
             jobs.append(job_to_add)
-        
+        # Sort
+          # => XXX See if it's correct
+        sortby = context.get_form_value('sortby', 'title')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            jobs.reverse()
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 20
@@ -316,7 +320,8 @@ class Address(RoleAware, Folder):
         # Namespace 
         if jobs:
             job_table = table(columns, jobs, [sortby], sortorder,[])
-            job_batch = batch(context.uri, batch_start, batch_size, batch_total)
+            job_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total)
             msg = None
         else:
             job_table = None
@@ -633,7 +638,7 @@ class Address(RoleAware, Folder):
                    u"If you like to login, please choose your password")
         return message.encode('utf-8')
 
-
+    
     def enquiry_send_email(self, user):
         root = self.get_root()
         users = root.get_handler('users')

@@ -103,6 +103,7 @@ class Schema(BaseSchema):
         'salary': SalaryRange,
         'closing_date': Date, 
         'job_text': Unicode,
+        'applicant_note': Unicode
         }
 
 

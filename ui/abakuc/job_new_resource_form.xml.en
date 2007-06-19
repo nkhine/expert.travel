@@ -6,7 +6,7 @@
     <form method="post" action=";new_resource">
       <dl>  
         <dt>
-          <label for="dc:title">Title</label>
+          <label for="dc:title">Job Title</label>
         </dt>
         <dd>
           <input type="text" name="dc:title" value=""/>
@@ -46,15 +46,15 @@
           <label for="dc:description">Short Description</label>
         </dt>
         <dd>
-          <textarea  cols="50" id="dc:description" name="dc:description"
+          <textarea  cols="100" id="dc:description" name="dc:description"
           rows="8"></textarea>
         </dd>
         <dt>
-          <label for="abakuc:job_text">Text</label>
+          <label for="abakuc:job_text">Long Description</label>
         </dt>
         <dd>
-          <textarea  cols="50" id="abakuc:job_text" name="abakuc:job_text"
-          rows="8"></textarea>
+          <textarea  cols="100" id="abakuc:job_text" name="abakuc:job_text"
+          rows="20"></textarea>
         </dd>
       </dl>
     <p>

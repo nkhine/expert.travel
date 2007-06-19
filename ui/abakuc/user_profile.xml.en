@@ -85,7 +85,17 @@
       </tr>
     </table>
     <stl:block if="address">
+      <h2>Jobs</h2>
       <p>
+        ${batch}
+        ${table}
+        <b stl:if="msg">${msg}</b>
+      </p>
+      
+      <h2>Actions</h2>
+      
+      <ul>
+        <li>
         <a href="/companies/${company_name}/;view">
           View company details
         </a>
@@ -93,40 +103,41 @@
         <a href="/companies/${company_name}/;edit_metadata_form?referrer=1">
           Modify company details
         </a>
-      </p>
-      <p>
+        </li>
+        
+        <li>
         <a href="/companies/${company_name}/${address_name}/;view">
           View address details and Jobs
         </a>
         &nbsp;|&nbsp;
-        <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1"
-          >
+        <a href="/companies/${company_name}/${address_name}/;edit_metadata_form?referrer=1">
           Modify address details
-          </a>
-      </p>
-      <stl:block if="reviewer">
-        <p>
+        </a>
+        </li>
+        
+        <li>
+        <a href=";setup_company_form">Switch to another company</a>.
+        </li>
+
+        <stl:block if="reviewer">
+        <li>
          <a href="/companies/${company_name}/${address_name}/;permissions_form">
            Users associate to the address
          </a>
-        </p>
-        <p>
+        </li>
+        <li>
           <a href="/companies/${company_name}/${address_name}/;new_user_form">
             Associate a new user to the address
           </a>
-        </p>
-      </stl:block>
-      <p>
-        <a href=";setup_company_form">Switch to another company</a>.
-      </p>
-        <p>
-          Jobs: {job/title} {job/closing_date} {job/job_path}
-        </p>
-        <p>
-         <a href="/companies/${company_name}/${address_name}/;new_resource_form?type=Job">
-         Add a job
-         </a>
-        </p>
+        </li>
+        <li>
+          <a href="/companies/${company_name}/${address_name}/;new_resource_form?type=Job">
+          Add a job
+          </a>
+        </li>
+        </stl:block>
+      </ul>
     </stl:block>
+  
   </stl:block>
 </stl:block>

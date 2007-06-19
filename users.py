@@ -17,11 +17,13 @@ from itools.cms.registry import register_object_class
 from itools.cms.users import UserFolder as iUserFolder, User as iUser
 from itools.cms.utils import get_parameters
 from itools.rest import checkid
+from itools.cms.widgets import table, batch
 
 # Import from our product
 from companies import Company, Address 
 from jobs import Job
 from utils import title_to_name
+from metadata import JobTitle, SalaryRange
 
 
 
@@ -31,13 +33,66 @@ class UserFolder(iUserFolder):
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
     class_icon48 = 'images/UserFolder48.png'
-    class_views = [['browse_thumbnails', 'browse_list'],
+    class_views = [['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
                    ['new_user_form'],
-                   ['edit_metadata_form']]
+                   ['edit_metadata_form'],
+                   ['view']]
+
+
+    view__access__ = 'is_allowed_to_edit'
+    view__label__ = u'View'
+    def view(self, context):
+        namespace = {}
+        columns = [('name', u'Name'),
+                   ('title', u'Title'),
+                   ('lastname', u'Lastname'),
+                   ('firstname', u'Firstname'),
+                   ('user_must_confirm', u'Confirm')]
+        # Get data
+        rows = []
+        users = self.search_handlers(handler_class=User)
+        for u in users:
+            confirm = u.get_property('ikaaro:user_must_confirm')
+            if confirm:
+                confirm = 'No'
+            else:
+                confirm = 'Yes'
+            rows.append({'id': u.name,
+                         'checkbox': True,
+                         'img': '/ui/images/User16.png',
+                         'name': (u.name,'%s/' % u.name),
+                         'title': u.title,
+                         'lastname': u.get_property('ikaaro:lastname'),
+                         'firstname': u.get_property('ikaaro:firstname'),
+                         'user_must_confirm': confirm})
+
+        # Create table
+        actions = [('select', u'Select All', 'button_select_all',
+                    "return select_checkboxes('browse_list', true);"),
+                   ('select', u'Select None', 'button_select_none',
+                    "return select_checkboxes('browse_list', false);"),
+                   ('remove', 'Supprimer', 'button_delete', None)]
+        if rows:
+            sortby = context.get_form_value('sortby', 'id')
+            sortorder = context.get_form_value('sortorder', 'up')
+            rows.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+            if sortorder == 'down':
+                rows.reverse()
+            namespace['table'] = table(columns, rows, [sortby],
+                                       sortorder, actions=actions)
+            namespace['msg'] = None
+        else:
+            namespace['table'] = None
+            namespace['msg'] = u'No Users'
+
+        handler = self.get_handler('/ui/abakuc/Users_view.xml')
+        return stl(handler, namespace)
 
 
     def get_document_types(self):
-        return [User]
+            return [User]
+
 
 register_object_class(UserFolder)
 
@@ -115,49 +170,130 @@ class User(iUser, Handler):
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
         # Company
-        results = root.search(format='address', members=self.name)
+        # XXX note used
+        #results = root.search(format='address', members=self.name)
         namespace['address'] = None
         address = self.get_address()
-        if address is not None:
-            company = address.parent
-            namespace['company_name'] = company.name
-            namespace['address_name'] = address.name
-            namespace['company_title'] = company.get_property('dc:title')
-            namespace['website'] = company.get_website()
-            namespace['address'] = address.get_property('abakuc:address')
-            namespace['town'] = address.get_property('abakuc:town')
-            county = address.get_property('abakuc:county')
-            namespace['county'] = world.get_row(county)[8]
-            namespace['postcode'] = address.get_property('abakuc:postcode')
-            namespace['phone'] = address.get_property('abakuc:phone')
-            namespace['fax'] = address.get_property('abakuc:fax')
+        if address is None:
+            handler = self.get_handler('/ui/abakuc/user_profile.xml')
+            return stl(handler, namespace)
 
-            namespace['address_path'] = self.get_pathto(address)
-            # Enquiries
-            csv = address.get_handler('log_enquiry.csv')
-            results = []
-            for row in csv.get_rows():
-                date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-                if resolved:
-                    continue
-                user = root.get_handler('users/%s' % user_id)
-                results.append({
-                    'index': row.number,
-                    'email': user.get_property('ikaaro:email'),
-                    'enquiry_subject': enquiry_subject})
-            results.reverse()
-            namespace['enquiries'] = results 
-            namespace['howmany'] = len(results)
-            # Jobs
+        company = address.parent
+        namespace['company_name'] = company.name
+        namespace['address_name'] = address.name
+        namespace['company_title'] = company.get_property('dc:title')
+        namespace['website'] = company.get_website()
+        namespace['address'] = address.get_property('abakuc:address')
+        namespace['town'] = address.get_property('abakuc:town')
+        county = address.get_property('abakuc:county')
+        namespace['county'] = world.get_row(county)[8]
+        namespace['postcode'] = address.get_property('abakuc:postcode')
+        namespace['phone'] = address.get_property('abakuc:phone')
+        namespace['fax'] = address.get_property('abakuc:fax')
 
-            # Reviewer of the adress ?
-            namespace['reviewer'] = address.has_user_role(self.name, 
-                                                          'ikaaro:reviewers')
-
+        namespace['address_path'] = self.get_pathto(address)
+        # Enquiries
+        csv = address.get_handler('log_enquiry.csv')
+        results = []
+        for row in csv.get_rows():
+            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+            if resolved:
+                continue
+            user = root.get_handler('users/%s' % user_id)
+            results.append({
+                'index': row.number,
+                'email': user.get_property('ikaaro:email'),
+                'enquiry_subject': enquiry_subject})
+        results.reverse()
+        namespace['enquiries'] = results 
+        namespace['howmany'] = len(results)
+        # Reviewer of the adress ?
+        reviewer = address.has_user_role(self.name,'ikaaro:reviewers')
+        namespace['reviewer'] = reviewer
+        ####
+        # Jobs
+        namespace['batch'] = ''
+        columns = [('title', u'Title'),
+                   ('closing_date', u'Closing Date'),
+                   ('function', u'Function'),
+                   ('description', u'Short description')]
+        # Get all Jobs
+        address_jobs = address.search_handlers(handler_class=Job)
+        # Construct the lines of the table
+        jobs = []
+        for job in list(address_jobs):
+            #job = root.get_handler(job.abspath)
+            get = job.get_property
+            # Information about the job
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                job.name)
+            job_to_add ={'id': job.name, 
+                         'checkbox': reviewer,
+                         'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
+                         'closing_date': get('abakuc:closing_date'),
+                         'function': JobTitle.get_value(
+                                        get('abakuc:function')),
+                         'description': get('dc:description')}
+            jobs.append(job_to_add)
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 20
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Order 
+        sortby = context.get_form_value('sortby', 'closing_date')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            jobs.reverse()
+        # Set batch informations
+        # Namespace 
+        if jobs:
+            actions = [('select', u'Select All', 'button_select_all',
+                        "return select_checkboxes('browse_list', true);"),
+                       ('select', u'Select None', 'button_select_none',
+                        "return select_checkboxes('browse_list', false);"),
+                       ('remove_job', 'Supprimer', 'button_delete', None)]
+            job_table = table(columns, jobs, [sortby], sortorder, actions)
+            job_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total)
+            msg = None
+        else:
+            job_table = None
+            job_batch = None
+            msg = u'No jobs'
+        
+        namespace['table'] = job_table
+        namespace['batch'] = job_batch
+        namespace['msg'] = msg 
+        
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
 
-        
+
+    ########################################################################
+    # Remove job
+    remove_job__access__ = 'is_self_or_admin'
+    def remove_job(self, context):
+        ids = context.get_form_values('ids')
+        root = context.root
+        if not ids:
+            return context.come_back(u'Please select a Job')
+        address = self.get_address() 
+        company = (address.parent).name
+        address = address.name
+        for job_id in ids:
+            job = root.get_handler('/companies/%s/%s/%s' % (company, address,
+                                                            job_id))
+            self.del_handler(job.abspath)
+        return context.come_back(u'Job(s) delete')
+
+    
     ########################################################################
     # Setup Company/Address
     setup_company_form__access__ = 'is_self_or_admin'
