@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from itools
-from itools.datatypes import Integer
+from itools.datatypes import Integer, Unicode
 from itools.stl import stl
 from itools.cms.website import WebSite as BaseWebSite
 from itools.cms import widgets
@@ -83,7 +83,7 @@ class WebSite(Handler, BaseWebSite):
                     # We Remove parameters which concern a sup level
                     kw = {}
                     for j, x in enumerate(context.uri.query):
-                        if j > i:
+                        if j > i+1:
                             kw[x] = None
                     url = context.uri.replace(**kw)
                 else:
@@ -121,6 +121,14 @@ class WebSite(Handler, BaseWebSite):
             level.sort(key=lambda x: x['title'])
             namespace['level'] = level
         
+        elif text is not None:
+            # Search 
+            namespace['level'] = None
+            results = root.search(**query)
+            documents = results.get_documents()
+        else:
+            return context.come_back(goto='/')
+
         # Batch
         start = context.get_form_value('batchstart', type=Integer, default=0)
         size = 5
