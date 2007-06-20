@@ -309,7 +309,7 @@ class Address(RoleAware, Folder):
         if county_id:
             row = world.get_row(county_id)
             indexes['level2'] = row[7]
-            indexes['level3'] = str(county_id)
+            indexes['level3'] = row[8] 
         indexes['level4'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
         return indexes
