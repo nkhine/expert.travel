@@ -8,6 +8,7 @@ from string import Template
 # Import from itools
 from itools.datatypes import Email, Integer, String, Unicode
 from itools.i18n.locale_ import format_datetime
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.stl import stl
 from itools.web import get_context
 from itools.cms.access import AccessControl, RoleAware
@@ -17,7 +18,8 @@ from itools.cms.registry import register_object_class
 from itools.cms.utils import generate_password
 from itools.cms.tracker import Tracker
 from itools.cms.widgets import table, batch
-from itools.catalog import EqQuery, AndQuery, RangeQuery
+from itools.cms.catalog import schedule_to_reindex
+
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
@@ -251,6 +253,10 @@ class Company(AccessControl, Folder):
                 else:
                     logo, metadata = self.set_object('logo', logo)
                     metadata.set_property('state', 'public')
+
+        # Re-index addresses
+        for address in self.search_handlers(handler_class=Address):
+            schedule_to_reindex(address)
 
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
