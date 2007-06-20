@@ -71,6 +71,27 @@ class WebSite(Handler, BaseWebSite):
         namespace['title'] = None
         namespace['regions'] = []
 
+        # Breadcrumbs path
+        namespace['bread_path'] = []
+        nb_level = len(context.uri.query)
+        keys = ['level2', 'level3', 'level4']
+        for i, key in enumerate(keys):
+            # If attribute exist in uri
+            if eval(key):
+                # If current level is the last, there's no URL
+                if nb_level > (i+2):
+                    # We Remove parameters which concern a sup level
+                    kw = {}
+                    for j, x in enumerate(context.uri.query):
+                        if j > i:
+                            kw[x] = None
+                    url = context.uri.replace(**kw)
+                else:
+                    url = None
+                namespace['bread_path'].append({'value': eval(key),
+                                                'url': url,
+                                                'last_level': (i+2)==4})
+
         # Topic
         if level1 is not None:
             base = context.uri

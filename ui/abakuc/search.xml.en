@@ -7,9 +7,26 @@
 <table width="100%" border="0">
   <tr>
     <td valign="top">
-      <div id="categories" stl:if="level">
-        <a stl:repeat="option level" href="${option/href}">${option/title}</a>
+      
+      <div id="bread_path">
+        <span stl:repeat="bread bread_path">
+          <a stl:if="bread/url" href="${bread/url}">
+            ${bread/value}
+          </a>
+          <span stl:if="not bread/url">
+            ${bread/value}
+          </span>
+          &nbsp;
+          <span stl:if="not bread/last_level">»&nbsp;</span>
+        </span>
+        <div id="categories" stl:if="level">
+          <a stl:repeat="option level" href="${option/href}">
+            ${option/title}
+          </a>
+        </div>
       </div>
+      
+      
       <div align="right">
         ${batch}
       </div>
