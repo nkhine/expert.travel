@@ -409,7 +409,20 @@ class User(iUser, Handler):
 
         # Add Address
         address = context.get_form_value('abakuc:address')
+        if not address:
+            message = u'Please give an Address'
+            return context.come_back(message)
+
         name = title_to_name(address)
+        if company.has_handler(name):
+            message = u'The address already exist'
+            return context.come_back(message)
+
+
+        if not context.get_form_value('abakuc:county'):
+            message = u'Please choose a county'
+            return context.come_back(message)
+
         address, metadata = company.set_object(name, Address())
 
         # Set Properties

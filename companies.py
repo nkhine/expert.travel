@@ -273,8 +273,11 @@ class Address(RoleAware, Folder):
 
     __fixed_handlers__ = ['log_enquiry.csv']
 
-    new_resource_form__access__ = True # XXX Fix it
-    new_resource__access__ = True # XXX Fix it
+    new_user_form__access__ = 'is_allowed_to_edit'
+    new_user__access__ = 'is_allowed_to_edit'
+    permissions_form__access__ = 'is_allowed_to_edit'
+    new_resource_form__access__ = True
+    new_resource__access__ = True
 
     def new(self, **kw):
         # Enquiry
@@ -521,6 +524,17 @@ class Address(RoleAware, Folder):
 
 
     def edit_metadata(self, context):
+        # Add Address
+        address = context.get_form_value('abakuc:address')
+        if not address:
+            message = u'Please give an Address'
+            return context.come_back(message)
+
+        if not context.get_form_value('abakuc:county'):
+            message = u'Please choose a county'
+            return context.come_back(message)
+
+        # Link the User to the Address
         keys = ['address', 'postcode', 'town', 'phone', 'fax', 'county']
 
         for key in keys:
