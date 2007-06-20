@@ -149,14 +149,16 @@ class Job(RoleAware, Folder):
                     'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
         
-        # if reviewer , show users who apply
-        reviewers = False
+        # if reviewer or members , show users who apply
+        is_reviewer_or_member = False
         user = context.user
         if user :
-            reviewers = self.parent.has_user_role(user.name,'ikaaro:reviewers')
-        namespace['reviewers'] = reviewers
+            reviewer = self.parent.has_user_role(user.name,'ikaaro:reviewers')
+            member = self.parent.has_user_role(user.name,'ikaaro:members')
+            is_reviewer_or_member = reviewer or member 
+        namespace['is_reviewer_or_member'] = is_reviewer_or_member
         namespace['table'] = None
-        if reviewers:
+        if is_reviewer_or_member:
             users = root.get_handler('users')
             nb_candidatures = 0
             candidatures = self.search_handlers(handler_class=Candidature)
@@ -170,7 +172,7 @@ class Job(RoleAware, Folder):
         return stl(handler, namespace)
 
     
-    view_candidatures__access__ = 'is_allowed_to_edit'
+    view_candidatures__access__ = 'is_reviewer_or_member'
     view_candidatures__label__ = u'Job Candidatures'
     def view_candidatures(self, context):
         root = context.root
@@ -214,7 +216,7 @@ class Job(RoleAware, Folder):
                        'abakuc:salary', 'abakuc:function']
     
 
-    edit_metadata_form__access__ = 'is_allowed_to_edit'
+    edit_metadata_form__access__ = 'is_reviewer_or_member'
     def edit_metadata_form(self, context):
         namespace = {}
         for key in self.edit_job_fields:
@@ -232,7 +234,7 @@ class Job(RoleAware, Folder):
         return stl(handler, namespace)
 
     
-    edit_metadata__access__ = 'is_allowed_to_edit'
+    edit_metadata__access__ = 'is_reviewer_or_member'
     def edit_metadata(self, context):
         for key in self.edit_job_fields:
             self.set_property(key, context.get_form_value(key))
@@ -266,9 +268,9 @@ class Job(RoleAware, Folder):
     # Security / Access Control
     #######################################################################
     
-    def is_allowed_to_edit(self, user, object):
+    def is_reviewer_or_member(self, user, object):
         address = self.parent
-        return address.is_allowed_to_edit(user, object)
+        return address.is_reviewer_or_member(user, object)
 
 
 class Candidature(RoleAware, Folder):
@@ -556,7 +558,7 @@ class Candidature(RoleAware, Folder):
     # View
     #######################################################################
     
-    view__access__ = True
+    view__access__ = 'is_reviewer_or_member'
     view__label__ = u'View Candidature'
     def view(self, context):
         """
@@ -588,17 +590,21 @@ class Candidature(RoleAware, Folder):
     # Security / Access Control
     #######################################################################
 
-    def is_allowed_to_edit(self, user, object):
-        if not user:
-            return False
+    def is_reviewer_or_member(self, user, object):
         job = self.parent
         address = job.parent
-        return address.is_allowed_to_edit(user, object)
-    
+        return address.is_reviewer_or_member(user, object)
+
+
+    def is_allowed_to_remove(self, user, object):
+        job = self.parent
+        address = job.parent
+        return address.is_reviewer(user, object)
+
 
     def is_allowed_to_view(self, user, object):
-        return self.is_allowed_to_edit(user,object)
-
+        # Protect CV 
+        return self.is_reviewer_or_member(user, object)        
 
 register_object_class(Job)
 register_object_class(Candidature)

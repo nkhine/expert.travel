@@ -158,38 +158,64 @@ class User(iUser, Handler):
     def profile(self, context):
         from root import world
 
+        namespace = {}
         user = context.user
         root = context.root
-
-        namespace = {}
-        # Personal
+        
+        # Get Company and Address
+        namespace['address'] = None
+        address = self.get_address()
+        
+        # User Role
         is_self = user is not None and user.name == self.name
         is_admin = root.is_admin(user, self)
         namespace['is_self_or_admin'] = is_self or is_admin
+        namespace['is_admin'] = is_admin
+        if address:
+            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
+            is_member = address.has_user_role(self.name, 'ikaaro:members')
+            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
+            is_reviewer_or_member = is_reviewer or is_member
+        else:
+            is_reviewer = False
+            is_member = False
+            is_guest = False
+            is_reviewer_or_member = False
+
+        namespace['is_reviewer'] = is_reviewer
+        namespace['is_member'] = is_member
+        namespace['is_guest'] = is_guest
+        namespace['is_reviewer_or_member'] = is_reviewer_or_member
+
+        # User Identity
         namespace['firstname'] = self.get_property('ikaaro:firstname')
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
-        # Company
-        namespace['address'] = None
-        address = self.get_address()
+        
         if address is None:
             handler = self.get_handler('/ui/abakuc/user_profile.xml')
             return stl(handler, namespace)
-
         company = address.parent
-        namespace['company_name'] = company.name
-        namespace['address_name'] = address.name
-        namespace['company_title'] = company.get_property('dc:title')
-        namespace['website'] = company.get_website()
-        namespace['address'] = address.get_property('abakuc:address')
-        namespace['town'] = address.get_property('abakuc:town')
-        county = address.get_property('abakuc:county')
-        namespace['county'] = world.get_row(county)[8]
-        namespace['postcode'] = address.get_property('abakuc:postcode')
-        namespace['phone'] = address.get_property('abakuc:phone')
-        namespace['fax'] = address.get_property('abakuc:fax')
+        
+        
+        # Company
+        namespace['company'] = {'name': company.name,
+                                'title': company.get_property('dc:title'),
+                                'website': company.get_website()}
 
-        namespace['address_path'] = self.get_pathto(address)
+        # Address
+        county = address.get_property('abakuc:county')
+        addr = {'name': address.name,
+                'address': address.get_property('abakuc:address'),
+                'town': address.get_property('abakuc:town'),
+                'county': world.get_row(county)[8],
+                'postcode':address.get_property('abakuc:postcode'),
+                'phone': address.get_property('abakuc:phone'),
+                'fax': address.get_property('abakuc:fax'),
+                'address_path': self.get_pathto(address)}
+
+        namespace['address'] = addr
+        
         # Enquiries
         csv = address.get_handler('log_enquiry.csv')
         results = []
@@ -205,11 +231,8 @@ class User(iUser, Handler):
         results.reverse()
         namespace['enquiries'] = results 
         namespace['howmany'] = len(results)
-        # Reviewer of the adress ?
-        reviewer = address.has_user_role(self.name,'ikaaro:reviewers')
-        namespace['reviewer'] = reviewer
-        ####
-        # Jobs
+        
+        # Table with Jobs
         namespace['batch'] = ''
         columns = [('title', u'Title'),
                    ('closing_date', u'Closing Date'),
@@ -226,7 +249,7 @@ class User(iUser, Handler):
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
             job_to_add ={'id': job.name, 
-                         'checkbox': reviewer,
+                         'checkbox': is_reviewer,
                          'img': '/ui/abakuc/images/JobBoard16.png',
                          'title': (get('dc:title'),url),
                          'closing_date': get('abakuc:closing_date'),

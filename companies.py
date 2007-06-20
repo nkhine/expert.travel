@@ -89,6 +89,12 @@ class Company(AccessControl, Folder):
                 return True
         return False
 
+    def is_reviewer(self, user, object):
+        for address in self.search_handlers(handler_class=Address):
+            if address.is_reviewer(user, address):
+                return True
+        return False
+
 
     #######################################################################
     # User Interface / View
@@ -203,6 +209,7 @@ class Company(AccessControl, Folder):
         return stl(handler, namespace)
 
 
+    edit_metadata_form__access__ = 'is_reviewer'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -220,6 +227,7 @@ class Company(AccessControl, Folder):
         return stl(handler, namespace)
 
 
+    edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         website = context.get_form_value('abakuc:website')
@@ -263,7 +271,6 @@ class Company(AccessControl, Folder):
         return context.come_back(message, goto=goto)
 
 
-
 class Address(RoleAware, Folder):
 
     class_id = 'address'
@@ -279,12 +286,14 @@ class Address(RoleAware, Folder):
 
     __fixed_handlers__ = ['log_enquiry.csv']
 
-    new_user_form__access__ = 'is_allowed_to_edit'
-    new_user__access__ = 'is_allowed_to_edit'
-    permissions_form__access__ = 'is_allowed_to_edit'
+    new_user_form__access__ = 'is_reviewer'
+    epoz_iframe__access__ = 'is_reviewer_or_member'
+    new_user__access__ = 'is_reviewer'
+    permissions_form__access__ = 'is_reviewer'
     new_resource_form__access__ = True
     new_resource__access__ = True
-
+    
+    
     def new(self, **kw):
         # Enquiry
         Folder.new(self, **kw)
@@ -298,6 +307,7 @@ class Address(RoleAware, Folder):
         return [Job]
 
 
+    get_epoz_data__access__ = 'is_reviewer_or_member'
     def get_epoz_data(self):
         # XXX don't works
         context = get_context()
@@ -332,7 +342,6 @@ class Address(RoleAware, Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
     view__label__ = u'Address'
     view__access__ = True
     def view(self, context):
@@ -510,6 +519,7 @@ class Address(RoleAware, Folder):
         return stl(handler, namespace)
 
 
+    edit_metadata_form__access__ = 'is_reviewer'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -529,6 +539,7 @@ class Address(RoleAware, Folder):
         return stl(handler, namespace)
 
 
+    edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
         # Add Address
         address = context.get_form_value('abakuc:address')
@@ -789,7 +800,7 @@ class Address(RoleAware, Folder):
     #######################################################################
     # User Interface / View Enquiries
     #######################################################################
-    view_enquiries__access__ = 'is_allowed_to_view'
+    view_enquiries__access__ = 'is_reviewer_or_member'
     def view_enquiries(self, context):
         root = context.root
         users = root.get_handler('users')
@@ -819,7 +830,7 @@ class Address(RoleAware, Folder):
         return stl(handler, namespace)
 
     
-    view_enquiry__access__ = 'is_allowed_to_view'
+    view_enquiry__access__ = 'is_reviewer_or_member'
     def view_enquiry(self, context):
         index = context.get_form_value('index', type=Integer)
 
@@ -841,6 +852,32 @@ class Address(RoleAware, Folder):
 
         handler = root.get_handler('ui/abakuc/address_view_enquiry.xml')
         return stl(handler, namespace)
+
+    
+    
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
+
+    def is_reviewer_or_member(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        root.is_admin(user, self)
+        # Is reviewer or member
+        return (self.has_user_role(user.name, 'ikaaro:reviewers') or
+                self.has_user_role(user.name, 'ikaaro:members'))
+    
+    
+    def is_reviewer(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        root.is_admin(user, self)
+        # Is reviewer or member
+        return self.has_user_role(user.name, 'ikaaro:reviewers') 
 
 
 register_object_class(Companies)

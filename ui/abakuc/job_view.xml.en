@@ -54,14 +54,14 @@
         </dd>
       </dl>       
     </stl:block>
-    <stl:block stl:if="reviewers">
+    <stl:block stl:if="is_reviewer_or_member">
       <h1>
         <a href=";edit_metadata_form">
           Edit the job
         </a>
       </h1>
     </stl:block>
-    <stl:block stl:if="reviewers">
+    <stl:block stl:if="is_reviewer_or_member">
         <h1>Users who applied</h1>
         
         <p stl:if="nb_candidatures">
