@@ -316,7 +316,7 @@ class User(iUser, Handler):
         for job_id in ids:
             job = root.get_handler('/companies/%s/%s/%s' % (company, address,
                                                             job_id))
-            self.del_handler(job.abspath)
+            self.del_object(job.abspath)
         return context.come_back(u'Job(s) delete')
 
     
