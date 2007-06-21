@@ -10,6 +10,7 @@ import mimetypes
 from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
+from itools.rest import to_html
 from itools.stl import stl
 from itools.web import get_context
 from itools.rest import checkid
@@ -557,7 +558,6 @@ class Candidature(RoleAware, Folder):
     #######################################################################
     # View
     #######################################################################
-    
     view__access__ = 'is_reviewer_or_member'
     view__label__ = u'View Candidature'
     def view(self, context):
@@ -566,7 +566,9 @@ class Candidature(RoleAware, Folder):
         """
         namespace = {}
         namespace['name'] = self.name
-        namespace['applicant_note'] = self.get_property('abakuc:applicant_note')
+        # Notes as rest
+        applicant_note = str(self.get_property('abakuc:applicant_note'))
+        namespace['applicant_note'] = to_html(applicant_note)
         # User
         user_id = self.get_property('user_id')
         users = context.root.get_handler('users')
