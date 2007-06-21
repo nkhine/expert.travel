@@ -567,8 +567,8 @@ class Candidature(RoleAware, Folder):
         namespace = {}
         namespace['name'] = self.name
         # Notes as rest
-        applicant_note = str(self.get_property('abakuc:applicant_note'))
-        namespace['applicant_note'] = to_html(applicant_note)
+        note = self.get_property('abakuc:applicant_note')
+        namespace['applicant_note'] = to_html(note)
         # User
         user_id = self.get_property('user_id')
         users = context.root.get_handler('users')
