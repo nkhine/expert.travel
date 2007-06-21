@@ -122,6 +122,7 @@ class Company(WebSite):
         namespace['addresses'] = addresses
         
         # Get all Jobs
+        namespace['batch'] = ''
         columns = [('title', u'Title'),
                    ('function', u'Function'),
                    ('address', u'Address'),
@@ -132,7 +133,6 @@ class Company(WebSite):
             address_jobs = list(address.search_handlers(handler_class=Job))
             all_jobs = all_jobs + address_jobs
 
-        namespace['batch'] = ''
         # Construct the lines of the table
         root = context.root
         catalog = context.server.catalog
@@ -171,7 +171,7 @@ class Company(WebSite):
             jobs.reverse()
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 20
+        batch_size = 5
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
@@ -191,7 +191,6 @@ class Company(WebSite):
         namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-
 
 
         handler = self.get_handler('/ui/abakuc/company_view.xml')
@@ -444,7 +443,7 @@ class Address(RoleAware, Folder):
             jobs.reverse()
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 20
+        batch_size = 5
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
