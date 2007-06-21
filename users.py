@@ -1,6 +1,10 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
+
+# Import from the standard library
+import mimetypes
+
 # Import from itools
 from itools import uri
 from itools import i18n
@@ -8,6 +12,7 @@ from itools import handlers
 from itools.stl import stl
 from itools.uri import Path, get_reference
 from itools.web import get_context
+from itools.cms.registry import get_object_class
 from itools.cms.access import AccessControl
 from itools.cms.binary import Image
 from itools.cms.folder import Folder
@@ -351,33 +356,62 @@ class User(iUser, Handler):
     def setup_company(self, context):
         # Add Company
         title = context.get_form_value('dc:title')
-        name = title_to_name(title)
-        company, metadata = self.set_object('/companies/%s' % name, Company())
+        
+        if not title:
+            message = u'Please give an Name to your Company'
+            return context.come_back(message)
+        
+        # Check the Logo
+        logo_form = context.get_form_value('logo')
+        if logo_form:
+            name, mimetype, body = logo_form
+            guessed = mimetypes.guess_type(name)[0]
+            if guessed is not None:
+                mimetype = guessed
+            logo_cls = get_object_class(mimetype)
+            logo = logo_cls(string=body)
+            logo_name = 'logo'
+            # Check format
+            if not isinstance(logo, Image):
+                msg = u'Your logo must be an Image PNG or JPEG'
+                return context.come_back(msg)
+            # Check size
+            size = logo.get_size()
+            if size is not None:
+                width, height = size
+                if width > 200 or height > 200:
+                    msg = u'Your logo is to big (max 200x200 px)'
+                    return context.come_back(msg)
 
+        # Add the company  
+        root = context.root
+        companies = root.get_handler('/companies')
+        name = title_to_name(title)
+        if companies.has_handler(name):
+            message = u'The Company already exist'
+            return context.come_back(message)
+
+        company, metadata = self.set_object('/companies/%s' % name, Company())
+        
         # Set Properties
         website = context.get_form_value('abakuc:website')
         topics = context.get_form_values('topic')
         types = context.get_form_values('type')
 
-        company.set_property('dc:title', title, language='en')
-        company.set_property('abakuc:website', website)
-        company.set_property('abakuc:topic', tuple(topics))
-        company.set_property('abakuc:type', types)
+        metadata.set_property('dc:title', title, language='en')
+        metadata.set_property('abakuc:website', website)
+        metadata.set_property('abakuc:topic', tuple(topics))
+        metadata.set_property('abakuc:type', types)
+        
+        # Add the logo
+        if logo_form:
+            logo, logo_metadata = company.set_object(logo_name, logo)
+            logo_metadata.set_property('state', 'public')
 
-        # Logo
-        logo = context.get_form_value('logo')
-        if logo is not None:
-            filename, mimetype, data = logo
-            logo = Image()
-            try:
-                logo.load_state_from_string(data)
-            except:
-                pass
-            else:
-                self.set_object('logo', logo)
         # Set the Address..
         name = name.encode('utf_8').replace('&', '%26')
         return context.uri.resolve(';setup_address_form?company=%s' % name)
+
 
 
     setup_address_form__access__ = 'is_self_or_admin'

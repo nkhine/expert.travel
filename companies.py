@@ -4,6 +4,7 @@
 # Import from the Standard Library
 from datetime import datetime, date
 from string import Template
+import mimetypes
 
 # Import from itools
 from itools.datatypes import Email, Integer, String, Unicode
@@ -14,7 +15,7 @@ from itools.web import get_context
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV
-from itools.cms.registry import register_object_class
+from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.utils import generate_password
 from itools.cms.tracker import Tracker
 from itools.cms.widgets import table, batch
@@ -245,22 +246,39 @@ class Company(AccessControl, Folder):
             if self.has_handler('logo'):
                 self.del_handler('logo')
         elif logo is not None:
-            filename, mimetype, data = logo
+            name, mimetype, data = logo
+            guessed = mimetypes.guess_type(name)[0]
+            if guessed is not None:
+                mimetype = guessed
+            logo_cls = get_object_class(mimetype)
+            logo = logo_cls(string=data)
+            logo_name = 'logo'
+            # Check format of Logo
+            if not isinstance(logo, Image):
+                msg = u'Your logo must be an Image PNG or JPEG'
+                return context.come_back(msg)
+            # Check size
+            size = logo.get_size()
+            if size is not None:
+                width, height = size
+                if width > 200 or height > 200:
+                    msg = u'Your logo is to big (max 200x200 px)'
+                    return context.come_back(msg)
+            
+            # Add or edit the logo
             if self.has_handler('logo'):
+                # Edit the logo
                 logo = self.get_handler('logo')
                 try:
                     logo.load_state_from_string(data)
                 except:
                     self.load_state()
+                logo = logo.load_state_from_string(string=data)
             else:
-                logo = Image()
-                try:
-                    logo.load_state_from_string(data)
-                except:
-                    pass
-                else:
-                    logo, metadata = self.set_object('logo', logo)
-                    metadata.set_property('state', 'public')
+                # Add the new logo
+                logo = logo_cls(string=data)
+                logo, metadata = self.set_object(logo_name, logo)
+                metadata.set_property('state', 'public')
 
         # Re-index addresses
         for address in self.search_handlers(handler_class=Address):
