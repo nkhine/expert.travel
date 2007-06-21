@@ -402,7 +402,8 @@ class User(iUser, Handler):
         metadata.set_property('abakuc:website', website)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('abakuc:type', types)
-        
+        metadata.set_property('ikaaro:website_is_open', True) 
+
         # Add the logo
         if logo_form:
             logo, logo_metadata = company.set_object(logo_name, logo)

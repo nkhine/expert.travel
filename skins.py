@@ -5,7 +5,6 @@
 from itools.cms.skins import Skin
 
 
-
 class FrontOffice(Skin):
 
     def get_template(self):

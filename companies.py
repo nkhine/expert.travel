@@ -12,6 +12,7 @@ from itools.i18n.locale_ import format_datetime
 from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.stl import stl
 from itools.web import get_context
+from itools.cms.website import WebSite
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV
@@ -37,6 +38,7 @@ class Companies(Folder):
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
+    
     def get_document_types(self):
         return [Company]
 
@@ -50,13 +52,14 @@ class Companies(Folder):
 
 
 
-class Company(AccessControl, Folder):
+class Company(WebSite):
 
     class_id = 'company'
     class_title = u'Company'
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
+    site_format = 'Address'
     
     class_views = [['view'], 
                    ['browse_content?mode=list',
@@ -71,6 +74,9 @@ class Company(AccessControl, Folder):
     def get_document_types(self):
         return [Address]
 
+
+    def get_level1_title(self, level1):
+        return None
 
     #######################################################################
     # API

@@ -64,7 +64,7 @@ class Root(Handler, BaseRoot):
 
     class_views = [['view']] + BaseRoot.class_views + [['import_data_form']]
 
-
+    
     #######################################################################
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
@@ -130,7 +130,7 @@ class Root(Handler, BaseRoot):
               'ikaaro:website_is_open': True}
         cache['destinations'] = destinations
         cache['destinations.metadata'] = destinations.build_metadata(**kw)
-        
+
         # Help
         help = XHTMLFile()
         cache['help.xhtml'] = help
@@ -149,6 +149,10 @@ class Root(Handler, BaseRoot):
             return self.get_handler('ui/uktravel')
         elif hostname == 'destinations':
             return self.get_handler('ui/destinations')
+        elif '.uktravel' in hostname:
+            return self.get_handler('ui/companies')
+        elif '.destinations' in hostname:
+            return self.get_handler('ui/countries')
 
         # return the default skin
         return self.get_handler('ui/aruni')
@@ -260,7 +264,7 @@ class Root(Handler, BaseRoot):
                 metadata.set_property('dc:title', company_title, language='en')
                 metadata.set_property('abakuc:website', str(row[11]))
                 metadata.set_property('abakuc:topic', (topic_id,))
-
+                metadata.set_property('ikaaro:website_is_open', True)
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)

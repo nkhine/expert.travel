@@ -18,11 +18,12 @@ from itools.cms.file import File as ikaaroFile
 from itools.cms.html import XHTMLFile as ikaaroHTML
 from itools.cms.registry import register_object_class
 
+
 # Import from abakuc
 from base import Handler
 from metadata import Continent, SubContinent
 import users
-from website import WebSite
+# XXX from website import WebSite
 
 
 ############################################################################
@@ -53,6 +54,7 @@ class Country(WebSite):
     class_icon48 = 'abakuc/images/TouristOffice48.png'
     class_icon16 = 'abakuc/images/TouristOffice16.png'
     class_views = [
+        ['view'], 
         ['browse_content?mode=thumbnails',
          'browse_content?mode=list',
          'browse_content?mode=image'],
@@ -84,6 +86,17 @@ class Country(WebSite):
         indexes['level1'] = self.get_property('abakuc:continent')
         indexes['level2'] = self.get_property('abakuc:sub_continent')
         return indexes
+
+
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'Country'
+    def view(self, context):
+        # XXX 
+        txt = 'List town :'
+        cities = list(self.search_handlers(handler_class=City))
+        for city in cities:
+            txt = txt + city.name
+        return txt
 
 
     ########################################################################
@@ -157,7 +170,8 @@ class Countries(Handler, ikaaroFolder):
             country = Country()
             metadata = country.build_metadata(**{'dc:title': title,
                                         'abakuc:continent': continent_name,
-                                        'abakuc:sub_continent': region})
+                                        'abakuc:sub_continent': region,
+                                        'ikaaro:website_is_open': True})
             cache[name] = country
             cache['%s.metadata' % name] = metadata
 
