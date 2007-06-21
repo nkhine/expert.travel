@@ -166,6 +166,7 @@ class User(iUser, Handler):
         namespace = {}
         user = context.user
         root = context.root
+        users = root.get_handler('users')
         
         # Get Company and Address
         namespace['address'] = None
@@ -228,7 +229,7 @@ class User(iUser, Handler):
             date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
             if resolved:
                 continue
-            user = root.get_handler('users/%s' % user_id)
+            user = users.get_handler(user_id)
             results.append({
                 'index': row.number,
                 'email': user.get_property('ikaaro:email'),
@@ -293,11 +294,18 @@ class User(iUser, Handler):
             job_table = None
             job_batch = None
             msg = u'No jobs'
-        
+
         namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        
+
+        namespace['contact'] = None
+        if address.has_user_role(user.name, 'ikaaro:guests'):
+            contacts = address.get_property('ikaaro:reviewers')
+            if contacts is not None:
+                contact = users.get_handler(contacts[0])
+                namespace['contact'] = contact.get_property('ikaaro:email')
+
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
 

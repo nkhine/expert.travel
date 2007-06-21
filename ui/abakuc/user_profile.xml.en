@@ -51,27 +51,26 @@
                 <th align="right">Fax</th>
                 <td>${address/fax}</td>
               </tr>
-              <tr>
-                <th></th>
-                <td>
-                <ul>
-                  <li>
-                  <a href="/companies/${company/name}/;view">
-                    View company details
-                  </a>
-                  </li>
-                  <li>
-                  <a href="/companies/${company/name}/${address/name}/;view">
-                    View address details and Jobs
-                  </a>
-                  </li>
-                  <li>
-                  <a href=";setup_company_form">Switch to another company</a>.
-                  </li>
-                </ul>
-                </td>
-              </tr>
             </table>
+            <ul>
+              <li>
+                <a href="/companies/${company/name}/;view">
+                  View company details
+                </a>
+              </li>
+              <li>
+                <a href="/companies/${company/name}/${address/name}/;view">
+                  View address details
+                </a>
+              </li>
+              <li>
+                <a href=";setup_company_form">Switch to another company</a>.
+              </li>
+            </ul>
+            <p stl:if="contact">
+              To manage these records, please contact ${contact} who is
+              the Manager for this record or contact the site administrator.
+            </p>
           </stl:block>
         </td>
         <td valign="top">

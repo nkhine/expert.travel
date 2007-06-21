@@ -32,6 +32,10 @@ class EnquiriesLog(CSV):
               'resolved': Boolean}
 
 
+    GET__access__ = 'is_reviewer_or_member'
+    __view__access__ = 'is_reviewer_or_member'
+
+
 
 class ApplicationsLog(CSV):
 
