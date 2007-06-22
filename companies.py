@@ -249,7 +249,7 @@ class Company(WebSite):
         # The logo
         if context.has_form_value('remove_logo'):
             if self.has_handler('logo'):
-                self.del_handler('logo')
+                self.del_object('logo')
         elif logo is not None:
             name, mimetype, data = logo
             guessed = mimetypes.guess_type(name)[0]
