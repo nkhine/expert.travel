@@ -72,15 +72,19 @@
         </td> 
         <td id="center" class="column" valign="top">
           <div id="maintitle">
-            <div id="message" stl:if="message">${message}</div>
-            <div id="logged">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="message" stl:if="message">${message}</td>
+            <td id="logged">
             <stl:block if="not user/info">
               (not logged in)
             </stl:block>
             <stl:block if="user/info">
               (logged in as ${user/info/title})
             </stl:block>
-            </div>
+            </td>
+            </tr>
+            </table>
             <div class="clear"></div>
           </div>
           <!-- The Body -->
