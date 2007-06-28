@@ -45,7 +45,7 @@
         </stl:block>
       </div>
     </td>
-    <td rowspan="2" valign="top">
+    <td rowspan="2" id="right">
     	<script type="text/javascript"><!--
 google_ad_client = "pub-2050823514740471";
 google_ad_width = 160;

@@ -70,7 +70,7 @@
             </tr>
           </table>
         </td> 
-        <td id="center" class="column" valign="top">
+        <td id="center" class="column">
           <div id="maintitle">
             <table width="100%" border="0" cellpadding="0" cellspacing="0">
             <tr>
@@ -80,7 +80,7 @@
               (not logged in)
             </stl:block>
             <stl:block if="user/info">
-              (logged in as ${user/info/title})
+              (logged in as <a href="${user/info/home}">${user/info/title}</a>)
             </stl:block>
             </td>
             </tr>

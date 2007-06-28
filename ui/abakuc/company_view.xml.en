@@ -2,17 +2,15 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<img stl:if="logo" border="0" src="logo" style="float: right" />
+<table width="100%" border="1" id="center">
+<tr>
+<td>
 <h1>${title}</h1>
 
-
+<img stl:if="logo" border="0" src="logo" style="float: right" />
 <a href="${website}">${website}</a>
 
 <h3>News List....</h3>
-
-<h3>Events List....</h3>
-
-<h3>Jobs List....</h3>
 
 <h3>Locations/Branches</h3>
 <ul>
@@ -20,10 +18,14 @@
     <a href="${address/name}">${address/address}</a>
   </li>
 </ul>
-
 <h3>Jobs</h3>
 <b stl:if="msg">${msg}</b>
 ${batch}
 ${table}
-
+</td>
+<td id="right">
+google
+</td>
+</tr>
+</table>
 </stl:block>
