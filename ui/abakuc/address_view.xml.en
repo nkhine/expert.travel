@@ -4,11 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<img stl:if="logo" border="0" src="../logo" style="float: right" />
 <table width="100%" border="0">
   <tr>
       <td colspan="2" valign="top">
-        <h1>${company}</h1>
+        <a href="../;view"><h1>${company}</h1></a>
+        <img stl:if="logo" border="0" src="../logo" style="float: right" />
         <address>
           ${address}<br/>
           ${town}<br/>
@@ -16,11 +16,15 @@
           ${postcode}<br/>
           ${country}<br/><br/>
         </address>
+  <table width="100%" border="0">
+       <tr> 
+        <td align="left">
           P: ${phone}&nbsp;-&nbsp;F: ${fax}
-        <p align="right"> 
+        </td> 
+        <td align="right"> 
           <a href=";enquiry_form">Make an enquiry</a>
-        </p> 
-  <table width="100%">
+        </td> 
+        </tr>
   <tr>
     <td width="70%"><h2>Other branches</h2></td>
   <td width="30%"><h2>News</h2></td>
@@ -33,13 +37,13 @@
   </li>
 </ul>
     </td>
-    <td valign="top">Lis of news</td>
+    <td valign="top">News</td>
   </tr>
   <tr>
     <td colspan="2"><h2>Jobs at ${company}</h2></td>
   </tr>
   <tr>
-    <td>
+    <td colspan="2">
       ${batch}
       ${table}
       <b stl:if="msg">${msg}</b>

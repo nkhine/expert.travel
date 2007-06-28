@@ -7,8 +7,7 @@
 <table width="100%" border="0">
   <tr>
     <td valign="top">
-      
-      <div id="bread_path">
+      <div id="categories">
         <span stl:repeat="bread bread_path">
           <a stl:if="bread/url" href="${bread/url}">
             ${bread/value}
@@ -19,14 +18,12 @@
           &nbsp;
           <span stl:if="not bread/last_level">»&nbsp;</span>
         </span>
-        <div id="categories" stl:if="level">
+        <span  stl:if="level">
           <a stl:repeat="option level" href="${option/href}">
             ${option/title}
           </a>
-        </div>
+        </span>
       </div>
-      
-      
       <div align="right">
         ${batch}
       </div>
@@ -38,9 +35,11 @@
               <a href="${item/href}">${item/title}</a>
             </dt>
             <dd>
+              <address>
               ${item/address}, ${item/town}, ${item/postcode}<br/>
-              ${item/county}, ${item/region}<br/>
-              Phone: ${item/phone}, Fax: ${item/fax}<br />
+              ${item/county}, ${item/region}
+              </address>
+              Phone: ${item/phone}, Fax: ${item/fax}
             </dd>
           </dl>       
         </stl:block>
