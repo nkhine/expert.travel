@@ -6,53 +6,52 @@
 
   <div>
     <stl:block> 
-      <h1>Job ${dc:title}</h1>
-      <dl>  
-        <dt>
-          <a href="../">
-          Informations about the company
-          </a>
-        </dt>
-        <dt>
-          Title :
-        </dt>
-        <dd>
-          ${dc:title} 
-        </dd>
-        <dt>
-          Function
-        </dt>
-        <dd>
-          ${abakuc:function} 
-        </dd>
-        <dt>
-          Short Description :
-        </dt>
-        <dd>
-          ${dc:description} 
-        </dd>
-        <dt>
-          Description
-        </dt>
-        <dd>
-          ${abakuc:job_text} 
-        </dd>
-        <dt>
-          Closing date
-        </dt>
-        <dd>
-          ${abakuc:closing_date} 
-        </dd>
-        <dt>
-          Salary Range
-        </dt>
-        <dd>
-          ${abakuc:salary} 
-        </dd>
-        <dd>
+      <table width="100%" id="#job" border="1">
+      <tr>
+      <td>
+      <h1>${dc:title}</h1>
+      </td>
+      <td id="right" rowspan="4">
+           ads
+      </td>
+      </tr>
+      <tr>
+      <td>
+          <ul>
+           <li>Position type: ${abakuc:function}</li>
+           <li>Closing date: ${abakuc:closing_date}</li>
+           <li>Salary package: ${abakuc:salary}</li>
+           </ul>
+      </td>
+      </tr>
+      <tr>
+      <td>
+          <p>${dc:description}</p> 
+          <p>${abakuc:job_text}</p> 
+      </td>
+      </tr>
+      <stl:block stl:if="not is_reviewer_or_member">
+      <tr>
+      <td align="right">
           <a href=";new_resource_form?type=Candidature">Apply for the job</a>
-        </dd>
-      </dl>       
+      </td>
+      </tr>
+      </stl:block>
+      <tr>
+      <td>
+      Most recent similar jobs
+          <ul>
+                                <li stl:repeat="job jobs">
+                                  <a href="${job/url}">
+                                    ${job/title}
+                                  </a>
+                                </li>
+                              </ul>
+
+      </td>
+      </tr>
+      </table>
+         <p>« Back to <a href="../../">${company}</a></p>
     </stl:block>
     <stl:block stl:if="is_reviewer_or_member">
       <h1>

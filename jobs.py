@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the standard library
-from datetime import datetime
+import datetime
 from string import Template
 import mimetypes
 
@@ -16,7 +16,7 @@ from itools.web import get_context
 from itools.rest import checkid
 from itools.cms.widgets import table
 from itools.cms.utils import generate_password
-from itools.catalog import EqQuery, AndQuery
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 
 # Import from abakuc
 from base import Handler, Folder
@@ -140,8 +140,10 @@ class Job(RoleAware, Folder):
     view__label__ = u'Job details'
     def view(self, context):
         root = context.root
+        company = self.parent.parent
         #namespace
         namespace = {}
+        namespace['company'] = company.get_property('dc:title')
         salary = self.get_property('abakuc:salary')
         namespace['abakuc:salary'] = SalaryRange.get_value(salary)
         function = self.get_property('abakuc:function')
@@ -150,6 +152,31 @@ class Job(RoleAware, Folder):
                     'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
         
+        #Find similar jobs
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'Job'))
+        today = (datetime.date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query.append(EqQuery('function', function))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        jobs = []
+        for job in list(documents):
+            job = root.get_handler(job.abspath)
+            get = job.get_property
+            # Information about the job
+            address = job.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                 job.name)
+            jobs.append({'url': url,
+                         'title': job.title})
+        #XXX Can we list all other jobs excluding the one we
+        #XXX are looking at
+        namespace['jobs'] = jobs
+
         # if reviewer or members , show users who apply
         is_reviewer_or_member = False
         user = context.user
@@ -172,7 +199,6 @@ class Job(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/job_view.xml')
         return stl(handler, namespace)
 
-    
     view_candidatures__access__ = 'is_reviewer_or_member'
     view_candidatures__label__ = u'Job Candidatures'
     def view_candidatures(self, context):
