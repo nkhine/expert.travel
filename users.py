@@ -319,12 +319,8 @@ class User(iUser, Handler):
         if not ids:
             return context.come_back(u'Please select a Job')
         address = self.get_address() 
-        company = (address.parent).name
-        address = address.name
         for job_id in ids:
-            job = root.get_handler('/companies/%s/%s/%s' % (company, address,
-                                                            job_id))
-            self.del_object(job.abspath)
+            address.del_object(job_id)
         return context.come_back(u'Job(s) delete')
 
     
