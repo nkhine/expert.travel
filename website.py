@@ -167,3 +167,20 @@ class WebSite(Handler, BaseWebSite):
 
         handler = self.get_handler('ui/abakuc/search.xml')
         return stl(handler, namespace)
+
+
+    ##########################################################################
+    ## Javascript
+    ##########################################################################
+    get_countries_str__access__ = True
+    def get_countries_str(self, context): 
+        return context.root.get_countries_str(context)
+
+    get_regions_str__access__ = True
+    def get_regions_str(self, context):  
+        return context.root.get_regions_str(context)
+
+    get_counties_str__access__ = True
+    def get_counties_str(self, context): 
+        return context.root.get_counties_str(context)
+

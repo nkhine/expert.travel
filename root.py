@@ -19,6 +19,7 @@ from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class
 from itools.cms.root import Root as BaseRoot
 from itools.cms.html import XHTMLFile
+from itools.xhtml import Document as XHTMLDocument
 from itools.catalog import  KeywordField, IntegerField
 
 # Import from abakuc our modules 
@@ -291,6 +292,134 @@ class Root(Handler, BaseRoot):
         message = ('Remember to reindex the database now:'
                    ' <a href=";catalog_form">reindex</a>.')
         return message
+
+
+    ##########################################################################
+    ## Javascript
+    ##########################################################################
+    
+    get_countries_str__access__ = True
+    def get_countries_str(self, context):
+        response = context.response
+        response.set_header('Content-Type', 'text/plain')
+        selected_country = context.get_form_value('selected_country')
+        return self.get_countries_stl(selected_country)
+
+
+    def get_countries_stl(self, selected_country=None): 
+        # Get data
+        rows = world.get_rows()
+        countries = []
+        for row in rows:
+            country = row[6]
+            if country not in countries:
+                countries.append(country)
+        countries = [{'name': x,
+                      'title': x,
+                      'selected': x==selected_country} for x in countries]
+        countries.sort(key=lambda x: x['title'])
+        # Build stl
+        namespace = {}
+        namespace['countries'] = countries
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+          <select id="countries" name="countries"
+              onchange="javascript: get_regions('http://uktravel/;get_regions_str?country='+ this.value,'div_regions'); get_regions('http://uktravel/;get_counties_str?', 'div_county')">
+              <option stl:repeat="country countries" value="${country/name}"
+                      selected="${country/selected}">
+              ${country/title}
+              </option>
+          </select>
+        </stl:block>         
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace) 
+
+
+    get_regions_str__access__ = True
+    def get_regions_str(self, context):
+        response = context.response
+        response.set_header('Content-Type', 'text/plain')
+        country = context.get_form_value('country', type=Unicode)
+        selected_region = context.get_form_value('selected_region', type=Unicode)
+        data = self.get_regions_stl(country, selected_region)
+        return data
+
+
+    def get_regions_stl(self, country=None, selected_region=None): 
+        # Get data
+        rows = world.get_rows()
+        regions = []
+        for row in rows:
+            if country == row[6]:
+                region = row[7]
+                if region not in regions:
+                    regions.append(region)
+
+        regions = [{'name': x,
+                    'title': x,
+                    'selected': x==selected_region} for x in regions]
+        regions.sort(key=lambda x: x['title'])
+        # Build stl
+        namespace = {}
+        namespace['regions'] = regions
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+        <div id="div_regions">
+          <select id="regions" name="regions"
+              onchange="javascript: get_regions('http://uktravel/;get_counties_str?region='+ this.value, 'div_county')">
+              <option stl:repeat="region regions" value="${region/name}"
+                      selected="${region/selected}">
+              ${region/title}
+              </option>
+          </select>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace) 
+
+
+    get_counties_str__access__ = True
+    def get_counties_str(self, context):
+        response = context.response
+        response.set_header('Content-Type', 'text/plain')
+        region = context.get_form_value('region', type=Unicode)
+        selected_county = context.get_form_value('selected_county', type=Unicode)
+        return self.get_counties_stl(region, selected_county)
+        
+
+    def get_counties_stl(self, region=None, selected_county=None): 
+        # Get data
+        rows = world.get_rows()
+        counties = []
+        for index, row in enumerate(rows):
+            if (region == row[7]):
+                county = row[8]
+                counties.append({'name': index,
+                                 'title': county,
+                                 'selected': selected_county==index})
+        counties.sort(key=lambda x: x['title'])
+        # Build stl
+        namespace = {}
+        namespace['counties'] = counties
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+        <div id="div_county">
+          <select id="abakuc:county" name="abakuc:county">
+              <option stl:repeat="county counties" value="${county/name}"
+                      selected="${county/selected}">
+              ${county/title}
+              </option>
+          </select>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace) 
 
 
 register_object_class(Root)

@@ -471,73 +471,26 @@ class Address(RoleAware, Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
+
     @staticmethod
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
-                 address_county=None):
-        from root import world
-        root = get_context().root
-        
+                 address_country=None, address_region=None, address_county=None,):
         namespace = {}
+        context = get_context()
+        root = context.root
+        countries = root.get_countries_stl(selected_country=address_country) 
+        regions = root.get_regions_stl(country=address_country,
+                                       selected_region=address_region)
+        county = root.get_counties_stl(region=address_region,
+                                       selected_county=address_county)
         namespace['address'] = address
         namespace['postcode'] = postcode
         namespace['town'] = town 
         namespace['phone'] = phone
         namespace['fax'] = fax
-        
-        rows = world.get_rows()
-        
-        countries = {}
-        regions = {}
-        for index, row in enumerate(rows):
-            country = row[6]
-            region = row[7]
-            county = row[8]
-            is_selected = (index == address_county)
-            id = str(index)
-
-            # Add the country if not yet added
-            if country in countries:
-                country_ns = countries[country]
-            else:
-                country_ns = {'id': index, 'title': country,
-                              'is_selected': False, 'display': 'none',
-                              'regions': []}
-                countries[country] = country_ns
-
-            # Add the region if not yet added
-            if region in regions:
-                region_ns = regions[region]
-            else:
-                region_ns = {'id': index, 'title': region,
-                              'is_selected': False, 'display': 'none',
-                              'counties': []}
-                regions[region] = region_ns
-                # Add to the country
-                country_ns['regions'].append(
-                    {'id': id, 'title': region, 'is_selected': False})
-
-            region_ns['counties'].append({'id': id, 'title': county,
-                                          'is_selected': is_selected})
-
-            # If this county is selected, activate the right blocks
-            if is_selected:
-                country_ns['is_selected'] = True
-                country_ns['display'] = 'inherit'
-                region_ns['is_selected'] = True
-                region_ns['display'] = 'inherit'
-                for x in country_ns['regions']:
-                    if x['title'] == region:
-                        x['is_selected'] = True
-                        break
-
-        countries = countries.values()
-        countries.sort(key=lambda x: x['title'])
         namespace['countries'] = countries
-
-        regions = regions.values()
-        regions.sort(key=lambda x: x['title'])
         namespace['regions'] = regions
-
+        namespace['counties'] = county
         handler = root.get_handler('ui/abakuc/address_form.xml.en')
         return stl(handler, namespace)
 
@@ -554,8 +507,14 @@ class Address(RoleAware, Folder):
         town = self.get_property('abakuc:town')
         phone = self.get_property('abakuc:phone')
         fax = self.get_property('abakuc:fax')
+        # Get the country,  the region and  the county
+        from root import world
         address_county = self.get_property('abakuc:county')
+        rows = world.get_row(address_county)
+        address_country = rows.get_value('country')
+        address_region = rows.get_value('region')
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
+                                          address_country, address_region,
                                           address_county)
 
         handler = self.get_handler('/ui/abakuc/address_edit_metadata.xml')

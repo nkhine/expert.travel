@@ -198,7 +198,4 @@ class UKTravel(WebSite):
         handler = self.get_handler('/ui/%s/view_jobs.xhtml' % self.name)
         return stl(handler, namespace)
 
-
-
-
 register_object_class(UKTravel)

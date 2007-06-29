@@ -14,34 +14,14 @@
     </tr>
     <tr>
       <td colspan="2">
-        Region<br/>
-          <select onchange="select_country(this.value)" style="width: 80%">
-          <option value="none"></option>
-          <option stl:repeat="country countries" value="country_${country/id}"
-            selected="${country/is_selected}">${country/title}</option> 
-        </select>
-        (Country)
+        Country :<br/>
+        ${countries}
         <br/>
-        <select onchange="select_region(this.value)" style="width: 80%">
-          <option value="none"></option>
-          <optgroup stl:repeat="country countries" id="country_${country/id}"
-            disabled="disabled" style="display: ${country/display}">
-            <option stl:repeat="region country/regions"
-              value="region_${region/id}"
-              selected="${region/is_selected}">${region/title}</option> 
-          </optgroup>
-        </select>
-        (Region)
+        Region :<br/>
+        ${regions}
+        County :<br/>
+        ${counties}
         <br/>
-        <select name="abakuc:county" style="width: 80%">
-          <option value=""></option>
-          <optgroup stl:repeat="region regions" id="region_${region/id}"
-            disabled="disabled" style="display: ${region/display}">
-            <option stl:repeat="county region/counties" value="${county/id}"
-              selected="${county/is_selected}">${county/title}</option> 
-          </optgroup>
-        </select>
-        (County)
       </td>
     </tr>
     <tr>
