@@ -7,9 +7,15 @@
   <h1>New vaccancy</h1>
   <table width="100%"  border="0">
   <tr>
-    <td>Job Title </td>
-    <td><input type="text" name="dc:title" value="${dc:title/value}"/></td>
-    <td>Closing Date </td>
+    <td>
+      <label class="${dc:title/class}">Job Title</label>
+    </td>
+    <td>
+      <input type="text" name="dc:title" value="${dc:title/value}"/>
+    </td>
+    <td>
+      <label class="${abakuc:closing_date/class}">Closing Date</label>
+    </td>
     <td><input id="abakuc:closing_date" name="abakuc:closing_date" 
                     type="text" value="${abakuc:closing_date/value}"/>
           <input id="trigger_date" type="button" value="..."/>
@@ -19,7 +25,9 @@
           </td>
   </tr>
   <tr>
-    <td>Job Function </td>
+    <td>
+      <label class="${abakuc:function/class}">Job Function</label> 
+    </td>
     <td>
       <select name="abakuc:function">
         <option stl:repeat="function abakuc:function/value"
@@ -28,7 +36,9 @@
         </option>
       </select>
      </td>
-    <td>Salary Range </td>
+    <td>
+      <label class="${abakuc:function/class}">Salary Range</label> 
+    </td>
     <td>
         <select name="abakuc:salary">
           <option stl:repeat="s abakuc:salary/value" value="${s/name}"
@@ -39,21 +49,33 @@
     </td>
   </tr>
   <tr>
-    <td colspan="4"><h5>Job Summary</h5></td>
+    <td colspan="4">
+      <h5>
+        <label class="${dc:description/class}"> 
+        Job Summary
+        </label>
+      </h5>
+    </td>
   </tr>
   <tr>
         <td colspan="4">
-          <textarea  rows="4" cols="80" 
-            id="dc:description" name="dc:description">
-            ${dc:description/value}
-          </textarea>
+          <textarea  rows="4" cols="80" id="dc:description" name="dc:description">${dc:description/value}</textarea>
         </td>
   </tr>
   <tr>
-    <td colspan="4"><h5>Job Description</h5></td>
+    <td colspan="4">
+      <h5>
+        <label class="${abakuc:job_text/class}"> 
+        Job Description
+        </label>
+      </h5>
+    </td>
   </tr>
   <tr>
-    <td colspan="4">${abakuc:job_text}</td>
+    <td colspan="4">
+      <textarea rows="20" cols="80" id="abakuc:job_text"
+      name="abakuc:job_text">${abakuc:job_text/value}</textarea>
+    </td>
   </tr>
 </table>
       <!-- Message -->

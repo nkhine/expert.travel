@@ -64,10 +64,6 @@ class Job(RoleAware, Folder):
     def new_instance_form(cls, context):
         namespace = context.build_form_namespace(cls.job_fields)
         namespace['class_id'] = Job.class_id
-        # Epoz
-        job_text = context.get_form_value('abakuc:job_text') or ''
-        rte = context.root.get_rte(context, 'abakuc:job_text', job_text)
-        namespace['abakuc:job_text'] = rte  
         path = '/ui/abakuc/job_new_resource_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
@@ -147,10 +143,12 @@ class Job(RoleAware, Folder):
         namespace['abakuc:salary'] = SalaryRange.get_value(salary)
         function = self.get_property('abakuc:function')
         namespace['abakuc:function'] =  JobTitle.get_value(function)
-        for key in ['dc:title' , 'dc:description', 'abakuc:job_text',
-                    'abakuc:closing_date']:
+        for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
         
+        job_text = to_html(self.get_property('abakuc:job_text'))
+        namespace['abakuc:job_text'] = job_text
+
         #Find similar jobs
         catalog = context.server.catalog
         query = []
@@ -253,8 +251,7 @@ class Job(RoleAware, Folder):
         function = self.get_property('abakuc:function')
         namespace['functions'] =  JobTitle.get_namespace(function)
         job_text = self.get_property('abakuc:job_text')
-        namespace['abakuc:job_text'] = self.get_rte(context,'abakuc:job_text',
-                                                 job_text)
+        namespace['abakuc:job_text'] = job_text
         # Return stl
         handler = self.get_handler('/ui/abakuc/job_edit_metadata.xml')
         return stl(handler, namespace)
@@ -268,10 +265,6 @@ class Job(RoleAware, Folder):
         self.set_property('abakuc:job_text', job_text)
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
-
-
-    def get_epoz_data(self):
-        return self.get_property('abakuc:job_text')
 
     
     ############################################################

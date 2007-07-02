@@ -59,7 +59,8 @@
           <label for="abakuc:job_text">Text</label>
         </dt>
         <dd>
-          ${abakuc:job_text}
+          <textarea rows="20" cols="80" id="abakuc:job_text"
+          name="abakuc:job_text">${abakuc:job_text}</textarea>
         </dd>
       </dl>
     <p>
