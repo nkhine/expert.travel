@@ -309,10 +309,12 @@ class Address(RoleAware, Folder):
 
     __fixed_handlers__ = ['log_enquiry.csv']
 
-    new_user_form__access__ = 'is_reviewer'
-    epoz_iframe__access__ = 'is_reviewer_or_member'
-    new_user__access__ = 'is_reviewer'
     permissions_form__access__ = 'is_reviewer'
+    permissions__access__ = 'is_reviewer'
+    edit_membership_form__access__ = 'is_reviewer'
+    edit_membership__access__ = 'is_reviewer'
+    new_user_form__access__ = 'is_reviewer'
+    new_user__access__ = 'is_reviewer'
     new_resource_form__access__ = True
     new_resource__access__ = True
     
@@ -324,7 +326,6 @@ class Address(RoleAware, Folder):
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
-
 
     def get_document_types(self):
         return [Job]
@@ -851,7 +852,11 @@ class Address(RoleAware, Folder):
         return (self.has_user_role(user.name, 'ikaaro:reviewers') or
                 self.has_user_role(user.name, 'ikaaro:members'))
     
-    
+
+    def is_admin(self, user, object):
+        return self.is_reviewer(user, object)
+
+
     def is_reviewer(self, user, object):
         if not user:
             return False
