@@ -69,7 +69,6 @@ class Job(RoleAware, Folder):
         rte = context.root.get_rte(context, 'abakuc:job_text', job_text)
         namespace['abakuc:job_text'] = rte  
         path = '/ui/abakuc/job_new_resource_form.xml'
-        
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
@@ -411,6 +410,15 @@ class Candidature(RoleAware, Folder):
                     confirm = user.get_property('ikaaro:user_must_confirm')
         user_id = str(user.name)
         
+        for x in container.search_handlers(handler_class=Candidature):
+            if user_id == x.get_property('user_id'):
+                msg = u"""
+                Application Previously Sent.
+                You have already applied for this particular vacancy. Your
+                details have NOT been sent again.
+                       """
+                return context.come_back(msg)
+
         # Create the candidature
         handler, metadata = container.set_object(name, cls())
         for key in ['abakuc:applicant_note']:
