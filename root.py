@@ -325,7 +325,7 @@ class Root(Handler, BaseRoot):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
           <select id="countries" name="countries"
-              onchange="javascript: get_regions('http://uktravel/;get_regions_str?country='+ this.value,'div_regions'); get_regions('http://uktravel/;get_counties_str?', 'div_county')">
+              onchange="javascript: get_regions('/;get_regions_str?country='+ this.value,'div_regions'); get_regions('/;get_counties_str?', 'div_county')">
               <option stl:repeat="country countries" value="${country/name}"
                       selected="${country/selected}">
               ${country/title}
@@ -369,7 +369,7 @@ class Root(Handler, BaseRoot):
           xmlns:stl="http://xml.itools.org/namespaces/stl">
         <div id="div_regions">
           <select id="regions" name="regions"
-              onchange="javascript: get_regions('http://uktravel/;get_counties_str?region='+ this.value, 'div_county')">
+              onchange="javascript: get_regions('/;get_counties_str?region='+ this.value, 'div_county')">
               <option stl:repeat="region regions" value="${region/name}"
                       selected="${region/selected}">
               ${region/title}
