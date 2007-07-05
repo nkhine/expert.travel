@@ -4,55 +4,67 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h1>Our JOBS</h1>
-
-<b stl:if="msg">${msg}</b>
-<p stl:if="table">
-  ${batch}
-  ${table}
-</p>
-
-<h1>Search</h1>
-
+<table width="100%" border="1">
 <form method="get" action="/;view_jobs">
-
-<dl>
-  <dt>
-  Function 
-  </dt>
-  <dd>
-     <select name="function">
-     <option value="">None</option>
-     <option stl:repeat="f function" value="${f/name}"
-     selected="${f/selected}">
-     ${f/value}
-     </option>
-    </select>
-  </dd>
-
-  <dt>
-  Salary band
-  </dt>
-  <dd>
-    <select name="salary">
-    <option value="">None</option>
-     <option stl:repeat="j salary" value="${j/name}"
-     selected="${j/selected}">
-     ${j/value}
-     </option>
-    </select>
-  </dd>
-
-  <dt>
-  Job title
-  </dt>
-  <dd>
-    <input type="text" name="job_title" value="${job_title}"/>
-  </dd>
-</dl>
-<p>
-  <input class="button_search" type="submit" value="Search a job" name="search"/>
-</p>
-
+  <tr>
+      <td colspan="3"> <h1>Search ${number_of_jobs} travel jobs in...</h1></td>
+      <td rowspan="6" id="right">
+        <a href="http://www.jdoqocy.com/l5115r09608ORTXPYRYOQPTPTYVV?sid=SearchForm" target="_blank" onmouseover="window.status='http://www.salestarget.co.uk';return true;" onmouseout="window.status=' ';return true;">
+        <img src="http://www.lduhtrp.net/1o117y7B-53PSUYQZSZPRQUQUZWW" alt="Sales jobs at salestarget.co.uk " border="0"/></a>
+      </td>
+  </tr>
+  <tr>
+      <td>Keywords: (e.g. Sales Manager)</td>
+      <td>Sector:</td>
+      <td>Salary band:</td>
+  </tr>
+  <tr>
+      <td><input type="text" size="25" name="job_title" value="${job_title}"/></td>
+      <td>
+          <select name="function">
+            <option value="">All sectors</option>
+            <option stl:repeat="f function" value="${f/name}"
+             selected="${f/selected}">
+             ${f/value}
+            </option>
+          </select>
+      </td>
+      <td>
+          <select name="salary">
+            <option value="">(all)</option>
+            <option stl:repeat="j salary" value="${j/name}"
+             selected="${j/selected}">
+             ${j/value}
+            </option>
+          </select>
+      </td>
+  </tr>
+  <tr>
+    <td colspan="3" align="right">
+      <input class="button_search" type="submit" value="Search..." name="search"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      <h1>Currently there are ${nb_jobs} open vacancies... </h1>
+          <b stl:if="msg">${msg}</b>
+												      <ul>
+                                <li stl:repeat="job jobs">
+                                     <a href="${job/url}">
+                                    ${job/title}
+                                  </a><br />
+                                    ${job/description}
+                                </li>
+                              </ul>
+                              <p>
+                              ${batch}
+                              </p>
+         <!--  <p stl:if="table">
+            ${batch}
+            ${table}
+          </p> -->
+    </td>
+  </tr>
 </form>
+</table>
 </stl:block>
