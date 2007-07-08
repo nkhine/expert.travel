@@ -538,8 +538,15 @@ class Candidature(RoleAware, Folder):
         # Send email
         self.send_email_to_members(context, all=True)
 
-        message = (u"Thank you, your CV  has been submitted.<br/>" 
-                   u"If you like to login, please choose your password")
+        # Get the Company Name
+        company = self.parent.parent.parent
+        to_company = company.get_property('dc:title')
+
+        message = (u"Thank you, your CV and application "
+                   u"has been submitted to <b>%s.</b><br/>" 
+                   u"If you like to login, please go to " 
+                   u"""<a href="/;view">Home</a>"""
+            % (to_company))
         return message.encode('utf-8')
 
     
@@ -570,7 +577,7 @@ class Candidature(RoleAware, Folder):
            
         # Sent an email for each candidature
         subject_template = u'[UK Travel] New Candidature (%s)' 
-        body_template = ('A new person post his Candidature to the job : %s\n'
+        body_template = ('You have a new job application for your announcement : %s\n'
                          'From : %s %s\n')
         for candidature in candidatures:
             job = candidature.parent

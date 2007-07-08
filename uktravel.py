@@ -105,7 +105,7 @@ class UKTravel(WebSite):
     #######################################################################
     view_jobs__access__ = True
     view_jobs__label__ = u'Our jobs'
-    def view_jobs(self, context, word_treshold=30):
+    def view_jobs(self, context):
         namespace = {}
         namespace['batch'] = ''
         #columns = [('title', u'Title'),
@@ -156,11 +156,19 @@ class UKTravel(WebSite):
             address = job.parent
             company = address.parent
             url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
+            function = get('abakuc:function')
+            salary = get('abakuc:salary')
+            closing_date = get('abakuc:closing_date')
             description = reduce_string(get('dc:description'),
                                              word_treshold=90,
                                              phrase_treshold=240)
             jobs.append({'url': url,
                          'title': job.title,
+                         'function': JobTitle.get_value(
+                                        get('abakuc:function')),
+                         'salary': SalaryRange.get_value(
+                                        get('abakuc:salary')),
+                         'closing_date': get('abakuc:closing_date'),
                          'description': description})
             ## If it's a search by Title , Check if we add the line
             #if job_title:

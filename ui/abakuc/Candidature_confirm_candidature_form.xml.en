@@ -4,10 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Registration</h2>
+  <h2>Thank you! Your email address has been confirmed.</h2>
 
   <p>
-    To confirm your registration, please type a password.
+   As a final step, please choose a password, your application will then be
+   sent directly to our member.
   </p>
 
   <form name="confirm_registration" action=";confirm_candidature" method="post">
@@ -28,7 +29,7 @@
     </dl>
     <p>
       <input type="hidden" name="key" value="${key}" />
-      <input type="submit" value="Confirm Registration" class="button_ok"/>
+      <input type="submit" value="Confirm" class="button_ok"/>
     </p>
   </form>
 
