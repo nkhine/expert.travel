@@ -55,17 +55,17 @@ class JobTitle(Enumerate):
 class SalaryRange(Enumerate):
 
     options = [
-        {'name': '1', 'value': u'Under &#163;15K'},
-        {'name': '2', 'value': u'&#163;15K-&#163;20K'},
-        {'name': '3', 'value': u'&#163;20K-&#163;25K'},
-        {'name': '4', 'value': u'&#163;25K-&#163;30K'},
-        {'name': '5', 'value': u'&#163;30K-&#163;35K'},
-        {'name': '6', 'value': u'&#163;35K-&#163;40K'},
-        {'name': '7', 'value': u'&#163;40K-&#163;45K'},
-        {'name': '8', 'value': u'&#163;45K-&#163;50K'},
-        {'name': '9', 'value': u'&#163;50K-&#163;70K'},
-        {'name': '10', 'value': u'&#163;70K-&#163;100K'},
-        {'name': '11', 'value': u'&#163;100K+'},
+        {'name': '1', 'value': u'Under £15K'},
+        {'name': '2', 'value': u'£15K-£20K'},
+        {'name': '3', 'value': u'£20K-£25K'},
+        {'name': '4', 'value': u'£25K-£30K'},
+        {'name': '5', 'value': u'£30K-£35K'},
+        {'name': '6', 'value': u'£35K-£40K'},
+        {'name': '7', 'value': u'£40K-£45K'},
+        {'name': '8', 'value': u'£45K-£50K'},
+        {'name': '9', 'value': u'£50K-£70K'},
+        {'name': '10', 'value': u'£70K-£100K'},
+        {'name': '11', 'value': u'£100K+'},
         {'name': '12', 'value': u'Unspecified'}]
 
 
