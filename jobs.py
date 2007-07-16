@@ -10,10 +10,9 @@ import mimetypes
 from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
-from itools.rest import to_html
 from itools.stl import stl
 from itools.web import get_context
-from itools.rest import checkid
+from itools.rest import checkid, to_html_events
 from itools.cms.widgets import table
 from itools.cms.utils import generate_password
 from itools.catalog import EqQuery, AndQuery, RangeQuery
@@ -146,7 +145,7 @@ class Job(RoleAware, Folder):
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
         
-        job_text = to_html(self.get_property('abakuc:job_text'))
+        job_text = to_html_events(self.get_property('abakuc:job_text'))
         namespace['abakuc:job_text'] = job_text
 
         #Find similar jobs
@@ -602,7 +601,7 @@ class Candidature(RoleAware, Folder):
         namespace['name'] = self.name
         # Notes as rest
         note = self.get_property('abakuc:applicant_note')
-        namespace['applicant_note'] = to_html(note)
+        namespace['applicant_note'] = to_html_events(note)
         # User
         user_id = self.get_property('user_id')
         users = context.root.get_handler('users')
