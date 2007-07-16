@@ -65,6 +65,12 @@ class Root(Handler, BaseRoot):
 
     class_views = [['view']] + BaseRoot.class_views + [['import_data_form']]
 
+    #######################################################################
+    # Administrator Email
+
+    contact_email = 'sylvain@itaapy.com'
+    #contact_email = 'jdavid@itaapy.com'
+    #contact_email = 'norman@khine.net'
     
     #######################################################################
     # Index & Search
@@ -162,8 +168,8 @@ class Root(Handler, BaseRoot):
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         # XXX While testing, uncomment the right line
         #to_addr = 'jdavid@itaapy.com'
-        to_addr = 'norman@khine.net'
-        #to_addr = 'sylvain@itaapy.com'
+        #to_addr = 'norman@khine.net'
+        to_addr = 'sylvain@itaapy.com'
         BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
 
 

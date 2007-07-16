@@ -23,7 +23,7 @@ from itools.cms.users import UserFolder as iUserFolder, User as iUser
 from itools.cms.utils import get_parameters
 from itools.rest import checkid
 from itools.cms.widgets import table, batch
-
+from itools.xml import Parser
 # Import from our product
 from companies import Company, Address 
 from jobs import Job
@@ -302,10 +302,12 @@ class User(iUser, Handler):
         namespace['contact'] = None
         if address.has_user_role(user.name, 'ikaaro:guests'):
             contacts = address.get_property('ikaaro:reviewers')
-            if contacts is not None:
+            if contacts:
                 contact = users.get_handler(contacts[0])
                 namespace['contact'] = contact.get_property('ikaaro:email')
-
+            else:
+                contact = '<span style="color:red;">The administrator</span>'
+                namespace['contact'] = Parser(contact)
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
 
@@ -448,16 +450,16 @@ class User(iUser, Handler):
         companies = self.get_handler('/companies')
         company = companies.get_handler(company_name)
         address = company.get_handler(address_name)
-        address.set_user_role(self.name, 'ikaaro:guests')
-
+        reviewers = address.get_property('ikaaro:reviewers')
+        if not reviewers:
+            address.set_user_role(self.name, 'ikaaro:reviewers')
+        else:
+            address.set_user_role(self.name, 'ikaaro:guests')
         root = context.root
         # Remove from old address
         old_address = self.get_address()
         if old_address is not None:
             old_address.set_user_role(self.name, None)
-
-        # Reindex
-        #root.reindex_handler(address)
 
         message = u'Company/Address selected.'
         goto = context.uri.resolve(';profile')

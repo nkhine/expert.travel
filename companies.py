@@ -763,6 +763,12 @@ class Address(RoleAware, Folder):
                          'Phone: %s\n'
                          '\n'
                          '%s')
+        if not to_addrs:
+            # No members, send to the administrator
+            to_addrs.append(root.contact_email)
+            company = self.parent.name
+            subject_template = '%s - %s (%s)' % (subject_template,
+                                                 company, self.name)
 
         if rows is None:
             csv = self.get_handler('log_enquiry.csv')
