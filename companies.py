@@ -12,6 +12,7 @@ from itools.i18n.locale_ import format_datetime
 from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.stl import stl
 from itools.web import get_context
+from itools.xml import get_element
 from itools.cms.website import WebSite
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
@@ -120,8 +121,17 @@ class Company(WebSite):
                 'name': address.name,
                 'address': address.get_property('abakuc:address')})
         namespace['addresses'] = addresses
-        
-        # Get all Jobs
+        namespace['jobs'] = self.view_jobs(context)
+
+        handler = self.get_handler('/ui/abakuc/company_view.xml')
+        return stl(handler, namespace)
+
+
+
+    view_jobs__label__ = u'Our Jobs'
+    view_jobs__access__ = True
+    def view_jobs(self, context):
+        namespace = {}
         namespace['batch'] = ''
         columns = [('title', u'Title'),
                    ('function', u'Function'),
@@ -151,8 +161,7 @@ class Company(WebSite):
             # Information about the job
             address = job.parent
             company = address.parent
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
-                                                 job.name)
+            url = '%s/%s/;view' % (address.name, job.name)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                          'title': (get('dc:title'),url),
                          'closing_date': get('abakuc:closing_date'),
@@ -162,7 +171,6 @@ class Company(WebSite):
                          'description': get('dc:description')}
             jobs.append(job_to_add)
         # Sort
-          # => XXX See if it's correct
         sortby = context.get_form_value('sortby', 'title')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
@@ -180,8 +188,10 @@ class Company(WebSite):
         # Namespace 
         if jobs:
             job_table = table(columns, jobs, [sortby], sortorder,[])
+            msgs = (u'There is one job.',
+                    u'There are ${n} jobs.')
             job_batch = batch(context.uri, batch_start, batch_size, 
-                              batch_total)
+                              batch_total, msgs=msgs)
             msg = None
         else:
             job_table = None
@@ -191,11 +201,8 @@ class Company(WebSite):
         namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-
-
-        handler = self.get_handler('/ui/abakuc/company_view.xml')
+        handler = self.get_handler('/ui/abakuc/company_view_jobs.xml')
         return stl(handler, namespace)
-
 
     #######################################################################
     # User Interface / Edit

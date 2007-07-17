@@ -18,10 +18,8 @@
     <a href="${address/name}">${address/address}</a>
   </li>
 </ul>
-<h3>Jobs</h3>
-<b stl:if="msg">${msg}</b>
-${batch}
-${table}
+<br/>
+${jobs}
 </td>
 <td id="right">
 google
