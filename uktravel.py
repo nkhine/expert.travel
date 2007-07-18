@@ -119,8 +119,9 @@ class UKTravel(WebSite):
         # Search fields
         function = context.get_form_value('function') or None
         salary = context.get_form_value('salary') or None
-        # XXX This does not work see bug #86
         job_title = context.get_form_value('job_title') or None
+        if job_title:
+            job_title = job_title.lower()
         # Get Jobs (construct the query for the search)
         if function:
             query.append(EqQuery('function', function))
@@ -137,20 +138,19 @@ class UKTravel(WebSite):
             get = job.get_property
             address = job.parent
             company = address.parent
-            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
-            function = get('abakuc:function')
-            salary = get('abakuc:salary')
-            closing_date = get('abakuc:closing_date')
+            url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                           job.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            jobs.append({
-                'url': url,
-                'title': job.title,
-                'function': JobTitle.get_value(get('abakuc:function')),
-                'salary': SalaryRange.get_value(get('abakuc:salary')),
-                'closing_date': get('abakuc:closing_date'),
-                'description': description})
+            if job_title is None or job_title in (job.title).lower():
+                jobs.append({
+                    'url': url,
+                    'title': job.title,
+                    'function': JobTitle.get_value(get('abakuc:function')),
+                    'salary': SalaryRange.get_value(get('abakuc:salary')),
+                    'closing_date': get('abakuc:closing_date'),
+                    'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5 

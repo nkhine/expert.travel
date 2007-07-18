@@ -22,7 +22,6 @@
       <td><input type="text" size="25" name="job_title" value="${job_title}"/></td>
       <td>
           <select name="function">
-            <option value="">All sectors</option>
             <option stl:repeat="f function" value="${f/name}"
              selected="${f/selected}">
              ${f/value}
@@ -31,7 +30,6 @@
       </td>
       <td>
           <select name="salary">
-            <option value="">(all)</option>
             <option stl:repeat="j salary" value="${j/name}"
              selected="${j/selected}">
              ${j/value}
