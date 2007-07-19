@@ -7,7 +7,7 @@ from itools.cms.skins import register_skin
 
 # Import from abakuc
 import metadata
-from skins import FrontOffice
+from skins import FrontOffice, FOCompanies
 from root import Root
 
 
@@ -18,6 +18,10 @@ __version__ = get_version(globals())
 path = get_abspath(globals(), 'ui/abakuc')
 register_skin('abakuc', path)
 
-for name in ['uktravel', 'destinations', 'companies', 'countries']:
+for name in ['uktravel', 'destinations', 'countries']:
     path = get_abspath(globals(), 'ui/%s' % name)
     register_skin(name, FrontOffice(path))
+
+for name in ['companies']:
+    path = get_abspath(globals(), 'ui/%s' % name)
+    register_skin(name, FOCompanies(path))

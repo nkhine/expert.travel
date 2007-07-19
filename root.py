@@ -150,8 +150,11 @@ class Root(Handler, BaseRoot):
         """Set the default skin"""
         context = get_context()
         hostname = context.uri.authority.host
-
         # XXX For testing purposes
+        if isinstance(context.handler, Company):
+            if hostname in ['uktravel', 'destinations', '.uktravel',
+                            '.destinations']:
+                return self.get_handler('ui/companies')
         if hostname == 'uktravel':
             return self.get_handler('ui/uktravel')
         elif hostname == 'destinations':
@@ -160,7 +163,6 @@ class Root(Handler, BaseRoot):
             return self.get_handler('ui/companies')
         elif '.destinations' in hostname:
             return self.get_handler('ui/countries')
-
         # return the default skin
         return self.get_handler('ui/aruni')
 

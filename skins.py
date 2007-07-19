@@ -4,12 +4,24 @@
 # Import from itools
 from itools.cms.skins import Skin
 
+# Import from abakuc
+from companies import Company
 
 class FrontOffice(Skin):
 
     def get_template(self):
         # All front-offices share the same template
         return self.get_handler('/ui/uktravel/template.xhtml')
+
+
+    def get_left_menus(self, context):
+        return []
+
+
+    def get_styles(self, context):
+        styles = Skin.get_styles(self, context)
+        styles.append('/ui/uktravel/style.css')
+        return styles
 
 
     def get_breadcrumb(self, context):
@@ -59,3 +71,40 @@ class FrontOffice(Skin):
         namespace['level1'] = level1
 
         return namespace
+
+
+
+class FOCompanies(FrontOffice):
+
+    def get_left_menus(self, context):
+        handler = context.handler
+        # Main Menu
+        menus = []
+        if isinstance(handler, Company):
+            menu = self.get_main_menu(context)
+            if menu is not None:
+                menus.append(menu)
+
+        # Content Menu XXX (Futur)
+        #menu = self.get_content_menu(context)
+        #menus.append(menu)
+        return menus
+
+
+    def get_main_menu_options(self, context):
+        handler = context.handler
+        options = []
+        append = options.append
+        path = handler.abspath
+        append({'path': path, 'method': 'view',
+                'title': u'Company details',
+                'icon': '/ui/abakuc/images/AddressBook16.png'})
+        append({'path': path, 'method': 'view_jobs',
+                'title': u'Jobs',
+                'icon': '/ui/abakuc/images/JobBoard16.png'})
+        append({'path': path, 'method': 'view_branches',
+                'title': u'Branches',
+                'icon': '/ui/images/UserFolder16.png'})
+
+        return options
+
