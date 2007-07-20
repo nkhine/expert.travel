@@ -151,7 +151,9 @@ class Root(Handler, BaseRoot):
         context = get_context()
         hostname = context.uri.authority.host
         # XXX For testing purposes
-        if isinstance(context.handler, Company):
+        handler = context.handler
+        root = handler.get_site_root()
+        if isinstance(root, Company):
             if hostname in ['uktravel', 'destinations', '.uktravel',
                             '.destinations']:
                 return self.get_handler('ui/companies')

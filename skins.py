@@ -4,8 +4,6 @@
 # Import from itools
 from itools.cms.skins import Skin
 
-# Import from abakuc
-from companies import Company
 
 class FrontOffice(Skin):
 
@@ -77,13 +75,11 @@ class FrontOffice(Skin):
 class FOCompanies(FrontOffice):
 
     def get_left_menus(self, context):
-        handler = context.handler
         # Main Menu
         menus = []
-        if isinstance(handler, Company):
-            menu = self.get_main_menu(context)
-            if menu is not None:
-                menus.append(menu)
+        menu = self.get_main_menu(context)
+        if menu is not None:
+            menus.append(menu)
 
         # Content Menu XXX (Futur)
         #menu = self.get_content_menu(context)
@@ -92,10 +88,12 @@ class FOCompanies(FrontOffice):
 
 
     def get_main_menu_options(self, context):
-        handler = context.handler
         options = []
         append = options.append
-        path = handler.abspath
+        handler = context.handler
+        root = handler.get_site_root()
+        path = root.abspath
+
         append({'path': path, 'method': 'view',
                 'title': u'Company details',
                 'icon': '/ui/abakuc/images/AddressBook16.png'})
