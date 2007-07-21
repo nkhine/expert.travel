@@ -56,7 +56,10 @@ class JobTitle(Enumerate):
 class SalaryRange(Enumerate):
 
     options = [
+<<<<<<< HEAD:metadata.py
         {'name': '', 'value': u'Unspecified'},
+=======
+>>>>>>> css:metadata.py
         {'name': '1', 'value': u'Under £15K'},
         {'name': '2', 'value': u'£15K-£20K'},
         {'name': '3', 'value': u'£20K-£25K'},
@@ -67,7 +70,12 @@ class SalaryRange(Enumerate):
         {'name': '8', 'value': u'£45K-£50K'},
         {'name': '9', 'value': u'£50K-£70K'},
         {'name': '10', 'value': u'£70K-£100K'},
+<<<<<<< HEAD:metadata.py
         {'name': '11', 'value': u'£100K+'}]
+=======
+        {'name': '11', 'value': u'£100K+'},
+        {'name': '12', 'value': u'Unspecified'}]
+>>>>>>> css:metadata.py
 
 
 
