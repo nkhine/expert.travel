@@ -2,7 +2,8 @@
 
 *{margin:0;padding:0}
 
-body{font-size:76%;line-height:1.5;font-family:Verdana, Arial, Helvetica, sans-serif;color:#666;}
+/* body{font-size:76%;line-height:1.5;font-family:Verdana, Arial, Helvetica,
+ * sans-serif;color:#666;}*/
 
 #height{position:relative;min-height:100%;}
 
@@ -30,7 +31,7 @@ no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bo
   text-align: left;
 }
 
-#header h1 a{width:400px;line-height:56px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
+#header h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
 
 #header h1 a:hover {background:none;border:none;text-decoration: none;}
 
@@ -42,7 +43,7 @@ no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bo
 #navbar{position:absolute;top:0;right:5px;text-align:right;margin:0;}
 #navbar ul{float:right;list-style:none;margin:0;padding:0;}
 #navbar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;color:white;}
-#navbar a{font-size: 0.8em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
+#navbar a{font-size: 1.1em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
 #navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
 
 /**************************************************************************
@@ -51,66 +52,21 @@ no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bo
 #bar{position:absolute;bottom:0;right:5px;text-align:right;margin:0;}
 #bar ul{float:right;list-style:none;margin:0;padding:0;}
 #bar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;}
-#bar a{font-size: 0.7em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#F9E9A9 url(images/off_bg.gif) repeat-x top left;margin:0 1px 0 0;padding:1px 8px;}
+#bar a{font-size: 1.0em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#F9E9A9 url(images/off_bg.gif) repeat-x top left;margin:0 1px 0 0;padding:1px 8px;}
 #bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
-
-#top {
-  background: #6899FF url(images/menu_bkg.gif) left bottom no-repeat;;
-  border-collapse: collapse;
-  text-align: left;
-}
-#menu {
-  background: #000 url(images/upper-nav-crn.gif) left bottom no-repeat;
-  border-collapse: collapse;
-  width: 310px;
-  height: 14px;
-  text-align: right;
-}
-
-#menu a {
-  color: white;
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0px 5px 0px 5px;
-  text-decoration: none;
-}
-
-#menu a:hover {
-  text-decoration: none;
-}
 
 /**************************************************************************
  * Search 
  **************************************************************************/
-#search {
-  background: #6899FF;
-  border-collapse: collapse;
-  height: 23px;
-  text-align: right;
-}
+#search {position:absolute;bottom:17px;right:5px;text-align:right;margin:0;}
 
-/**************************************************************************
- * Profile menu 
- **************************************************************************/
-#profile {
-  background: #05ba05 url(images/lower-nav-crn.gif) left bottom no-repeat;
-  border-collapse: collapse;
-  height: 1.3em;
-  text-align: right;
+.searchinput {
+    font:normal 11px Tahoma, Arial;
+    color:#000;
+    margin:0px 8px 0px 0px;
+    background:#fff url(images/mag_glass.gif) no-repeat;
+    padding:2px 2px 2px 17px
 }
-
-#profile a {
-  color: white;
-  font-size: 1.2em;
-  font-weight: bold;
-  padding: 0px 5px 0px 5px;
-  text-decoration: none;
-}
-
-#profile a:hover {
-  text-decoration: none;
-}
-
 /**************************************************************************
  * Left menu style 
  **************************************************************************/
@@ -218,11 +174,4 @@ no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bo
   text-decoration: underline;
 }
 
-.searchinput {
-    font:normal 11px Tahoma, Arial;
-    color:#000;
-    margin:0px 8px 0px 0px;
-    background:#fff url(images/mag_glass.gif) no-repeat;
-    padding:2px 2px 2px 17px
-}
 

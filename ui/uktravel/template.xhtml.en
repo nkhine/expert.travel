@@ -32,10 +32,10 @@ Abakuc Expert.Travel</a></h1>
 </ul>
 </div>
                                       <form action="/;search" method="get">
-                                        <div class="search">
-                                            <input name="search_text" type="text" 
-                                              value="Abakuc Limited" size="15"
-                                              onblur="if(this.value=='') this.value='Abakuc Limited';"
+                                        <div id="search">
+                                            <input name="search_text"
+                                            type="text" class="searchinput" 
+                                              value="" size="15"
                                               onFocus="if(this.value=='Search this site') this.value='';" />
                                             <input type="submit" value="Search"/>
                                         </div>
