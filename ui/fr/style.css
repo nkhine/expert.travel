@@ -17,7 +17,7 @@ body,html{height:100%;}
 /**************************************************************************
  * Header 
  **************************************************************************/
-#header{width:100%;position:relative;z-index:10;background:#6899FF;
+#header{width:100%;position:relative;z-index:10;background:#002E90;
   margin-bottom: 0px;
   padding: 0px;
 }
@@ -43,7 +43,7 @@ no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bo
 #navbar{position:absolute;top:0;right:5px;text-align:right;margin:0;}
 #navbar ul{float:right;list-style:none;margin:0;padding:0;}
 #navbar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;color:white;}
-#navbar a{font-size: 1.1em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
+#navbar a{font-size: 1.1em;font-weight:bold;float:left;display:block;color:#FFF;text-decoration:none;border:1px solid;border-color:#6899FF;background:#002E90;margin:0 1px 0 0;padding:1px 8px;}
 #navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
 
 /**************************************************************************

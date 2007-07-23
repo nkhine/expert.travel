@@ -54,12 +54,12 @@
             </table>
             <ul>
               <li>
-                <a href="/companies/${company/name}/;view">
+                <a href="${company/path}/;view">
                   View company details
                 </a>
               </li>
               <li>
-                <a href="/companies/${company/name}/${address/name}/;view">
+                <a href="${address/address_path}/;view">
                   View address details
                 </a>
               </li>
@@ -122,7 +122,7 @@
         <b stl:if="msg">${msg}</b>
       
         <p stl:if="is_reviewer_or_member">
-          <a href="/companies/${company/name}/${address/name}/;new_resource_form?type=Job">
+          <a href="${address/address_path}/;new_resource_form?type=Job">
           Add a job
           </a>
         </p>
@@ -134,25 +134,25 @@
       <h2>Actions</h2>
       <ul>
         <li>
-        <a href="/companies/${company/name}/;edit_metadata_form?referrer=1">
+        <a href="${company/path}/;edit_metadata_form?referrer=1">
           Modify company details
         </a>
         </li>
         
         <li>
-        <a href="/companies/${company/name}/${address/name}/;edit_metadata_form?referrer=1">
+        <a href="${address/address_path}/;edit_metadata_form?referrer=1">
           Modify address details
         </a>
         </li>
         
         <li>
-         <a href="/companies/${company/name}/${address/name}/;permissions_form">
+         <a href="${address/address_path}/;permissions_form">
            Users associate to the address
          </a>
         </li>
         
         <li>
-          <a href="/companies/${company/name}/${address/name}/;new_user_form">
+          <a href="${address/address_path}/;new_user_form">
             Associate a new user to the address
           </a>
         </li>

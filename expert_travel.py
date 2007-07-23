@@ -17,10 +17,10 @@ from metadata import JobTitle, SalaryRange
 from website import WebSite
 
 
-class UKTravel(WebSite):
+class ExpertTravel(WebSite):
  
-    class_id = 'uktravel'
-    class_title = u'UK Travel List'
+    class_id = 'expert_travel'
+    class_title = u'Expert Travel Website'
     class_icon48 = 'abakuc/images/Import48.png'
     class_icon16 = 'abakuc/images/Import16.png'
 
@@ -95,7 +95,8 @@ class UKTravel(WebSite):
         namespace['jobs'] = jobs
         # Construct the lines of the table
         # Return the page
-        handler = self.get_handler('/ui/%s/home.xhtml' % self.name)
+        skin_base = self.get_skin_base(context)
+        handler = self.get_handler('/ui/%s/home.xhtml' % skin_base)
         return stl(handler, namespace)
 
 
@@ -178,7 +179,29 @@ class UKTravel(WebSite):
         namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['job_title'] = job_title
         # Return the page
-        handler = self.get_handler('/ui/%s/view_jobs.xhtml' % self.name)
+        skin_base = self.get_skin_base(context)
+        handler = self.get_handler('/ui/%s/view_jobs.xhtml' % skin_base)
         return stl(handler, namespace)
 
-register_object_class(UKTravel)
+
+    def get_skin_base(self, context):
+        """
+          Select the name of the skin
+          There are 3 solutions :
+            -> For country : uk , fr ...
+            -> For companies : -> company_name
+                               -> or by default : companies
+        """
+        return 'uk'
+        hostname = context.uri.authority.host
+        country = hostname[0:2]
+        if hostname[0:2] in ['fr', 'uk']:
+            return country
+        else:
+            if self.has_handler('/ui/%s/' % hostname):
+                return hostname
+            else:
+                return 'companies'
+
+
+register_object_class(ExpertTravel)

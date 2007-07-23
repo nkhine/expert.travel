@@ -12,8 +12,6 @@ from base import Handler
 
 
 class WebSite(Handler, BaseWebSite):
- 
-
 
     #######################################################################
     # User Interface
@@ -55,8 +53,15 @@ class WebSite(Handler, BaseWebSite):
 
         # Build the query
         query = {'format': 'address'}
+
+
         if level1 is not None:
             query['level1'] = level1
+            # Select the good country
+            authorized_countries = root.get_authorized_countries(context)
+            if len(authorized_countries)==1:
+                country_name, country_code = authorized_countries[0]
+                query['level0'] = country_code
         if level2 is not None:
             query['level2'] = level2
         if level3 is not None:
@@ -172,10 +177,6 @@ class WebSite(Handler, BaseWebSite):
     ##########################################################################
     ## Javascript
     ##########################################################################
-    get_countries_str__access__ = True
-    def get_countries_str(self, context): 
-        return context.root.get_countries_str(context)
-
     get_regions_str__access__ = True
     def get_regions_str(self, context):  
         return context.root.get_regions_str(context)

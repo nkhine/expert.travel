@@ -207,8 +207,8 @@ class User(iUser, Handler):
         # Company
         namespace['company'] = {'name': company.name,
                                 'title': company.get_property('dc:title'),
-                                'website': company.get_website()}
-
+                                'website': company.get_website(),
+                                'path': self.get_pathto(company)}
         # Address
         county = address.get_property('abakuc:county')
         addr = {'name': address.name,

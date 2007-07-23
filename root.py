@@ -24,15 +24,15 @@ from itools.catalog import  KeywordField, IntegerField
 
 # Import from abakuc our modules 
 from base import Handler
-from handlers import EnquiriesLog
 from utils import title_to_name
+from handlers import EnquiriesLog
 from users import UserFolder
 
 # Import from abakuc our products
 from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
-from uktravel import UKTravel
+from expert_travel import ExpertTravel
 
 
 class World(BaseCSV):
@@ -64,7 +64,7 @@ class Root(Handler, BaseRoot):
                          u' darkness bind them.')
 
     class_views = [['view']] + BaseRoot.class_views + [['import_data_form']]
-
+    site_format =''
     #######################################################################
     # Administrator Email
 
@@ -75,6 +75,7 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
+            KeywordField('level0', is_stored=True),
             KeywordField('level1', is_stored=True),
             KeywordField('level2', is_stored=True),
             KeywordField('level3', is_stored=True),
@@ -122,13 +123,13 @@ class Root(Handler, BaseRoot):
         cache['types.csv'] = types
         cache['types.csv.metadata'] = types.build_metadata()
 
-        # UK Travel List
-        title = u'UK Travel List'
-        uktravel = UKTravel()
+        # Expert Travel
+        title = u'Expert Travel Website'
+        expert_travel = ExpertTravel()
         kw = {'dc:title': {'en': title},
               'ikaaro:website_is_open': True}
-        cache['uktravel'] = uktravel
-        cache['uktravel.metadata'] = uktravel.build_metadata(**kw)
+        cache['expert'] = expert_travel
+        cache['expert.metadata'] = expert_travel.build_metadata(**kw)
 
         # Destinations Guide 
         title = u'Destinations Guide'
@@ -145,26 +146,35 @@ class Root(Handler, BaseRoot):
                                             **{'dc:title': {'en': u'Help me'}})
 
     #######################################################################
-    # XXX
+    # Select the skin
+    #######################################################################
+
     def get_skin(self):
         """Set the default skin"""
         context = get_context()
-        hostname = context.uri.authority.host
+        website_type = self.get_website_type(context)
+        if website_type==1 or website_type==2:
+            # For address as :
+            # -> http://itaapy.expert.travel/
+            # -> http://fr.expert.travel/itaapy
+            return self.get_handler('/ui/companies')
+        elif website_type==3:
+            # For address as :
+            # -> http://fr.expert.travel
+            # -> http://uk.expert.travel
+            country = self.get_website_country(context)
+            if country:
+                skin_path = 'ui/%s' % country
+                if not self.has_handler(skin_path):
+                    raise LookupError, "The Skin %s don't exist" % skin_path
+                return self.get_handler(skin_path)
+
         # XXX For testing purposes
-        handler = context.handler
-        root = handler.get_site_root()
-        if isinstance(root, Company):
-            if hostname in ['uktravel', 'destinations', '.uktravel',
-                            '.destinations']:
-                return self.get_handler('ui/companies')
-        if hostname == 'uktravel':
-            return self.get_handler('ui/uktravel')
-        elif hostname == 'destinations':
-            return self.get_handler('ui/destinations')
-        elif '.uktravel' in hostname:
-            return self.get_handler('ui/companies')
-        elif '.destinations' in hostname:
-            return self.get_handler('ui/countries')
+        #if hostname == 'destinations':
+        #    return self.get_handler('ui/destinations')
+        #elif '.destinations' in hostname:
+        #    return self.get_handler('ui/countries')
+
         # return the default skin
         return self.get_handler('ui/aruni')
 
@@ -241,8 +251,9 @@ class Root(Handler, BaseRoot):
                 user = None
 
             # Filter the UK Regions and Counties
-            results = world.search(iana_root_zone='gb', region=str(row[2]),
+            results = world.search(iana_root_zone='uk', region=str(row[2]),
                                county=str(row[3]))
+
             n_results = len(results)
             if n_results == 0:
                 county = None
@@ -304,29 +315,126 @@ class Root(Handler, BaseRoot):
         return message
 
 
+    #######################################################################
+    # API for Website identification
+    #######################################################################
+
+    def _get_site_root(self, context):
+        root = context.root
+        request = context.request
+        if request.has_header('X-Base-Path'):
+            path = request.get_header('X-Base-Path')
+            return root.get_handler(path)
+
+        return root
+
+
+    def get_active_countries(self, context):
+        """
+        Return a list with actives countries and it's code as:
+        [('United Kingdom', 'uk'), ('France', 'fr')]
+        """
+        rows = world.get_rows()
+        list_countries = set()
+        # List countries and its regions
+        for row in rows:
+            country = row.get_value('country')
+            iana_root_zone = row.get_value('iana_root_zone')
+            region = row.get_value('region')
+            if region and (region!=u'none'):
+                list_countries.add((country, iana_root_zone))
+        # Return the list of iana_root_zone
+        return list_countries
+
+
+    def list_country_codes(self):
+        return world.get_unique_values('iana_root_zone')
+
+
+    def get_country_name(self, country_code):
+        results = world.search(iana_root_zone=country_code)
+        if results:
+            row = world.get_row(results[0])
+            return row.get_value('country')
+        return None
+
+
+    def get_host_prefix(self, context):
+        hostname = context.uri.authority.host
+        tab = hostname.split('.')
+        if len(tab)>1:
+            return tab[0]
+        return None
+
+
+    def get_website_country(self, context):
+        host_prefix = self.get_host_prefix(context)
+        for active_country in self.get_active_countries(context):
+            country_name, country_code = active_country
+            if host_prefix==country_code:
+                return host_prefix
+        return None
+
+
+    def get_website_type(self, context):
+        """
+        An expert.travel has 3 configuration :
+        1/ Company view in a Country website
+            http://fr.expert.travel/companies/itaapy
+        2/ Company website
+            http://itaapy.expert.travel/
+        3/ Country website
+            http://fr.expert.travel/
+        """
+        handler = context.handler
+        root = handler.get_site_root()
+        if isinstance(root, Company):
+            site_root = self._get_site_root(context)
+            if isinstance(site_root, ExpertTravel):
+                # Rule for address as :
+                # -> http://fr.expert.travel/companies/itaapy
+                return 1
+            elif isinstance(site_root, Company):
+                # Rule for address as :
+                # -> http://itaapy.expert.travel/
+                return 2
+            else:
+                raise ValueError, 'Unknow website'
+        else:
+            # Rule for address as:
+            # -> http://fr.expert.travel/
+            return 3
+
+
+    def get_authorized_countries(self, context):
+        website_type = self.get_website_type(context)
+        if website_type==3:
+            country_code = self.get_host_prefix(context)
+            country_name = self.get_country_name(country_code)
+            return [(country_name, country_code)]
+        elif (website_type==1) or (website_type==2):
+            countries = self.get_active_countries(context)
+            return countries
+        else:
+            raise ValueError, 'Unknow website'
+
+
     ##########################################################################
     ## Javascript
     ##########################################################################
-    
-    get_countries_str__access__ = True
-    def get_countries_str(self, context):
-        response = context.response
-        response.set_header('Content-Type', 'text/plain')
-        selected_country = context.get_form_value('selected_country')
-        return self.get_countries_stl(selected_country)
 
-
-    def get_countries_stl(self, selected_country=None): 
-        # Get data
-        rows = world.get_rows()
+    def get_countries_stl(self, countries=[], selected_country=None):
+        # Get authorized countries
+        context = get_context()
+        root = context.root
         countries = []
-        for row in rows:
-            country = row[6]
-            if country not in countries:
-                countries.append(country)
-        countries = [{'name': x,
-                      'title': x,
-                      'selected': x==selected_country} for x in countries]
+        authorized_countries = root.get_authorized_countries(context)
+        for authorized_country in authorized_countries:
+            country_name, country_code = authorized_country
+            countries.append({'name': country_name,
+                              'title': country_name,
+                              'selected': country_name==selected_country})
+
         countries.sort(key=lambda x: x['title'])
         # Build stl
         namespace = {}
@@ -336,6 +444,7 @@ class Root(Handler, BaseRoot):
           xmlns:stl="http://xml.itools.org/namespaces/stl">
           <select id="countries" name="countries"
               onchange="javascript: get_regions('/;get_regions_str?country='+ this.value,'div_regions'); get_regions('/;get_counties_str?', 'div_county')">
+              <option value=""></option>
               <option stl:repeat="country countries" value="${country/name}"
                       selected="${country/selected}">
               ${country/title}
@@ -380,6 +489,7 @@ class Root(Handler, BaseRoot):
         <div id="div_regions">
           <select id="regions" name="regions"
               onchange="javascript: get_regions('/;get_counties_str?region='+ this.value, 'div_county')">
+              <option value=""></option>
               <option stl:repeat="region regions" value="${region/name}"
                       selected="${region/selected}">
               ${region/title}

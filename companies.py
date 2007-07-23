@@ -31,7 +31,6 @@ from jobs import Job
 from metadata import JobTitle, SalaryRange 
 
 
-
 class Companies(Folder):
 
     class_id = 'companies'
@@ -369,6 +368,7 @@ class Address(RoleAware, Folder):
         county_id = self.get_property('abakuc:county')
         if county_id:
             row = world.get_row(county_id)
+            indexes['level0'] = row.get_value('iana_root_zone')
             indexes['level2'] = row[7]
             indexes['level3'] = row[8] 
         indexes['level4'] = self.get_property('abakuc:town')
@@ -496,11 +496,30 @@ class Address(RoleAware, Folder):
 
     @staticmethod
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
-                 address_country=None, address_region=None, address_county=None,):
+                address_country=None, address_region=None, address_county=None):
         namespace = {}
         context = get_context()
         root = context.root
-        countries = root.get_countries_stl(selected_country=address_country) 
+        # List authorized countries
+        list_countries = []
+        authorized_countries = root.get_authorized_countries(context)
+        for authorized_country in authorized_countries:
+            country_name, country_code = authorized_country
+            list_countries.append({'name': country_name,
+                                   'title': country_name,
+                                   'selected': country_name==address_country})
+        list_countries.sort(key=lambda x: x['title'])
+        nb_countries = len(authorized_countries)
+        if nb_countries>1:
+            # Show a list with all authorized countries
+            countries = root.get_countries_stl(countries=list_countries,
+                                              selected_country=address_country)
+        elif nb_countries==1:
+            # Only one country, don't show a list
+            address_country, country_code = authorized_countries[0]
+            countries = address_country
+        else:
+            raise ValueError, 'Number of countries is invalid'
         regions = root.get_regions_stl(country=address_country,
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,
