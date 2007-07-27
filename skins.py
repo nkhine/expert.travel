@@ -118,14 +118,12 @@ class FOCompanies(FrontOffice):
             company_skin = '/ui/companies/%s/template.xhtml' % company
             if self.has_handler(company_skin):
                 # The company has a personalized skin
-                template_prefix = 'companies/%s' % company
-            else:
-                # Set the default company skin
-                template_prefix = 'companies/'
-        else:
-            raise ValueError, 'Invalid value'
+                return 'companies/%s' % company
 
-        return template_prefix
+            # Set the default company skin
+            return 'companies/'
+
+        raise ValueError, 'Invalid value'
 
 
     def get_template(self):

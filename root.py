@@ -181,9 +181,9 @@ class Root(Handler, BaseRoot):
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         # XXX While testing, uncomment the right line
-        #to_addr = 'jdavid@itaapy.com'
+        to_addr = 'jdavid@itaapy.com'
         #to_addr = 'norman@khine.net'
-        to_addr = 'sylvain@itaapy.com'
+        #to_addr = 'sylvain@itaapy.com'
         BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
 
 
@@ -398,12 +398,12 @@ class Root(Handler, BaseRoot):
                 # Rule for address as :
                 # -> http://itaapy.expert.travel/
                 return 2
-            else:
-                raise ValueError, 'Unknow website'
-        else:
-            # Rule for address as:
-            # -> http://fr.expert.travel/
-            return 3
+
+            return None
+
+        # Rule for address as:
+        # -> http://fr.expert.travel/
+        return 3
 
 
     def get_authorized_countries(self, context):
@@ -415,8 +415,8 @@ class Root(Handler, BaseRoot):
         elif (website_type==1) or (website_type==2):
             countries = self.get_active_countries(context)
             return countries
-        else:
-            raise ValueError, 'Unknow website'
+
+        raise ValueError, 'Unknow website'
 
 
     ##########################################################################
