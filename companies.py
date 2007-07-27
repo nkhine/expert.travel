@@ -887,13 +887,13 @@ class Address(RoleAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-
     def is_reviewer_or_member(self, user, object):
         if not user:
             return False
         # Is global admin
         root = object.get_root()
-        root.is_admin(user, self)
+        if root.is_admin(user, self):
+            return True
         # Is reviewer or member
         return (self.has_user_role(user.name, 'ikaaro:reviewers') or
                 self.has_user_role(user.name, 'ikaaro:members'))
@@ -908,7 +908,8 @@ class Address(RoleAware, Folder):
             return False
         # Is global admin
         root = object.get_root()
-        root.is_admin(user, self)
+        if root.is_admin(user, self):
+            return True
         # Is reviewer or member
         return self.has_user_role(user.name, 'ikaaro:reviewers') 
 

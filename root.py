@@ -412,11 +412,8 @@ class Root(Handler, BaseRoot):
             country_code = self.get_host_prefix(context)
             country_name = self.get_country_name(country_code)
             return [(country_name, country_code)]
-        elif (website_type==1) or (website_type==2):
-            countries = self.get_active_countries(context)
-            return countries
 
-        raise ValueError, 'Unknow website'
+        return self.get_active_countries(context)
 
 
     ##########################################################################

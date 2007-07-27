@@ -285,10 +285,10 @@ class Job(RoleAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    
     def is_reviewer_or_member(self, user, object):
         address = self.parent
         return address.is_reviewer_or_member(user, object)
+
 
 
 class Candidature(RoleAware, Folder):
@@ -624,16 +624,13 @@ class Candidature(RoleAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-
     def is_reviewer_or_member(self, user, object):
-        job = self.parent
-        address = job.parent
+        address = self.parent.parent
         return address.is_reviewer_or_member(user, object)
 
 
     def is_allowed_to_remove(self, user, object):
-        job = self.parent
-        address = job.parent
+        address = self.parent.parent
         return address.is_reviewer(user, object)
 
 
