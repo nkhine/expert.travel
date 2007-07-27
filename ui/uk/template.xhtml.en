@@ -17,45 +17,48 @@
 
   </head>
   <body>
-  <div id="height">
-<div id="header">
-<div class="width">
-<h1 class="title" title="Abakuc Expert.Travel"><a href="/" title="Abakuc Expert.Travel">
-Abakuc Expert.Travel</a></h1>
 
-<div id="navbar"><ul>
-<li><a href="/">Home</a></li>
-<li><a href="/">News</a></li>
-<li><a href="/">Jobs</a></li>
-<li><a href="/">FAQ</a></li>
-<li><a href="/">More&nbsp;»</a></li>
-</ul>
-</div>
-                                      <form action="/;search" method="get">
-                                        <div id="search">
-                                            <input name="search_text"
-                                            type="text" class="searchinput" 
-                                              value="" size="15"
-                                              onFocus="if(this.value=='Search this site') this.value='';" />
-                                            <input type="submit" value="Search"/>
-                                        </div>
-                                      </form>
-<div id="bar"><ul>
-                                        <stl:block if="not user/info">
-                                            <li><a href="/;login_form">Log in</a></li>
-                                            <li><a href="/;register_form"
-                                              stl:if="user/joinisopen">Register</a></li>
-                                        </stl:block>
-                                        <stl:block if="user/info">
-                                            <li><a href="${user/info/home}">My Profile</a></li>
-                                            <li><a href="/;logout">Log out</a></li>
-                                        </stl:block>
-                                    <li><a href="/;contact_form">Help</a></li>
-                                    <li><a href="/;contact_form">Contact</a></li>
-</ul>
-</div>
-</div><!-- /header -->
-</div><!--/width-->
+<div id="height">
+  <div id="header">
+    <div class="width">
+      <h1 class="title" title="Abakuc Expert.Travel">
+        <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
+      </h1>
+      <div id="navbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/">News</a></li>
+          <li><a href="/">Jobs</a></li>
+          <li><a href="/">FAQ</a></li>
+          <li><a href="/">More&nbsp;»</a></li>
+        </ul>
+      </div>
+      <form action="/;search" method="get">
+        <div id="search">
+          <input name="search_text" type="text" class="searchinput" 
+              value="" size="15"
+              onFocus="if(this.value=='Search this site') this.value='';" />
+          <input type="submit" value="Search"/>
+        </div>
+      </form>
+      <div id="bar">
+        <ul>
+          <stl:block if="not user/info">
+            <li><a href="/;login_form">Log in</a></li>
+            <li>
+              <a href="/;register_form" stl:if="user/joinisopen">Register</a>
+            </li>
+          </stl:block>
+          <stl:block if="user/info">
+            <li><a href="${user/info/home}">My Profile</a></li>
+            <li><a href="/;logout">Log out</a></li>
+          </stl:block>
+          <li><a href="/;contact_form">Help</a></li>
+          <li><a href="/;contact_form">Contact</a></li>
+        </ul>
+      </div>
+    </div><!-- /header -->
+  </div><!--/width-->
 
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>
@@ -102,11 +105,12 @@ Abakuc Expert.Travel</a></h1>
         </td>
       </tr>
     </table>
-</div><!--/height-->
-    <div id="footer">
-      <a href="/;about">About</a>
-      <a href="/;credits">Credits</a>
-      <a href="/;license">License</a>
-    </div>
+  </div><!--/height-->
+  <div id="footer">
+    <a href="/;about">About</a>
+    <a href="/;credits">Credits</a>
+    <a href="/;license">License</a>
+  </div>
+
   </body>
 </html>

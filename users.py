@@ -386,7 +386,7 @@ class User(iUser, Handler):
             if size is not None:
                 width, height = size
                 if width > 200 or height > 200:
-                    msg = u'Your logo is to big (max 200x200 px)'
+                    msg = u'Your logo is too big (max 200x200 px)'
                     return context.come_back(msg)
 
         # Add the company  

@@ -13,6 +13,7 @@ from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.stl import stl
 from itools.web import get_context
 from itools.xml import get_element
+from itools.xhtml import Document as XHTMLDocument
 from itools.cms.website import WebSite
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
@@ -29,6 +30,17 @@ from handlers import EnquiriesLog, EnquiryType
 from website import WebSite
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
+
+
+
+country_select_template = XHTMLDocument(string="""
+<select xmlns="http://www.w3.org/1999/xhtml" xmlns:stl="http://xml.itools.org/namespaces/stl" id="countries" name="countries" onchange="javascript: get_regions('/;get_regions_str?country='+ this.value,'div_regions'); get_regions('/;get_counties_str?', 'div_county')">
+  <option value=""></option>
+  <option stl:repeat="country countries" value="${country/name}"
+    selected="${country/selected}">${country/title}</option>
+</select>
+""")
+
 
 
 class Companies(Folder):
@@ -59,7 +71,7 @@ class Company(WebSite):
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
-    site_format = 'Address'
+    site_format = 'address'
     
     class_views = [['view'], 
                    ['browse_content?mode=list',
@@ -287,7 +299,7 @@ class Company(WebSite):
             if size is not None:
                 width, height = size
                 if width > 200 or height > 200:
-                    msg = u'Your logo is to big (max 200x200 px)'
+                    msg = u'Your logo is too big (max 200x200 px)'
                     return context.come_back(msg)
             
             # Add or edit the logo
@@ -346,6 +358,7 @@ class Address(RoleAware, Folder):
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
+
 
     def get_document_types(self):
         return [Job]
@@ -493,31 +506,26 @@ class Address(RoleAware, Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-
     @staticmethod
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
-                address_country=None, address_region=None, address_county=None):
+                 address_country=None, address_region=None,
+                 address_county=None):
         namespace = {}
         context = get_context()
         root = context.root
         # List authorized countries
-        list_countries = []
-        authorized_countries = root.get_authorized_countries(context)
-        for authorized_country in authorized_countries:
-            country_name, country_code = authorized_country
-            list_countries.append({'name': country_name,
-                                   'title': country_name,
-                                   'selected': country_name==address_country})
-        list_countries.sort(key=lambda x: x['title'])
-        nb_countries = len(authorized_countries)
-        if nb_countries>1:
+        list_countries = [
+            {'name': x, 'title': x, 'selected': x == address_country}
+            for x, y in root.get_authorized_countries(context) ]
+        nb_countries = len(list_countries)
+        if nb_countries > 1:
             # Show a list with all authorized countries
-            countries = root.get_countries_stl(countries=list_countries,
-                                              selected_country=address_country)
+            list_countries.sort(key=lambda x: x['title'])
+            namespace = {'countries': list_countries}
+            countries = stl(country_select_template, namespace) 
         elif nb_countries==1:
             # Only one country, don't show a list
-            address_country, country_code = authorized_countries[0]
-            countries = address_country
+            countries = list_countries[0]['title']
         else:
             raise ValueError, 'Number of countries is invalid'
         regions = root.get_regions_stl(country=address_country,

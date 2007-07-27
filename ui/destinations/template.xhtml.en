@@ -17,79 +17,100 @@
 
   </head>
   <body>
-  <table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td rowspan="3" id="top">
-      <a href="/">
-      <img width="400" height="56" border="0" alt="Go to
-      Expert.Travel Home" src="/ui/uktravel/images/logo.png" />
-      </a>
-    </td>
-    <td id="menu">
-                            <a href="/">Home</a>
-                            <a href="/">News</a>
-                            <a href="/;view_jobs">Jobs</a>
-                            <a href="/">FAQ</a>
-                            <a href="/">More&nbsp;»</a>
-                            </td>
-  </tr>
-  <tr>
-    <td id="search">
-                                        <form action="/;search" method="get">
-                                            <input class="searchinput" name="search_text" type="text" 
-                                            value="Abakuc Limited" size="25" onFocus="this.value=''" />
-                                            <input class="button_search" type="submit" value="Search"/>
-                                        </form>
-  </td>
-  </tr>
-  <tr>
 
-    <td id="profile">
-                                        <stl:block if="not user/info">
-                                            <a href="/;login_form">Log in</a>
-                                            <a href="/;register_form"
-                                              stl:if="user/joinisopen">Register</a>
-                                        </stl:block>
-                                        <stl:block if="user/info">
-                                            <a href="${user/info/home}">My Profile</a>
-                                            <a href="/;logout">Log out</a>
-                                        </stl:block>
-                                    <a href="/;contact_form">Help</a>
-                                    <a href="/;contact_form">Contact</a>
-  </td>
-  </tr>
-</table>
+<div id="height">
+  <div id="header">
+    <div class="width">
+      <h1 class="title" title="Abakuc Expert.Travel">
+        <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
+      </h1>
+      <div id="navbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/">News</a></li>
+          <li><a href="/">Jobs</a></li>
+          <li><a href="/">FAQ</a></li>
+          <li><a href="/">More&nbsp;»</a></li>
+        </ul>
+      </div>
+      <form action="/;search" method="get">
+        <div id="search">
+          <input name="search_text" type="text" class="searchinput" 
+              value="" size="15"
+              onFocus="if(this.value=='Search this site') this.value='';" />
+          <input type="submit" value="Search"/>
+        </div>
+      </form>
+      <div id="bar">
+        <ul>
+          <stl:block if="not user/info">
+            <li><a href="/;login_form">Log in</a></li>
+            <li>
+              <a href="/;register_form" stl:if="user/joinisopen">Register</a>
+            </li>
+          </stl:block>
+          <stl:block if="user/info">
+            <li><a href="${user/info/home}">My Profile</a></li>
+            <li><a href="/;logout">Log out</a></li>
+          </stl:block>
+          <li><a href="/;contact_form">Help</a></li>
+          <li><a href="/;contact_form">Contact</a></li>
+        </ul>
+      </div>
+    </div><!-- /header -->
+  </div><!--/width-->
+
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>
-        <td id="left" class="column" valign="top" stl:repeat="option level1">
-            <a href="/;search?level1=${option/name}">${option/title}</a>
-        </td>
-        <td id="center" class="column" valign="top">
+        <td id="left" class="column" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <!-- Left Menu -->
+            <tr>
+              <td>
+              <div class="navigation" stl:repeat="menu left_menus">
+                <label>${menu/title}</label>
+                ${menu/content}
+              </div>
+              </td>
+            </tr>
+
+            <tr stl:repeat="option level1">
+              <td>
+                <a href="/;search?level1=${option/name}">${option/title}</a>
+              </td>
+            </tr>
+          </table>
+        </td> 
+        <td id="center" class="column">
           <div id="maintitle">
-            <label>Location:</label>
-            <div id="logged">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="message" stl:if="message">${message}</td>
+            <td id="logged">
             <stl:block if="not user/info">
               (not logged in)
             </stl:block>
             <stl:block if="user/info">
-              (logged in as ${user/info/title})
+              (logged in as <a href="${user/info/home}">${user/info/title}</a>)
             </stl:block>
-            </div>
+            </td>
+            </tr>
+            </table>
             <div class="clear"></div>
           </div>
           <!-- The Body -->
           <div id="body">
-            <div id="message" stl:if="message">${message}</div>
             <div id="content">${body}</div>
           </div>
         </td>
       </tr>
     </table>
+  </div><!--/height-->
+  <div id="footer">
+    <a href="/;about">About</a>
+    <a href="/;credits">Credits</a>
+    <a href="/;license">License</a>
+  </div>
 
-    <div id="footer">
-      <a href="/;about">About</a>
-      <a href="/;credits">Credits</a>
-      <a href="/;license">License</a>
-    </div>
   </body>
 </html>

@@ -4,5 +4,18 @@
 
 def title_to_name(title):
     title = title.encode('ascii', 'replace')
-    name = title.lower().replace('/', '-').replace('?', '-').replace('.', '').replace(',', '').replace('&', '').replace('(', '').replace(')', '')
+    title = title.lower()
+    name = title.replace('/', '-').replace('?', '-')
+    for c in '.,&()':
+        name = name.replace(c, '')
     return '-'.join(name.split())
+
+
+
+def get_host_prefix(context):
+    hostname = context.uri.authority.host
+    tab = hostname.split('.', 1)
+    if len(tab)>1:
+        return tab[0]
+    return None
+

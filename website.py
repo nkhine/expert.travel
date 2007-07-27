@@ -52,16 +52,13 @@ class WebSite(Handler, BaseWebSite):
             level4 = unicode(level4, 'utf-8')
 
         # Build the query
-        query = {'format': 'address'}
-
+        query = {'format': self.site_format}
 
         if level1 is not None:
             query['level1'] = level1
             # Select the good country
-            authorized_countries = root.get_authorized_countries(context)
-            if len(authorized_countries)==1:
-                country_name, country_code = authorized_countries[0]
-                query['level0'] = country_code
+            level0 = [ x[1] for x in root.get_authorized_countries(context) ]
+            query['level0'] = level0
         if level2 is not None:
             query['level2'] = level2
         if level3 is not None:

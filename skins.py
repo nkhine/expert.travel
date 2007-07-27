@@ -7,6 +7,8 @@ from itools.web import get_context
 
 # Import from abakuc
 from expert_travel import ExpertTravel
+from utils import get_host_prefix
+
 
 class FrontOffice(Skin):
 
@@ -29,12 +31,6 @@ class FrontOffice(Skin):
 
     def get_left_menus(self, context):
         return []
-
-
-    def get_styles(self, context):
-        styles = Skin.get_styles(self, context)
-        styles.append('/ui/%s/style.css' % self.name)
-        return styles
 
 
     def get_breadcrumb(self, context):
@@ -67,14 +63,38 @@ class FrontOffice(Skin):
         namespace = Skin.build_namespace(self, context)
 
         # Level0 correspond to the country (uk, fr) ...
-        level0 = None
-        authorized_countries = root.get_authorized_countries(context)
-        if len(authorized_countries)==1:
-            country_name, country_code = authorized_countries[0]
-            level0 = country_code
+        level0 = [ x[1] for x in root.get_authorized_countries(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
-        results = context.root.search(level0=level0,format=site_root.site_format)
+        results = root.search(level0=level0, format=site_root.site_format)
+        # Flat
+        level1 = []
+        for x in results.get_documents():
+            x = x.level1
+            if isinstance(x, list):
+                level1.extend(x)
+            else:
+                level1.append(x)
+        # Unique
+        level1 = set(level1)
+        level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
+                   for x in level1 ]
+        level1.sort(key=lambda x: x['title'])
+        namespace['level1'] = level1
+
+        return namespace
+
+
+
+class DestinationsSkin(FrontOffice):
+    
+    def build_namespace(self, context):
+        root = context.root
+        namespace = Skin.build_namespace(self, context)
+
+        # Navigation (level 1)
+        site_root = context.handler.get_site_root()
+        results = root.search(format=site_root.site_format)
         # Flat
         level1 = []
         for x in results.get_documents():
@@ -95,10 +115,7 @@ class FrontOffice(Skin):
 
 
 class FOCompanies(FrontOffice):
-
-    """
-      Skin for companies
-    """
+    """Skin for companies"""
 
     def get_template_prefix(self):
         """
@@ -110,11 +127,11 @@ class FOCompanies(FrontOffice):
         if website_type==1:
             # We are on a country website as
             # uk.expert.travel/companies/itaapy
-            return root.get_host_prefix(context)
+            return get_host_prefix(context)
         elif website_type==2:
             # We are on a company website as
             # itaapy.expert.travel
-            company = root.get_host_prefix(context)
+            company = get_host_prefix(context)
             company_skin = '/ui/companies/%s/template.xhtml' % company
             if self.has_handler(company_skin):
                 # The company has a personalized skin

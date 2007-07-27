@@ -1,60 +1,112 @@
-#top {
-  background: #6899FF url(images/menu_bkg.gif) left bottom no-repeat;;
-  border-collapse: collapse;
+/*Copyright 2007 Abakuc Limited */
+
+*{margin:0;padding:0}
+
+/* body{font-size:76%;line-height:1.5;font-family:Verdana, Arial, Helvetica,
+ * sans-serif;color:#666;}*/
+
+#height{position:relative;min-height:100%;}
+
+body,html{height:100%;}
+
+* html #height{height:100%;}
+
+.width{position:relative;min-width: 770px;max-width: 960px;width:auto !important;width:960px;}
+
+
+/**************************************************************************
+ * Header 
+ **************************************************************************/
+#header{width:100%;position:relative;z-index:10;background:#6899FF;
+  margin-bottom: 0px;
+  padding: 0px;
+}
+#header h1{background:url(images/logo.png) top left
+no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bottom:
+0em;
+
+  padding: 0px;
+  color: none;
+  font-size: 1.1em;
   text-align: left;
 }
-#menu {
-  background: #000 url(images/upper-nav-crn.gif) left bottom no-repeat;
-  border-collapse: collapse;
-  width: 310px;
-  height: 14px;
-  text-align: right;
-}
 
-#menu a {
-  color: white;
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0px 5px 0px 5px;
-  text-decoration: none;
-}
+#header h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
 
-#menu a:hover {
-  text-decoration: none;
-}
+#header h1 a:hover {background:none;border:none;text-decoration: none;}
+
+#header .search {position:absolute;top:18px;right:10px;}
+
+/**************************************************************************
+ * Navigation Bar 
+ **************************************************************************/
+#navbar{position:absolute;top:0;right:5px;text-align:right;margin:0;}
+#navbar ul{float:right;list-style:none;margin:0;padding:0;}
+#navbar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;color:white;}
+#navbar a{font-size: 1.1em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
+#navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
+
+/**************************************************************************
+ * Bar 
+ **************************************************************************/
+#bar{position:absolute;bottom:0;right:5px;text-align:right;margin:0;}
+#bar ul{float:right;list-style:none;margin:0;padding:0;}
+#bar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;}
+#bar a{font-size: 1.0em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#F9E9A9 url(images/off_bg.gif) repeat-x top left;margin:0 1px 0 0;padding:1px 8px;}
+#bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
 
 /**************************************************************************
  * Search 
  **************************************************************************/
-#search {
-  background: #6899FF;
+#search {position:absolute;bottom:17px;right:5px;text-align:right;margin:0;}
+
+.searchinput {
+    font:normal 11px Tahoma, Arial;
+    color:#000;
+    margin:0px 8px 0px 0px;
+    background:#fff url(images/mag_glass.gif) no-repeat;
+    padding:2px 2px 2px 17px
+}
+/**************************************************************************
+ * Left menu style 
+ **************************************************************************/
+#left table {
   border-collapse: collapse;
-  height: 23px;
-  text-align: right;
+  font-weight: bold;
+}
+
+#left label {
+  display: block;
+  margin: 0.3em;
+  padding: 0.3em 0.6em;
+  color: #fff;
+  background: #6899FF;
 }
 
 /**************************************************************************
- * Profile menu 
+ * Main title style 
  **************************************************************************/
-#profile {
-  background: #05ba05 url(images/lower-nav-crn.gif) left bottom no-repeat;
+#maintitle {
   border-collapse: collapse;
-  height: 10px;
+  height: 1.5em;
+}
+#maintitle a {
+  text-decoration: none;
+}
+/**************************************************************************
+ * Center style 
+ **************************************************************************/
+#center {
+  vertical-align: top; 
+}
+/**************************************************************************
+ * Right menu style 
+ **************************************************************************/
+#right {
+  width: 160px;
+  vertical-align: top; 
   text-align: right;
 }
-
-#profile a {
-  color: white;
-  font-size: 1.2em;
-  font-weight: bold;
-  padding: 0px 5px 0px 5px;
-  text-decoration: none;
-}
-
-#profile a:hover {
-  text-decoration: none;
-}
-
 /**************************************************************************
  * Categories style 
  **************************************************************************/
@@ -96,7 +148,9 @@
  * 
  * ***********************************************************************/
 #logged {
-  margin: -0.9em 0 0.3em 24px;
+  margin: 0.3em;
+  padding: 0.5em 0.3em 0.5em 24px;
+  width: 180px;
   text-align: right;
 }
 
@@ -120,10 +174,4 @@
   text-decoration: underline;
 }
 
-.searchinput {
-    font:normal 11px Tahoma, Arial;
-    color:#000;
-    margin:0px 8px 0px 0px;
-    background:#fff url(images/mag_glass.gif) no-repeat;
-    padding:2px 2px 2px 17px
-}
+

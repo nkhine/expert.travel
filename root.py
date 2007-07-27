@@ -24,15 +24,13 @@ from itools.catalog import  KeywordField, IntegerField
 
 # Import from abakuc our modules 
 from base import Handler
-from utils import title_to_name
 from handlers import EnquiriesLog
 from users import UserFolder
-
-# Import from abakuc our products
 from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
 from expert_travel import ExpertTravel
+from utils import title_to_name, get_host_prefix
 
 
 class World(BaseCSV):
@@ -148,7 +146,6 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # Select the skin
     #######################################################################
-
     def get_skin(self):
         """Set the default skin"""
         context = get_context()
@@ -169,11 +166,16 @@ class Root(Handler, BaseRoot):
                     raise LookupError, "The Skin %s don't exist" % skin_path
                 return self.get_handler(skin_path)
 
-        # XXX For testing purposes
-        #if hostname == 'destinations':
-        #    return self.get_handler('ui/destinations')
-        #elif '.destinations' in hostname:
-        #    return self.get_handler('ui/countries')
+        # Destinations
+        hostname = context.uri.authority.host
+        if hostname == 'destinations':
+            return self.get_handler('ui/destinations')
+        elif '.destinations' in hostname:
+            code = hostname.split('.', 1)[0]
+            countries = self.get_handler('ui/countries')
+            if countries.has_handler(code):
+                return countries.get_handler(code)
+            return countries
 
         # return the default skin
         return self.get_handler('ui/aruni')
@@ -359,16 +361,8 @@ class Root(Handler, BaseRoot):
         return None
 
 
-    def get_host_prefix(self, context):
-        hostname = context.uri.authority.host
-        tab = hostname.split('.')
-        if len(tab)>1:
-            return tab[0]
-        return None
-
-
     def get_website_country(self, context):
-        host_prefix = self.get_host_prefix(context)
+        host_prefix = get_host_prefix(context)
         for active_country in self.get_active_countries(context):
             country_name, country_code = active_country
             if host_prefix==country_code:
@@ -409,7 +403,7 @@ class Root(Handler, BaseRoot):
     def get_authorized_countries(self, context):
         website_type = self.get_website_type(context)
         if website_type==3:
-            country_code = self.get_host_prefix(context)
+            country_code = get_host_prefix(context)
             country_name = self.get_country_name(country_code)
             return [(country_name, country_code)]
 
@@ -417,42 +411,8 @@ class Root(Handler, BaseRoot):
 
 
     ##########################################################################
-    ## Javascript
+    # Javascript
     ##########################################################################
-
-    def get_countries_stl(self, countries=[], selected_country=None):
-        # Get authorized countries
-        context = get_context()
-        root = context.root
-        countries = []
-        authorized_countries = root.get_authorized_countries(context)
-        for authorized_country in authorized_countries:
-            country_name, country_code = authorized_country
-            countries.append({'name': country_name,
-                              'title': country_name,
-                              'selected': country_name==selected_country})
-
-        countries.sort(key=lambda x: x['title'])
-        # Build stl
-        namespace = {}
-        namespace['countries'] = countries
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-          <select id="countries" name="countries"
-              onchange="javascript: get_regions('/;get_regions_str?country='+ this.value,'div_regions'); get_regions('/;get_counties_str?', 'div_county')">
-              <option value=""></option>
-              <option stl:repeat="country countries" value="${country/name}"
-                      selected="${country/selected}">
-              ${country/title}
-              </option>
-          </select>
-        </stl:block>         
-                  """
-        template = XHTMLDocument(string=template)
-        return stl(template, namespace) 
-
-
     get_regions_str__access__ = True
     def get_regions_str(self, context):
         response = context.response
