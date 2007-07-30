@@ -510,7 +510,6 @@ class Address(RoleAware, Folder):
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
                  address_country=None, address_region=None,
                  address_county=None):
-        namespace = {}
         context = get_context()
         root = context.root
         # List authorized countries
@@ -532,6 +531,7 @@ class Address(RoleAware, Folder):
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
+        namespace = {}
         namespace['address'] = address
         namespace['postcode'] = postcode
         namespace['town'] = town 
