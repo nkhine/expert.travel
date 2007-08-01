@@ -22,7 +22,9 @@ class WebSite(Handler, BaseWebSite):
 
     view__access__ = True
     def view(self, context):
-        handler = self.get_handler('/ui/%s/home.xhtml' % self.name)
+        root = context.root
+
+        handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler)
 
 

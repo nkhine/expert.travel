@@ -161,7 +161,7 @@ class Countries(Handler, ikaaroFolder):
     def new(self, **kw):
         ikaaroFolder.new(self, **kw)
         cache = self.cache
-        path = get_abspath(globals(), 'data/csv/country.csv')
+        path = get_abspath(globals(), 'data/country.csv')
         handler = get_handler(path)
         for row in handler.get_rows():
             id, continent_name, region_id, region, country_id, name = row

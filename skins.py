@@ -5,29 +5,9 @@
 from itools.cms.skins import Skin
 from itools.web import get_context
 
-# Import from abakuc
-from expert_travel import ExpertTravel
-from utils import get_host_prefix
 
 
 class FrontOffice(Skin):
-
-    def get_template(self):
-        context = get_context()
-        root = context.root
-        # Set a default template
-        template = '/ui/uk/template.xhtml'
-
-        # Select the template (considering counties)
-        country = root.get_website_country(context)
-        if country:
-            template = '/ui/%s/template.xhtml' % self.name
-            # If template not exist, raise
-            if not self.has_handler(template):
-                raise LookupError, "The Template %s don't exist" % template
-
-        return self.get_handler(template)
-
 
     def get_left_menus(self, context):
         return []
@@ -117,42 +97,12 @@ class DestinationsSkin(FrontOffice):
 class FOCompanies(FrontOffice):
     """Skin for companies"""
 
-    def get_template_prefix(self):
-        """
-        Return the prefix of the template to use
-        """
-        context = get_context()
-        root = context.root
-        website_type = root.get_website_type(context)
-        if website_type==1:
-            # We are on a country website as
-            # uk.expert.travel/companies/itaapy
-            return get_host_prefix(context)
-        elif website_type==2:
-            # We are on a company website as
-            # itaapy.expert.travel
-            company = get_host_prefix(context)
-            company_skin = '/ui/companies/%s/template.xhtml' % company
-            if self.has_handler(company_skin):
-                # The company has a personalized skin
-                return 'companies/%s' % company
-
-            # Set the default company skin
-            return 'companies/'
-
-        raise ValueError, 'Invalid value'
-
-
     def get_template(self):
-        template_prefix = self.get_template_prefix()
-        return self.get_handler('/ui/%s/template.xhtml' % template_prefix)
-
-
-    def get_styles(self, context):
-        styles = Skin.get_styles(self, context)
-        template_prefix = self.get_template_prefix()
-        styles.append('/ui/%s/style.css' % template_prefix)
-        return styles
+        try:
+            return self.get_handler('template.xhtml')
+        except LookupError:
+            # Default
+            return self.get_handler('../.expert.travel/template.xhtml')
 
 
     def get_left_menus(self, context):
@@ -186,4 +136,17 @@ class FOCompanies(FrontOffice):
                 'icon': '/ui/images/UserFolder16.png'})
 
         return options
+
+
+websites = {
+    # Main Sites
+    'fr.expert.travel': FrontOffice,
+    'uk.expert.travel': FrontOffice,
+    'destinationsguide.info': DestinationsSkin,
+    # Companies
+    'abakuc.expert.travel': FOCompanies,
+    '.expert.travel': FOCompanies,
+    # Countries
+    '.destinationsguide.info': FrontOffice,
+}
 

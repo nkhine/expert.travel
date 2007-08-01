@@ -98,7 +98,7 @@ Abakuc Expert.Travel</a></h1>
           <!-- The Body -->
           <div id="body">
             <div id="content">
-            The itaapy Website
+            The abakuc Website
             ${body}
             </div>
           </div>

@@ -12,10 +12,3 @@ def title_to_name(title):
 
 
 
-def get_host_prefix(context):
-    hostname = context.uri.authority.host
-    tab = hostname.split('.', 1)
-    if len(tab)>1:
-        return tab[0]
-    return None
-

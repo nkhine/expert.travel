@@ -152,7 +152,7 @@ class User(iUser, Handler):
         else:
             namespace['must_confirm'] = True
 
-        handler = self.get_handler('/ui/abakuc/user/edit_account.xml')
+        handler = self.get_handler('/ui/abakuc/user_edit_account.xml')
         return stl(handler, namespace)
 
 

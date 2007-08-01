@@ -134,7 +134,7 @@ class Company(WebSite):
         namespace['addresses'] = addresses
         namespace['jobs'] = self.view_jobs(context)
 
-        handler = self.get_handler('/ui/companies/company_view.xml')
+        handler = self.get_handler('/ui/abakuc/company_view.xml')
         return stl(handler, namespace)
 
 
@@ -148,9 +148,8 @@ class Company(WebSite):
             url = '%s/;view' %  address.name
             namespace['addresses'].append({'url': url,
                                            'title': address.title_or_name})
-        handler = self.get_handler('/ui/companies/view_branches.xml')
+        handler = self.get_handler('/ui/abakuc/company_view_branches.xml')
         return stl(handler, namespace)
-
 
 
     view_jobs__label__ = u'Our Jobs'
@@ -226,8 +225,9 @@ class Company(WebSite):
         namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        handler = self.get_handler('/ui/companies/company_view_jobs.xml')
+        handler = self.get_handler('/ui/abakuc/company_view_jobs.xml')
         return stl(handler, namespace)
+
 
     #######################################################################
     # User Interface / Edit
@@ -243,7 +243,7 @@ class Company(WebSite):
         namespace['types'] = root.get_types_namespace(types)
         namespace['logo'] = logo
 
-        handler = root.get_handler('ui/companies/company_form.xml')
+        handler = root.get_handler('ui/abakuc/company_form.xml')
         return stl(handler, namespace)
 
 
@@ -261,7 +261,7 @@ class Company(WebSite):
         logo = self.has_handler('logo')
         namespace['form'] = self.get_form(title, website, topics, types, logo)
 
-        handler = self.get_handler('/ui/companies/company_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/company_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -499,7 +499,7 @@ class Address(RoleAware, Folder):
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
 
-        handler = self.get_handler('/ui/companies/address_view.xml')
+        handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)
 
 
@@ -540,7 +540,7 @@ class Address(RoleAware, Folder):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
-        handler = root.get_handler('ui/companies/address_form.xml.en')
+        handler = root.get_handler('ui/abakuc/address_form.xml')
         return stl(handler, namespace)
 
 
@@ -566,7 +566,7 @@ class Address(RoleAware, Folder):
                                           address_country, address_region,
                                           address_county)
 
-        handler = self.get_handler('/ui/companies/address_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/address_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -627,7 +627,7 @@ class Address(RoleAware, Folder):
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
 
-        handler = self.get_handler('/ui/companies/enquiry_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -743,7 +743,7 @@ class Address(RoleAware, Folder):
         namespace['user_id'] = user_id
         namespace['key'] = must_confirm
 
-        handler = self.get_handler('/ui/companies/address_enquiry_confirm.xml')
+        handler = self.get_handler('/ui/abakuc/address_enquiry_confirm.xml')
         return stl(handler, namespace)
 
 
@@ -863,7 +863,7 @@ class Address(RoleAware, Folder):
             enquiries.reverse()
         namespace['enquiries'] = enquiries
 
-        handler = self.get_handler('/ui/companies/address_view_enquiries.xml')
+        handler = self.get_handler('/ui/abakuc/address_view_enquiries.xml')
         return stl(handler, namespace)
 
     
@@ -887,7 +887,7 @@ class Address(RoleAware, Folder):
         namespace['email'] = user.get_property('ikaaro:email')
         namespace['phone'] = phone
 
-        handler = root.get_handler('ui/companies/address_view_enquiry.xml')
+        handler = root.get_handler('ui/abakuc/address_view_enquiry.xml')
         return stl(handler, namespace)
 
     

@@ -55,7 +55,7 @@ There are three issues in the existing system as far as I can see:
 
 1) After the importation of the addresses, we do not know who the 'Manager' is.
 2) The email address we have in same cases is just the general email.
-for example, sales@itaapy.com
+for example, sales@abakuc.com
 3) We have some companies and addresses without any emails.
 
 A Company/Branch manager is the first user who registers/logs into the

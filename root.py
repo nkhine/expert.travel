@@ -30,7 +30,17 @@ from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
 from expert_travel import ExpertTravel
-from utils import title_to_name, get_host_prefix
+from utils import title_to_name
+
+
+
+def get_host_prefix(context):
+    hostname = context.uri.authority.host
+    tab = hostname.split('.', 1)
+    if len(tab)>1:
+        return tab[0]
+    return None
+
 
 
 class World(BaseCSV):
@@ -49,7 +59,7 @@ class World(BaseCSV):
               'county': Unicode(index='keyword')}
 
 
-path = get_abspath(globals(), 'data/csv/countries_full.csv')
+path = get_abspath(globals(), 'data/countries_full.csv')
 world = World(path)
 
 class Root(Handler, BaseRoot):
@@ -109,14 +119,14 @@ class Root(Handler, BaseRoot):
 
         # Business Topics
         topics = CSV()
-        path = get_abspath(globals(), 'data/csv/topics.csv')
+        path = get_abspath(globals(), 'data/topics.csv')
         topics.load_state_from(path)
         cache['topics.csv'] = topics
         cache['topics.csv.metadata'] = topics.build_metadata()
 
         # Business Types 
         types = CSV()
-        path = get_abspath(globals(), 'data/csv/types.csv')
+        path = get_abspath(globals(), 'data/types.csv')
         types.load_state_from(path)
         cache['types.csv'] = types
         cache['types.csv.metadata'] = types.build_metadata()
@@ -143,42 +153,33 @@ class Root(Handler, BaseRoot):
         cache['help.xhtml.metadata'] = help.build_metadata(
                                             **{'dc:title': {'en': u'Help me'}})
 
+
     #######################################################################
     # Select the skin
     #######################################################################
     def get_skin(self):
-        """Set the default skin"""
-        context = get_context()
-        website_type = self.get_website_type(context)
-        if website_type==1 or website_type==2:
-            # For address as :
-            # -> http://itaapy.expert.travel/
-            # -> http://fr.expert.travel/itaapy
-            return self.get_handler('/ui/companies')
-        elif website_type==3:
-            # For address as :
-            # -> http://fr.expert.travel
-            # -> http://uk.expert.travel
-            country = self.get_website_country(context)
-            if country:
-                skin_path = 'ui/%s' % country
-                if not self.has_handler(skin_path):
-                    raise LookupError, "The Skin %s don't exist" % skin_path
-                return self.get_handler(skin_path)
+        hostname = get_context().uri.authority.host
+        ui = self.get_handler('ui')
 
-        # Destinations
-        hostname = context.uri.authority.host
-        if hostname == 'destinations':
-            return self.get_handler('ui/destinations')
-        elif '.destinations' in hostname:
-            code = hostname.split('.', 1)[0]
-            countries = self.get_handler('ui/countries')
-            if countries.has_handler(code):
-                return countries.get_handler(code)
-            return countries
+        # Production / Exact match
+        if ui.has_handler(hostname):
+            return ui.get_handler(hostname)
 
-        # return the default skin
-        return self.get_handler('ui/aruni')
+        # Production / Approx. match
+        for name in ui.get_handler_names():
+            if hostname.endswith(name):
+                return ui.get_handler(name)
+
+        # Development
+        hostname = hostname.replace('_', '.')
+        if ui.has_handler(hostname):
+            return ui.get_handler(hostname)
+        for name in ui.get_handler_names():
+            if hostname.endswith(name):
+                return ui.get_handler(name)
+
+        # Default
+        return ui.get_handler('aruni')
 
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
@@ -228,7 +229,7 @@ class Root(Handler, BaseRoot):
         # Import Companies
 
         # Read the input CSV file
-        path = get_abspath(globals(), 'data/csv/abakuc_import_companies.csv')
+        path = get_abspath(globals(), 'data/abakuc_import_companies.csv')
         handler = get_handler(path)
         rows = handler.get_rows()
         rows = list(rows)
@@ -370,39 +371,20 @@ class Root(Handler, BaseRoot):
         return None
 
 
-    def get_website_type(self, context):
+    def get_authorized_countries(self, context):
         """
         An expert.travel has 3 configuration :
         1/ Company view in a Country website
-            http://fr.expert.travel/companies/itaapy
+            http://fr.expert.travel/companies/abakuc
         2/ Company website
-            http://itaapy.expert.travel/
+            http://abakuc.expert.travel/
         3/ Country website
             http://fr.expert.travel/
         """
-        handler = context.handler
-        root = handler.get_site_root()
-        if isinstance(root, Company):
-            site_root = self._get_site_root(context)
-            if isinstance(site_root, ExpertTravel):
-                # Rule for address as :
-                # -> http://fr.expert.travel/companies/itaapy
-                return 1
-            elif isinstance(site_root, Company):
-                # Rule for address as :
-                # -> http://itaapy.expert.travel/
-                return 2
-
-            return None
-
-        # Rule for address as:
-        # -> http://fr.expert.travel/
-        return 3
-
-
-    def get_authorized_countries(self, context):
-        website_type = self.get_website_type(context)
-        if website_type==3:
+        root = context.handler.get_site_root()
+        if not isinstance(root, Company):
+            # Rule for address as:
+            # -> http://fr.expert.travel/
             country_code = get_host_prefix(context)
             country_name = self.get_country_name(country_code)
             return [(country_name, country_code)]

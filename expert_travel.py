@@ -95,10 +95,8 @@ class ExpertTravel(WebSite):
         namespace['jobs'] = jobs
         # Construct the lines of the table
         # Return the page
-        skin_base = self.get_skin_base(context)
-        handler = self.get_handler('/ui/%s/home.xhtml' % skin_base)
+        handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
-
 
 
     #######################################################################
@@ -179,29 +177,8 @@ class ExpertTravel(WebSite):
         namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['job_title'] = job_title
         # Return the page
-        skin_base = self.get_skin_base(context)
-        handler = self.get_handler('/ui/%s/view_jobs.xhtml' % skin_base)
+        handler = self.get_handler('/ui/uk.expert.travel/view_jobs.xhtml')
         return stl(handler, namespace)
-
-
-    def get_skin_base(self, context):
-        """
-          Select the name of the skin
-          There are 3 solutions :
-            -> For country : uk , fr ...
-            -> For companies : -> company_name
-                               -> or by default : companies
-        """
-        return 'uk'
-        hostname = context.uri.authority.host
-        country = hostname[0:2]
-        if hostname[0:2] in ['fr', 'uk']:
-            return country
-        else:
-            if self.has_handler('/ui/%s/' % hostname):
-                return hostname
-            else:
-                return 'companies'
 
 
 register_object_class(ExpertTravel)
