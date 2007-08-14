@@ -383,11 +383,11 @@ class Root(Handler, BaseRoot):
         """
         root = context.handler.get_site_root()
         if not isinstance(root, Company):
-            # Rule for address as:
-            # -> http://fr.expert.travel/
             country_code = get_host_prefix(context)
-            country_name = self.get_country_name(country_code)
-            return [(country_name, country_code)]
+            if country_code is not None:
+                # Rule for address as: http://fr.expert.travel/
+                country_name = self.get_country_name(country_code)
+                return [(country_name, country_code)]
 
         return self.get_active_countries(context)
 
