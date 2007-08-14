@@ -5,12 +5,44 @@
 from itools.cms.skins import Skin
 from itools.web import get_context
 
+# Import from abakuc
+from companies import Company
+
 
 
 class FrontOffice(Skin):
 
     def get_left_menus(self, context):
-        return []
+        menus = []
+
+        root =  context.handler.get_site_root()
+        if isinstance(root, Company):
+            # Main Menu
+            menu = self.get_main_menu(context)
+            if menu is not None:
+                menus.append(menu)
+
+        return menus
+
+
+    def get_main_menu_options(self, context):
+        options = []
+        append = options.append
+        handler = context.handler
+        root = handler.get_site_root()
+        path = root.abspath
+
+        append({'path': path, 'method': 'view',
+                'title': u'Company details',
+                'icon': '/ui/abakuc/images/AddressBook16.png'})
+        append({'path': path, 'method': 'view_jobs',
+                'title': u'Jobs',
+                'icon': '/ui/abakuc/images/JobBoard16.png'})
+        append({'path': path, 'method': 'view_branches',
+                'title': u'Branches',
+                'icon': '/ui/images/UserFolder16.png'})
+
+        return options
 
 
     def get_breadcrumb(self, context):
@@ -104,38 +136,6 @@ class FOCompanies(FrontOffice):
             # Default
             return self.get_handler('../.expert.travel/template.xhtml')
 
-
-    def get_left_menus(self, context):
-        # Main Menu
-        menus = []
-        menu = self.get_main_menu(context)
-        if menu is not None:
-            menus.append(menu)
-
-        # Content Menu XXX (Futur)
-        #menu = self.get_content_menu(context)
-        #menus.append(menu)
-        return menus
-
-
-    def get_main_menu_options(self, context):
-        options = []
-        append = options.append
-        handler = context.handler
-        root = handler.get_site_root()
-        path = root.abspath
-
-        append({'path': path, 'method': 'view',
-                'title': u'Company details',
-                'icon': '/ui/abakuc/images/AddressBook16.png'})
-        append({'path': path, 'method': 'view_jobs',
-                'title': u'Jobs',
-                'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'view_branches',
-                'title': u'Branches',
-                'icon': '/ui/images/UserFolder16.png'})
-
-        return options
 
 
 websites = {

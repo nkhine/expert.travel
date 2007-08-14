@@ -148,7 +148,7 @@ class Company(WebSite):
             url = '%s/;view' %  address.name
             namespace['addresses'].append({'url': url,
                                            'title': address.title_or_name})
-        handler = self.get_handler('/ui/abakuc/company_view_branches.xml')
+        handler = self.get_handler('/ui/abakuc/abakuc_view_branches.xml')
         return stl(handler, namespace)
 
 
