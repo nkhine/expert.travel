@@ -63,7 +63,7 @@ class Job(RoleAware, Folder):
     def new_instance_form(cls, context):
         namespace = context.build_form_namespace(cls.job_fields)
         namespace['class_id'] = Job.class_id
-        path = '/ui/abakuc/job_new_resource_form.xml'
+        path = '/ui/abakuc/jobs/job_new_resource_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
