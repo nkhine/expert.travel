@@ -192,7 +192,7 @@ class Job(RoleAware, Folder):
                 if user.has_property('ikaaro:user_must_confirm') is False:
                     nb_candidatures += 1 
             namespace['nb_candidatures'] = nb_candidatures
-        handler = self.get_handler('/ui/abakuc/job_view.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/job_view.xml')
         return stl(handler, namespace)
 
     view_candidatures__access__ = 'is_reviewer_or_member'
@@ -227,7 +227,7 @@ class Job(RoleAware, Folder):
             namespace['table'] = None
             namespace['msg'] = u'No candidature'
         
-        handler = self.get_handler('/ui/abakuc/Job_view_candidatures.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/Job_view_candidatures.xml')
         return stl(handler, namespace)
 
 
@@ -252,7 +252,7 @@ class Job(RoleAware, Folder):
         job_text = self.get_property('abakuc:job_text')
         namespace['abakuc:job_text'] = job_text
         # Return stl
-        handler = self.get_handler('/ui/abakuc/job_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/job_edit_metadata.xml')
         return stl(handler, namespace)
 
     
@@ -328,7 +328,7 @@ class Candidature(RoleAware, Folder):
             namespace['is_authenticated'] = True
         namespace['class_id'] = cls.class_id
         # Return stl
-        path = '/ui/abakuc/Candidature_new_instance_form.xml'
+        path = '/ui/abakuc/jobs/Candidature_new_instance_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
@@ -494,7 +494,7 @@ class Candidature(RoleAware, Folder):
         namespace['user_id'] = user_id
         namespace['key'] = must_confirm
 
-        url = '/ui/abakuc/Candidature_confirm_candidature_form.xml'
+        url = '/ui/abakuc/jobs/Candidature_confirm_candidature_form.xml'
         handler = self.get_handler(url)
         return stl(handler, namespace)
 
@@ -617,7 +617,7 @@ class Candidature(RoleAware, Folder):
         namespace['cv'] = {'icon': cv_icon,
                            'path': cv_path}
         
-        handler = self.get_handler('/ui/abakuc/Candidature_view.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/Candidature_view.xml')
         return stl(handler, namespace)
 
   
