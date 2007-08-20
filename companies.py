@@ -33,16 +33,6 @@ from metadata import JobTitle, SalaryRange
 
 
 
-country_select_template = XHTMLDocument(string="""
-<select xmlns="http://www.w3.org/1999/xhtml" xmlns:stl="http://xml.itools.org/namespaces/stl" id="countries" name="countries" onchange="javascript: get_regions('/;get_regions_str?country='+ this.value,'div_regions'); get_regions('/;get_counties_str?', 'div_county')">
-  <option value=""></option>
-  <option stl:repeat="country countries" value="${country/name}"
-    selected="${country/selected}">${country/title}</option>
-</select>
-""")
-
-
-
 class Companies(Folder):
 
     class_id = 'companies'
@@ -513,20 +503,15 @@ class Address(RoleAware, Folder):
         context = get_context()
         root = context.root
         # List authorized countries
-        list_countries = [
+        countries = [
             {'name': x, 'title': x, 'selected': x == address_country}
             for x, y in root.get_authorized_countries(context) ]
-        nb_countries = len(list_countries)
-        if nb_countries > 1:
-            # Show a list with all authorized countries
-            list_countries.sort(key=lambda x: x['title'])
-            namespace = {'countries': list_countries}
-            countries = stl(country_select_template, namespace) 
-        elif nb_countries==1:
-            # Only one country, don't show a list
-            countries = list_countries[0]['title']
-        else:
+        nb_countries = len(countries)
+        if nb_countries < 1:
             raise ValueError, 'Number of countries is invalid'
+
+        # Show a list with all authorized countries
+        countries.sort(key=lambda x: x['title'])
         regions = root.get_regions_stl(country=address_country,
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,

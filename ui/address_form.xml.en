@@ -14,12 +14,18 @@
     </tr>
     <tr>
       <td colspan="2">
-        Country :<br/>
-        ${countries}
+        Country:<br/>
+        <select id="countries" name="countries" onchange="
+          get_regions('/;get_regions_str?country='+ this.value,'div_regions');
+          get_regions('/;get_counties_str?', 'div_county')">
+          <option value=""></option>
+          <option stl:repeat="country countries" value="${country/name}"
+            selected="${country/selected}">${country/title}</option>
+        </select>
         <br/>
-        Region :<br/>
+        Region:<br/>
         ${regions}
-        County :<br/>
+        County:<br/>
         ${counties}
         <br/>
       </td>
