@@ -544,9 +544,13 @@ class Address(RoleAware, Folder):
         # Get the country,  the region and  the county
         from root import world
         address_county = self.get_property('abakuc:county')
-        rows = world.get_row(address_county)
-        address_country = rows.get_value('country')
-        address_region = rows.get_value('region')
+        if address_county is None:
+            address_country = None
+            address_region = None
+        else:
+            rows = world.get_row(address_county)
+            address_country = rows.get_value('country')
+            address_region = rows.get_value('region')
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
                                           address_country, address_region,
                                           address_county)
