@@ -53,7 +53,6 @@ class Companies(Folder):
         return 'bobo'
 
 
-
 class Company(WebSite):
 
     class_id = 'company'
@@ -113,6 +112,7 @@ class Company(WebSite):
     def view(self, context):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
+        namespace['description'] = self.get_property('dc:description')
         namespace['website'] = self.get_website()
         namespace['logo'] = self.has_handler('logo')
 
@@ -223,11 +223,12 @@ class Company(WebSite):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_form(name=None, website=None, topics=None, types=None, logo=None):
+    def get_form(name=None, description=None, website=None, topics=None, types=None, logo=None):
         root = get_context().root
 
         namespace = {}
         namespace['title'] = name
+        namespace['description'] = description 
         namespace['website'] = website
         namespace['topics'] = root.get_topics_namespace(topics)
         namespace['types'] = root.get_types_namespace(types)
@@ -245,11 +246,13 @@ class Company(WebSite):
             namespace['referrer'] = str(context.request.referrer)
         # Form
         title = self.get_property('dc:title')
+        # Description
+        description = self.get_property('dc:description')
         website = self.get_property('abakuc:website')
         topics = self.get_property('abakuc:topic')
         types = self.get_property('abakuc:type')
         logo = self.has_handler('logo')
-        namespace['form'] = self.get_form(title, website, topics, types, logo)
+        namespace['form'] = self.get_form(title, description, website, topics, types, logo)
 
         handler = self.get_handler('/ui/abakuc/company_edit_metadata.xml')
         return stl(handler, namespace)
@@ -258,12 +261,14 @@ class Company(WebSite):
     edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
+        description = context.get_form_value('dc:description')
         website = context.get_form_value('abakuc:website')
         topics = context.get_form_values('topic')
         types = context.get_form_values('type')
         logo = context.get_form_value('logo')
 
         self.set_property('dc:title', title, language='en')
+        self.set_property('dc:description', description, language='en')
         self.set_property('abakuc:website', website)
         self.set_property('abakuc:topic', tuple(topics))
         self.set_property('abakuc:type', types)

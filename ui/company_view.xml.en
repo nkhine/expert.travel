@@ -6,6 +6,7 @@
 <tr>
 <td>
 <h1>${title}</h1>
+<h1>${description}</h1>
 
 <img stl:if="logo" border="0" src="logo" style="float: right" />
 <a href="${website}">${website}</a>
