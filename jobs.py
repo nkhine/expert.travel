@@ -231,6 +231,36 @@ class Job(RoleAware, Folder):
         return stl(handler, namespace)
 
 
+    #######################################################################
+    # XXX User Interface / Edit
+    #######################################################################
+    @staticmethod
+    def get_form(address_country=None, address_region=None,
+                 address_county=None):
+        context = get_context()
+        root = context.root
+        # List authorized countries
+        countries = [
+            {'name': x, 'title': x, 'selected': x == address_country}
+            for x, y in root.get_authorized_countries(context) ]
+        nb_countries = len(countries)
+        if nb_countries < 1:
+            raise ValueError, 'Number of countries is invalid'
+
+        # Show a list with all authorized countries
+        countries.sort(key=lambda x: x['title'])
+        regions = root.get_regions_stl(country=address_country,
+                                       selected_region=address_region)
+        county = root.get_counties_stl(region=address_region,
+                                       selected_county=address_county)
+        namespace = {}
+        namespace['countries'] = countries
+        namespace['regions'] = regions
+        namespace['counties'] = county
+        handler = root.get_handler('ui/abakuc/jobs_form.xml')
+        return stl(handler, namespace)
+
+
     ###########################################################
     # Edit details
     ###########################################################
@@ -251,6 +281,19 @@ class Job(RoleAware, Folder):
         namespace['functions'] =  JobTitle.get_namespace(function)
         job_text = self.get_property('abakuc:job_text')
         namespace['abakuc:job_text'] = job_text
+        # XXX Form
+        # Get the country,  the region and  the county
+        from root import world
+        address_county = self.get_property('abakuc:county')
+        if address_county is None:
+            address_country = None
+            address_region = None
+        else:
+            rows = world.get_row(address_county)
+            address_country = rows.get_value('country')
+            address_region = rows.get_value('region')
+        namespace['form'] = self.get_form(address_country, address_region,
+                                          address_county)
         # Return stl
         handler = self.get_handler('/ui/abakuc/jobs/job_edit_metadata.xml')
         return stl(handler, namespace)
@@ -262,6 +305,8 @@ class Job(RoleAware, Folder):
             self.set_property(key, context.get_form_value(key))
         job_text = context.get_form_value('abakuc:job_text')
         self.set_property('abakuc:job_text', job_text)
+        address_county = context.get_form_value('abakuc:county')
+        self.set_property('abakuc:county', address_county)
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
 

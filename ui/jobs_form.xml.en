@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<script type="text/javascript" src="/ui/abakuc/abakuc.js"></script>
+
+  <table>
+    <tr>
+      <td colspan="2">
+        Country:<br/>
+        <select id="countries" name="countries" onchange="
+          get_regions('/;get_regions_str?country='+ this.value,'div_regions');
+          get_regions('/;get_counties_str?', 'div_county')">
+          <option value=""></option>
+          <option stl:repeat="country countries" value="${country/name}"
+            selected="${country/selected}">${country/title}</option>
+        </select>
+        <br/>
+        Region:<br/>
+        ${regions}
+        County:<br/>
+        ${counties}
+        <br/>
+      </td>
+    </tr>
+  </table>
+
+</stl:block>

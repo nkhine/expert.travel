@@ -63,6 +63,7 @@
           name="abakuc:job_text">${abakuc:job_text}</textarea>
         </dd>
       </dl>
+    ${form}  
     <p>
       <input type="submit" value="Modify job details" class="button_ok" />
     </p>
