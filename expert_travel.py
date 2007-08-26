@@ -74,6 +74,7 @@ class ExpertTravel(WebSite):
         root = context.root
         namespace = {}
         # Get the 5 last Jobs
+        # XXX Fix so that it lists only jobs specific for the Country
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'Job'))

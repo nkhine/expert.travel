@@ -55,14 +55,37 @@ class Job(RoleAware, Folder):
         ('abakuc:function', True),
         ('abakuc:salary', True),
         ('abakuc:closing_date', True),
+        ('abakuc:county', True),
         ('dc:description', True),
         ('abakuc:job_text', True)]
 
 
     @classmethod
-    def new_instance_form(cls, context):
+    def new_instance_form(cls, context, address_country=None,
+                          address_region=None, address_county=None):
+        # XXX This uses different form then the
+        # XXX metadata_edit_form
+        # XXX look to merge the two
+        # List authorized countries
+        countries = [
+            {'name': x, 'title': x, 'selected': x == address_country}
+            for x, y in context.root.get_authorized_countries(context) ]
+        nb_countries = len(countries)
+        if nb_countries < 1:
+            raise ValueError, 'Number of countries is invalid'
+
+        # Show a list with all authorized countries
+        countries.sort(key=lambda x: x['title'])
+        regions = context.root.get_regions_stl(country=address_country,
+                                       selected_region=address_region)
+        county = context.root.get_counties_stl(region=address_region,
+                                       selected_county=address_county)
         namespace = context.build_form_namespace(cls.job_fields)
         namespace['class_id'] = Job.class_id
+        namespace['countries'] = countries
+        namespace['regions'] = regions
+        namespace['counties'] = county
+
         path = '/ui/abakuc/jobs/job_new_resource_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
@@ -108,7 +131,8 @@ class Job(RoleAware, Folder):
         handler = cls()
         metadata = handler.build_metadata()
         for key in ['dc:title' , 'dc:description', 'abakuc:job_text',
-                    'abakuc:closing_date', 'abakuc:salary', 'abakuc:function']:
+                    'abakuc:closing_date', 'abakuc:salary', 
+                    'abakuc:function', 'abakuc:county']:
             try:
                 value = context.get_form_value(key)
                 if not value:
@@ -135,6 +159,18 @@ class Job(RoleAware, Folder):
     def view(self, context):
         root = context.root
         company = self.parent.parent
+        # Country, Region, County
+        from root import world
+
+        county_id = self.get_property('abakuc:county')
+        if county_id is None:
+            # XXX Every address should have a county
+            country = region = county = '-'
+        else:
+            row = world.get_row(county_id)
+            country = row[6]
+            region = row[7]
+            county = row[8]
         #namespace
         namespace = {}
         namespace['company'] = company.get_property('dc:title')
@@ -147,6 +183,11 @@ class Job(RoleAware, Folder):
         
         job_text = to_html_events(self.get_property('abakuc:job_text'))
         namespace['abakuc:job_text'] = job_text
+
+        # Country, Region, County
+        namespace['country'] = country
+        namespace['region'] = region
+        namespace['county'] = county
 
         #Find similar jobs
         catalog = context.server.catalog

@@ -22,6 +22,9 @@
            <li>Position type: ${abakuc:function}</li>
            <li>Closing date: ${abakuc:closing_date}</li>
            <li>Salary package: ${abakuc:salary}</li>
+           <li>Country: ${country}</li>
+           <li>Region: ${region}</li>
+           <li>County: ${county}</li>
            </ul>
       </td>
       </tr>
