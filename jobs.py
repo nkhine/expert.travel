@@ -52,11 +52,10 @@ class Job(RoleAware, Folder):
 
     job_fields = [
         ('dc:title', True),
+        ('dc:description', True),
         ('abakuc:function', True),
         ('abakuc:salary', True),
         ('abakuc:closing_date', True),
-        ('abakuc:county', True),
-        ('dc:description', True),
         ('abakuc:job_text', True)]
 
 
@@ -136,7 +135,8 @@ class Job(RoleAware, Folder):
             try:
                 value = context.get_form_value(key)
                 if not value:
-                    message = u'You have to fill all fields.'
+                    message = (u"You have to fill all fields. You can edit"
+                               u" these afterwords")
                     return context.come_back(message)
                 metadata.set_property(key, context.get_form_value(key))
             except:
@@ -164,8 +164,8 @@ class Job(RoleAware, Folder):
 
         county_id = self.get_property('abakuc:county')
         if county_id is None:
-            # XXX Every address should have a county
-            country = region = county = '-'
+            # XXX Every job should have a county
+            country = region = county = None 
         else:
             row = world.get_row(county_id)
             country = row[6]

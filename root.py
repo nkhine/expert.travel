@@ -131,6 +131,13 @@ class Root(Handler, BaseRoot):
         cache['types.csv'] = types
         cache['types.csv.metadata'] = types.build_metadata()
 
+        # User Job Functions
+        functions = CSV()
+        path = get_abspath(globals(), 'data/functions.csv')
+        functions.load_state_from(path)
+        cache['functions.csv'] = functions
+        cache['functions.csv.metadata'] = functions.build_metadata()
+
         # Expert Travel
         title = u'Expert Travel Website'
         expert_travel = ExpertTravel()
@@ -213,6 +220,15 @@ class Root(Handler, BaseRoot):
 
         return namespace
 
+    def get_functions_namespace(self, ids=None):
+        job_functions = self.get_handler('functions.csv')
+        namespace = []
+        for row in job_functions.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
     #######################################################################
     # User Interface / Import
     #######################################################################
@@ -392,6 +408,15 @@ class Root(Handler, BaseRoot):
         return self.get_active_countries(context)
 
 
+    def get_site_types(self, context):
+        """
+        Each portal has its own list of Business Types 
+        1/ Expert.Travel deals with Travel Agencies 
+        2/ Destinations Guide are Hotels etc... 
+        """
+        root = context.handler.get_site_root()
+
+        return self.get_site_types(context)
     ##########################################################################
     # Javascript
     ##########################################################################

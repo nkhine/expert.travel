@@ -12,6 +12,33 @@ from companies import Company
 
 class FrontOffice(Skin):
 
+    def build_namespace(self, context):
+        root = context.root
+        namespace = Skin.build_namespace(self, context)
+
+        # Level0 correspond to the country (uk, fr) ...
+        level0 = [ x[1] for x in root.get_authorized_countries(context) ]
+        # Navigation (level 1)
+        site_root = context.handler.get_site_root()
+        results = root.search(level0=level0, format=site_root.site_format)
+        # Flat
+        level1 = []
+        for x in results.get_documents():
+            x = x.level1
+            if isinstance(x, list):
+                level1.extend(x)
+            else:
+                level1.append(x)
+        # Unique
+        level1 = set(level1)
+        level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
+                   for x in level1 ]
+        level1.sort(key=lambda x: x['title'])
+        namespace['level1'] = level1
+
+        return namespace
+
+
     def get_left_menus(self, context):
         menus = []
 
@@ -68,34 +95,6 @@ class FrontOffice(Skin):
             breadcrumb.append({'name': title, 'short_name': title, 'url': url})
 
         return breadcrumb
-
-
-    def build_namespace(self, context):
-        root = context.root
-        namespace = Skin.build_namespace(self, context)
-
-        # Level0 correspond to the country (uk, fr) ...
-        level0 = [ x[1] for x in root.get_authorized_countries(context) ]
-        # Navigation (level 1)
-        site_root = context.handler.get_site_root()
-        results = root.search(level0=level0, format=site_root.site_format)
-        # Flat
-        level1 = []
-        for x in results.get_documents():
-            x = x.level1
-            if isinstance(x, list):
-                level1.extend(x)
-            else:
-                level1.append(x)
-        # Unique
-        level1 = set(level1)
-        level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
-                   for x in level1 ]
-        level1.sort(key=lambda x: x['title'])
-        namespace['level1'] = level1
-
-        return namespace
-
 
 
 class DestinationsSkin(FrontOffice):

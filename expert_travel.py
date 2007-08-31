@@ -6,6 +6,8 @@ from datetime import date
 
 # Import from itools
 from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
+from itools import get_abspath
+from itools.cms.csv import CSV
 from itools.cms.html import XHTMLFile
 from itools.cms.registry import register_object_class
 from itools.cms.widgets import table, batch
@@ -44,7 +46,6 @@ class ExpertTravel(WebSite):
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = help.build_metadata(
             **{'dc:title': {'en': u'Help'}})
-
 
     def _get_virtual_handler(self, segment):
         name = segment.name
@@ -106,6 +107,8 @@ class ExpertTravel(WebSite):
     view_jobs__access__ = True
     view_jobs__label__ = u'Our jobs'
     def view_jobs(self, context):
+        from root import world
+
         root = context.root
 
         namespace = {}
@@ -119,6 +122,7 @@ class ExpertTravel(WebSite):
         # Search fields
         function = context.get_form_value('function') or None
         salary = context.get_form_value('salary') or None
+        county = context.get_form_value('county') or None
         job_title = context.get_form_value('job_title') or None
         if job_title:
             job_title = job_title.lower()
@@ -127,6 +131,8 @@ class ExpertTravel(WebSite):
             query.append(EqQuery('function', function))
         if salary:
             query.append(EqQuery('salary', salary))
+        if county:
+            query.append(EqQuery('county', county))
         results = root.search(AndQuery(*query))
         namespace['nb_jobs'] = results.get_n_documents()
 
@@ -138,6 +144,15 @@ class ExpertTravel(WebSite):
             get = job.get_property
             address = job.parent
             company = address.parent
+            county_id = get('abakuc:county')
+            if county_id is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
             url = '/companies/%s/%s/%s' % (company.name, address.name,
                                            job.name)
             description = reduce_string(get('dc:description'),
@@ -149,6 +164,8 @@ class ExpertTravel(WebSite):
                     'title': job.title,
                     'function': JobTitle.get_value(get('abakuc:function')),
                     'salary': SalaryRange.get_value(get('abakuc:salary')),
+                    'county': county,
+                    'region': region,
                     'closing_date': get('abakuc:closing_date'),
                     'description': description})
         # Set batch informations

@@ -22,9 +22,9 @@
            <li>Position type: ${abakuc:function}</li>
            <li>Closing date: ${abakuc:closing_date}</li>
            <li>Salary package: ${abakuc:salary}</li>
-           <li>Country: ${country}</li>
-           <li>Region: ${region}</li>
-           <li>County: ${county}</li>
+           <li stl:if="country">Country: ${country}</li>
+           <li stl:if="region">Region: ${region}</li>
+           <li stl:if="county">County: ${county}</li>
            </ul>
       </td>
       </tr>

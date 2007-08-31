@@ -231,6 +231,12 @@ class Company(WebSite):
         namespace['description'] = description 
         namespace['website'] = website
         namespace['topics'] = root.get_topics_namespace(topics)
+        #XXX Make this list only types specific for the sub-site
+        #site_specific_types = root.get_site_types(types)
+        #if site is localhost list all
+        #if site is expert.travel select types with id = 1
+        #if site is destinations guide select types with id = 2
+        # etc....
         namespace['types'] = root.get_types_namespace(types)
         namespace['logo'] = logo
 

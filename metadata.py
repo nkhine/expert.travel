@@ -82,6 +82,8 @@ class Schema(BaseSchema):
                               is_mandatory=True),
 
         'sub_continent': Unicode(title=u'Sub continent', is_mandatory=True),
+        # User
+        'job_function': String,
         # Company
         'website': String,
         'topic': Tokens,

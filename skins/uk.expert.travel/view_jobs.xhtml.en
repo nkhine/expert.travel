@@ -44,7 +44,6 @@
   </tr>
   <tr>
     <td colspan="3">
-      <h1>Currently there are ${nb_jobs} open vacancies... </h1>
         <div align="right">
           ${batch}
         </div>
@@ -58,6 +57,8 @@
               </dt>
               <dd>
                 ${job/function} - ${job/salary} - ${job/closing_date}<br />
+                <br stl:if="job/region"> ${job/region}</br>
+                <br stl:if="job/county"> ${job/county}</br>
                 ${job/description}<br />
               </dd>
             </dl>       

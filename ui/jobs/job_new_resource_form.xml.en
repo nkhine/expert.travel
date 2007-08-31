@@ -53,7 +53,7 @@
   </tr>
     <tr>
       <td colspan="2">
-        Country:<br/>
+       <label class="${abakuc:function/class}">Country:</label>
         <select id="countries" name="countries" onchange="
           get_regions('/;get_regions_str?country='+ this.value,'div_regions');
           get_regions('/;get_counties_str?', 'div_county')">
@@ -62,9 +62,9 @@
             selected="${country/selected}">${country/title}</option>
         </select>
         <br/>
-        Region:<br/>
+       <label class="${abakuc:function/class}">Region:</label>
         ${regions}
-        County:<br/>
+       <label class="${abakuc:function/class}">County:</label>
         ${counties}
         <br/>
       </td>

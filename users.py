@@ -24,6 +24,7 @@ from itools.cms.utils import get_parameters
 from itools.rest import checkid
 from itools.cms.widgets import table, batch
 from itools.xml import Parser
+from itools.datatypes import Email
 # Import from our product
 from companies import Company, Address 
 from jobs import Job
@@ -142,10 +143,14 @@ class User(iUser, Handler):
     edit_account_form__label__ = u'Edit'
     edit_account_form__sublabel__ = u'Account'
     def edit_account_form(self, context):
+        root = get_context().root
+        job_functions = self.get_property('abakuc:job_function')
+
         # Build the namespace
         namespace = {}
         for key in self.account_fields:
             namespace[key] = self.get_property(key)
+        namespace['job_functions'] = root.get_functions_namespace(job_functions)
         # Ask for password to confirm the changes
         if self.name != context.user.name:
             namespace['must_confirm'] = False
@@ -155,6 +160,35 @@ class User(iUser, Handler):
         handler = self.get_handler('/ui/abakuc/user_edit_account.xml')
         return stl(handler, namespace)
 
+    edit_account__access__ = 'is_allowed_to_edit'
+    def edit_account(self, context):
+        # Check password to confirm changes
+        password = context.get_form_value('password')
+        user = context.user
+        if self.name == user.name:
+            if not self.authenticate(password):
+                return context.come_back(
+                    u"You mistyped your actual password, your account is"
+                    u" not changed.")
+
+        # Check the email is good
+        email = context.get_form_value('ikaaro:email')
+        if not Email.is_valid(email):
+            return context.come_back(MSG_INVALID_EMAIL)
+
+        root = context.root
+        results = root.search(email=email)
+        if results.get_n_documents():
+            message = (u'There is another user with the email "%s", '
+                       u'please try again')
+        job_functions = context.get_form_values('job_function')
+        # Save changes
+        for key in self.account_fields:
+            value = context.get_form_value(key)
+            self.set_property(key, value)
+        self.set_property('abakuc:job_function', job_functions)
+
+        return context.come_back(u'Account changed.')
 
     #######################################################################
     # Profile
@@ -300,6 +334,8 @@ class User(iUser, Handler):
         namespace['msg'] = msg 
 
         namespace['contact'] = None
+        if user is None:
+            return u'You need to be registered!'     
         if address.has_user_role(user.name, 'ikaaro:guests'):
             contacts = address.get_property('ikaaro:reviewers')
             if contacts:
