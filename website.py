@@ -4,14 +4,84 @@
 # Import from itools
 from itools.datatypes import Integer, Unicode
 from itools.stl import stl
-from itools.cms.website import WebSite as BaseWebSite
 from itools.cms import widgets
+from itools.cms.utils import generate_password
+from itools.cms.website import WebSite as BaseWebSite
+from itools.web import get_context
 
 # Import from abakuc
 from base import Handler
 
 
 class WebSite(Handler, BaseWebSite):
+
+    ########################################################################
+    # Register
+    def is_allowed_to_register(self, user, object):
+        return self.get_property('ikaaro:website_is_open')
+
+
+    register_fields = [('ikaaro:firstname', True),
+                       ('ikaaro:lastname', True),
+                       ('ikaaro:email', True)]
+
+
+    register_form__access__ = 'is_allowed_to_register'
+    register_form__label__ = u'Register'
+    def register_form(self, context, job_functions=None):
+        root = get_context().root
+        namespace = context.build_form_namespace(self.register_fields)
+        namespace['job_functions'] = root.get_functions_namespace(job_functions)
+        handler = self.get_handler('/ui/abakuc/register.xml')
+        return stl(handler, namespace)
+
+
+    register__access__ = 'is_allowed_to_register'
+    def register(self, context):
+        keep = ['ikaaro:firstname', 'ikaaro:lastname', 'ikaaro:email']
+        # Check input data
+        error = context.check_form_input(self.register_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+
+        # Get input data
+        firstname = context.get_form_value('ikaaro:firstname').strip()
+        lastname = context.get_form_value('ikaaro:lastname').strip()
+        email = context.get_form_value('ikaaro:email').strip()
+        job_function = context.get_form_value('job_function')
+
+        # Do we already have a user with that email?
+        root = context.root
+        results = root.search(email=email)
+        users = self.get_handler('users')
+        if results.get_n_documents():
+            user = results.get_documents()[0]
+            user = users.get_handler(user.name)
+            if not user.has_property('ikaaro:user_must_confirm'):
+                message = u'There is already an active user with that email.'
+                return context.come_back(message, keep=keep)
+        else:
+            # Add the user
+            user = users.set_user(email, None)
+            user.set_property('ikaaro:firstname', firstname, language='en')
+            user.set_property('ikaaro:lastname', lastname, language='en')
+            # Set the role
+            default_role = self.__roles__[0]['name']
+            self.set_user_role(user.name, default_role)
+
+        # Set product specific data 
+        user.set_property('abakuc:job_function', job_function)
+        # Send confirmation email
+        key = generate_password(30)
+        user.set_property('ikaaro:user_must_confirm', key)
+        user.send_confirmation(context, email)
+
+        # Bring the user to the login form
+        message = self.gettext(
+            u"An email has been sent to you, to finish the registration "
+            u"process follow the instructions detailed in it.")
+        return message.encode('utf-8')
+
 
     #######################################################################
     # User Interface
