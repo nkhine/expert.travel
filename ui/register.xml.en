@@ -10,7 +10,7 @@
   The <span class="field_required">emphasized</span> fields are required.
   </p>
 
-  <form name="joinform" action=";register" method="post">
+  <form name="joinform" action=";register" method="post" style="width: 15em">
     <dl>
       <dt>
         <label for="ikaaro:firstname" class="${ikaaro:firstname/class}">
@@ -39,8 +39,8 @@
             <dt>
         <label for="job_function">Job Function</label>
       </dt>
-      <dd>
-        <select id="job_function" name="job_function" style="width: 90%">
+      <dd style="width: 90%">
+        <select id="job_function" name="job_function">
           <option stl:repeat="job_function job_functions" value="${job_function/id}"
             selected="${job_function/is_selected}">${job_function/title}</option> 
         </select>

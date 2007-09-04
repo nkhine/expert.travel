@@ -156,6 +156,26 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
   text-align: right;
 }
 
+/* Registration Form
+fieldset { border: 1px solid #000; }
+
+legend { padding: 0; color: #000; }
+
+label { color: #333fff; }
+
+input, textarea, select {
+	margin: 0;
+	padding: 1px;
+	font-size: 100%;
+  width: 100px;
+	font-family: inherit;
+	}
+
+input:focus, textarea:focus { background: #efefef; color: #000; }
+
+------------------------------*/
+/* Footer
+------------------------------*/
 
 #footer {
   text-align: center;

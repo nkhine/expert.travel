@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2007-08-02 18:08+CET\n"
+"POT-Creation-Date: 2007-09-04 08:09+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: jobs.py:411
+#: jobs.py:497
 msgid ""
 "\n"
 "                Application Previously Sent.\n"
@@ -104,12 +104,20 @@ msgstr ""
 msgid "${company_title}"
 msgstr ""
 
-#: ui/address_form.xml.en:0
+#: ui/jobs_form.xml.en:0
 msgid "${counties} <br/>"
 msgstr ""
 
-#: ui/address_form.xml.en:0
-msgid "${countries} <br/> Region :<br/>"
+#: ui/jobs_form.xml.en:0
+msgid "${country/title}"
+msgstr ""
+
+#: ui/jobs/job_view.xml.en:0
+msgid "${country}"
+msgstr ""
+
+#: ui/jobs/job_view.xml.en:0
+msgid "${county}"
 msgstr ""
 
 #: ui/address_view_enquiry.xml.en:0
@@ -176,6 +184,10 @@ msgid ""
 "${enquiry_subject}\"> ${email}</a>"
 msgstr ""
 
+#: ui/jobs/job_edit_metadata.xml.en:0
+msgid "${form}"
+msgstr ""
+
 #: ui/user_setup_company.xml.en:0
 msgid "${form} <input type=\"submit\" value=\"Create\"/>"
 msgstr ""
@@ -212,12 +224,17 @@ msgstr ""
 
 #: skins/uk.expert.travel/view_jobs.xhtml.en:0
 msgid ""
-"${job/function} - ${job/salary} - ${job/closing_date}<br/> ${job/description}"
-"<br/>"
+"${job/function} - ${job/salary} - ${job/closing_date}<br/> <br stl:if=\"job/"
+"region\"/> ${job/region} <br stl:if=\"job/county\"/> ${job/county} ${job/"
+"description}<br/>"
 msgstr ""
 
 #: ui/jobs/job_view.xml.en:0
 msgid "${job/title}"
+msgstr ""
+
+#: ui/user_edit_account.xml.en:0
+msgid "${job_function/title}"
 msgstr ""
 
 #: skins/uk.expert.travel/template.xhtml.en:0
@@ -266,8 +283,16 @@ msgstr ""
 msgid "${phone} - F:"
 msgstr ""
 
-#: ui/address_form.xml.en:0
-msgid "${regions} County :<br/>"
+#: ui/jobs/job_new_resource_form.xml.en:0
+msgid "${regions}"
+msgstr ""
+
+#: ui/jobs_form.xml.en:0
+msgid "${regions} County:<br/>"
+msgstr ""
+
+#: ui/jobs/job_view.xml.en:0
+msgid "${region}"
 msgstr ""
 
 #: ui/jobs/job_new_resource_form.xml.en:0
@@ -372,6 +397,10 @@ msgid ""
 "enquiry/value}</textarea>"
 msgstr ""
 
+#: ui/jobs_form.xml.en:0
+msgid "<br/> Region:<br/>"
+msgstr ""
+
 #: ui/address_view_enquiry.xml.en:0
 msgid "<br/>Phone:"
 msgstr ""
@@ -435,7 +464,7 @@ msgid ""
 "href}\"> ${option/title} </a> </span>"
 msgstr ""
 
-#: jobs.py:298
+#: jobs.py:384
 msgid "A Candidature"
 msgstr ""
 
@@ -447,12 +476,16 @@ msgstr ""
 msgid "Abakuc Expert.Travel"
 msgstr ""
 
-#: users.py:143
+#: users.py:144
 msgid "Account"
 msgstr ""
 
 #: ui/user_edit_account.xml.en:0
 msgid "Account Change"
+msgstr ""
+
+#: users.py:191
+msgid "Account changed."
 msgstr ""
 
 #: ui/user_profile.xml.en:0
@@ -495,6 +528,12 @@ msgstr ""
 msgid "Americas"
 msgstr ""
 
+#: website.py:81
+msgid ""
+"An email has been sent to you, to finish the registration process follow the "
+"instructions detailed in it."
+msgstr ""
+
 #: skins/uk.expert.travel/home.xhtml.en:0
 msgid "An on-line directory of the UK Travel market covers:"
 msgstr ""
@@ -511,7 +550,7 @@ msgstr ""
 msgid "Apply for the job"
 msgstr ""
 
-#: expert_travel.py:170
+#: expert_travel.py:188
 msgid "Appologies, currently we don't have any job announcements"
 msgstr ""
 
@@ -529,7 +568,7 @@ msgstr ""
 msgid "Associate a new user to the address"
 msgstr ""
 
-#: jobs.py:516
+#: jobs.py:602
 msgid "Bad key."
 msgstr ""
 
@@ -573,7 +612,7 @@ msgstr ""
 msgid "Change account"
 msgstr ""
 
-#: jobs.py:265
+#: jobs.py:351
 msgid "Changes Saved."
 msgstr ""
 
@@ -597,7 +636,7 @@ msgstr ""
 msgid "Companies Directory"
 msgstr ""
 
-#: companies.py:70
+#: companies.py:59
 msgid "Company"
 msgstr ""
 
@@ -613,7 +652,7 @@ msgstr ""
 msgid "Company Website"
 msgstr ""
 
-#: skins.py:129
+#: skins.py:63
 msgid "Company details"
 msgstr ""
 
@@ -621,11 +660,11 @@ msgstr ""
 msgid "Company modification"
 msgstr ""
 
-#: users.py:464
+#: users.py:500
 msgid "Company/Address selected."
 msgstr ""
 
-#: users.py:508
+#: users.py:544
 msgid "Company/Address setup done."
 msgstr ""
 
@@ -669,10 +708,6 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: ui/address_form.xml.en:0
-msgid "Country :<br/>"
-msgstr ""
-
 #: ui/country_edit_metadata.xml.en:0
 msgid "Country Name"
 msgstr ""
@@ -689,8 +724,20 @@ msgstr ""
 msgid "Country modified!"
 msgstr ""
 
+#: ui/jobs/job_view.xml.en:0
+msgid "Country:"
+msgstr ""
+
+#: ui/jobs_form.xml.en:0
+msgid "Country:<br/>"
+msgstr ""
+
 #: ui/user_profile.xml.en:0
 msgid "County"
+msgstr ""
+
+#: ui/jobs/job_view.xml.en:0
+msgid "County:"
 msgstr ""
 
 #: ui/user_setup_address.xml.en:0
@@ -705,11 +752,7 @@ msgstr ""
 msgid "Cruises"
 msgstr ""
 
-#: skins/uk.expert.travel/view_jobs.xhtml.en:0
-msgid "Currently there are ${nb_jobs} open vacancies..."
-msgstr ""
-
-#: jobs.py:205
+#: jobs.py:246
 msgid "Date"
 msgstr ""
 
@@ -721,7 +764,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: root.py:143
+#: root.py:150
 msgid "Destinations Guide"
 msgstr ""
 
@@ -729,7 +772,7 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: users.py:142
+#: users.py:143
 msgid "Edit"
 msgstr ""
 
@@ -745,6 +788,10 @@ msgstr ""
 msgid "Email :"
 msgstr ""
 
+#: ui/register.xml.en:0
+msgid "Email address"
+msgstr ""
+
 #: ui/user_profile.xml.en:0
 msgid "Enquiries"
 msgstr ""
@@ -753,7 +800,7 @@ msgstr ""
 msgid "Enquiry"
 msgstr ""
 
-#: companies.py:689
+#: companies.py:691
 msgid "Enquiry sent"
 msgstr ""
 
@@ -761,7 +808,7 @@ msgstr ""
 msgid "Enquiry type<br/>"
 msgstr ""
 
-#: jobs.py:119
+#: jobs.py:143
 msgid "Error of DataTypes."
 msgstr ""
 
@@ -769,7 +816,7 @@ msgstr ""
 msgid "Europe"
 msgstr ""
 
-#: expert_travel.py:38
+#: expert_travel.py:40
 msgid "Events"
 msgstr ""
 
@@ -777,7 +824,7 @@ msgstr ""
 msgid "Executive/Management"
 msgstr ""
 
-#: root.py:135
+#: root.py:142
 msgid "Expert Travel Website"
 msgstr ""
 
@@ -785,7 +832,7 @@ msgstr ""
 msgid "FAQ"
 msgstr ""
 
-#: expert_travel.py:42
+#: expert_travel.py:44
 msgid "FAQs"
 msgstr ""
 
@@ -797,7 +844,7 @@ msgstr ""
 msgid "Fax Number"
 msgstr ""
 
-#: ui/jobs/Candidature_new_instance_form.xml.en:0
+#: ui/register.xml.en:0
 msgid "First Name"
 msgstr ""
 
@@ -815,7 +862,7 @@ msgstr ""
 msgid "FirstName :"
 msgstr ""
 
-#: users.py:55
+#: users.py:56
 msgid "Firstname"
 msgstr ""
 
@@ -831,7 +878,7 @@ msgstr ""
 msgid "From:"
 msgstr ""
 
-#: users.py:245
+#: users.py:279
 msgid "Function"
 msgstr ""
 
@@ -843,7 +890,7 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: root.py:154
+#: root.py:161
 msgid "Help me"
 msgstr ""
 
@@ -875,11 +922,11 @@ msgstr ""
 msgid "Job"
 msgstr ""
 
-#: jobs.py:297
+#: jobs.py:383
 msgid "Job Candidature"
 msgstr ""
 
-#: jobs.py:199
+#: jobs.py:240
 msgid "Job Candidatures"
 msgstr ""
 
@@ -891,7 +938,7 @@ msgstr ""
 msgid "Job Entry modification"
 msgstr ""
 
-#: ui/jobs/job_new_resource_form.xml.en:0
+#: ui/user_edit_account.xml.en:0
 msgid "Job Function"
 msgstr ""
 
@@ -903,11 +950,11 @@ msgstr ""
 msgid "Job Title"
 msgstr ""
 
-#: jobs.py:134
+#: jobs.py:158
 msgid "Job details"
 msgstr ""
 
-#: users.py:326
+#: users.py:362
 msgid "Job(s) delete"
 msgstr ""
 
@@ -923,7 +970,7 @@ msgstr ""
 msgid "Keywords:"
 msgstr ""
 
-#: ui/jobs/Candidature_new_instance_form.xml.en:0
+#: ui/register.xml.en:0
 msgid "Last Name"
 msgstr ""
 
@@ -941,7 +988,7 @@ msgstr ""
 msgid "LastName :"
 msgstr ""
 
-#: users.py:54
+#: users.py:55
 msgid "Lastname"
 msgstr ""
 
@@ -1012,11 +1059,11 @@ msgstr ""
 msgid "My Profile"
 msgstr ""
 
-#: users.py:52
+#: users.py:53
 msgid "Name"
 msgstr ""
 
-#: jobs.py:126
+#: jobs.py:150
 msgid "New Job added."
 msgstr ""
 
@@ -1028,7 +1075,7 @@ msgstr ""
 msgid "News"
 msgstr ""
 
-#: expert_travel.py:34
+#: expert_travel.py:36
 msgid "News Folder List"
 msgstr ""
 
@@ -1040,11 +1087,11 @@ msgstr ""
 msgid "News and Case Studies"
 msgstr ""
 
-#: users.py:92
+#: users.py:93
 msgid "No Users"
 msgstr ""
 
-#: jobs.py:228
+#: jobs.py:269
 msgid "No candidature"
 msgstr ""
 
@@ -1056,7 +1103,7 @@ msgstr ""
 msgid "No companies found."
 msgstr ""
 
-#: users.py:296
+#: users.py:330
 msgid "No jobs"
 msgstr ""
 
@@ -1100,15 +1147,15 @@ msgstr ""
 msgid "Our ${nb_jobs} jobs >>>"
 msgstr ""
 
-#: companies.py:155
+#: companies.py:145
 msgid "Our Jobs"
 msgstr ""
 
-#: companies.py:141
+#: companies.py:131
 msgid "Our branches"
 msgstr ""
 
-#: expert_travel.py:106
+#: expert_travel.py:108
 msgid "Our jobs"
 msgstr ""
 
@@ -1150,7 +1197,7 @@ msgid ""
 "proceeding."
 msgstr ""
 
-#: users.py:487
+#: users.py:523
 msgid "Please choose a county"
 msgstr ""
 
@@ -1160,23 +1207,23 @@ msgid ""
 "database."
 msgstr ""
 
-#: jobs.py:85
+#: jobs.py:107
 msgid "Please give a title to your job"
 msgstr ""
 
-#: users.py:477
+#: users.py:513
 msgid "Please give an Address"
 msgstr ""
 
-#: users.py:367
+#: users.py:403
 msgid "Please give an Name to your Company"
 msgstr ""
 
-#: jobs.py:354
+#: jobs.py:440
 msgid "Please put your CV"
 msgstr ""
 
-#: users.py:322
+#: users.py:358
 msgid "Please select a Job"
 msgstr ""
 
@@ -1192,7 +1239,7 @@ msgstr ""
 msgid "Postcode"
 msgstr ""
 
-#: users.py:162
+#: users.py:196
 msgid "Profile"
 msgstr ""
 
@@ -1208,11 +1255,15 @@ msgstr ""
 msgid "Rail"
 msgstr ""
 
-#: skins/uk.expert.travel/template.xhtml.en:0
+#: ui/jobs/job_view.xml.en:0
+msgid "Region:"
+msgstr ""
+
+#: ui/register.xml.en:0
 msgid "Register"
 msgstr ""
 
-#: ui/address_enquiry_confirm.xml.en:0
+#: ui/register.xml.en:0
 msgid "Registration"
 msgstr ""
 
@@ -1284,11 +1335,11 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: users.py:284
+#: users.py:318
 msgid "Select All"
 msgstr ""
 
-#: users.py:286
+#: users.py:320
 msgid "Select None"
 msgstr ""
 
@@ -1312,11 +1363,11 @@ msgstr ""
 msgid "Short Description<br/>"
 msgstr ""
 
-#: users.py:246
+#: users.py:280
 msgid "Short description"
 msgstr ""
 
-#: companies.py:496
+#: companies.py:499
 msgid "Sorry but there are no jobs"
 msgstr ""
 
@@ -1340,7 +1391,7 @@ msgstr ""
 msgid "Support Staff"
 msgstr ""
 
-#: users.py:332
+#: users.py:368
 msgid "Switch to another company"
 msgstr ""
 
@@ -1356,19 +1407,24 @@ msgstr ""
 msgid "Thank you!"
 msgstr ""
 
-#: jobs.py:544
+#: jobs.py:630
 msgid ""
 "Thank you, your CV and application has been submitted to <b>%s.</b><br/>If "
 "you like to login, please go to <a href=\"/;view\">Home</a>"
 msgstr ""
 
-#: companies.py:790
+#: companies.py:792
 msgid ""
 "Thank you, your enquiry to has been submitted.<br/>If you like to login, "
 "please choose your password"
 msgstr ""
 
-#: users.py:397
+#: ui/register.xml.en:0
+msgid ""
+"The <span class=\"field_required\">emphasized</span> fields are required."
+msgstr ""
+
+#: users.py:433
 msgid "The Company already exist"
 msgstr ""
 
@@ -1383,35 +1439,43 @@ msgstr ""
 msgid "The abakuc Website ${body}"
 msgstr ""
 
-#: users.py:482
+#: users.py:518
 msgid "The address already exist"
 msgstr ""
 
-#: jobs.py:527
+#: jobs.py:613
 msgid "The passwords do not match."
 msgstr ""
 
-#: jobs.py:90
+#: jobs.py:112
 msgid "The title contains illegal characters, choose another one."
 msgstr ""
 
-#: expert_travel.py:166
+#: expert_travel.py:184
 msgid "There are ${n} job announcements."
 msgstr ""
 
-#: companies.py:216
+#: companies.py:206
 msgid "There are ${n} jobs."
 msgstr ""
 
-#: expert_travel.py:165
+#: expert_travel.py:183
 msgid "There is 1 job announcement."
 msgstr ""
 
-#: companies.py:215
+#: website.py:61
+msgid "There is already an active user with that email."
+msgstr ""
+
+#: users.py:182
+msgid "There is another user with the email \"%s\", please try again"
+msgstr ""
+
+#: companies.py:205
 msgid "There is one job."
 msgstr ""
 
-#: companies.py:698
+#: companies.py:700
 msgid ""
 "This email has been generated in response to your enquiry on the UK Travel "
 "List.\n"
@@ -1424,7 +1488,7 @@ msgid ""
 "UK Travel List Team"
 msgstr ""
 
-#: jobs.py:436
+#: jobs.py:522
 msgid ""
 "This email has been generated in response to your job candidature  on the UK "
 "Travel List.\n"
@@ -1495,7 +1559,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: jobs.py:595
+#: jobs.py:681
 msgid "View Candidature"
 msgstr ""
 
@@ -1543,8 +1607,16 @@ msgstr ""
 msgid "Welcome to the UK Travel List on-line portal!"
 msgstr ""
 
-#: jobs.py:115
-msgid "You have to fill all fields."
+#: jobs.py:138
+msgid "You have to fill all fields. You can edit these afterwords"
+msgstr ""
+
+#: users.py:171
+msgid "You mistyped your actual password, your account is not changed."
+msgstr ""
+
+#: users.py:338
+msgid "You need to be registered!"
 msgstr ""
 
 #: ui/jobs/job_new_resource_form.xml.en:0
@@ -1555,7 +1627,7 @@ msgstr ""
 msgid "Your CV (Format :"
 msgstr ""
 
-#: jobs.py:362
+#: jobs.py:448
 msgid "Your CV must be an DOC, ODT or PDF"
 msgstr ""
 
@@ -1563,11 +1635,11 @@ msgstr ""
 msgid "Your ad must not contain:"
 msgstr ""
 
-#: jobs.py:427
+#: jobs.py:513
 msgid "Your candidature has been sent"
 msgstr ""
 
-#: jobs.py:456
+#: jobs.py:542
 msgid ""
 "Your candidature to <strong>%s</strong> needs to be validated.<p>An email "
 "has been sent to <strong><em>%s</em></strong>, to finish the enquiry "
@@ -1580,7 +1652,7 @@ msgstr ""
 msgid "Your email address has been confirmed."
 msgstr ""
 
-#: companies.py:718
+#: companies.py:720
 msgid ""
 "Your enquiry to <strong>%s</strong> needs to be validated.<p>An email has "
 "been sent to <strong><em>%s</em></strong>, to finish the enquiry process, "
@@ -1589,11 +1661,11 @@ msgid ""
 "contact_form\">contact us.</a></p>"
 msgstr ""
 
-#: users.py:389
+#: users.py:425
 msgid "Your logo is too big (max 200x200 px)"
 msgstr ""
 
-#: users.py:382
+#: users.py:418
 msgid "Your logo must be an Image PNG or JPEG"
 msgstr ""
 
@@ -1601,15 +1673,15 @@ msgstr ""
 msgid "Your notes"
 msgstr ""
 
-#: jobs.py:433
+#: jobs.py:519
 msgid "[%s] Register confirmation required"
 msgstr ""
 
-#: jobs.py:578
+#: jobs.py:664
 msgid "[UK Travel] New Candidature (%s)"
 msgstr ""
 
-#: companies.py:808
+#: companies.py:810
 msgid "[UK Travel] New Enquiry (%s)"
 msgstr ""
 
@@ -1637,7 +1709,7 @@ msgstr ""
 msgid "national tourist offices;"
 msgstr ""
 
-#: root.py:347
+#: root.py:363
 msgid "none"
 msgstr ""
 
