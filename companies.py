@@ -23,14 +23,15 @@ from itools.cms.utils import generate_password
 from itools.cms.tracker import Tracker
 from itools.cms.widgets import table, batch
 from itools.cms.catalog import schedule_to_reindex
+from itools.cms.utils import reduce_string
 
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
 from website import WebSite
+from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
-
 
 
 class Companies(Folder):
@@ -219,6 +220,80 @@ class Company(WebSite):
         return stl(handler, namespace)
 
 
+    view_news__label__ = u'Our News'
+    view_news__access__ = True
+    def view_news(self, context):
+        namespace = {}
+        namespace['batch'] = ''
+        columns = [('title', u'Title'),
+                   ('address', u'Address'),
+                   ('description', u'Short description'),
+                   ('closing_date', u'Closing Date')]
+        all_news = []
+        for address in self.search_handlers(handler_class=Address):
+            address_news = list(address.search_handlers(handler_class=News))
+            all_news = all_news + address_news
+
+        # Construct the lines of the table
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'news'))
+        query.append(EqQuery('company', self.name))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        news_items = []
+        for news in list(documents):
+            news = root.get_handler(news.abspath)
+            get = news.get_property
+            # Information about the job
+            address = news.parent
+            company = address.parent
+            url = '%s/%s/;view' % (address.name, news.name)
+            news_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
+                         'closing_date': get('abakuc:closing_date'),
+                         'address': address.get_title_or_name(), 
+                         'description': get('dc:description')}
+            news_items.append(news_to_add)
+        # Sort
+        sortby = context.get_form_value('sortby', 'title')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        news_items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            news_items.reverse()
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(news_items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        news_items = news_items[batch_start:batch_fin]
+        # Namespace 
+        if news_items:
+            news_table = table(columns, news_items, [sortby], sortorder,[])
+            msgs = (u'There is one news item.',
+                    u'There are ${n} news items.')
+            news_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            news_table = None
+            news_batch = None
+            msg = u'Sorry but there is no news'
+        
+        namespace['table'] = news_table
+        namespace['batch'] = news_batch
+        namespace['msg'] = msg 
+        handler = self.get_handler('/ui/abakuc/company_view_news.xml')
+        return stl(handler, namespace)
+
+
     #######################################################################
     # User Interface / Edit
     #######################################################################
@@ -362,7 +437,7 @@ class Address(RoleAware, Folder):
 
 
     def get_document_types(self):
-        return [Job]
+        return [News, Job]
 
 
     get_epoz_data__access__ = 'is_reviewer_or_member'
@@ -438,19 +513,19 @@ class Address(RoleAware, Folder):
         namespace['addresses'] = addresses
         ######## 
         # Jobs
-        columns = [('title', u'Title'),
-                   ('function', u'Function'),
-                   ('description', u'Short description'),
-                   ('closing_date', u'Closing Date')]
+        #columns = [('title', u'Title'),
+        #           ('function', u'Function'),
+        #           ('description', u'Short description'),
+        #           ('closing_date', u'Closing Date')]
         namespace['batch'] = ''
         # Construct the lines of the table
         root = context.root
         catalog = context.server.catalog
         query = []
+        today = (date.today()).strftime('%Y-%m-%d')
         query.append(EqQuery('format', 'Job'))
         query.append(EqQuery('company', self.parent.name))
         query.append(EqQuery('address', self.name))
-        today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
@@ -464,24 +539,36 @@ class Address(RoleAware, Folder):
             company = address.parent
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
-            job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            #job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+            #             'title': (get('dc:title'),url),
+            #             'closing_date': get('abakuc:closing_date'),
+            #             'function': JobTitle.get_value(
+            #                            get('abakuc:function')),
+            #             'description': get('dc:description')}
+            #jobs.append(job_to_add)
+            jobs.append({'url': url,
+                         'title': job.title,
+                         'function': JobTitle.get_value(get('abakuc:function')),
+                         'salary': SalaryRange.get_value(get('abakuc:salary')),
+                         'county': county,
+                         'region': region,
                          'closing_date': get('abakuc:closing_date'),
-                         'function': JobTitle.get_value(
-                                        get('abakuc:function')),
-                         'description': get('dc:description')}
-            jobs.append(job_to_add)
+                         'description': description})
         # Sort
-          # => XXX See if it's correct
-        sortby = context.get_form_value('sortby', 'title')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
-        if reverse:
-            jobs.reverse()
+        # => XXX See if it's correct
+        #sortby = context.get_form_value('sortby', 'title')
+        #sortorder = context.get_form_value('sortorder', 'up')
+        #reverse = (sortorder == 'down')
+        #jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        #if reverse:
+        #    jobs.reverse()
+        # Set batch informations
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5
+        batch_size = 5 
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
@@ -489,18 +576,30 @@ class Address(RoleAware, Folder):
         jobs = jobs[batch_start:batch_fin]
         # Namespace 
         if jobs:
-            job_table = table(columns, jobs, [sortby], sortorder,[])
-            job_batch = batch(context.uri, batch_start, batch_size, 
-                              batch_total)
+            job_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, 
+                              msgs=(u"There is 1 job announcement.",
+                                    u"There are ${n} job announcements."))
             msg = None
         else:
-            job_table = None
             job_batch = None
-            msg = u'Sorry but there are no jobs'
-        
-        namespace['table'] = job_table
+            msg = u"Appologies, currently we don't have any job announcements"
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
+        namespace['jobs'] = jobs
+        # Namespace 
+        #if jobs:
+        #    job_table = table(columns, jobs, [sortby], sortorder,[])
+        #    job_batch = batch(context.uri, batch_start, batch_size, 
+        #                      batch_total)
+        #    msg = None
+        #else:
+        #    job_table = None
+        #    job_batch = None
+        #    msg = u'Sorry but there are no jobs'
+        #
+        #namespace['table'] = job_table
+        #namespace['msg'] = msg 
 
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)

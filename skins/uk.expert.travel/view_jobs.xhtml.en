@@ -64,10 +64,6 @@
             </dl>       
           </stl:block>
         </div>
-         <!--  <p stl:if="table">
-            ${batch}
-            ${table}
-          </p> -->
     </td>
   </tr>
 </form>

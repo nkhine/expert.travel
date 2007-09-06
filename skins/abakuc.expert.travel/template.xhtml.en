@@ -5,7 +5,10 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title>${title}</title>
+    <!-- Meta -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta stl:repeat="meta meta_tags" name="${meta/name}"
+          content="${meta/content}" />
 
     <!-- CSS -->
     <link type="text/css" stl:repeat="style styles" rel="stylesheet"
@@ -17,45 +20,47 @@
 
   </head>
   <body>
-  <div id="height">
-<div id="header">
-<div class="width">
-<h1 class="title" title="Abakuc Expert.Travel"><a href="/" title="Abakuc Expert.Travel">
-Abakuc Expert.Travel</a></h1>
 
-<div id="navbar"><ul>
-<li><a href="/">Home</a></li>
-<li><a href="/">News</a></li>
-<li><a href="/">Jobs</a></li>
-<li><a href="/">FAQ</a></li>
-<li><a href="/">More&nbsp;»</a></li>
-</ul>
-</div>
-                                      <form action="/;search" method="get">
-                                        <div id="search">
-                                            <input name="search_text"
-                                            type="text" class="searchinput" 
-                                              value="" size="15"
-                                              onFocus="if(this.value=='Search this site') this.value='';" />
-                                            <input type="submit" value="Search"/>
-                                        </div>
-                                      </form>
-<div id="bar"><ul>
-                                        <stl:block if="not user/info">
-                                            <li><a href="/;login_form">Log in</a></li>
-                                            <li><a href="/;register_form"
-                                              stl:if="user/joinisopen">Register</a></li>
-                                        </stl:block>
-                                        <stl:block if="user/info">
-                                            <li><a href="${user/info/home}">My Profile</a></li>
-                                            <li><a href="/;logout">Log out</a></li>
-                                        </stl:block>
-                                    <li><a href="/;contact_form">Help</a></li>
-                                    <li><a href="/;contact_form">Contact</a></li>
-</ul>
-</div>
-</div><!-- /header -->
-</div><!--/width-->
+<div id="height">
+  <div id="header">
+    <div class="width">
+      <h1 class="title" title="Abakuc Expert.Travel">
+        <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
+      </h1>
+      <div id="navbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/view_jobs">News</a></li>
+          <li><a href="/;view_jobs">Jobs</a></li>
+          <li><a href="/">FAQ</a></li>
+          <li><a href="/">More&nbsp;»</a></li>
+        </ul>
+      </div>
+      <form action="/;search" method="get">
+        <div id="search">
+          <input name="search_text" type="text" class="searchinput" 
+              value="" size="20" />
+          <input type="submit" value="Search"/>
+        </div>
+      </form>
+      <div id="bar">
+        <ul>
+          <stl:block if="not user/info">
+            <li><a href="/;login_form">Log in</a></li>
+            <li>
+              <a href="/;register_form" stl:if="user/joinisopen">Register</a>
+            </li>
+          </stl:block>
+          <stl:block if="user/info">
+            <li><a href="${user/info/home}">My Profile</a></li>
+            <li><a href="/;logout">Log out</a></li>
+          </stl:block>
+          <li><a href="/;contact_form">Help</a></li>
+          <li><a href="/;contact_form">Contact</a></li>
+        </ul>
+      </div>
+    </div><!-- /header -->
+  </div><!--/width-->
 
     <table width="100%" border="0" cellpadding="0" cellspacing="0">
       <tr>
@@ -70,7 +75,6 @@ Abakuc Expert.Travel</a></h1>
               </div>
               </td>
             </tr>
-
             <tr stl:repeat="option level1">
               <td>
                 <a href="/;search?level1=${option/name}">${option/title}</a>
@@ -97,19 +101,17 @@ Abakuc Expert.Travel</a></h1>
           </div>
           <!-- The Body -->
           <div id="body">
-            <div id="content">
-            The abakuc Website
-            ${body}
-            </div>
+            <div id="content">${body}</div>
           </div>
         </td>
       </tr>
     </table>
-</div><!--/height-->
-    <div id="footer">
-      <a href="/;about">About</a>
-      <a href="/;credits">Credits</a>
-      <a href="/;license">License</a>
-    </div>
+  </div><!--/height-->
+  <div id="footer">
+    <a href="/;about">About</a>
+    <a href="/;credits">Credits</a>
+    <a href="/;license">License</a>
+  </div>
+
   </body>
 </html>

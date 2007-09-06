@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <div>
+    <stl:block> 
+      <table width="100%" id="#news" border="1">
+      <tr>
+      <td>
+      <h1>${dc:title}</h1>
+      </td>
+      <td id="right" rowspan="4">
+          <a href="http://www.dpbolvw.net/b274biroiq58AE6F8F576A6AFCC" target="_blank" onmouseover="window.status='http://www.salestarget.co.uk';return true;" onmouseout="window.status=' ';return true;">
+<img src="http://www.tqlkg.com/tp112snrflj479D5E7E465959EBB" alt="Sales newss at salestarget.co.uk " border="0"/></a> 
+      </td>
+      </tr>
+      <tr>
+      <td>
+          <ul>
+           <li>Closing date: ${abakuc:closing_date}</li>
+           </ul>
+      </td>
+      </tr>
+      <tr>
+      <td>
+          <p>${dc:description}</p> 
+          <p>${abakuc:news_text}</p> 
+      </td>
+      </tr>
+      <stl:block stl:if="not is_reviewer_or_member">
+      <tr>
+      <td align="right">
+          <a href=";new_resource_form?type=Candidature">Apply for the news</a>
+      </td>
+      </tr>
+      </stl:block>
+      </table>
+         <p>« Back to <a href="../../">${company}</a></p>
+    </stl:block>
+    <stl:block stl:if="is_reviewer_or_member">
+      <h1>
+        <a href=";edit_metadata_form">
+          Edit the news
+        </a>
+      </h1>
+    </stl:block>
+  </div>
+
+</stl:block>

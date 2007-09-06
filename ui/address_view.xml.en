@@ -44,9 +44,24 @@
   </tr>
   <tr>
     <td colspan="2">
-      ${batch}
-      ${table}
-      <b stl:if="msg">${msg}</b>
+        <div align="right">
+          ${batch}
+        </div>
+        <div stl:if="msg" align="right">${msg}</div>
+        <div id="List">
+          <stl:block repeat="job jobs"> 
+            <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+              onmouseout="this.className='ListItem';">  
+              <dt>
+                <a href="${job/url}">${job/title}</a>
+              </dt>
+              <dd>
+                ${job/function} - ${job/salary} - ${job/closing_date}<br />
+                ${job/description}<br />
+              </dd>
+            </dl>       
+          </stl:block>
+        </div>
     </td>
   </tr>
   </table>

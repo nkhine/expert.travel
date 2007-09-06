@@ -1,0 +1,177 @@
+/*Copyright 2007 Abakuc Limited */
+
+*{margin:0;padding:0}
+
+/* body{font-size:76%;line-height:1.5;font-family:Verdana, Arial, Helvetica,
+ * sans-serif;color:#666;}*/
+
+#height{position:relative;min-height:100%;}
+
+body,html{height:100%;}
+
+* html #height{height:100%;}
+
+.width{position:relative;min-width: 770px;max-width: 960px;width:auto !important;width:960px;}
+
+
+/**************************************************************************
+ * Header 
+ **************************************************************************/
+#header{width:100%;position:relative;z-index:10;background:#6899FF;
+  margin-bottom: 0px;
+  padding: 0px;
+}
+#header h1{background:url(images/logo.png) top left
+no-repeat;width:400px;height:56px;position:relative;margin:0;padding:0;margin-bottom:
+0em;
+
+  padding: 0px;
+  color: none;
+  font-size: 1.1em;
+  text-align: left;
+}
+
+#header h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
+
+#header h1 a:hover {background:none;border:none;text-decoration: none;}
+
+#header .search {position:absolute;top:18px;right:10px;}
+
+/**************************************************************************
+ * Navigation Bar 
+ **************************************************************************/
+#navbar{position:absolute;top:0;right:5px;text-align:right;margin:0;}
+#navbar ul{float:right;list-style:none;margin:0;padding:0;}
+#navbar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;color:white;}
+#navbar a{font-size: 1.1em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
+#navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
+
+/**************************************************************************
+ * Bar 
+ **************************************************************************/
+#bar{position:absolute;bottom:0;right:5px;text-align:right;margin:0;}
+#bar ul{float:right;list-style:none;margin:0;padding:0;}
+#bar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;}
+#bar a{font-size: 1.0em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#F9E9A9 url(images/off_bg.gif) repeat-x top left;margin:0 1px 0 0;padding:1px 8px;}
+#bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
+
+/**************************************************************************
+ * Search 
+ **************************************************************************/
+#search {position:absolute;bottom:17px;right:5px;text-align:right;margin:0;}
+
+.searchinput {
+    font:normal 11px Tahoma, Arial;
+    color:#000;
+    margin:0px 8px 0px 0px;
+    background:#fff url(images/mag_glass.gif) no-repeat;
+    padding:2px 2px 2px 17px
+}
+/**************************************************************************
+ * Left menu style 
+ **************************************************************************/
+#left table {
+  border-collapse: collapse;
+  font-weight: bold;
+}
+
+#left label {
+  display: block;
+  margin: 0.3em;
+  padding: 0.3em 0.6em;
+  color: #fff;
+  background: #6899FF;
+}
+
+/**************************************************************************
+ * Main title style 
+ **************************************************************************/
+#maintitle {
+  border-collapse: collapse;
+  height: 1.5em;
+}
+#maintitle a {
+  text-decoration: none;
+}
+/**************************************************************************
+ * Center style 
+ **************************************************************************/
+#center {
+  vertical-align: top; 
+}
+/**************************************************************************
+ * Right menu style 
+ **************************************************************************/
+#right {
+  width: 160px;
+  vertical-align: top; 
+  text-align: right;
+}
+/**************************************************************************
+ * Categories style 
+ **************************************************************************/
+#categories		{
+	background-color: #F5F5F5;
+  margin-left: .5em;
+	border: 1px solid #a5a5a5;
+}
+#categories a { 
+  text-decoration: none;
+	font-size: 11px;
+}
+#categories a:hover {
+  text-decoration: underline;
+}
+
+/**************************************************************************
+ * Lists   
+ **************************************************************************/
+#List {
+    margin-left: 5px;
+}
+.ListItem			{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #BBBBBB; background-color: #FFFFE1; }
+.ListItem_Hover		{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #CCCCCC; background-color: #FFFFCC; }
+.ListItem dt { font-size: 1.4em; font-weight: bold; }
+.ListItem_Hover dt { font-size: 1.4em; font-weight: bold; }
+.ListItem dt a { text-decoration: none; color: #000; }
+.ListItem_Hover dt a { text-decoration: none; color: #000; }
+.SmallText				{ font-size: 10px; color: #666666; }
+
+/**************************************************************************
+ * Portlets
+ * ***********************************************************************/
+.portlet_title {padding:3px 6px 3px 6px; background-color:#DBEDF6;}
+.portlet_list {padding:3px 6px 3px 6px; background-color:#DBEDF6;}
+.portlet_more {padding:3px 6px 3px 6px; background-color:#DBEDF6;}
+
+/**************************************************************************
+ * 
+ * ***********************************************************************/
+#logged {
+  margin: 0.3em;
+  padding: 0.5em 0.3em 0.5em 24px;
+  width: 180px;
+  text-align: right;
+}
+
+
+#footer {
+  text-align: center;
+  border-top: 1px solid #6899FF;
+  font-size: 1.0em;
+  margin: 3.5em auto 0 auto;
+  padding: 0.3em;
+  width: 500px;
+}
+
+#footer a {
+  margin-left: 2em;
+  margin-right: 2em;
+  text-decoration: none;
+}
+
+#footer a:hover {
+  text-decoration: underline;
+}
+
+

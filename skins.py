@@ -4,9 +4,11 @@
 # Import from itools
 from itools.cms.skins import Skin
 from itools.web import get_context
+from itools.cms.widgets import tree
 
 # Import from abakuc
-from companies import Company
+from companies import Company, Address
+from countries import Country
 
 
 
@@ -39,19 +41,6 @@ class FrontOffice(Skin):
         return namespace
 
 
-    def get_left_menus(self, context):
-        menus = []
-
-        root =  context.handler.get_site_root()
-        if isinstance(root, Company):
-            # Main Menu
-            menu = self.get_main_menu(context)
-            if menu is not None:
-                menus.append(menu)
-
-        return menus
-
-
     def get_main_menu_options(self, context):
         options = []
         append = options.append
@@ -59,18 +48,41 @@ class FrontOffice(Skin):
         root = handler.get_site_root()
         path = root.abspath
 
-        append({'path': path, 'method': 'view',
-                'title': u'Company details',
-                'icon': '/ui/abakuc/images/AddressBook16.png'})
+        append({'path': path, 'method': 'view_news',
+                'title': u'News',
+                'icon': '/ui/images/UserFolder16.png'})
         append({'path': path, 'method': 'view_jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
         append({'path': path, 'method': 'view_branches',
-                'title': u'Branches',
+                'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
-
         return options
 
+
+    def get_navigation_menu(self, context):
+        """Build the namespace for the navigation menu."""
+        #root = self._get_site_root(context)
+        handler = context.handler
+        root = handler.get_site_root()
+        menu = tree(root, active_node=context.handler, filter=Address,
+                    user=context.user)
+        return {'title': self.gettext(u'Navigation'), 'content': menu}
+
+
+    def get_left_menus(self, context):
+        menus = []
+        root =  context.handler.get_site_root()
+        if isinstance(root, Company):
+            # Main Menu
+            menu = self.get_main_menu(context)
+            if menu is not None:
+                menus.append(menu)
+            # Navigation
+            menu = self.get_navigation_menu(context)
+            menus.append(menu)
+
+        return menus
 
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
@@ -123,9 +135,38 @@ class DestinationsSkin(FrontOffice):
 
         return namespace
 
+    def get_left_menus(self, context):
+        menus = []
+
+        root =  context.handler.get_site_root()
+        if isinstance(root, Country):
+            # Main Menu
+            menu = self.get_main_menu(context)
+            if menu is not None:
+                menus.append(menu)
+
+        return menus
+
+    def get_main_menu_options(self, context):
+        options = []
+        append = options.append
+        handler = context.handler
+        root = handler.get_site_root()
+        path = root.abspath
+
+        append({'path': path, 'method': 'view',
+                'title': u'Country details',
+                'icon': '/ui/abakuc/images/AddressBook16.png'})
+        append({'path': path, 'method': 'view_jobs',
+                'title': u'Jobs',
+                'icon': '/ui/abakuc/images/JobBoard16.png'})
+        append({'path': path, 'method': 'view_branches',
+                'title': u'Branches',
+                'icon': '/ui/images/UserFolder16.png'})
+        return options
 
 
-class FOCompanies(FrontOffice):
+class CompanySkin(FrontOffice):
     """Skin for companies"""
 
     def get_template(self):
@@ -136,6 +177,16 @@ class FOCompanies(FrontOffice):
             return self.get_handler('../.expert.travel/template.xhtml')
 
 
+class CountrySkin(FrontOffice):
+    """Skin for countries"""
+
+    def get_template(self):
+        try:
+            return self.get_handler('template.xhtml')
+        except LookupError:
+            # Default
+            return self.get_handler('../.destinationsguide.info/template.xhtml')
+
 
 websites = {
     # Main Sites
@@ -143,9 +194,10 @@ websites = {
     'uk.expert.travel': FrontOffice,
     'destinationsguide.info': DestinationsSkin,
     # Companies
-    'abakuc.expert.travel': FOCompanies,
-    '.expert.travel': FOCompanies,
+    'abakuc.expert.travel': CompanySkin,
+    '.expert.travel': CompanySkin,
     # Countries
-    '.destinationsguide.info': FrontOffice,
+    'angola.destinationsguide.info': CountrySkin,
+    '.destinationsguide.info': CountrySkin,
 }
 

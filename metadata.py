@@ -100,6 +100,8 @@ class Schema(BaseSchema):
         'enquiry_subject': Unicode,
         'enquiry': Unicode,
         'enquiry_type': String,
+        # News 
+        'news_text': Unicode,
         # Job
         'function': JobTitle,
         'salary': SalaryRange,
