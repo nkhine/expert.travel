@@ -423,8 +423,8 @@ class Address(RoleAware, Folder):
     edit_membership__access__ = 'is_reviewer'
     new_user_form__access__ = 'is_reviewer'
     new_user__access__ = 'is_reviewer'
-    new_resource_form__access__ = True
-    new_resource__access__ = True
+    new_resource_form__access__ = 'is_allowed_to_view'
+    new_resource__access__ = 'is_allowed_to_view'
     
     
     def new(self, **kw):
