@@ -62,11 +62,10 @@ class FrontOffice(Skin):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        #root = self._get_site_root(context)
         handler = context.handler
         root = handler.get_site_root()
-        menu = tree(root, active_node=context.handler, filter=Address,
-                    user=context.user)
+        menu = tree(context.site_root, active_node=context.handler,
+                    filter=Address, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 
@@ -87,10 +86,9 @@ class FrontOffice(Skin):
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
-        root = self._get_site_root(context)
 
         # Build the list of handlers that make up the breadcrumb
-        handlers = [root]
+        handlers = [context.site_root]
         for segment in context.uri.path:
             name = segment.name
             if name:

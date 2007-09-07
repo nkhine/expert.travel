@@ -337,17 +337,6 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # API for Website identification
     #######################################################################
-
-    def _get_site_root(self, context):
-        root = context.root
-        request = context.request
-        if request.has_header('X-Base-Path'):
-            path = request.get_header('X-Base-Path')
-            return root.get_handler(path)
-
-        return root
-
-
     def get_active_countries(self, context):
         """
         Return a list with actives countries and it's code as:
