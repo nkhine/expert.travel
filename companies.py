@@ -24,6 +24,7 @@ from itools.cms.tracker import Tracker
 from itools.cms.widgets import table, batch
 from itools.cms.catalog import schedule_to_reindex
 from itools.cms.utils import reduce_string
+from itools.cms.workflow import WorkflowAware
 
 # Import from abakuc
 from base import Handler, Folder
@@ -402,7 +403,7 @@ class Company(WebSite):
         return context.come_back(message, goto=goto)
 
 
-class Address(RoleAware, Folder):
+class Address(RoleAware, WorkflowAware, Folder):
 
     class_id = 'address'
     class_title = u'Address'
@@ -413,6 +414,7 @@ class Address(RoleAware, Folder):
         ['browse_content?mode=list'],
         ['new_resource_form'],
         ['edit_metadata_form'],
+        ['state_form'],
         ['permissions_form', 'new_user_form']]
 
     __fixed_handlers__ = ['log_enquiry.csv']

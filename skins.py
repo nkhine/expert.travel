@@ -5,7 +5,8 @@
 from itools.cms.skins import Skin
 from itools.web import get_context
 from itools.cms.widgets import tree
-
+from itools.cms.base import Node
+from itools.cms.utils import reduce_string
 # Import from abakuc
 from companies import Company, Address
 from countries import Country
@@ -50,7 +51,7 @@ class FrontOffice(Skin):
 
         append({'path': path, 'method': 'view_news',
                 'title': u'News',
-                'icon': '/ui/images/UserFolder16.png'})
+                'icon': '/ui/abakuc/images/News16.png'})
         append({'path': path, 'method': 'view_jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
@@ -62,11 +63,10 @@ class FrontOffice(Skin):
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        #root = self._get_site_root(context)
         handler = context.handler
         root = handler.get_site_root()
-        menu = tree(root, active_node=context.handler, filter=Address,
-                    user=context.user)
+        menu = tree(root, active_node=context.handler,
+                    filter=Address, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 
@@ -84,6 +84,10 @@ class FrontOffice(Skin):
 
         return menus
 
+
+    #######################################################################
+    # Breadcrumb
+    #######################################################################
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
@@ -94,17 +98,29 @@ class FrontOffice(Skin):
         for segment in context.uri.path:
             name = segment.name
             if name:
-                handler = handlers[-1].get_handler(name)
+                try:
+                    handler = handlers[-1].get_handler(name)
+                except LookupError:
+                    continue
                 handlers.append(handler)
 
         #  Build the namespace
         breadcrumb = []
         for handler in handlers:
-            url = '%s/;view' % here.get_pathto(handler)
+            if not isinstance(handler, Node):
+                break
+            # The link
+            view = handler.get_firstview()
+            if view is None:
+                url = None
+            else:
+                url = '%s/;%s' % (here.get_pathto(handler), view)
             # The title
-            title = handler.get_title_or_name()
+            title = handler.get_title()
+            short_title = reduce_string(title, 15, 30) 
             # Name
-            breadcrumb.append({'name': title, 'short_name': title, 'url': url})
+            breadcrumb.append({'name': title, 'short_name': short_title,
+                               'url': url})
 
         return breadcrumb
 
