@@ -22,8 +22,8 @@ class News(RoleAware, Folder):
     class_id = 'news'
     class_title = u'News'
     class_description = u'Add new news items'
-    class_icon16 = 'abakuc/images/JobBoard16.png'
-    class_icon48 = 'abakuc/images/JobBoard48.png'
+    class_icon16 = 'abakuc/images/News16.png'
+    class_icon48 = 'abakuc/images/News48.png'
     class_views = [
         ['view'],
         ['view_candidatures'],
