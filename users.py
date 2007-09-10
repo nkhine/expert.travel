@@ -25,6 +25,7 @@ from itools.rest import checkid
 from itools.cms.widgets import table, batch
 from itools.xml import Parser
 from itools.datatypes import Email
+
 # Import from our product
 from companies import Company, Address 
 from jobs import Job
@@ -78,7 +79,7 @@ class UserFolder(iUserFolder):
                     "return select_checkboxes('browse_list', true);"),
                    ('select', u'Select None', 'button_select_none',
                     "return select_checkboxes('browse_list', false);"),
-                   ('remove', 'Supprimer', 'button_delete', None)]
+                   ('remove', 'Remove', 'button_delete', None)]
         if rows:
             sortby = context.get_form_value('sortby', 'id')
             sortorder = context.get_form_value('sortorder', 'up')
@@ -299,7 +300,7 @@ class User(iUser, Handler):
             jobs.append(job_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 20
+        batch_size = 5
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
@@ -319,10 +320,13 @@ class User(iUser, Handler):
                         "return select_checkboxes('browse_list', true);"),
                        ('select', u'Select None', 'button_select_none',
                         "return select_checkboxes('browse_list', false);"),
-                       ('remove_job', 'Supprimer', 'button_delete', None)]
+                       ('create_new_job', u'Add new job', 'button_ok',
+                        None),
+                       ('remove_job', 'Delete Job/s', 'button_delete', None)]
             job_table = table(columns, jobs, [sortby], sortorder, actions)
+            msgs = (u'There is one job.', u'There are ${n} jobs.')
             job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total)
+                              batch_total, msgs=msgs)
             msg = None
         else:
             job_table = None
@@ -348,6 +352,19 @@ class User(iUser, Handler):
         return stl(handler, namespace)
 
 
+    ########################################################################
+    # Create a new job 
+    create_new_job__access__ = 'is_self_or_admin'
+    def create_new_job(self, context):
+        address = self.get_address()
+        company = address.parent
+        url = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
+                                                                address.name)
+        goto = context.uri.resolve(url)
+        message = u'Please use this form to add a new job'
+        return context.come_back(message, goto=goto)
+        
+    
     ########################################################################
     # Remove job
     remove_job__access__ = 'is_self_or_admin'

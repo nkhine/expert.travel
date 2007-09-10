@@ -6,11 +6,18 @@
       <tr>
         <stl:block if="not address">
         <td><h2>Company Name/Address</h2></td>
-        <td><h2>Personnal Details</h2></td>
+            <stl:block if="not lastname">
+            <td><h2>Personnal Details</h2></td>
+            </stl:block>
         </stl:block>
         <stl:block if="address">
         <td><h2>${company/title}</h2></td>
-        <td><h2>${firstname} ${lastname}</h2></td>
+            <stl:block if="not lastname">
+            <td><h2>Personnal Details</h2></td>
+            </stl:block>
+            <stl:block if="lastname">
+            <td><h2>${firstname} ${lastname}</h2></td>
+            </stl:block>
         </stl:block>
       </tr>
       <tr>
@@ -119,12 +126,6 @@
         ${batch}
         ${table}
         <b stl:if="msg">${msg}</b>
-      
-        <p stl:if="is_reviewer_or_member">
-          <a href="${address/address_path}/;new_resource_form?type=Job">
-          Add a job
-          </a>
-        </p>
       </p>
     </stl:block>
 
