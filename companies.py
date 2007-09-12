@@ -130,6 +130,27 @@ class Company(WebSite):
         return stl(handler, namespace)
 
 
+    ####################################################################
+    # Users
+    get_members_namespace__access__ = 'is_allowed_to_edit'
+    get_members_namespace__label__ = u'Users'
+    def get_members_namespace(self):
+        """
+        Returns a namespace (list of dictionaries) to be used for the
+        selection box of users (the 'assigned to' field).
+        """
+        address = self.search_handlers(handler_class=Address)
+        users = address.get_members()
+        members = []
+        for username in users:
+            url = '/users/%s/;profile' % username 
+            members.append({'id': username, 'url': url})
+        #namespace['users'] = members 
+        return members
+
+
+    ####################################################################
+    # View branches 
     view_branches__label__ = u'Our branches'
     view_branches__access__ = True
     def view_branches(self, context):
@@ -139,11 +160,15 @@ class Company(WebSite):
         for address in addresses:
             url = '%s/;view' %  address.name
             namespace['addresses'].append({'url': url,
+                                           'address': address.get_property('abakuc:address'),
                                            'title': address.title_or_name})
+        #namespace['users'] = self.get_members_namespace()
         handler = self.get_handler('/ui/abakuc/abakuc_view_branches.xml')
         return stl(handler, namespace)
 
 
+    ####################################################################
+    # View jobs 
     view_jobs__label__ = u'Our Jobs'
     view_jobs__access__ = True
     def view_jobs(self, context):

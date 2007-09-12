@@ -189,7 +189,10 @@ class User(iUser, Handler):
             self.set_property(key, value)
         self.set_property('abakuc:job_function', job_functions)
 
-        return context.come_back(u'Account changed.')
+        url = ';profile'
+        goto = context.uri.resolve(url)
+        message = u'Account changed.'
+        return context.come_back(message, goto=goto)
 
     #######################################################################
     # Profile
@@ -351,6 +354,12 @@ class User(iUser, Handler):
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
 
+
+    ########################################################################
+    # View 
+    view__access__ = True 
+    def view(self, context):
+        return 'Hello' 
 
     ########################################################################
     # Create a new job 

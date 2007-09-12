@@ -5,6 +5,6 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
     <h1>Branches</h1>
     <div stl:repeat="address addresses">
-        <a href="${address/url}">${address/title}</a>
+        <a href="${address/url}">${address/address}</a>
     </div>
 </stl:block>

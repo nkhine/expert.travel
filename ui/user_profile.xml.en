@@ -82,26 +82,27 @@
         <td valign="top">
           <table>
             <tr>
-              <th align="right">Email</th>
-              <td>${email}</td>
+              <td rowspan="3">
+                <img name="" src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image" />
+              </td>
+              <th valign="top" height="99%">Email</th>
+              <td valign="top">${email}</td>
             </tr>
             <tr>
-              <th>Role</th>
-              <td>
-                <span stl:if="is_admin">Admin</span>
+              <th valign="top">Role</th>
+              <td valign="top">
+                <span stl:if="is_admin">Admin,</span>
                 <span stl:if="is_reviewer">Reviewer</span>
                 <span stl:if="is_member">Member</span>
                 <span stl:if="is_guest">Guest</span>
               </td>
             </tr>
-            <tr>
-              <td></td>
-              <td>
-                  <a href=";edit_account_form">Edit account details.</a>
-                  <a href=";edit_password_form">Change password.</a>
-              </td>
-            </tr>
           </table>
+          <p>
+            <a href=";edit_account_form">Modify portrait.</a>
+            <a href=";edit_account_form">Edit account details.</a>
+            <a href=";edit_password_form">Change password.</a>
+          </p>
         </td>
         <tr stl:if="is_reviewer_or_member">
           <td valign="top">
@@ -128,7 +129,11 @@
         <b stl:if="msg">${msg}</b>
       </p>
     </stl:block>
-
+    <p stl:if="is_reviewer_or_member">
+      <a href="${address/address_path}/;new_resource_form?type=Job" >
+      Add a job
+      </a>
+    </p>
     <!-- Reviewer Actions -->
     <stl:block if="is_reviewer">
       <h2>Actions</h2>
