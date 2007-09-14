@@ -34,7 +34,6 @@ from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
 
-
 class Companies(Folder):
 
     class_id = 'companies'
@@ -68,6 +67,7 @@ class Company(WebSite):
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
+                   ['permissions_form', 'new_user_form'],
                    ['edit_metadata_form']]
 
 
@@ -89,7 +89,6 @@ class Company(WebSite):
         if website.startswith('http://'):
             return website
         return 'http://' + website
-
     #######################################################################
     # Security / Access Control
     #######################################################################
@@ -132,21 +131,31 @@ class Company(WebSite):
 
     ####################################################################
     # Users
-    get_members_namespace__access__ = 'is_allowed_to_edit'
-    get_members_namespace__label__ = u'Users'
-    def get_members_namespace(self, context):
-        """
-        Returns a namespace (list of dictionaries) to be used 
-        in the branch view list.
-        """
-        address = self.search_handlers(handler_class=Address)
-        users = context.get_members()
-        members = []
-        for user in users:
-            url = '/users/%s/;profile' % user 
-            members.append({'id': user,
-                            'url': url})
-        return members
+    #get_members_namespace__access__ = 'is_allowed_to_edit'
+    #get_members_namespace__label__ = u'Users'
+    #def get_members_namespace(self, context):
+    #    """
+    #    Returns a namespace (list of dictionaries) to be used 
+    #    in the branch view list.
+    #    """
+    #    addresses = self.search_handlers(handler_class=Address)
+    #    users = self.get_handler('/users')
+    #    for address in addresses:
+    #        members = []
+    #        branch_members = address.get_members()
+    #        for username in branch_members:
+    #            user = users.get_handler(username)
+    #            url = '/users/%s/;profile' % username 
+    #            members.append({'id': username,
+    #                            'title': user.get_title(),
+    #                            'url': url})
+    #        #for username in self.get_site_root().get_members():
+    #        #    user = users.get_handler(username)
+    #        #    members.append({'id': username, 'title': user.get_title()})
+    #        # Select
+
+    #        return members
+
 
     ####################################################################
     # View branches 
@@ -157,6 +166,14 @@ class Company(WebSite):
         addresses = self.search_handlers(handler_class=Address)
         namespace['addresses'] = []
         for address in addresses:
+            branch_members = address.get_members()
+            members = []
+            for user in branch_members:
+                url = '/users/%s/;profile' % user 
+                members.append({'id': user,
+                                #'title': username,
+                                'url': url})
+            namespace['users'] = members
             url = '%s/;view' %  address.name
             enquire = '%s/;enquiry_form' % address.name
             namespace['addresses'].append({'url': url,
@@ -165,8 +182,10 @@ class Company(WebSite):
                                            'postcode': address.get_property('abakuc:postcode'),
                                            'phone': address.get_property('abakuc:phone'),
                                            'title': address.title_or_name})
-            namespace['users'] = self.get_members_namespace(address)
+
+        #namespace['users'] = self.get_members_namespace(address)
         handler = self.get_handler('/ui/abakuc/abakuc_view_branches.xml')
+
         return stl(handler, namespace)
 
 

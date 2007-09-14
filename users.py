@@ -193,43 +193,43 @@ class User(iUser, Handler):
         self.set_property('abakuc:job_function', job_functions)
         
         # The logo
-        if context.has_form_value('remove_logo'):
-            if self.has_handler('logo'):
-                self.del_object('logo')
-        elif logo is not None:
-            name, mimetype, data = logo
-            guessed = mimetypes.guess_type(name)[0]
-            if guessed is not None:
-                mimetype = guessed
-            logo_cls = get_object_class(mimetype)
-            logo = logo_cls(string=data)
-            logo_name = 'logo'
-            # Check format of Logo
-            if not isinstance(logo, Image):
-                msg = u'Your logo must be an Image PNG or JPEG'
-                return context.come_back(msg)
-            # Check size
-            size = logo.get_size()
-            if size is not None:
-                width, height = size
-                if width > 200 or height > 200:
-                    msg = u'Your logo is too big (max 200x200 px)'
-                    return context.come_back(msg)
-            
-            # Add or edit the logo
-            if self.has_handler('logo'):
-                # Edit the logo
-                logo = self.get_handler('logo')
-                try:
-                    logo.load_state_from_string(data)
-                except:
-                    self.load_state()
-                logo = logo.load_state_from_string(string=data)
-            else:
-                # Add the new logo
-                logo = logo_cls(string=data)
-                logo, metadata = self.set_object(logo_name, logo)
-                metadata.set_property('state', 'public')
+        #if context.has_form_value('remove_logo'):
+        #    if self.has_handler('logo'):
+        #        self.del_object('logo')
+        #elif logo is not None:
+        #    name, mimetype, data = logo
+        #    guessed = mimetypes.guess_type(name)[0]
+        #    if guessed is not None:
+        #        mimetype = guessed
+        #    logo_cls = get_object_class(mimetype)
+        #    logo = logo_cls(string=data)
+        #    logo_name = 'logo'
+        #    # Check format of Logo
+        #    if not isinstance(logo, Image):
+        #        msg = u'Your logo must be an Image PNG or JPEG'
+        #        return context.come_back(msg)
+        #    # Check size
+        #    size = logo.get_size()
+        #    if size is not None:
+        #        width, height = size
+        #        if width > 200 or height > 200:
+        #            msg = u'Your logo is too big (max 200x200 px)'
+        #            return context.come_back(msg)
+        #    
+        #    # Add or edit the logo
+        #    if self.has_handler('logo'):
+        #        # Edit the logo
+        #        logo = self.get_handler('logo')
+        #        try:
+        #            logo.load_state_from_string(data)
+        #        except:
+        #            self.load_state()
+        #        logo = logo.load_state_from_string(string=data)
+        #    else:
+        #        # Add the new logo
+        #        logo = logo_cls(string=data)
+        #        logo, metadata = self.set_object(logo_name, logo)
+        #        metadata.set_property('state', 'public')
 
         url = ';profile'
         goto = context.uri.resolve(url)
