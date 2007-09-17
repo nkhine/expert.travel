@@ -131,30 +131,27 @@ class Company(WebSite):
 
     ####################################################################
     # Users
-    #get_members_namespace__access__ = 'is_allowed_to_edit'
-    #get_members_namespace__label__ = u'Users'
-    #def get_members_namespace(self, context):
-    #    """
-    #    Returns a namespace (list of dictionaries) to be used 
-    #    in the branch view list.
-    #    """
-    #    addresses = self.search_handlers(handler_class=Address)
-    #    users = self.get_handler('/users')
-    #    for address in addresses:
-    #        members = []
-    #        branch_members = address.get_members()
-    #        for username in branch_members:
-    #            user = users.get_handler(username)
-    #            url = '/users/%s/;profile' % username 
-    #            members.append({'id': username,
-    #                            'title': user.get_title(),
-    #                            'url': url})
-    #        #for username in self.get_site_root().get_members():
-    #        #    user = users.get_handler(username)
-    #        #    members.append({'id': username, 'title': user.get_title()})
-    #        # Select
+    get_members_namespace__access__ = 'is_allowed_to_edit'
+    get_members_namespace__label__ = u'Users'
+    def get_members_namespace(self, context):
+        """
+        Returns a namespace (list of dictionaries) to be used 
+        in the branch view list.
+        """
+        # This works, but returns only the user's id
+        # and also don't know how to break it down
+        # into individual branches.
+        addresses = self.search_handlers(handler_class=Address)
+        members = []
+        for address in addresses:
+            branch_members = address.get_members()
+            for username in branch_members:
+                url = '/users/%s/;profile' % username 
+                members.append({'id': username,
+                                'url': url})
+        # List users 
 
-    #        return members
+        return members
 
 
     ####################################################################
@@ -166,14 +163,6 @@ class Company(WebSite):
         addresses = self.search_handlers(handler_class=Address)
         namespace['addresses'] = []
         for address in addresses:
-            branch_members = address.get_members()
-            members = []
-            for user in branch_members:
-                url = '/users/%s/;profile' % user 
-                members.append({'id': user,
-                                #'title': username,
-                                'url': url})
-            namespace['users'] = members
             url = '%s/;view' %  address.name
             enquire = '%s/;enquiry_form' % address.name
             namespace['addresses'].append({'url': url,
@@ -183,7 +172,7 @@ class Company(WebSite):
                                            'phone': address.get_property('abakuc:phone'),
                                            'title': address.title_or_name})
 
-        #namespace['users'] = self.get_members_namespace(address)
+        namespace['users'] = self.get_members_namespace(address)
         handler = self.get_handler('/ui/abakuc/abakuc_view_branches.xml')
 
         return stl(handler, namespace)
@@ -523,7 +512,28 @@ class Address(RoleAware, WorkflowAware, Folder):
         address = self.get_property('abakuc:address')
         return address or self.name
 
+    def get_members_namespace(self, context):
+        """
+        Returns a namespace (list of dictionaries) to be used 
+        in the branch view list.
+        """
+        # This works if the user is added to the Company
+        users = self.get_handler('/users')
+        members = []
+        for username in self.get_members():
+           user = users.get_handler(username)
+           url = '/users/%s/;profile' % username 
+           state = user.get_property('state')
+           if state != 'public':
+                return None
+           members.append({'id': user.get_title,
+                           'url': url,
+                           'firstname': user.get_property('ikaaro:firstname'),
+                           'phone': user.get_property('abakuc:phone'),
+                           'title': user.get_title()})
+        # List users 
 
+        return members
     #######################################################################
     # User Interface / View
     #######################################################################
@@ -560,12 +570,12 @@ class Address(RoleAware, WorkflowAware, Folder):
                 'name': address.name,
                 'address': address.get_property('abakuc:address')})
         namespace['addresses'] = addresses
+
+        ################ 
+        # Branch Members
+        namespace['users'] = self.get_members_namespace(address)
         ######## 
         # Jobs
-        #columns = [('title', u'Title'),
-        #           ('function', u'Function'),
-        #           ('description', u'Short description'),
-        #           ('closing_date', u'Closing Date')]
         namespace['batch'] = ''
         # Construct the lines of the table
         root = context.root
@@ -591,13 +601,6 @@ class Address(RoleAware, WorkflowAware, Folder):
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            #job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-            #             'title': (get('dc:title'),url),
-            #             'closing_date': get('abakuc:closing_date'),
-            #             'function': JobTitle.get_value(
-            #                            get('abakuc:function')),
-            #             'description': get('dc:description')}
-            #jobs.append(job_to_add)
             jobs.append({'url': url,
                          'title': job.title,
                          'function': JobTitle.get_value(get('abakuc:function')),
@@ -606,15 +609,6 @@ class Address(RoleAware, WorkflowAware, Folder):
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'description': description})
-        # Sort
-        # => XXX See if it's correct
-        #sortby = context.get_form_value('sortby', 'title')
-        #sortorder = context.get_form_value('sortorder', 'up')
-        #reverse = (sortorder == 'down')
-        #jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
-        #if reverse:
-        #    jobs.reverse()
-        # Set batch informations
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5 
@@ -633,22 +627,10 @@ class Address(RoleAware, WorkflowAware, Folder):
         else:
             job_batch = None
             msg = u"Appologies, currently we don't have any job announcements"
+        # Namespace 
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
         namespace['jobs'] = jobs
-        # Namespace 
-        #if jobs:
-        #    job_table = table(columns, jobs, [sortby], sortorder,[])
-        #    job_batch = batch(context.uri, batch_start, batch_size, 
-        #                      batch_total)
-        #    msg = None
-        #else:
-        #    job_table = None
-        #    job_batch = None
-        #    msg = u'Sorry but there are no jobs'
-        #
-        #namespace['table'] = job_table
-        #namespace['msg'] = msg 
 
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)

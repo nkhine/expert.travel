@@ -25,6 +25,7 @@ from itools.rest import checkid
 from itools.cms.widgets import table, batch
 from itools.xml import Parser
 from itools.datatypes import Email
+from itools.cms.workflow import WorkflowAware
 
 # Import from our product
 from companies import Company, Address 
@@ -105,7 +106,7 @@ register_object_class(UserFolder)
 
 
 
-class User(iUser, Handler):
+class User(iUser, WorkflowAware, Handler):
 
     class_id = 'user'
     class_version = '20040625'
@@ -117,6 +118,7 @@ class User(iUser, Handler):
                     'browse_content?mode=list',
                     'browse_content?mode=image'],
                    ['new_resource_form'],
+                   ['state_form'],
                    ['edit_form', 'edit_account_form', 'edit_password_form'],
                    ['tasks_list']]
 
@@ -273,6 +275,10 @@ class User(iUser, Handler):
         namespace['is_guest'] = is_guest
         namespace['is_reviewer_or_member'] = is_reviewer_or_member
 
+        #User's state
+        namespace['statename'] = self.get_statename()
+        state = self.get_state()
+        namespace['state'] = self.gettext(state['title'])
         # User Identity
         namespace['firstname'] = self.get_property('ikaaro:firstname')
         namespace['lastname'] = self.get_property('ikaaro:lastname')

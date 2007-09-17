@@ -69,7 +69,7 @@ class ExpertTravel(WebSite):
         raise KeyError
 
     #######################################################################
-    # List last 5 jobs for Home page
+    # List last 5 jobs and 5 news items for Home page
     #######################################################################
     def view(self, context):
         root = context.root
@@ -96,6 +96,25 @@ class ExpertTravel(WebSite):
                          'title': job.title})
         namespace['jobs'] = jobs
         # Construct the lines of the table
+        #catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'news'))
+        today = date.today().strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        namespace['nb_news'] = len(documents)
+        documents = documents[0:4]
+        news_items = []
+        for news in documents:
+            news = root.get_handler(news.abspath)
+            address = news.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s' % (company.name, address.name, news.name)
+            news_items.append({'url': url,
+                         'title': news.title})
+        namespace['news'] = news_items
         # Return the page
         handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)

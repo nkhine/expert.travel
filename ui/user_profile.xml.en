@@ -82,7 +82,7 @@
         <td valign="top">
           <table>
             <tr>
-              <td rowspan="3">
+              <td rowspan="4">
                 <img name="" src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image" />
               </td>
               <th valign="top" height="99%">Email</th>
@@ -97,6 +97,14 @@
                 <span stl:if="is_guest">Guest</span>
               </td>
             </tr>
+            <tr>
+              <th valign="top">State</th>
+              <td valign="top">
+                <a href=";state_form"><strong
+                class="wf_${statename}">${state}</strong></a>
+              </td>
+            </tr>
+
           </table>
           <p>
             <a href=";edit_account_form">Modify portrait.</a>

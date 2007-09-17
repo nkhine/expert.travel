@@ -35,10 +35,10 @@
 				</tr>
         <tr>
               <td id="List">
-                  <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                  <dl stl:repeat="news_items news" class="ListItem" onmouseover="this.className='ListItem_Hover';"
                     onmouseout="this.className='ListItem';">  
                     <dt>
-                      <a href="{item/href}">{item/title}</a>
+                      <a href="${news_items/url}">${news_items/title}</a>
                     </dt>
                     <dd>
                       Short Description<br/>
@@ -129,13 +129,13 @@
 												<tr>
 													<td style="line-height:160%;">
 													<p style="line-height:130%;margin:0 0 6px 0">
-												      <ul>
+												       <ul>
                                 <li stl:repeat="job jobs">
                                   <a href="${job/url}">
                                     ${job/title}
                                   </a>
                                 </li>
-                              </ul>
+                              </ul> 
 													</p>
 													</td>
 												</tr>

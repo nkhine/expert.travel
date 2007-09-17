@@ -9,8 +9,8 @@
         ${address/postcode}
         ${address/phone}
         <a href="${address/enquire}">Send Enquiry</a>
-        <div stl:repeat="item users">
-            <a href="${item/url}">${item/id}</a>
-        </div>
+    </div>
+    <div stl:repeat="item users">
+        <a href="${item/url}">${item/id}</a>
     </div>
 </stl:block>

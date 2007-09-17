@@ -37,7 +37,19 @@
   </li>
 </ul>
     </td>
-    <td valign="top">News</td>
+    <td valign="top">
+    <stl:block if="not users">
+    <div>
+       No Users
+    </div>
+    </stl:block>
+    <stl:block if="users">
+    <div stl:repeat="item users">
+        <a href="${item/url}">${item/title}</a>
+    </div>
+    </stl:block>
+    </td>
+    
   </tr>
   <tr>
     <td colspan="2"><h2>Jobs at ${company}</h2></td>
