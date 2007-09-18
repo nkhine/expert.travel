@@ -518,19 +518,20 @@ class Address(RoleAware, WorkflowAware, Folder):
         in the branch view list.
         """
         # This works if the user is added to the Company
+        root = get_context().root
         users = self.get_handler('/users')
         members = []
         for username in self.get_members():
            user = users.get_handler(username)
            url = '/users/%s/;profile' % username 
+           job_function = user.get_property('abakuc:job_function')
            state = user.get_property('state')
-           if state != 'public':
-                return None
-           members.append({'id': user.get_title,
-                           'url': url,
-                           'firstname': user.get_property('ikaaro:firstname'),
-                           'phone': user.get_property('abakuc:phone'),
-                           'title': user.get_title()})
+           if state == 'public':
+                 members.append({'id': user.get_title,
+                                 'url': url,
+                                 'job_function': job_function,
+                                 'phone': user.get_property('abakuc:phone'),
+                                 'title': user.get_title()})
         # List users 
 
         return members
@@ -574,6 +575,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         ################ 
         # Branch Members
         namespace['users'] = self.get_members_namespace(address)
+
         ######## 
         # Jobs
         namespace['batch'] = ''

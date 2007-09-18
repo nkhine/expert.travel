@@ -26,18 +26,11 @@
         </td> 
         </tr>
   <tr>
-    <td width="70%"><h2>Other branches</h2></td>
+    <td width="70%"><h2>Personnel</h2></td>
   <td width="30%"><h2>News</h2></td>
   </tr>
   <tr>
     <td>
-    <ul>
-  <li stl:repeat="address addresses">
-    <a href="../${address/name}">${address/address}</a>
-  </li>
-</ul>
-    </td>
-    <td valign="top">
     <stl:block if="not users">
     <div>
        No Users
@@ -45,9 +38,16 @@
     </stl:block>
     <stl:block if="users">
     <div stl:repeat="item users">
-        <a href="${item/url}">${item/title}</a>
+     ${item/job_function}: <a href="${item/url}">${item/title}</a>
     </div>
     </stl:block>
+    </td>
+    <td valign="top">
+    <ul>
+      <li stl:repeat="address addresses">
+        <a href="../${address/name}">${address/address}</a>
+      </li>
+    </ul>
     </td>
     
   </tr>
