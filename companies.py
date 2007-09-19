@@ -214,13 +214,18 @@ class Company(WebSite):
             address = job.parent
             company = address.parent
             url = '%s/%s/;view' % (address.name, job.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
+                         'url': url,
+                         'title': get('dc:title'),
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(), 
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
-                         'description': get('dc:description')}
+                         'salary': SalaryRange.get_value(get('abakuc:salary')),               
+                         'description': description}
             jobs.append(job_to_add)
         # Sort
         sortby = context.get_form_value('sortby', 'title')
@@ -249,7 +254,8 @@ class Company(WebSite):
             job_table = None
             job_batch = None
             msg = u'Sorry but there are no jobs'
-        
+
+        namespace['jobs'] = jobs        
         namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
@@ -630,10 +636,63 @@ class Address(RoleAware, WorkflowAware, Folder):
             job_batch = None
             msg = u"Appologies, currently we don't have any job announcements"
         # Namespace 
-        namespace['batch'] = job_batch
+        namespace['job_batch'] = job_batch
         namespace['msg'] = msg 
         namespace['jobs'] = jobs
 
+        ######## 
+        # News 
+        namespace['batch'] = ''
+        # Construct the lines of the table
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(EqQuery('format', 'news'))
+        query.append(EqQuery('company', self.parent.name))
+        query.append(EqQuery('address', self.name))
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        news_items = []
+        for news in list(documents):
+            news = root.get_handler(news.abspath)
+            get = news.get_property
+            # Information about the news
+            address = news.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                 news.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=10,
+                                        phrase_treshold=60)
+            news_items.append({'url': url,
+                               'title': news.title,
+                               'closing_date': get('abakuc:closing_date'),
+                               'description': description})
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 2 
+        batch_total = len(news_items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        news_items = news_items[batch_start:batch_fin]
+        # Namespace 
+        if news_items:
+            news_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, 
+                              msgs=(u"There is 1 news item.",
+                                    u"There are ${n} news items."))
+            msg = None
+        else:
+            news_batch = None
+            msg = u"Currently there is no news."
+        # Namespace 
+        namespace['news_batch'] = news_batch
+        namespace['news_msg'] = msg 
+        namespace['news_items'] = news_items
         handler = self.get_handler('/ui/abakuc/address_view.xml')
         return stl(handler, namespace)
 

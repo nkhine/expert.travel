@@ -298,7 +298,7 @@ class Job(RoleAware, Folder):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
-        handler = root.get_handler('ui/abakuc/jobs_form.xml')
+        handler = root.get_handler('ui/abakuc/jobs/jobs_form.xml')
         return stl(handler, namespace)
 
 

@@ -6,77 +6,110 @@
 
 <table width="100%" border="0">
   <tr>
-      <td colspan="2" valign="top">
-        <a href="../;view"><h1>${company}</h1></a>
-        <img stl:if="logo" border="0" src="../logo" style="float: right" />
-        <address>
-          ${address}<br/>
-          ${town}<br/>
-          ${region}&nbsp;-&nbsp;${county}<br/>
-          ${postcode}<br/>
-          ${country}<br/><br/>
-        </address>
-  <table width="100%" border="0">
-       <tr> 
-        <td align="left">
-          P: ${phone}&nbsp;-&nbsp;F: ${fax}
-        </td> 
-        <td align="right"> 
-          <a href=";enquiry_form">Make an enquiry</a>
-        </td> 
-        </tr>
-  <tr>
-    <td width="70%"><h2>Personnel</h2></td>
-  <td width="30%"><h2>News</h2></td>
-  </tr>
-  <tr>
-    <td>
-    <stl:block if="not users">
-    <div>
-       No Users
-    </div>
-    </stl:block>
-    <stl:block if="users">
-    <div stl:repeat="item users">
-     ${item/job_function}: <a href="${item/url}">${item/title}</a>
-    </div>
-    </stl:block>
-    </td>
-    <td valign="top">
-    <ul>
-      <li stl:repeat="address addresses">
-        <a href="../${address/name}">${address/address}</a>
-      </li>
-    </ul>
-    </td>
-    
-  </tr>
-  <tr>
-    <td colspan="2"><h2>Jobs at ${company}</h2></td>
-  </tr>
-  <tr>
-    <td colspan="2">
-        <div align="right">
-          ${batch}
-        </div>
-        <div stl:if="msg" align="right">${msg}</div>
-        <div id="List">
-          <stl:block repeat="job jobs"> 
-            <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
-              onmouseout="this.className='ListItem';">  
-              <dt>
-                <a href="${job/url}">${job/title}</a>
-              </dt>
-              <dd>
-                ${job/function} - ${job/salary} - ${job/closing_date}<br />
-                ${job/description}<br />
-              </dd>
-            </dl>       
-          </stl:block>
-        </div>
-    </td>
-  </tr>
-  </table>
+     <td colspan="2" valign="top">
+          <table width="100%" border="0">
+               <tr> 
+                <td colspan="3" align="left">
+                    <a href="../;view"><h1>${company}</h1></a>
+                    <img stl:if="logo" border="0" src="../logo" style="float: right" />
+                    <address>
+                      ${address}<br/>
+                      ${town}<br/>
+                      ${region}&nbsp;-&nbsp;${county}<br/>
+                      ${postcode}<br/>
+                      ${country}<br/><br/>
+                    </address>
+                </td> 
+                <td valign="top" bgcolor="#E9E9E9"> 
+                <h1>
+                <!-- AddThis Bookmark Button BEGIN -->
+                <script type="text/javascript">
+                  addthis_url    = location.href;   
+                  addthis_title  = document.title;  
+                  addthis_pub    = 'qsqgeekyogdty';     
+                </script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
+                <!-- AddThis Bookmark Button END -->
+                </h1>
+                </td> 
+                </tr>
+               <tr> 
+                <td colspan="3" align="left">
+                  P: ${phone}&nbsp;-&nbsp;F: ${fax}
+                </td> 
+                <td align="right" bgcolor="#E9E9E9"> 
+                  <a href=";enquiry_form">
+                      <img border="0" src="/ui/abakuc/images/btn_ask_113x18.gif" alt="Make an enquiry" />
+                  </a>
+                </td> 
+                </tr>
+          <tr>
+          <td><h2>News</h2></td>
+          <td><h2>Special Offers</h2></td>
+          <td><h2>Jobs</h2></td>
+          <td><h2>Personnel</h2></td>
+          </tr>
+          <tr>
+            <!-- List news -->
+            <td colspan="3" valign="top">
+                <div align="right">
+                  ${news_batch}
+                </div>
+                <div stl:if="msg" align="right">${news_msg}</div>
+                <div id="List">
+                  <stl:block repeat="news_items news_items"> 
+                    <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                      onmouseout="this.className='ListItem';">  
+                      <dt>
+                        <a href="${news_items/url}">${news_items/title}</a>
+                      </dt>
+                      <dd>
+                        ${news_items/closing_date}<br />
+                        ${news_items/description}<br />
+                      </dd>
+                    </dl>       
+                  </stl:block>
+                </div>
+            </td>
+            <!-- List users -->
+            <td valign="top" bordercolor="#333333" bgcolor="#999999">
+               <stl:block if="not users">
+                   <div>
+                       No Users
+                   </div>
+               </stl:block>
+               <stl:block if="users">
+                   <div stl:repeat="item users">
+                    ${item/job_function}: <a href="${item/url}">${item/title}</a>
+                   </div>
+               </stl:block>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4"><h2>Jobs at ${company}</h2></td>
+          </tr>
+          <tr>
+            <td colspan="4">
+                <div align="right">
+                  ${job_batch}
+                </div>
+                <div stl:if="msg" align="right">${msg}</div>
+                <div id="List">
+                  <stl:block repeat="job jobs"> 
+                    <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                      onmouseout="this.className='ListItem';">  
+                      <dt>
+                        <a href="${job/url}">${job/title}</a>
+                      </dt>
+                      <dd>
+                        ${job/function} - ${job/salary} - ${job/closing_date}<br />
+                        ${job/description}<br />
+                      </dd>
+                    </dl>       
+                  </stl:block>
+                </div>
+            </td>
+          </tr>
+          </table>
   </td>
   <td valign="top">
 

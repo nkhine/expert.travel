@@ -57,9 +57,9 @@
               </dt>
               <dd>
                 ${job/function} - ${job/salary} - ${job/closing_date}<br />
-                <br stl:if="job/region"> ${job/region}</br>
-                <br stl:if="job/county"> ${job/county}</br>
-                ${job/description}<br />
+                <i stl:if="job/region"> ${job/region}</i>
+                <i stl:if="job/county"> ${job/county}</i>
+                <dd>${job/description}</dd>
               </dd>
             </dl>       
           </stl:block>
