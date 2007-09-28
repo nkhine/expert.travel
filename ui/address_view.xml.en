@@ -4,6 +4,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<script type="text/javascript" src="/ui/abakuc/ajax.js" />
+<script type="text/javascript" src="/ui/abakuc/tab-view.js" />
 <table width="100%" border="0">
   <tr>
      <td colspan="2" valign="top">
@@ -43,70 +45,83 @@
                 </td> 
                 </tr>
           <tr>
-          <td><h2>News</h2></td>
-          <td><h2>Special Offers</h2></td>
-          <td><h2>Jobs</h2></td>
-          <td><h2>Personnel</h2></td>
-          </tr>
-          <tr>
-            <!-- List news -->
-            <td colspan="3" valign="top">
-                <div align="right">
-                  ${news_batch}
-                </div>
-                <div stl:if="msg" align="right">${news_msg}</div>
-                <div id="List">
-                  <stl:block repeat="news_items news_items"> 
-                    <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
-                      onmouseout="this.className='ListItem';">  
-                      <dt>
-                        <a href="${news_items/url}">${news_items/title}</a>
-                      </dt>
-                      <dd>
-                        ${news_items/closing_date}<br />
-                        ${news_items/description}<br />
-                      </dd>
-                    </dl>       
-                  </stl:block>
-                </div>
-            </td>
-            <!-- List users -->
-            <td valign="top" bordercolor="#333333" bgcolor="#999999">
-               <stl:block if="not users">
-                   <div>
-                       No Users
-                   </div>
-               </stl:block>
-               <stl:block if="users">
-                   <div stl:repeat="item users">
-                    ${item/job_function}: <a href="${item/url}">${item/title}</a>
-                   </div>
-               </stl:block>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4"><h2>Jobs at ${company}</h2></td>
-          </tr>
-          <tr>
             <td colspan="4">
-                <div align="right">
-                  ${job_batch}
+                <div id="tabView">
+                  <div class="aTab">
+                    <div align="right">
+                      ${news_batch}
+                    </div>
+                    <div stl:if="msg" align="right">${news_msg}</div>
+                    <div id="List">
+                      <stl:block repeat="news_items news_items"> 
+                        <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                          onmouseout="this.className='ListItem';">  
+                          <dt>
+                            <a href="${news_items/url}">${news_items/title}</a>
+                          </dt>
+                          <dd>
+                            ${news_items/closing_date}<br />
+                            ${news_items/description}<br />
+                          </dd>
+                        </dl>       
+                      </stl:block>
+                    </div>
+                  </div>
+                  <div class="aTab">
+                    <div align="right">
+                      ${job_batch}
+                    </div>
+                    <div stl:if="msg" align="right">${msg}</div>
+                    <div id="List">
+                      <stl:block repeat="jobs jobs"> 
+                        <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                          onmouseout="this.className='ListItem';">  
+                          <dt>
+                            <a href="${jobs/url}">${jobs/title}</a>
+                          </dt>
+                          <dd>
+                            ${jobs/function} - ${jobs/salary} - ${jobs/closing_date}<br />
+                            ${jobs/description}<br />
+                          </dd>
+                        </dl>       
+                      </stl:block>
+                    </div>
+                  </div>
+                  <div class="aTab">
+                    <div id="List">
+                      <stl:block repeat="address addresses"> 
+                        <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+                          onmouseout="this.className='ListItem';">  
+                          <dt>
+                             <a href="${address/url}">${address/address}</a>
+                             <stl:block if="address/is_current"> *current </stl:block>
+                          </dt>
+                          <dd>
+                              P: ${address/phone} F: ${address/fax}
+                          </dd>
+                        </dl>       
+                      </stl:block>
+                    </div>
+                  </div>
+                  <div class="aTab">
+                   <stl:block if="not users">
+                       <div>
+                           No Users
+                       </div>
+                   </stl:block>
+                   <stl:block if="users">
+                       <div stl:repeat="item users">
+                        ${item/job_function}: <a href="${item/url}">${item/title}</a>
+                       </div>
+                   </stl:block>
+                  </div>
                 </div>
-                <div stl:if="msg" align="right">${msg}</div>
-                <div id="List">
-                  <stl:block repeat="job jobs"> 
-                    <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
-                      onmouseout="this.className='ListItem';">  
-                      <dt>
-                        <a href="${job/url}">${job/title}</a>
-                      </dt>
-                      <dd>
-                        ${job/function} - ${job/salary} - ${job/closing_date}<br />
-                        ${job/description}<br />
-                      </dd>
-                    </dl>       
-                  </stl:block>
-                </div>
+                <script type="text/javascript">
+                initTabs('tabView',Array('News','Jobs','Other branches','Members'),0,600,300,Array(false,false,false,false));
+                </script>
+            
+            
+            
             </td>
           </tr>
           </table>
@@ -133,5 +148,4 @@ google_color_url = "008000";
     </td>
   </tr>
 </table>
-
 </stl:block>

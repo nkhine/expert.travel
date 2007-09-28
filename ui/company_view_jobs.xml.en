@@ -20,8 +20,4 @@
             </dl>       
           </stl:block>
         </div>
-  <!-- 
-  <b stl:if="msg">${msg}</b>
-  ${batch}
-  ${table} -->
 </stl:block>

@@ -117,13 +117,9 @@ class Company(WebSite):
         namespace['website'] = self.get_website()
         namespace['logo'] = self.has_handler('logo')
 
-        addresses = []
-        for address in self.search_handlers():
-            addresses.append({
-                'name': address.name,
-                'address': address.get_property('abakuc:address')})
-        namespace['addresses'] = addresses
+        namespace['branches'] = self.view_addresses(context)
         namespace['jobs'] = self.view_jobs(context)
+        namespace['news'] = self.view_news(context)
 
         handler = self.get_handler('/ui/abakuc/company_view.xml')
         return stl(handler, namespace)
@@ -156,9 +152,9 @@ class Company(WebSite):
 
     ####################################################################
     # View branches 
-    view_branches__label__ = u'Our branches'
-    view_branches__access__ = True
-    def view_branches(self, context):
+    view_addresses__label__ = u'Our branches'
+    view_addresses__access__ = True
+    def view_addresses(self, context):
         namespace = {}
         addresses = self.search_handlers(handler_class=Address)
         namespace['addresses'] = []
@@ -173,7 +169,7 @@ class Company(WebSite):
                                            'title': address.title_or_name})
 
         namespace['users'] = self.get_members_namespace(address)
-        handler = self.get_handler('/ui/abakuc/abakuc_view_branches.xml')
+        handler = self.get_handler('/ui/abakuc/company_view_addresses.xml')
 
         return stl(handler, namespace)
 
@@ -185,11 +181,6 @@ class Company(WebSite):
     def view_jobs(self, context):
         namespace = {}
         namespace['batch'] = ''
-        columns = [('title', u'Title'),
-                   ('function', u'Function'),
-                   ('address', u'Address'),
-                   ('description', u'Short description'),
-                   ('closing_date', u'Closing Date')]
         all_jobs = []
         for address in self.search_handlers(handler_class=Address):
             address_jobs = list(address.search_handlers(handler_class=Job))
@@ -227,13 +218,6 @@ class Company(WebSite):
                          'salary': SalaryRange.get_value(get('abakuc:salary')),               
                          'description': description}
             jobs.append(job_to_add)
-        # Sort
-        sortby = context.get_form_value('sortby', 'title')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
-        if reverse:
-            jobs.reverse()
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
@@ -244,7 +228,6 @@ class Company(WebSite):
         jobs = jobs[batch_start:batch_fin]
         # Namespace 
         if jobs:
-            job_table = table(columns, jobs, [sortby], sortorder,[])
             msgs = (u'There is one job.',
                     u'There are ${n} jobs.')
             job_batch = batch(context.uri, batch_start, batch_size, 
@@ -256,14 +239,15 @@ class Company(WebSite):
             msg = u'Sorry but there are no jobs'
 
         namespace['jobs'] = jobs        
-        namespace['table'] = job_table
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
         handler = self.get_handler('/ui/abakuc/company_view_jobs.xml')
         return stl(handler, namespace)
 
 
-    view_news__label__ = u'Our News'
+    ####################################################################
+    # View news 
+    view_news__label__ = u'News'
     view_news__access__ = True
     def view_news(self, context):
         namespace = {}
@@ -296,19 +280,13 @@ class Company(WebSite):
             address = news.parent
             company = address.parent
             url = '%s/%s/;view' % (address.name, news.name)
-            news_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
-                         'closing_date': get('abakuc:closing_date'),
-                         'address': address.get_title_or_name(), 
-                         'description': get('dc:description')}
-            news_items.append(news_to_add)
-        # Sort
-        sortby = context.get_form_value('sortby', 'title')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        news_items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
-        if reverse:
-            news_items.reverse()
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=10,
+                                        phrase_treshold=60)
+            news_items.append({'url': url,
+                               'title': news.title,
+                               'closing_date': get('abakuc:closing_date'),
+                               'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
@@ -319,20 +297,18 @@ class Company(WebSite):
         news_items = news_items[batch_start:batch_fin]
         # Namespace 
         if news_items:
-            news_table = table(columns, news_items, [sortby], sortorder,[])
-            msgs = (u'There is one news item.',
-                    u'There are ${n} news items.')
             news_batch = batch(context.uri, batch_start, batch_size, 
                               batch_total, msgs=msgs)
+            msgs = (u'There is one news item.',
+                    u'There are ${n} news items.')
             msg = None
         else:
-            news_table = None
             news_batch = None
-            msg = u'Sorry but there is no news'
+            msg = u'Currently there is no news.'
         
-        namespace['table'] = news_table
-        namespace['batch'] = news_batch
+        namespace['news_batch'] = news_batch
         namespace['msg'] = msg 
+        namespace['news_items'] = news_items
         handler = self.get_handler('/ui/abakuc/company_view_news.xml')
         return stl(handler, namespace)
 
@@ -573,9 +549,16 @@ class Address(RoleAware, WorkflowAware, Folder):
         
         addresses = []
         for address in self.parent.search_handlers():
+            company = address.parent
+            current_address = self.get_property('abakuc:address')
+            url = '/companies/%s/%s/;view' % (company.name, address.name)
             addresses.append({
                 'name': address.name,
-                'address': address.get_property('abakuc:address')})
+                'is_current': address.name == current_address,
+                'url': url,
+                'address': address.get_property('abakuc:address'),
+                'phone': address.get_property('abakuc:phone'),
+                'fax': address.get_property('abakuc:fax')})
         namespace['addresses'] = addresses
 
         ################ 
@@ -602,8 +585,8 @@ class Address(RoleAware, WorkflowAware, Folder):
             job = root.get_handler(job.abspath)
             get = job.get_property
             # Information about the job
-            address = job.parent
             company = address.parent
+            address = job.parent
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
             description = reduce_string(get('dc:description'),
@@ -619,7 +602,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                          'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
+        batch_size = 2 
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
@@ -636,10 +619,9 @@ class Address(RoleAware, WorkflowAware, Folder):
             job_batch = None
             msg = u"Appologies, currently we don't have any job announcements"
         # Namespace 
-        namespace['job_batch'] = job_batch
+        namespace['job_batch'] = job_batch 
         namespace['msg'] = msg 
         namespace['jobs'] = jobs
-
         ######## 
         # News 
         namespace['batch'] = ''

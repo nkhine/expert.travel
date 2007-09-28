@@ -2,6 +2,8 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
+<script type="text/javascript" src="/ui/abakuc/ajax.js" />
+<script type="text/javascript" src="/ui/abakuc/tab-view.js" />
 <table width="100%" border="1" id="center">
 <tr>
 <td>
@@ -11,16 +13,26 @@
 <img stl:if="logo" border="0" src="logo" style="float: right" />
 <a href="${website}">${website}</a>
 
-<h3>News List....</h3>
-
-<h3>Locations/Branches</h3>
-<ul>
-  <li stl:repeat="address addresses">
-    <a href="${address/name}">${address/address}</a>
-  </li>
-</ul>
-<br/>
-${jobs}
+                <div id="tabView">
+                  <div class="aTab">
+                    ${news}
+                  </div>
+                  <div class="aTab">
+                  Special Offers 
+                  </div>
+                  <div class="aTab">
+                    ${jobs}
+                  </div>
+                  <div class="aTab">
+                    ${branches}
+                  </div>
+                  <div class="aTab">
+                  Users
+                  </div>
+                </div>
+                <script type="text/javascript">
+                initTabs('tabView',Array('News','Special Offers', 'Jobs','Branches','Members'),0,600,300,Array(false,false,false,false));
+                </script>
 </td>
 <td id="right">
 google

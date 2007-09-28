@@ -55,7 +55,7 @@ class FrontOffice(Skin):
         append({'path': path, 'method': 'view_jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'view_branches',
+        append({'path': path, 'method': 'view_addresses',
                 'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
         return options
@@ -176,7 +176,7 @@ class DestinationsSkin(FrontOffice):
         append({'path': path, 'method': 'view_jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'view_branches',
+        append({'path': path, 'method': 'view_addresses',
                 'title': u'Branches',
                 'icon': '/ui/images/UserFolder16.png'})
         return options

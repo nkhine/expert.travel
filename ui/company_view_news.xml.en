@@ -2,7 +2,22 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <h1>News</h1>
-  <b stl:if="msg">${msg}</b>
-  ${batch}
-  ${table}
+    <div align="right">
+      ${news_batch}
+    </div>
+    <div stl:if="msg" align="right">${msg}</div>
+    <div id="List">
+      <stl:block repeat="news_items news_items"> 
+        <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+          onmouseout="this.className='ListItem';">  
+          <dt>
+            <a href="${news_items/url}">${news_items/title}</a>
+          </dt>
+          <dd>
+            ${news_items/closing_date}<br />
+            ${news_items/description}<br />
+          </dd>
+        </dl>       
+      </stl:block>
+    </div>
 </stl:block>
