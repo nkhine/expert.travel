@@ -297,10 +297,10 @@ class Company(WebSite):
         news_items = news_items[batch_start:batch_fin]
         # Namespace 
         if news_items:
-            news_batch = batch(context.uri, batch_start, batch_size, 
-                              batch_total, msgs=msgs)
             msgs = (u'There is one news item.',
                     u'There are ${n} news items.')
+            news_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total, msgs=msgs)
             msg = None
         else:
             news_batch = None
