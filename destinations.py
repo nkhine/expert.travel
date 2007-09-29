@@ -22,6 +22,8 @@ class Destinations(WebSite):
         name = segment.name
         if name == 'countries':
             return self.get_handler('/countries')
+        if name == 'companies':
+            return self.get_handler('/companies')
         return WebSite._get_virtual_handler(self, segment)
 
 
