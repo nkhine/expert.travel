@@ -268,7 +268,7 @@ class Job(RoleAware, Folder):
             namespace['table'] = None
             namespace['msg'] = u'No candidature'
         
-        handler = self.get_handler('/ui/abakuc/jobs/Job_view_candidatures.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/job_view_candidatures.xml')
         return stl(handler, namespace)
 
 
@@ -414,7 +414,7 @@ class Candidature(RoleAware, Folder):
             namespace['is_authenticated'] = True
         namespace['class_id'] = cls.class_id
         # Return stl
-        path = '/ui/abakuc/jobs/Candidature_new_instance_form.xml'
+        path = '/ui/abakuc/jobs/new_instance_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
@@ -580,7 +580,7 @@ class Candidature(RoleAware, Folder):
         namespace['user_id'] = user_id
         namespace['key'] = must_confirm
 
-        url = '/ui/abakuc/jobs/Candidature_confirm_candidature_form.xml'
+        url = '/ui/abakuc/jobs/confirm_form.xml'
         handler = self.get_handler(url)
         return stl(handler, namespace)
 
@@ -703,7 +703,7 @@ class Candidature(RoleAware, Folder):
         namespace['cv'] = {'icon': cv_icon,
                            'path': cv_path}
         
-        handler = self.get_handler('/ui/abakuc/jobs/Candidature_view.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/candidature_view.xml')
         return stl(handler, namespace)
 
   
