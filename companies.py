@@ -548,7 +548,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['county'] = county
         
         addresses = []
-        for address in self.parent.search_handlers():
+        for address in self.parent.search_handlers(handler_class=Address):
             company = address.parent
             current_address = self.get_property('abakuc:address')
             url = '/companies/%s/%s/;view' % (company.name, address.name)

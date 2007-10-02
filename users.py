@@ -540,10 +540,11 @@ class User(iUser, WorkflowAware, Handler):
         namespace = {}
         namespace['company_name'] = company_name
         namespace['company_title'] = company.get_title()
+        #XXX If there is a logo, it lists this as well.
         namespace['addresses'] = [
             {'name': x.name, 'title': x.get_title(),
              'postcode': x.get_property('abakuc:postcode')}
-            for x in company.search_handlers() ]
+            for x in company.search_handlers(handler_class=Address) ]
         namespace['addresses'].sort(key=lambda x: x['postcode'])
         namespace['form'] = Address.get_form()
 
