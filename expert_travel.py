@@ -30,14 +30,14 @@ class ExpertTravel(WebSite):
         WebSite.new(self, **kw)
         cache = self.cache
         # Add extra handlers here
-        news = XHTMLFile()
-        cache['news.xhtml'] = news
-        cache['news.xhtml.metadata'] = news.build_metadata(
-            **{'dc:title': {'en': u'News Folder List'}})
-        events = XHTMLFile()
-        cache['events.xhtml'] = events
-        cache['events.xhtml.metadata'] = events.build_metadata(
-            **{'dc:title': {'en': u'Events'}})
+        terms = XHTMLFile()
+        cache['terms.xhtml'] = news
+        cache['terms.xhtml.metadata'] = terms.build_metadata(
+            **{'dc:title': {'en': u'Terms & Conditions'}})
+        privacy = XHTMLFile()
+        cache['privacy.xhtml'] = events
+        cache['privacy.xhtml.metadata'] = privacy.build_metadata(
+            **{'dc:title': {'en': u'Privacy'}})
         faq = XHTMLFile()
         cache['faq.xhtml'] = faq
         cache['faq.xhtml.metadata'] = faq.build_metadata(
