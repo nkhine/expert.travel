@@ -703,7 +703,7 @@ class Candidature(RoleAware, Folder):
         namespace['cv'] = {'icon': cv_icon,
                            'path': cv_path}
         
-        handler = self.get_handler('/ui/abakuc/jobs/candidature_view.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/view_application.xml')
         return stl(handler, namespace)
 
   
