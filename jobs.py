@@ -268,7 +268,7 @@ class Job(RoleAware, Folder):
             namespace['table'] = None
             namespace['msg'] = u'No candidature'
         
-        handler = self.get_handler('/ui/abakuc/jobs/job_view_candidatures.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/view_applications.xml')
         return stl(handler, namespace)
 
 
