@@ -8,3 +8,4 @@ The basics:
 
 We have 3 entities, Advertisers, Enquiries, Users; all of these are mangled into
 the publication which in turn has: Aricles, Images (media objects)
+Also
