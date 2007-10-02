@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<stl:block> 
+  <h1>Informations about the Candidature : ${name}</h1>
+  <h2>Applicant details</h2>
+  <p>
+    <dl>  
+      <dt>
+        FirstName :
+      </dt>
+      <dd>
+        ${user/firstname}
+      </dd>
+
+      <dt>
+        LastName :
+      </dt>
+      <dd>
+        ${user/lastname}
+      </dd>
+
+      <dt>
+        Email :
+      </dt>
+      <dd>
+        ${user/email}
+      </dd>
+      <dt>
+        Phone :
+      </dt>
+      <dd>
+        ${user/phone}
+      </dd>
+    </dl>
+  </p>
+  <h2>Letter</h2>
+  <p>
+  ${applicant_note}
+  </p>
+  <h2>CV</h2>
+  <p>
+  <a href="${cv/path}"><img src="${cv/icon}"/></a>
+  </p>
+</stl:block>

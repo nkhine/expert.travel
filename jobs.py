@@ -450,7 +450,7 @@ class Candidature(RoleAware, Folder):
         # Name already used?
         candidatures = container.search_handlers(handler_class=cls)
         nb_candidatures =  str(len(list(candidatures))+1)
-        name = 'Candidature_%s' % nb_candidatures
+        name = 'candidature_%s' % nb_candidatures
         while container.has_handler(name):
               try:
                   names = name.split('_')
