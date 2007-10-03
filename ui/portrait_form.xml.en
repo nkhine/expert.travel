@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <dl>
+      <dt>
+        <label for="portrait">Portrait</label>
+      </dt>
+      <dd>
+        <input type="file" name="portrait" id="portrait" size="36" />
+        <stl:block if="portrait">
+          <br/>
+          <img src="portrait" align="left" />
+          <input type="checkbox" name="remove_portrait" value="1" />
+          Check to remove the portrait.
+        </stl:block>
+      </dd>
+    </dl>
+
+</stl:block>

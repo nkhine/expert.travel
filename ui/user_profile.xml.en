@@ -83,7 +83,12 @@
           <table>
             <tr>
               <td rowspan="4">
-                <img name="" src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image" />
+                <stl:block if="portrait">
+                  <img src="portrait" align="left" />
+                </stl:block>
+                <stl:block if="not portrait">
+                  <img name="" src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image" />
+                </stl:block>
               </td>
               <th valign="top" height="99%">Email</th>
               <td valign="top">${email}</td>
@@ -107,7 +112,7 @@
 
           </table>
           <p>
-            <a href=";edit_account_form">Modify portrait.</a>
+            <a href=";portrait_form">Modify portrait.</a>
             <a href=";edit_account_form">Edit account details.</a>
             <a href=";edit_password_form">Change password.</a>
           </p>

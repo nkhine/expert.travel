@@ -119,7 +119,8 @@ class User(iUser, WorkflowAware, Handler):
                     'browse_content?mode=image'],
                    ['new_resource_form'],
                    ['state_form'],
-                   ['edit_form', 'edit_account_form', 'edit_password_form'],
+                   ['edit_form', 'edit_account_form', 
+                    'edit_portrait_form', 'edit_password_form'],
                    ['tasks_list']]
 
     ########################################################################
@@ -194,44 +195,6 @@ class User(iUser, WorkflowAware, Handler):
             self.set_property(key, value)
         self.set_property('abakuc:job_function', job_functions)
         
-        # The logo
-        #if context.has_form_value('remove_logo'):
-        #    if self.has_handler('logo'):
-        #        self.del_object('logo')
-        #elif logo is not None:
-        #    name, mimetype, data = logo
-        #    guessed = mimetypes.guess_type(name)[0]
-        #    if guessed is not None:
-        #        mimetype = guessed
-        #    logo_cls = get_object_class(mimetype)
-        #    logo = logo_cls(string=data)
-        #    logo_name = 'logo'
-        #    # Check format of Logo
-        #    if not isinstance(logo, Image):
-        #        msg = u'Your logo must be an Image PNG or JPEG'
-        #        return context.come_back(msg)
-        #    # Check size
-        #    size = logo.get_size()
-        #    if size is not None:
-        #        width, height = size
-        #        if width > 200 or height > 200:
-        #            msg = u'Your logo is too big (max 200x200 px)'
-        #            return context.come_back(msg)
-        #    
-        #    # Add or edit the logo
-        #    if self.has_handler('logo'):
-        #        # Edit the logo
-        #        logo = self.get_handler('logo')
-        #        try:
-        #            logo.load_state_from_string(data)
-        #        except:
-        #            self.load_state()
-        #        logo = logo.load_state_from_string(string=data)
-        #    else:
-        #        # Add the new logo
-        #        logo = logo_cls(string=data)
-        #        logo, metadata = self.set_object(logo_name, logo)
-        #        metadata.set_property('state', 'public')
 
         url = ';profile'
         goto = context.uri.resolve(url)
@@ -249,6 +212,7 @@ class User(iUser, WorkflowAware, Handler):
         user = context.user
         root = context.root
         users = root.get_handler('users')
+        portrait = self.get_handler('portrait')
         
         # Get Company and Address
         namespace['address'] = None
@@ -283,7 +247,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['firstname'] = self.get_property('ikaaro:firstname')
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
-        
+        namespace['portrait'] = portrait
         if address is None:
             handler = self.get_handler('/ui/abakuc/user_profile.xml')
             return stl(handler, namespace)
@@ -402,9 +366,84 @@ class User(iUser, WorkflowAware, Handler):
         handler = self.get_handler('/ui/abakuc/user_profile.xml')
         return stl(handler, namespace)
 
+    #######################################################################
+    # User upload portrait 
+    #######################################################################
+    @staticmethod
+    def get_form(portrait=None):
+        root = get_context().root
+
+        namespace = {}
+        namespace['portrait'] = portrait
+
+        handler = root.get_handler('ui/abakuc/portrait_form.xml')
+        return stl(handler, namespace)
+
 
     ########################################################################
-    # View 
+    # View user's public profile page 
+    portrait_form__access__ = 'is_self_or_admin'
+    portrait_form__sublabel__ = u'Upload or modify your portrait'
+    def portrait_form(self, context, portrait=None):
+        namespace = {}
+        namespace['referrer'] = None
+        if context.get_form_value('referrer'):
+            namespace['referrer'] = str(context.request.referrer)
+        portrait = self.has_handler('portrait')
+        namespace['form'] = self.get_form(portrait)
+
+        handler = self.get_handler('/ui/abakuc/portrait_metadata.xml')
+        return stl(handler, namespace)
+
+
+    portrait__access__ = 'is_self_or_admin'
+    def portrait(self, context):
+        portrait = context.get_form_value('portrait')
+
+        ## The portrait
+        if context.has_form_value('remove_portrait'):
+            if self.has_handler('portrait'):
+                self.del_object('portrait')
+        elif portrait is not None:
+            name, mimetype, data = portrait
+            guessed = mimetypes.guess_type(name)[0]
+            if guessed is not None:
+                mimetype = guessed
+            portrait_cls = get_object_class(mimetype)
+            portrait = portrait_cls(string=data)
+            portrait_name = 'portrait'
+            # Check format of portrait
+            if not isinstance(portrait, Image):
+                msg = u'You can upload a JPG, GIF or PNG file (File size limit is 100K).'
+                return context.come_back(msg)
+            # Check size
+            size = portrait.get_size()
+            if size is not None:
+                width, height = size
+                if width > 200 or height > 200:
+                    msg = u'Your portrait is too big (max 200x200 px)'
+                    return context.come_back(msg)
+            
+            # Add or edit the portrait
+            if self.has_handler('portrait'):
+                # Edit the portrait
+                portrait = self.get_handler('portrait')
+                try:
+                    portrait.load_state_from_string(data)
+                except:
+                    self.load_state()
+                portrait = portrait.load_state_from_string(string=data)
+            else:
+                # Add the new portrait
+                portrait = portrait_cls(string=data)
+                portrait, metadata = self.set_object(portrait_name, portrait)
+                metadata.set_property('state', 'public')
+
+        message = u'Portrait uploaded.'
+        goto = context.get_form_value('referrer') or None
+        return context.come_back(message, goto=goto)
+    ########################################################################
+    # View user's public profile page 
     view__access__ = True 
     def view(self, context):
         return 'Hello' 
@@ -474,7 +513,7 @@ class User(iUser, WorkflowAware, Handler):
         title = context.get_form_value('dc:title')
         
         if not title:
-            message = u'Please give an Name to your Company'
+            message = u'Please give a Name to your Company'
             return context.come_back(message)
         
         # Check the Logo

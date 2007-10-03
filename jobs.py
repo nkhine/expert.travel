@@ -206,6 +206,8 @@ class Job(RoleAware, Folder):
             # Information about the job
             address = job.parent
             company = address.parent
+            #logo = company.has_handler('logo')
+            namespace['logo'] = company.has_handler('logo')
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
             jobs.append({'url': url,

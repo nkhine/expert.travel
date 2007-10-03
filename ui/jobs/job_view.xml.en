@@ -6,7 +6,7 @@
 
   <div>
     <stl:block> 
-      <table width="100%" id="#job" border="1">
+      <table width="100%" id="#job" border="0">
       <tr>
       <td>
       <h1>${dc:title}</h1>
@@ -22,7 +22,6 @@
            <li>Position type: ${abakuc:function}</li>
            <li>Closing date: ${abakuc:closing_date}</li>
            <li>Salary package: ${abakuc:salary}</li>
-           <li stl:if="country">Country: ${country}</li>
            <li stl:if="region">Region: ${region}</li>
            <li stl:if="county">County: ${county}</li>
            </ul>
@@ -43,41 +42,50 @@
       </stl:block>
       <tr>
       <td>
-      Most recent similar jobs
-          <ul>
-                                <li stl:repeat="job jobs">
-                                  <a href="${job/url}">
-                                    ${job/title}
-                                  </a>
-                                </li>
-                              </ul>
-
       </td>
       </tr>
       </table>
-         <p>« Back to <a href="../../">${company}</a></p>
+         <p>« Back to <a href="../../">${company}</a>
+             <img stl:if="logo" border="0" src="../../logo" style="float: right" />
+             </p>
     </stl:block>
+    <div id="message">
+    <strong>Warning:</strong> There should be no need to provide your bank
+    account details or to send any cash when applying for a job. We strongly
+    advise that jobseekers should never supply bank account details or any other
+    financial information. If you see a vacancy advertised on
+    <u>Expert.Travel</u> which requests bank account details or money of if the
+    advertiser subsequently asks for this information in a manner that concerns
+    you, please <a href="/;contact_form">report this</a> with the advertiser's company name and the title of the job vacancy.
+    </div>        
+        <div>
+         <h2>Recent similar jobs</h2>
+          <ul>
+            <li stl:repeat="job jobs">
+              <a href="${job/url}">
+                ${job/title}
+              </a>
+            </li>
+          </ul>
+        </div>
     <stl:block stl:if="is_reviewer_or_member">
-      <h1>
-        <a href=";edit_metadata_form">
-          Edit the job
-        </a>
-      </h1>
-    </stl:block>
-    <stl:block stl:if="is_reviewer_or_member">
-        <h1>Users who applied</h1>
-        
-        <p stl:if="nb_candidatures">
-          ${nb_candidatures} candidatures, 
-          <a href=";view_candidatures">
-          &nbsp;Click it to see
-          </a>
-        </p>
-
-        <p stl:if="not nb_candidatures">
-          No candidatures
-        </p>
-
+      <h1>Management</h1>
+      <div>
+         <h3>
+           <a href=";edit_metadata_form">
+             Edit the job
+           </a>
+         </h3>
+      </div>
+      <div>
+         <h3>Users who applied</h3>
+         <p stl:if="nb_candidatures">
+           There are <a href=";view_candidatures">${nb_candidatures} applications</a>, waiting for your review.
+         </p>
+         <p stl:if="not nb_candidatures">
+           No candidatures
+         </p>
+      </div>
     </stl:block>
   </div>
 
