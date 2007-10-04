@@ -30,7 +30,7 @@
           <stl:block if="address">
             <table>
               <tr>
-                <th align="right">Website</th>
+                <th align="right" valign="top">Website</th>
                 <td><a href="${company/website}">${company/website}</a></td>
               </tr>
               <tr>
@@ -87,7 +87,9 @@
                   <img src="portrait" align="left" />
                 </stl:block>
                 <stl:block if="not portrait">
-                  <img name="" src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image" />
+                  <a href=";portrait_form"><img name=""
+                  src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
+                  /></a>
                 </stl:block>
               </td>
               <th valign="top" height="99%">Email</th>

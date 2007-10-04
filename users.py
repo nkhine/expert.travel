@@ -212,7 +212,7 @@ class User(iUser, WorkflowAware, Handler):
         user = context.user
         root = context.root
         users = root.get_handler('users')
-        portrait = self.get_handler('portrait')
+        portrait = self.has_handler('portrait')
         
         # Get Company and Address
         namespace['address'] = None
