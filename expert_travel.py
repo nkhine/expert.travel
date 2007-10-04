@@ -31,11 +31,11 @@ class ExpertTravel(WebSite):
         cache = self.cache
         # Add extra handlers here
         terms = XHTMLFile()
-        cache['terms.xhtml'] = news
+        cache['terms.xhtml'] = terms 
         cache['terms.xhtml.metadata'] = terms.build_metadata(
             **{'dc:title': {'en': u'Terms & Conditions'}})
         privacy = XHTMLFile()
-        cache['privacy.xhtml'] = events
+        cache['privacy.xhtml'] = privacy 
         cache['privacy.xhtml.metadata'] = privacy.build_metadata(
             **{'dc:title': {'en': u'Privacy'}})
         faq = XHTMLFile()

@@ -12,7 +12,7 @@ from string import ascii_letters
 from itools import get_abspath
 from itools.datatypes import Integer, String, Unicode
 from itools.handlers import get_handler
-from itools.csv.csv import CSV as BaseCSV
+from itools.cms.csv import CSV as BaseCSV
 from itools.stl import stl
 from itools.web import get_context
 from itools.cms.csv import CSV
