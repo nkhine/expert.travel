@@ -393,8 +393,8 @@ class Company(WebSite):
             size = logo.get_size()
             if size is not None:
                 width, height = size
-                if width > 200 or height > 200:
-                    msg = u'Your logo is too big (max 200x200 px)'
+                if width > 150 or height > 150:
+                    msg = u'Your logo is too big (max 150x150 px)'
                     return context.come_back(msg)
             
             # Add or edit the logo
