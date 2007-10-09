@@ -257,3 +257,15 @@ input:focus, textarea:focus { background: #efefef; color: #000; }
 	.tabPane img{
 		float:left;
 	}
+  /* LINKS */
+a:link { color: #039; }
+a:visited { color: #339; }
+a img { border: 0; }
+a.backtop { display: block; font-size: 92%; text-align: right; margin-bottom: 10px; }
+a.action { display: block; float: left; margin: 0 10px 0 0; background: #ffcc00 url(/img/bg/bg_action_primary_right.gif) no-repeat 100% 0; text-decoration: none; color: #000 !important; cursor: pointer; text-align: center; _font-size: 13px;}
+a.action span { display: block; padding: 4px 20px 0 20px; _padding-bottom: 3px !important; min-height: 19px; background: url(/img/bg/bg_action_primary_left.gif) no-repeat 0 0; }
+a.action.secondary { background: #dcdcdc url(/img/bg/bg_action_secondary_right.gif) no-repeat 100% 0; }
+a.action.secondary span { background: url(/img/bg/bg_action_secondary_left.gif) no-repeat 0 0; }
+a.action:hover { background: #c8e7fa url(/img/bg/bg_action_hover_right.gif) no-repeat 100% 0; }
+a.action:hover span { background: url(/img/bg/bg_action_hover_left.gif) no-repeat 0 0; }
+a.action:visited {color: #000;}

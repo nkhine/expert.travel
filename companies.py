@@ -14,7 +14,6 @@ from itools.stl import stl
 from itools.web import get_context
 from itools.xml import get_element
 from itools.xhtml import Document as XHTMLDocument
-from itools.cms.website import WebSite
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.csv import CSV

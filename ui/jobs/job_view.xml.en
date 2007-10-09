@@ -36,7 +36,7 @@
       <stl:block stl:if="not is_reviewer_or_member">
       <tr>
       <td align="right">
-          <a href=";new_resource_form?type=Candidature">Apply for the job</a>
+          <a href=";new_resource_form?type=Candidature" class="action">Apply for the job</a>
       </td>
       </tr>
       </stl:block>

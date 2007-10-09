@@ -66,7 +66,7 @@ class FrontOffice(Skin):
         handler = context.handler
         root = handler.get_site_root()
         menu = tree(root, active_node=context.handler,
-                    allow=Company, user=context.user)
+                    filter=Company, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 
@@ -91,8 +91,8 @@ class FrontOffice(Skin):
     def get_breadcrumb(self, context):
         """Return a list of dicts [{name, url}...] """
         here = context.handler
-        root = context.site_root
-
+        #root = context.site_root
+        root = self._get_site_root(context)
         # Build the list of handlers that make up the breadcrumb
         handlers = [root]
         for segment in context.uri.path:

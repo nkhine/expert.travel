@@ -30,6 +30,7 @@ from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
 from expert_travel import ExpertTravel
+from training import Trainings, Training
 from utils import title_to_name
 
 
@@ -153,6 +154,13 @@ class Root(Handler, BaseRoot):
               'ikaaro:website_is_open': True}
         cache['destinations'] = destinations
         cache['destinations.metadata'] = destinations.build_metadata(**kw)
+
+        # Training 
+        title = u'Training Programmes'
+        kw = {'dc:title': {'en': title}}
+        training = Trainings()
+        cache['training'] = training
+        cache['training.metadata'] = training.build_metadata(**kw)
 
         # Help
         help = XHTMLFile()
