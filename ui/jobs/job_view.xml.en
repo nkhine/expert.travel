@@ -3,40 +3,59 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-  <div>
     <stl:block> 
       <table width="100%" id="#job" border="0">
       <tr>
-      <td>
-      <h1>${dc:title}</h1>
-      </td>
-      <td id="right" rowspan="4">
-          <a href="http://www.dpbolvw.net/b274biroiq58AE6F8F576A6AFCC" target="_blank" onmouseover="window.status='http://www.salestarget.co.uk';return true;" onmouseout="window.status=' ';return true;">
-<img src="http://www.tqlkg.com/tp112snrflj479D5E7E465959EBB" alt="Sales jobs at salestarget.co.uk " border="0"/></a> 
-      </td>
+          <td>
+          <h1>${dc:title}</h1>
+          <div class="job-details">
+              <dl>
+                <dt>Sector:</dt>
+                <dd><span name="__jobType">${abakuc:function}</span>
+                  <a href=";new_resource_form?type=Candidature"
+                  class="action"><span>Apply Now</span></a> </dd>
+                <dt>Location:</dt>
+                <dd><span name="__jobExperienceLevel">${region} / ${county}</span></dd>
+                <dt>Salary band:</dt>
+                <dd><span name="__jobIndustry">${abakuc:salary}</span></dd>
+                <dt>Closing date:</dt>
+                <dd>${abakuc:closing_date} </dd>
+                <dt>Posted on:</dt>
+                <dd>${abakuc:closing_date} <strong>by <a href="#" title="View Nathalie's profile">Nathalie Lang</a></strong> 
+                </dd>
+              </dl>
+              <h2>Description</h2>
+                <p>${dc:description}</p> 
+                <p>${abakuc:job_text}</p> 
+              <div>        
+        <a href=";new_resource_form?type=Candidature" class="action"><span>Apply Now</span></a> 
+              </div>        
+              <h3>Additional Information</h3>
+              <div id="message">
+                <strong>Warning:</strong> There should be no need to provide your bank account details or to send any cash when applying for a job. We strongly advise that jobseekers should never supply bank account details or any other financial information. If you see a vacancy advertised on <u>Expert.Travel</u> which requests bank account details or money of if the advertiser subsequently asks for this information in a manner that concerns you, please <a href="/;contact_form">report this</a> with the advertiser's company name and the title of the job vacancy.
+              </div>        
+              <h3>Recent similar jobs</h3>
+              <ul>
+                <li stl:repeat="job jobs">
+                  <a href="${job/url}">
+                    ${job/title}
+                  </a>
+                </li>
+              </ul>
+          </div>
+          </td>
+          <td id="right" rowspan="4">
+              <a href="http://www.dpbolvw.net/b274biroiq58AE6F8F576A6AFCC" target="_blank" onmouseover="window.status='http://www.salestarget.co.uk';return true;" onmouseout="window.status=' ';return true;">
+    <img src="http://www.tqlkg.com/tp112snrflj479D5E7E465959EBB" alt="Sales jobs at salestarget.co.uk " border="0"/></a> 
+          </td>
       </tr>
       <tr>
       <td>
-          <ul>
-           <li>Position type: ${abakuc:function}</li>
-           <li>Closing date: ${abakuc:closing_date}</li>
-           <li>Salary package: ${abakuc:salary}</li>
-           <li stl:if="region">Region: ${region}</li>
-           <li stl:if="county">County: ${county}</li>
-           </ul>
-      </td>
-      </tr>
-      <tr>
-      <td>
-          <p>${dc:description}</p> 
-          <p>${abakuc:job_text}</p> 
       </td>
       </tr>
       <stl:block stl:if="not is_reviewer_or_member">
       <tr>
-      <td align="right">
-          <a href=";new_resource_form?type=Candidature" class="action">Apply for the job</a>
+      <td>
       </td>
       </tr>
       </stl:block>
@@ -45,28 +64,8 @@
       </td>
       </tr>
       </table>
-         <p>« Back to <a href="../../">${company}</a>
-             <img stl:if="logo" border="0" src="../../logo" style="float: right" />
-             </p>
     </stl:block>
-    <div id="message">
-    <strong>Warning:</strong> There should be no need to provide your bank
-    account details or to send any cash when applying for a job. We strongly
-    advise that jobseekers should never supply bank account details or any other
-    financial information. If you see a vacancy advertised on
-    <u>Expert.Travel</u> which requests bank account details or money of if the
-    advertiser subsequently asks for this information in a manner that concerns
-    you, please <a href="/;contact_form">report this</a> with the advertiser's company name and the title of the job vacancy.
-    </div>        
         <div>
-         <h2>Recent similar jobs</h2>
-          <ul>
-            <li stl:repeat="job jobs">
-              <a href="${job/url}">
-                ${job/title}
-              </a>
-            </li>
-          </ul>
         </div>
     <stl:block stl:if="is_reviewer_or_member">
       <h1>Management</h1>
@@ -87,6 +86,4 @@
          </p>
       </div>
     </stl:block>
-  </div>
-
 </stl:block>
