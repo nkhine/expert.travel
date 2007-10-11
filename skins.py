@@ -66,7 +66,7 @@ class FrontOffice(Skin):
         handler = context.handler
         root = handler.get_site_root()
         menu = tree(root, active_node=context.handler,
-                    filter=Company, user=context.user)
+                    allow=Company, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
 
