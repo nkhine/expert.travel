@@ -51,8 +51,8 @@ class Country(WebSite):
     class_id = 'country'
     class_title = u'Country'
     class_description = u'Add a new Country'
-    class_icon48 = 'abakuc/images/TouristOffice48.png'
-    class_icon16 = 'abakuc/images/TouristOffice16.png'
+    class_icon48 = 'abakuc/images/Destination48.png'
+    class_icon16 = 'abakuc/images/Destination16.png'
     class_views = [
         ['view'], 
         ['browse_content?mode=thumbnails',
@@ -155,8 +155,8 @@ class Countries(Handler, ikaaroFolder):
     class_id = 'countries'
     class_title = u'Countries in the World'
     class_description = u'Folder containing all the Countries'
-    class_icon48 = 'abakuc/images/Destination48.png'
-    class_icon16 = 'abakuc/images/Destination16.png'
+    class_icon48 = 'abakuc/images/World48.png'
+    class_icon16 = 'abakuc/images/World16.png'
 
     def new(self, **kw):
         ikaaroFolder.new(self, **kw)

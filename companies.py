@@ -24,6 +24,7 @@ from itools.cms.widgets import table, batch
 from itools.cms.catalog import schedule_to_reindex
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
+from itools.uri import encode_query, Reference, Path
 
 # Import from abakuc
 from base import Handler, Folder
@@ -88,6 +89,49 @@ class Company(WebSite):
         if website.startswith('http://'):
             return website
         return 'http://' + website
+
+    def get_tabs_stl(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        # Build stl
+        namespace = {}
+        namespace['news'] = self.view_news(context)
+        namespace['jobs'] = self.view_jobs(context)
+        namespace['branches'] = self.view_addresses(context)
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <script type="text/javascript">
+            $(function() {
+                $('#container-1 ul').tabs({ cache: true });
+            });
+        </script>
+        <div id="container-1">
+            <ul>
+                <li><a href="#fragment-1"><span>News</span></a></li>
+                <li><a href="#fragment-2"><span>Jobs</span></a></li>
+                <li><a href="#fragment-3"><span>Branches</span></a></li>
+            </ul>
+            <div id="fragment-1">
+              ${news} 
+            </div>
+            <div id="fragment-2">
+              ${jobs}
+            </div>
+            <div id="fragment-3">
+              ${branches}
+            </div>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace)
+
+
     #######################################################################
     # Security / Access Control
     #######################################################################
@@ -116,9 +160,7 @@ class Company(WebSite):
         namespace['website'] = self.get_website()
         namespace['logo'] = self.has_handler('logo')
 
-        namespace['branches'] = self.view_addresses(context)
-        namespace['jobs'] = self.view_jobs(context)
-        namespace['news'] = self.view_news(context)
+        namespace['tabs'] = self.get_tabs_stl(context)
 
         handler = self.get_handler('/ui/abakuc/company_view.xml')
         return stl(handler, namespace)
