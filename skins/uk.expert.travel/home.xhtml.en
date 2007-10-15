@@ -8,6 +8,7 @@
   </head>
   <body>
     <h2>Welcome to the UK Travel List on-line portal!</h2>
+    <div class="content">
     <p>
     An on-line directory of the UK Travel market covers: travel trade
     services; land and sea travel; air travel; travel trade information;
@@ -21,20 +22,33 @@
     <a href=";register_form"><i>'Register'</i></a> and register. If your entry
     is incorrect please login or re-register.
     </p>
+    </div>
+    <div class="sidebar">
+      <div class="general-box">
+        <div class="title">
+          <h3>Recent jobs</h3>
+        </div>
+        <div class="content">
+          <div class="info">
+            <div class="text">
+              <p>Electronics, RF, Semiconductor, Software Recruitment &amp; Headhunting Co. Director of Twinserve Ltd <span>(Recruiting / Staffing Firm)</span></p>
+            </div>
+          </div>
+           <ul>
+              <li>Apply now</li>
+           </ul>
+        </div>
+      </div>
+      <div class="job-company">
+        <h3>Resources</h3>
+        <div class="job-company-info">
+          <h4>Y</h4>
+        </div>
+      </div>
+    </div> 
 
-<!-- table one -->  
-<table width="100%" border="0" align="center" cellpadding="3" cellspacing="0">
-	<tr>
-		<td width="10" />
-		<td valign="top" width="75%">
-			<table width="100%" style="margin-bottom:5px;">
-				<tr>
-					<td>
-						<h2>Latest travel industry news</h2>
-					</td>
-				</tr>
-        <tr>
-              <td id="List">
+
+              <div class="newslist">
                   <dl stl:repeat="news_items news" class="ListItem" onmouseover="this.className='ListItem_Hover';"
                     onmouseout="this.className='ListItem';">  
                     <dt>
@@ -44,121 +58,10 @@
                       Short Description<br/>
                     </dd>
                   </dl>       
-          </td>
-        </tr>
-			</table>
-		</td>
-		<td valign="top">
-			<table width="35px" border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<td><img width="1" height="1" alt="" /></td>
-				</tr>
-			</table>
-		</td> 
-		<td valign="top">
-			<!-- table two -->
-			<table width="280" border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<td>
-						<!-- table three -->
-						<table width="100%"  border="0" cellpadding="0" cellspacing="0.5" bgcolor="#6699CC">
-							<tr>
-								<td>
-								<!-- table four -->
-								<table width="100%"  border="0" cellpadding="10" cellspacing="0" bgcolor="#FFFFFF">
-									<tr>
-										<td style="padding:3px 6px 3px 6px; background-color:#DBEDF6;">
-											<table border="0" cellpadding="0"
-												cellspacing="0"
-												width="100%">
-												<tr><td><b>Resources</b></td><td>
-												<img src="images/tearoff_icon.gif" align="right" />
-												</td></tr>
-											</table>
-										</td>
-									</tr> <!-- what is this -->	
-									<tr>
-										<td style="background-color:#cccccc;">
-											<!-- table five -->
-											<table width="100%" border="0" cellpadding="5" cellspacing="0" bgcolor="#ffffff">
-												<tr>
-													<td style="line-height:160%;">
-													<p style="line-height:130%;margin:0 0 6px 0">
-												      <div><a id="" target="_blank" href="#">Demos and Guides</a></div>
-                              <div><a id="" target="_blank" href="#">Blog</a></div>
-                              <div><a id="" target="_blank" href="#">News and Case Studies</a></div>
-                              <div><a id="" target="_blank" href="#">Glossary</a></div>
-                              <div><a id="" target="_blank" href="#">Optimization Tips</a></div>
-                              <div><a id="" target="_blank" href="#">Report a Policy Violation</a></div>
-                              <div><a id="" target="_blank" href="#">Program Policies</a></div>
-													</p>
-													</td>
-												</tr>
-											</table>
-											<!--end of table five -->
-										</td>
-									</tr>
-								</table>
-								<!-- end of table four -->
-								</td>
-							</tr>
-						</table>
-						<!-- end of table three -->
-            <br />
-							<!-- table three -->
-						<table width="100%"  border="0" cellpadding="0" cellspacing="0.5" bgcolor="#6699CC">
-							<tr>
-								<td>
-								<!-- table four -->
-								<table stl:if="jobs" width="100%"  border="0" cellpadding="10" cellspacing="0" bgcolor="#FFFFFF">
-									<tr>
-										<td style="padding:3px 6px 3px 6px; background-color:#DBEDF6;">
-											<table border="0" cellpadding="0"
-												cellspacing="0"
-												width="100%">
-												<tr><td><b>Jobs</b></td><td>
-												<img src="images/tearoff_icon.gif" align="right" />
-												</td></tr>
-											</table>
-										</td>
-									</tr> <!-- what is this -->	
-									<tr>
-										<td style="background-color:#cccccc;">
-											<!-- table five -->
-											<table width="100%" border="0" cellpadding="5" cellspacing="0" bgcolor="#ffffff">
-												<tr>
-													<td style="line-height:160%;">
-													<p style="line-height:130%;margin:0 0 6px 0">
-												       <ul>
-                                <li stl:repeat="job jobs">
-                                  <a href="${job/url}">
-                                    ${job/title}
-                                  </a>
-                                </li>
-                              </ul> 
-													</p>
-													</td>
-												</tr>
-                        <tr>  
-                          <td align="right"><a id="" href=";view_jobs">Our ${nb_jobs} jobs >>></a></td>
-                        </tr>  
-											</table>
-											<!--end of table five -->
-										</td>
-									</tr>
-								</table>
-								<!-- end of table four -->
-								</td>
-							</tr>
-						</table>
-						<!-- end of table three -->
-            <br />				</td>
-				</tr>
-			</table>
-			<!-- end of table two -->
-		</td>
-	</tr>
-</table> 
-<!-- end of table one -->
+          <p class="viewall"><strong><a href="/jobs?runSearch=" name="_viewAll">View all »</a></strong></p>
+          </div>
+
+        
+        
   </body>
 </stl:block>
