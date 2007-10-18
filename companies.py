@@ -106,9 +106,12 @@ class Company(WebSite):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-            $(function() {
-                $('#container-1 ul').tabs({ cache: true });
-            });
+            var $tabs = $('ul').tabs(parseInt($.cookie('tab')) || 0, {
+        click: function() {
+            $.cookie('tab', $tabs.tabsSelected());
+        }
+
+    }); 
         </script>
         <div id="container-1">
             <ul>
@@ -558,6 +561,50 @@ class Address(RoleAware, WorkflowAware, Folder):
         # List users 
 
         return members
+
+
+    def get_tabs_stl(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        # Build stl
+        namespace = {}
+        #namespace['news'] = self.view_news(context)
+        namespace['jobs'] = self.view_jobs(context)
+        namespace['branches'] = self.view_addresses(context)
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <script type="text/javascript">
+            $(function() {
+                $('#container-1 ul').tabs({ cache: true });
+            });
+        </script>
+        <div id="container-1">
+            <ul>
+                <li><a href="#fragment-1"><span>News</span></a></li>
+                <li><a href="#fragment-2"><span>Jobs</span></a></li>
+                <li><a href="#fragment-3"><span>Branches</span></a></li>
+            </ul>
+            <div id="fragment-1">
+              {news} 
+            </div>
+            <div id="fragment-2">
+              ${jobs}
+            </div>
+            <div id="fragment-3">
+              ${branches}
+            </div>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace)
+
+
     #######################################################################
     # User Interface / View
     #######################################################################
@@ -602,6 +649,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                 'fax': address.get_property('abakuc:fax')})
         namespace['addresses'] = addresses
 
+        namespace['tabs'] = self.get_tabs_stl(context)
         ################ 
         # Branch Members
         namespace['users'] = self.get_members_namespace(address)
@@ -720,6 +768,96 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
 
+    ####################################################################
+    # View branches 
+    view_addresses__label__ = u'Our branches'
+    view_addresses__access__ = True
+    def view_addresses(self, context):
+        namespace = {}
+        addresses = self.parent.search_handlers(handler_class=Address)
+        namespace['addresses'] = []
+        for address in addresses:
+            company = address.parent
+            url = '/companies/%s/%s/;view' % (company.name, address.name)
+            enquire = '%s/;enquiry_form' % address.name
+            namespace['addresses'].append({'url': url,
+                                           'enquire': enquire,
+                                           'address': address.get_property('abakuc:address'),
+                                           'postcode': address.get_property('abakuc:postcode'),
+                                           'phone': address.get_property('abakuc:phone'),
+                                           'title': address.title_or_name})
+
+        namespace['users'] = self.get_members_namespace(address)
+        handler = self.get_handler('/ui/abakuc/company_view_addresses.xml')
+
+        return stl(handler, namespace)
+
+
+    ####################################################################
+    # View jobs 
+    view_jobs__label__ = u'Our Jobs'
+    view_jobs__access__ = True
+    def view_jobs(self, context):
+        namespace = {}
+        namespace['batch'] = ''
+
+        # Construct the lines of the table
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'Job'))
+        query.append(EqQuery('company', self.name))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        jobs = []
+        for job in list(documents):
+            job = root.get_handler(job.abspath)
+            get = job.get_property
+            # Information about the job
+            address = job.parent
+            company = address.parent
+            url = '%s/%s/;view' % (address.name, job.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                         'url': url,
+                         'title': get('dc:title'),
+                         'closing_date': get('abakuc:closing_date'),
+                         'address': address.get_title_or_name(), 
+                         'function': JobTitle.get_value(
+                                        get('abakuc:function')),
+                         'salary': SalaryRange.get_value(get('abakuc:salary')),               
+                         'description': description}
+            jobs.append(job_to_add)
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Namespace 
+        if jobs:
+            msgs = (u'There is one job.',
+                    u'There are ${n} jobs.')
+            job_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            job_table = None
+            job_batch = None
+            msg = u'Sorry but there are no jobs'
+
+        namespace['jobs'] = jobs        
+        namespace['batch'] = job_batch
+        namespace['msg'] = msg 
+        handler = self.get_handler('/ui/abakuc/company_view_jobs.xml')
+        return stl(handler, namespace)
     #######################################################################
     # User Interface / Edit
     #######################################################################

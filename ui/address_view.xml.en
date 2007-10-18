@@ -124,6 +124,11 @@
             
             </td>
           </tr>
+          <tr>
+            <td colspan="4">
+            ${tabs}
+            </td>
+          </tr>  
           </table>
   </td>
   <td valign="top">
