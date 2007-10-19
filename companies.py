@@ -105,14 +105,20 @@ class Company(WebSite):
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <script type="text/javascript">
-            var $tabs = $('ul').tabs(parseInt($.cookie('tab')) || 0, {
-        click: function() {
-            $.cookie('tab', $tabs.tabsSelected());
-        }
+<script type="text/javascript">
+            var TABS_COOKIE = 'tabs_cookie';
+            $("ul").tabs((parseInt($.cookie(TABS_COOKIE))
+|| 1,{
+                 click: function(clicked){
+                       var lastTab = $
+(clicked).parents("#container-1 ul").find("li").index(clicked.parentNode) + 1;
+                       $.cookie(TABS_COOKIE, lastTab);},
+             fxSlide: true,
+             fxFade:  true,
+             fxSpeed: "normal"
 
-    }); 
-        </script>
+               });
+              </script> 
         <div id="container-1">
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
