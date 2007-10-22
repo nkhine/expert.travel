@@ -22,6 +22,17 @@ from base import Handler, Folder
 from handlers import ApplicationsLog
 from metadata import JobTitle, SalaryRange
 
+# Definition of the fields of the forms to add new job application 
+application_fields = [
+    ('abakuc:applicant_note', True),
+    ('ikaaro:firstname', True),
+    ('ikaaro:lastname', True),
+    ('ikaaro:email', True),
+    ('abakuc:phone', False)]
+
+application_fields_auth = [
+    ('abakuc:applicant_note', True)]
+
 
 class Job(RoleAware, Folder):
 
@@ -32,16 +43,21 @@ class Job(RoleAware, Folder):
     class_icon48 = 'abakuc/images/JobBoard48.png'
     class_views = [
         ['view'],
+        ['application_form'],
         ['view_candidatures'],
         ['browse_content?mode=list'],
         ['edit_metadata_form']]
 
     
     def get_document_types(self):
-        return [Candidature, File]
+        return []
 
+    ###################################################################
+    ## Permissions for anonymous users to apply for job and add CV file 
 
+    # XXX [SECURITY BUG] See http://bugs.abakuc.com/show_bug.cgi?id=117 
     new_resource_form__access__ = True
+    # This tells us who can upload
     new_resource__access__ = True
 
 
@@ -272,6 +288,28 @@ class Job(RoleAware, Folder):
         return stl(handler, namespace)
 
 
+    application_form__access__ = True 
+    application_form__label__ = u'Apply now!'
+    def application_form(self, context):
+        class_id = 'Candidature'
+        keep = ['title', 'version', 'type', 'state', 'module', 'priority',
+            'assigned_to', 'comment']
+        if context.user is None:
+            namespace = context.build_form_namespace(application_fields)
+            namespace['is_authenticated'] = False
+        else:
+            namespace = context.build_form_namespace(application_fields_auth)
+            namespace['is_authenticated'] = True
+        namespace['class_id'] = class_id
+        # Check input data
+        #error = context.check_form_input(application_fields)
+        #if error is not None:
+        #    return context.come_back(error, keep=keep)
+
+        # Add
+        path = '/ui/abakuc/jobs/new_instance_form.xml'
+        handler = context.root.get_handler(path)
+        return stl(handler, namespace)    
     #######################################################################
     # XXX User Interface / Edit
     #######################################################################
@@ -352,7 +390,7 @@ class Job(RoleAware, Folder):
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
 
-    
+
     #######################################################################
     ## Indexes
     #######################################################################
@@ -438,7 +476,7 @@ class Candidature(RoleAware, Folder):
         # Check the cv
         file = context.get_form_value('file')
         if file is None:
-            return context.come_back(u'Please put your CV')
+            return context.come_back(u'Please upload your CV')
         name, mimetype, body = file
         guessed = mimetypes.guess_type(name)[0]
         if guessed is not None:
@@ -492,7 +530,6 @@ class Candidature(RoleAware, Folder):
         for x in container.search_handlers(handler_class=Candidature):
             if user_id == x.get_property('user_id'):
                 msg = u"""
-                Application Previously Sent.
                 You have already applied for this particular vacancy. Your
                 details have NOT been sent again.
                        """
@@ -511,27 +548,37 @@ class Candidature(RoleAware, Folder):
         # Authenticated user, we are done
         if confirm is None:
             handler.send_email_to_members(context, all=False)
-            message = u'Your candidature has been sent'
+            message = (u"Your job application has been succesfully sent. "
+                       u"Good luck with your application!")
             return message.encode('utf-8')
         
         # Send confirmation email
         hostname = context.uri.authority.host
-        from_addr = 'jobs@uktravellist.info'
-        subject = u"[%s] Register confirmation required" % hostname
+        from_addr = 'jobs@expert.travel'
+        subject = u"[%s] Job application needs confirmation." % (hostname)
         subject = container.gettext(subject)
         body = container.gettext(
             u"This email has been generated in response to your"
-            u" job candidature  on the UK Travel List.\n"
-            u"To submit your enquiry, click the link:\n"
-            u"\n"
+            u" job application at http://%s.\n"
+            "\n"
+            u"In order to ensure that only genuine application are submitted, "
+            u"this can only be achieved if we are able to validate the "
+            u"authenticity of the applicant and a valid email address.\n"
+            "\n"
+            u"To confirm that you want to apply for this position, "
+            u"please visit this web page:\n"
+            "\n"
             u"  $confirm_url"
             u"\n"
-            u"If the text is on two lines, please copy and "
-            u"paste the full line into your browser URL bar."
+            u"Some email clients may split this onto two lines,  "
+            u"if this is the case, please copy and "
+            u"paste the full line into your browser URL bar.\n"
             u"\n"
-            u"Thank you for visiting the UK Travel List website."
+            u"Good Luck!"
             u"\n"
-            u"UK Travel List Team")
+            u"Expert Travel Jobs"
+            u"\n"
+            u"http://%s") % (hostname, hostname)
         url = '%s/;confirm_candidature_form?user=%s&key=%s' % (name, user_id,
                                                                confirm)
         url = context.uri.resolve(url)
