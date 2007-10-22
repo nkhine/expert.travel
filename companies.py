@@ -99,18 +99,18 @@ class Company(WebSite):
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         namespace = {}
-        namespace['news'] = self.view_news(context)
-        namespace['jobs'] = self.view_jobs(context)
-        namespace['branches'] = self.view_addresses(context)
+        namespace['news'] = self.list_news(context)
+        namespace['jobs'] = self.list_jobs(context)
+        namespace['branches'] = self.list_addresses(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-                var TABS_COOKIE = 'tabs_cookie'; 
+                var TABS_COOKIE = 'company_cookie'; 
                 $(function() {
                     $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                         var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE, lastTab);
+                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
                     },
                     fxFade: true,
                     fxSpeed: 'fast',
@@ -200,10 +200,10 @@ class Company(WebSite):
 
 
     ####################################################################
-    # View branches 
-    view_addresses__label__ = u'Our branches'
-    view_addresses__access__ = True
-    def view_addresses(self, context):
+    # List addresses 
+    list_addresses__label__ = u'List addresses'
+    list_addresses__access__ = True
+    def list_addresses(self, context):
         namespace = {}
         addresses = self.search_handlers(handler_class=Address)
         namespace['addresses'] = []
@@ -218,16 +218,16 @@ class Company(WebSite):
                                            'title': address.title_or_name})
 
         namespace['users'] = self.get_members_namespace(address)
-        handler = self.get_handler('/ui/abakuc/company_view_addresses.xml')
+        handler = self.get_handler('/ui/abakuc/list_addresses.xml')
 
         return stl(handler, namespace)
 
 
     ####################################################################
-    # View jobs 
-    view_jobs__label__ = u'Our Jobs'
-    view_jobs__access__ = True
-    def view_jobs(self, context):
+    # List jobs 
+    list_jobs__label__ = u'List jobs'
+    list_jobs__access__ = True
+    def list_jobs(self, context):
         namespace = {}
         namespace['batch'] = ''
         all_jobs = []
@@ -235,7 +235,6 @@ class Company(WebSite):
             address_jobs = list(address.search_handlers(handler_class=Job))
             all_jobs = all_jobs + address_jobs
 
-        # Construct the lines of the table
         root = context.root
         catalog = context.server.catalog
         query = []
@@ -290,15 +289,15 @@ class Company(WebSite):
         namespace['jobs'] = jobs        
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        handler = self.get_handler('/ui/abakuc/company_view_jobs.xml')
+        handler = self.get_handler('/ui/abakuc/list_jobs.xml')
         return stl(handler, namespace)
 
 
     ####################################################################
     # View news 
-    view_news__label__ = u'News'
-    view_news__access__ = True
-    def view_news(self, context):
+    list_news__label__ = u'List news'
+    list_news__access__ = True
+    def list_news(self, context):
         namespace = {}
         namespace['batch'] = ''
         columns = [('title', u'Title'),
@@ -328,7 +327,7 @@ class Company(WebSite):
             # Information about the job
             address = news.parent
             company = address.parent
-            url = '%s/%s/;view' % (address.name, news.name)
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
@@ -358,7 +357,7 @@ class Company(WebSite):
         namespace['news_batch'] = news_batch
         namespace['msg'] = msg 
         namespace['news_items'] = news_items
-        handler = self.get_handler('/ui/abakuc/company_view_news.xml')
+        handler = self.get_handler('/ui/abakuc/list_news.xml')
         return stl(handler, namespace)
 
 
@@ -577,17 +576,25 @@ class Address(RoleAware, WorkflowAware, Folder):
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         namespace = {}
-        #namespace['news'] = self.view_news(context)
-        namespace['jobs'] = self.view_jobs(context)
-        namespace['branches'] = self.view_addresses(context)
+        namespace['news'] = self.list_news(context)
+        namespace['jobs'] = self.list_jobs(context)
+        namespace['branches'] = self.list_addresses(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-            $(function() {
-                $('#container-1 ul').tabs({ cache: true });
-            });
-        </script>
+                var TABS_COOKIE = 'address_cookie'; 
+                $(function() {
+                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+                    },
+                    fxFade: true,
+                    fxSpeed: 'fast',
+                    fxSpeed: "normal" 
+                    });
+                });
+            </script>
         <div id="container-1">
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
@@ -595,7 +602,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                 <li><a href="#fragment-3"><span>Branches</span></a></li>
             </ul>
             <div id="fragment-1">
-              {news} 
+              ${news} 
             </div>
             <div id="fragment-2">
               ${jobs}
@@ -659,74 +666,27 @@ class Address(RoleAware, WorkflowAware, Folder):
         # Branch Members
         namespace['users'] = self.get_members_namespace(address)
 
-        ######## 
-        # Jobs
+        handler = self.get_handler('/ui/abakuc/address_view.xml')
+        return stl(handler, namespace)
+
+    ####################################################################
+    # View news 
+    list_news__label__ = u'News'
+    list_news__access__ = True
+    def list_news(self, context):
+        namespace = {}
         namespace['batch'] = ''
+        columns = [('title', u'Title'),
+                   ('address', u'Address'),
+                   ('description', u'Short description'),
+                   ('closing_date', u'Closing Date')]
+        all_news = self.search_handlers(handler_class=News)
         # Construct the lines of the table
         root = context.root
         catalog = context.server.catalog
         query = []
-        today = (date.today()).strftime('%Y-%m-%d')
-        query.append(EqQuery('format', 'Job'))
-        query.append(EqQuery('company', self.parent.name))
-        query.append(EqQuery('address', self.name))
-        query.append(RangeQuery('closing_date', today, None))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        documents = results.get_documents()
-        jobs = []
-        for job in list(documents):
-            job = root.get_handler(job.abspath)
-            get = job.get_property
-            # Information about the job
-            company = address.parent
-            address = job.parent
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
-                                                 job.name)
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            jobs.append({'url': url,
-                         'title': job.title,
-                         'function': JobTitle.get_value(get('abakuc:function')),
-                         'salary': SalaryRange.get_value(get('abakuc:salary')),
-                         'county': county,
-                         'region': region,
-                         'closing_date': get('abakuc:closing_date'),
-                         'description': description})
-        # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 2 
-        batch_total = len(jobs)
-        batch_fin = batch_start + batch_size
-        if batch_fin > batch_total:
-            batch_fin = batch_total
-        jobs = jobs[batch_start:batch_fin]
-        # Namespace 
-        if jobs:
-            job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
-                              msgs=(u"There is 1 job announcement.",
-                                    u"There are ${n} job announcements."))
-            msg = None
-        else:
-            job_batch = None
-            msg = u"Appologies, currently we don't have any job announcements"
-        # Namespace 
-        namespace['job_batch'] = job_batch 
-        namespace['msg'] = msg 
-        namespace['jobs'] = jobs
-        ######## 
-        # News 
-        namespace['batch'] = ''
-        # Construct the lines of the table
-        root = context.root
-        catalog = context.server.catalog
-        query = []
-        today = (date.today()).strftime('%Y-%m-%d')
         query.append(EqQuery('format', 'news'))
-        query.append(EqQuery('company', self.parent.name))
-        query.append(EqQuery('address', self.name))
+        today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
@@ -735,11 +695,8 @@ class Address(RoleAware, WorkflowAware, Folder):
         for news in list(documents):
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the news
-            address = news.parent
-            company = address.parent
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
-                                                 news.name)
+            # Information about the job
+            url = '%s/;view' % news.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
@@ -749,7 +706,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                                'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 2 
+        batch_size = 5
         batch_total = len(news_items)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
@@ -757,61 +714,36 @@ class Address(RoleAware, WorkflowAware, Folder):
         news_items = news_items[batch_start:batch_fin]
         # Namespace 
         if news_items:
-            news_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
-                              msgs=(u"There is 1 news item.",
-                                    u"There are ${n} news items."))
+            msgs = (u'There is one news item.',
+                    u'There are ${n} news items.')
+            news_batch = batch(context.uri, batch_start, batch_size, 
+                              batch_total, msgs=msgs)
             msg = None
         else:
             news_batch = None
-            msg = u"Currently there is no news."
-        # Namespace 
+            msg = u'Currently there is no news.'
+        
         namespace['news_batch'] = news_batch
-        namespace['news_msg'] = msg 
+        namespace['msg'] = msg 
         namespace['news_items'] = news_items
-        handler = self.get_handler('/ui/abakuc/address_view.xml')
+        handler = self.get_handler('/ui/abakuc/list_news.xml')
         return stl(handler, namespace)
 
-
-    ####################################################################
-    # View branches 
-    view_addresses__label__ = u'Our branches'
-    view_addresses__access__ = True
-    def view_addresses(self, context):
-        namespace = {}
-        addresses = self.parent.search_handlers(handler_class=Address)
-        namespace['addresses'] = []
-        for address in addresses:
-            company = address.parent
-            url = '/companies/%s/%s/;view' % (company.name, address.name)
-            enquire = '%s/;enquiry_form' % address.name
-            namespace['addresses'].append({'url': url,
-                                           'enquire': enquire,
-                                           'address': address.get_property('abakuc:address'),
-                                           'postcode': address.get_property('abakuc:postcode'),
-                                           'phone': address.get_property('abakuc:phone'),
-                                           'title': address.title_or_name})
-
-        namespace['users'] = self.get_members_namespace(address)
-        handler = self.get_handler('/ui/abakuc/company_view_addresses.xml')
-
-        return stl(handler, namespace)
 
 
     ####################################################################
     # View jobs 
-    view_jobs__label__ = u'Our Jobs'
-    view_jobs__access__ = True
-    def view_jobs(self, context):
+    list_jobs__label__ = u'Our jobs'
+    list_jobs__access__ = True
+    def list_jobs(self, context):
         namespace = {}
         namespace['batch'] = ''
-
+        all_jobs = self.search_handlers(handler_class=Job)
         # Construct the lines of the table
         root = context.root
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'Job'))
-        query.append(EqQuery('company', self.name))
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
@@ -820,11 +752,10 @@ class Address(RoleAware, WorkflowAware, Folder):
         jobs = []
         for job in list(documents):
             job = root.get_handler(job.abspath)
+            address = job.parent
             get = job.get_property
             # Information about the job
-            address = job.parent
-            company = address.parent
-            url = '%s/%s/;view' % (address.name, job.name)
+            url = '%s/;view' % job.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
@@ -861,8 +792,34 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['jobs'] = jobs        
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        handler = self.get_handler('/ui/abakuc/company_view_jobs.xml')
+        handler = self.get_handler('/ui/abakuc/list_jobs.xml')
         return stl(handler, namespace)
+
+
+    ####################################################################
+    # View branches 
+    list_addresses__label__ = u'Our branches'
+    list_addresses__access__ = True
+    def list_addresses(self, context):
+        namespace = {}
+        addresses = self.parent.search_handlers(handler_class=Address)
+        namespace['addresses'] = []
+        for address in addresses:
+            url = '%s/;view' % address.name
+            enquire = '%s/;enquiry_form' % address.name
+            namespace['addresses'].append({'url': url,
+                                           'enquire': enquire,
+                                           'address': address.get_property('abakuc:address'),
+                                           'postcode': address.get_property('abakuc:postcode'),
+                                           'phone': address.get_property('abakuc:phone'),
+                                           'title': address.title_or_name})
+
+        namespace['users'] = self.get_members_namespace(address)
+        handler = self.get_handler('/ui/abakuc/list_addresses.xml')
+
+        return stl(handler, namespace)
+
+
     #######################################################################
     # User Interface / Edit
     #######################################################################

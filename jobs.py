@@ -34,9 +34,7 @@ class Job(RoleAware, Folder):
         ['view'],
         ['view_candidatures'],
         ['browse_content?mode=list'],
-        ['new_resource_form'],
-        ['edit_metadata_form'],
-        ['permissions_form']]
+        ['edit_metadata_form']]
 
     
     def get_document_types(self):
@@ -239,7 +237,7 @@ class Job(RoleAware, Folder):
         return stl(handler, namespace)
 
     view_candidatures__access__ = 'is_reviewer_or_member'
-    view_candidatures__label__ = u'Job Candidatures'
+    view_candidatures__label__ = u'Job candidatures'
     def view_candidatures(self, context):
         root = context.root
         users = root.get_handler('users')
@@ -313,6 +311,7 @@ class Job(RoleAware, Folder):
     
 
     edit_metadata_form__access__ = 'is_reviewer_or_member'
+    edit_metadata_form__label__ = u'Modify job details'
     def edit_metadata_form(self, context):
         namespace = {}
         for key in self.edit_job_fields:

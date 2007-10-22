@@ -4,13 +4,13 @@
 # Import from itools
 from itools.cms.skins import Skin
 from itools.web import get_context
-from itools.cms.widgets import tree
+from itools.cms.folder import Folder as DBFolder
+from itools.cms.widgets import tree, build_menu
 from itools.cms.base import Node
 from itools.cms.utils import reduce_string
 # Import from abakuc
 from companies import Company, Address
 from countries import Country
-
 
 
 class FrontOffice(Skin):
@@ -43,22 +43,52 @@ class FrontOffice(Skin):
 
 
     def get_main_menu_options(self, context):
-        options = []
-        append = options.append
         handler = context.handler
         root = handler.get_site_root()
         path = root.abspath
 
-        append({'path': path, 'method': 'view_news',
+        options = []
+        append = options.append
+        append({'path': path, 'method': 'list_news',
                 'title': u'News',
                 'icon': '/ui/abakuc/images/News16.png'})
-        append({'path': path, 'method': 'view_jobs',
+        append({'path': path, 'method': 'list_jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'view_addresses',
+        append({'path': path, 'method': 'list_addresses',
                 'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
         return options
+
+
+    def get_context_menu(self, context):
+        # FIXME Hard-Coded
+        from jobs import Job
+        from news import News
+        here = context.handler
+        while here is not None:
+            if isinstance(here, (Job, News)):
+                break
+            here = here.parent
+        else:
+            return None
+
+        base = context.handler.get_pathto(here)
+
+        menu = []
+        for view in here.get_views():
+            # Find out the title
+            name, args = view, {}
+            title = getattr(here, '%s__label__' % name)
+            if callable(title):
+                title = title(**args)
+            # Append to the menu
+            menu.append({'href': '%s/;%s' % (base, view),
+                         'title': self.gettext(title),
+                         'class': '', 'src': None, 'items': []})
+
+        return {'title': self.gettext(here.class_title),
+                'content': build_menu(menu)}
 
 
     def get_navigation_menu(self, context):
@@ -76,6 +106,10 @@ class FrontOffice(Skin):
         if isinstance(root, Company):
             # Main Menu
             menu = self.get_main_menu(context)
+            if menu is not None:
+                menus.append(menu)
+            # Parent's Menu
+            menu = self.get_context_menu(context)
             if menu is not None:
                 menus.append(menu)
             # Navigation
