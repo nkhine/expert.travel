@@ -26,9 +26,11 @@ from itools.cms.widgets import table, batch
 from itools.xml import Parser
 from itools.datatypes import Email
 from itools.cms.workflow import WorkflowAware
+from itools.xhtml import Document as XHTMLDocument
 
 # Import from our product
 from companies import Company, Address 
+from news import News
 from jobs import Job
 from utils import title_to_name
 from metadata import JobTitle, SalaryRange
@@ -139,6 +141,57 @@ class User(iUser, WorkflowAware, Handler):
         for job in results.get_documents():
             return root.get_handler(job.abspath)
         return None
+
+    def get_tabs_stl(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        # Build stl
+        namespace = {}
+        namespace['news'] = self.news_table(context)
+        namespace['jobs'] = self.jobs_table(context)
+        #namespace['branches'] = self.list_addresses(context)
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <script type="text/javascript">
+                var TABS_COOKIE = 'profile_cookie'; 
+                $(function() {
+                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+                    },
+                    fxFade: true,
+                    fxSpeed: 'fast',
+                    fxSpeed: "normal" 
+                    });
+                });
+            </script>
+        <div id="container-1">
+            <ul>
+                <li><a href="#fragment-1"><span>News</span></a></li>
+                <li><a href="#fragment-2"><span>Jobs</span></a></li>
+                <li><a href="#fragment-3"><span>Branches</span></a></li>
+            </ul>
+            <div id="fragment-1">
+              ${news} 
+            </div>
+            <div id="fragment-2">
+              ${jobs}
+            </div>
+            <div id="fragment-3">
+              {branches}
+            </div>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace)
+
+
     #######################################################################
     # Edit Account 
     account_fields = iUser.account_fields + ['abakuc:phone']
@@ -288,69 +341,8 @@ class User(iUser, WorkflowAware, Handler):
         namespace['enquiries'] = results 
         namespace['howmany'] = len(results)
         
-        # Table with Jobs
-        namespace['batch'] = ''
-        columns = [('title', u'Title'),
-                   ('closing_date', u'Closing Date'),
-                   ('function', u'Function'),
-                   ('description', u'Short description')]
-        # Get all Jobs
-        address_jobs = address.search_handlers(handler_class=Job)
-        # Construct the lines of the table
-        jobs = []
-        for job in list(address_jobs):
-            #job = root.get_handler(job.abspath)
-            get = job.get_property
-            # Information about the job
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
-                                                 job.name)
-            job_to_add ={'id': job.name, 
-                         'checkbox': is_reviewer,
-                         'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
-                         'closing_date': get('abakuc:closing_date'),
-                         'function': JobTitle.get_value(
-                                        get('abakuc:function')),
-                         'description': get('dc:description')}
-            jobs.append(job_to_add)
-        # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5
-        batch_total = len(jobs)
-        batch_fin = batch_start + batch_size
-        if batch_fin > batch_total:
-            batch_fin = batch_total
-        jobs = jobs[batch_start:batch_fin]
-        # Order 
-        sortby = context.get_form_value('sortby', 'closing_date')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
-        if reverse:
-            jobs.reverse()
-        # Set batch informations
-        # Namespace 
-        if jobs:
-            actions = [('select', u'Select All', 'button_select_all',
-                        "return select_checkboxes('browse_list', true);"),
-                       ('select', u'Select None', 'button_select_none',
-                        "return select_checkboxes('browse_list', false);"),
-                       ('create_new_job', u'Add new job', 'button_ok',
-                        None),
-                       ('remove_job', 'Delete Job/s', 'button_delete', None)]
-            job_table = table(columns, jobs, [sortby], sortorder, actions)
-            msgs = (u'There is one job.', u'There are ${n} jobs.')
-            job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, msgs=msgs)
-            msg = None
-        else:
-            job_table = None
-            job_batch = None
-            msg = u'No jobs'
-
-        namespace['table'] = job_table
-        namespace['batch'] = job_batch
-        namespace['msg'] = msg 
+        # Tabs
+        namespace['tabs'] = self.get_tabs_stl(context)
 
         namespace['contact'] = None
         if user is None:
@@ -449,9 +441,34 @@ class User(iUser, WorkflowAware, Handler):
         return 'Hello' 
 
     ########################################################################
+    # Create a new news item 
+    create_news__access__ = 'is_self_or_admin'
+    def create_news(self, context):
+        address = self.get_address()
+        company = address.parent
+        url = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,
+                                                                address.name)
+        goto = context.uri.resolve(url)
+        message = u'Please use this form to add a new news item'
+        return context.come_back(message, goto=goto)
+        
+    
+    ########################################################################
+    # Remove news item/s
+    remove_news__access__ = 'is_self_or_admin'
+    def remove_news(self, context):
+        ids = context.get_form_values('ids')
+        root = context.root
+        if not ids:
+            return context.come_back(u'Please select a news item to remove')
+        address = self.get_address() 
+        for news_id in ids:
+            address.del_object(news_id)
+        return context.come_back(u'News(s) delete')
+    ########################################################################
     # Create a new job 
-    create_new_job__access__ = 'is_self_or_admin'
-    def create_new_job(self, context):
+    create_job__access__ = 'is_self_or_admin'
+    def create_job(self, context):
         address = self.get_address()
         company = address.parent
         url = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
@@ -473,8 +490,171 @@ class User(iUser, WorkflowAware, Handler):
         for job_id in ids:
             address.del_object(job_id)
         return context.come_back(u'Job(s) delete')
+    ########################################################################
+    # News table used in the 'tabs' method
+    def news_table(self, context):
+        namespace = {}
+        address = self.get_address()
+        company = address.parent
+        if address:
+            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
+            is_member = address.has_user_role(self.name, 'ikaaro:members')
+            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
+            is_reviewer_or_member = is_reviewer or is_member
+        else:
+            is_reviewer = False
+            is_member = False
+            is_guest = False
+            is_reviewer_or_member = False
+        # Table with News
+        columns = [('title', u'Title'),
+                   ('closing_date', u'Closing Date'),
+                   ('description', u'Short description')]
+        # Get all News 
+        address_news = address.search_handlers(handler_class=News)
+        # Construct the lines of the table
+        news_items = []
+        for news in list(address_news):
+            #job = root.get_handler(job.abspath)
+            get = news.get_property
+            # Information about the news 
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                 news.name)
+            news_to_add ={'id': news.name, 
+                         'checkbox': is_reviewer,
+                         'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
+                         'closing_date': get('abakuc:closing_date'),
+                         'description': get('dc:description')}
+            news_items.append(news_to_add)
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(news_items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        news_items = news_items[batch_start:batch_fin]
+        # Order 
+        sortby = context.get_form_value('sortby', 'closing_date')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        news_items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            news_items.reverse()
+        # Set batch informations
+        # Namespace 
+        if news_items:
+            actions = [('select', u'Select All', 'button_select_all',
+                        "return select_checkboxes('browse_list', true);"),
+                       ('select', u'Select None', 'button_select_none',
+                        "return select_checkboxes('browse_list', false);"),
+                       ('create_news', u'Add news ', 'button_ok',
+                        None),
+                       ('remove_news', 'Delete News/s', 'button_delete', None)]
+            news_table = table(columns, news_items, [sortby], sortorder, actions)
+            msgs = (u'There is one news item.', u'There are ${n} news items.')
+            news_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            actions = [('create_news', u'Add news ', 'button_ok',
+                        None)]
+            news_table = table(columns, news_items, [sortby], sortorder, actions)
+            news_batch = None
+            msg = u'No news has been posted.'
 
+        namespace['news_table'] = news_table
+        namespace['news_batch'] = news_batch
+        namespace['news_msg'] = msg 
+        handler = self.get_handler('/ui/abakuc/news/news_table.xml')
+        return stl(handler, namespace)
+
+
+   
     
+    ########################################################################
+    # Job table used in the 'tabs' method
+    def jobs_table(self, context):
+        namespace = {}
+        address = self.get_address()
+        company = address.parent
+        if address:
+            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
+            is_member = address.has_user_role(self.name, 'ikaaro:members')
+            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
+            is_reviewer_or_member = is_reviewer or is_member
+        else:
+            is_reviewer = False
+            is_member = False
+            is_guest = False
+            is_reviewer_or_member = False
+            # Table with Jobs
+        columns = [('title', u'Title'),
+                   ('closing_date', u'Closing Date'),
+                   ('function', u'Function'),
+                   ('description', u'Short description')]
+        # Get all Jobs
+        address_jobs = address.search_handlers(handler_class=Job)
+        # Construct the lines of the table
+        jobs = []
+        for job in list(address_jobs):
+            #job = root.get_handler(job.abspath)
+            get = job.get_property
+            # Information about the job
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                 job.name)
+            job_to_add ={'id': job.name, 
+                         'checkbox': is_reviewer,
+                         'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
+                         'closing_date': get('abakuc:closing_date'),
+                         'function': JobTitle.get_value(
+                                        get('abakuc:function')),
+                         'description': get('dc:description')}
+            jobs.append(job_to_add)
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Order 
+        sortby = context.get_form_value('sortby', 'closing_date')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            jobs.reverse()
+        # Set batch informations
+        # Namespace 
+        if jobs:
+            actions = [('select', u'Select All', 'button_select_all',
+                        "return select_checkboxes('browse_list', true);"),
+                       ('select', u'Select None', 'button_select_none',
+                        "return select_checkboxes('browse_list', false);"),
+                       ('create_job', u'Add new job', 'button_ok',
+                        None),
+                       ('remove_job', 'Delete Job/s', 'button_delete', None)]
+            job_table = table(columns, jobs, [sortby], sortorder, actions)
+            msgs = (u'There is one job.', u'There are ${n} jobs.')
+            job_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            job_table = None
+            job_batch = None
+            msg = u'No jobs'
+
+        namespace['job_table'] = job_table
+        namespace['job_batch'] = job_batch
+        namespace['job_msg'] = msg 
+        handler = self.get_handler('/ui/abakuc/jobs/jobs_table.xml')
+        return stl(handler, namespace)
+
+
     ########################################################################
     # Setup Company/Address
     setup_company_form__access__ = 'is_self_or_admin'

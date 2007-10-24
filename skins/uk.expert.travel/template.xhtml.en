@@ -61,53 +61,49 @@
 
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
           <tr>
-            <td id="left" class="column" valign="top">
-              <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                <!-- Left Menu -->
-                <tr>
-                  <td>
+            <td id="left" class="column" valign="top"><!-- left column -->
+                  <div stl:repeat="option level1">
+                      <a href="/;search?level1=${option/name}">${option/title}</a>
+                  </div>
                   <div class="navigation" stl:repeat="menu left_menus">
                     <label>${menu/title}</label>
                     ${menu/content}
                   </div>
-                  </td>
-                </tr>
-                <tr stl:repeat="option level1">
-                  <td>
-                    <a href="/;search?level1=${option/name}">${option/title}</a>
-                  </td>
-                </tr>
-              </table>
-            </td> 
-            <td id="center" class="column">
+            </td><!-- /left column --> 
+            <td id="center" class="column" valign="top"><!-- center column -->
               <div id="maintitle">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td id="message" stl:if="message">${message}</td>
-                <td id="logged">
+                <div class="information"><!-- user information -->
                 <stl:block if="not user/info">
                   (not logged in)
                 </stl:block>
                 <stl:block if="user/info">
                   (logged in as <a href="${user/info/home}">${user/info/title}</a>)
                 </stl:block>
-                </td>
-                </tr>
-                </table>
+                </div><!-- /user information -->
+                <div id="breadcrumbs"><!-- breadcrumbs -->
+                  <label>Location:</label>
+                  <span stl:repeat="item breadcrumb">
+                    <a stl:if="item/url" href="${item/url}"
+                      title="${item/name}">${item/short_name}</a>
+                    <span stl:if="not item/url"
+                      title="${item/name}">${item/short_name}</span>
+                    <stl:inline if="not repeat/item/end">/</stl:inline> 
+                  </span>
+                </div><!-- /breadcrumbs -->
                 <div class="clear"></div>
               </div>
-              <!-- The Body -->
               <div id="body">
+                <div id="message" stl:if="message">${message}</div>
                 <div id="content">${body}</div>
               </div>
-            </td>
+            </td><!-- /center column -->
           </tr>
         </table>
-      <div id="footer">
+      <div id="footer"><!-- footer -->
         <a href="/;about">About</a>
         <a href="/;credits">Credits</a>
         <a href="/;license">License</a>
-      </div>
+      </div><!-- /footer -->
 
   </body>
 </html>

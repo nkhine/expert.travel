@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+      <h2>Jobs</h2>
+      <p>
+        ${job_batch}
+        ${job_table}
+        <b stl:if="job_msg">${job_msg}</b>
+      </p>
+</stl:block>

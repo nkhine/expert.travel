@@ -126,7 +126,7 @@ class FrontOffice(Skin):
     #    """Return a list of dicts [{name, url}...] """
     #    here = context.handler
     #    #root = context.site_root
-    #    root = self._get_site_root(context)
+    #    root = here.get_site_root()
     #    # Build the list of handlers that make up the breadcrumb
     #    handlers = [root]
     #    for segment in context.uri.path:

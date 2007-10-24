@@ -41,6 +41,13 @@ class Companies(Folder):
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
+    class_views = [['view'], 
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
+                   ['new_resource_form'],
+                   ['permissions_form', 'new_user_form'],
+                   ['edit_metadata_form']]
+
     
     def get_document_types(self):
         return [Company]

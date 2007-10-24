@@ -67,6 +67,10 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 /**************************************************************************
  * Left menu style 
  **************************************************************************/
+#left {
+  float: left;
+  width: 180px;
+}
 #left table {
   border-collapse: collapse;
   font-weight: bold;
@@ -94,20 +98,22 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 #maintitle a {
   text-decoration: none;
 }
+#maintitle .information { float: right; }
 /**************************************************************************
- * Center style 
+ * Center column style
  **************************************************************************/
 #center {
   vertical-align: top; 
 }
 /**************************************************************************
- * Right menu style 
+ * Right column style 
  **************************************************************************/
 #right {
+  float: right;
   width: 160px;
   vertical-align: top; 
-  text-align: right;
 }
+#right .adverts { text-align: left; }
 /**************************************************************************
  * Categories style 
  **************************************************************************/
@@ -143,12 +149,6 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 /**************************************************************************
  * 
  * ***********************************************************************/
-#logged {
-  margin: 0.3em;
-  padding: 0.5em 0.3em 0.5em 24px;
-  width: 180px;
-  text-align: right;
-}
 
 /* Registration Form
 fieldset { border: 1px solid #000; }
@@ -189,68 +189,7 @@ input:focus, textarea:focus { background: #efefef; color: #000; }
   text-decoration: underline;
 }
 
-/* tab-view css */
-	.tabPane{
-		height:21px;	/* Height of tabs */
-		border-bottom:1px solid #919b9c;
-	}
-	.aTab{
-		border-left:1px solid #919b9c;
-		border-right:1px solid #919b9c;
-		border-bottom:1px solid #919b9c;
-		font-family: Trebuchet MS, Lucida Sans Unicode, Arial, sans-serif;
-		padding:5px;		
-		
-	}
-	.tabPane DIV{
-		float:left;
-		height:100%;	/* Height of tabs */
-		padding-left:3px;
-		vertical-align:middle;
-		background-repeat:no-repeat;
-		background-position:bottom left;
-		cursor:pointer;
-		position:relative;
-		bottom:-1px;
-		margin-left:0px;
-		margin-right:0px;
-	}
-	.tabPane .tabActive{
-		background-image:url('images/tab_left_active.gif');
-		margin-left:0px;
-		margin-right:0px;	
-		z-index:10;	
-	}
-	.tabPane .tabInactive{
-		background-image:url('images/tab_left_inactive.gif');
-		margin-left:0px;
-		margin-right:0px;
-		z-index:1;
-	}
-
-	.tabPane .inactiveTabOver{
-		background-image:url('images/tab_left_over.gif');
-		margin-left:0px;
-		margin-right:0px;
-	}
-	.tabPane span{
-		font-family:arial;
-		vertical-align:top;
-		font-size:11px;
-		padding-left:3px;
-		padding-right:3px;		
-		line-height:21px;
-		float:left;
-	}
-	.tabPane .tabActive span{
-		padding-bottom:1px;
-		line-height:20px;
-	}
-	
-	.tabPane img{
-		float:left;
-	}
-  /* LINKS */
+/* LINKS */
 a img { border: 0; }
 a.action { display: block; float: right; margin: 0 10px 0 0; background: #ffcc00 url(images/bg_action_primary_right.gif) no-repeat 100% 0; text-decoration: none; color: #000 !important; cursor: pointer; text-align: center; font-size: 13px;}
 a.action span { display: block; padding: 4px 20px 0 20px; _padding-bottom: 3px !important; min-height: 19px; background: url(images/bg_action_primary_left.gif) no-repeat 0 0; }

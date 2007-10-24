@@ -135,19 +135,11 @@
       </tr>
     </table>
     
-    <!-- JOBS -->
-    <stl:block if="address">
-      <h2>Jobs</h2>
-      <p>
-        ${batch}
-        ${table}
-        <b stl:if="msg">${msg}</b>
-      </p>
-    </stl:block>
     <p stl:if="is_reviewer_or_member">
-      <a href="${address/address_path}/;new_resource_form?type=Job" >
-      Add a job
-      </a>
+        <!-- Tabs -->
+        <stl:block if="address">
+            ${tabs}
+        </stl:block>
     </p>
     <!-- Reviewer Actions -->
     <stl:block if="is_reviewer">

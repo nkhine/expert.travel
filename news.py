@@ -36,10 +36,32 @@ class News(RoleAware, Folder):
     def get_document_types(self):
         return [File]
 
-
     new_resource_form__access__ = True
     new_resource__access__ = True
 
+    ###################################################################
+    ## API 
+    ####
+    def get_new_id(self, prefix=''):
+        ids = []
+        for name in self.get_handler_names():
+            if name.endswith('.metadata'):
+                continue
+            if prefix:
+                if not name.startswith(prefix):
+                    continue
+                name = name[len(prefix):]
+            try:
+                id = int(name)
+            except ValueError:
+                continue
+            ids.append(id)
+
+        if ids:
+            ids.sort()
+            return prefix + str(ids[-1] + 1)
+        
+        return prefix + '0'
 
     ###################################################################
     ## Create a new news item 

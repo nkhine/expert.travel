@@ -25,6 +25,13 @@ class ExpertTravel(WebSite):
     class_title = u'Expert Travel Website'
     class_icon48 = 'abakuc/images/Import48.png'
     class_icon16 = 'abakuc/images/Import16.png'
+    class_views = [['view'], 
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
+                   ['new_resource_form'],
+                   ['permissions_form', 'new_user_form'],
+                   ['edit_metadata_form']]
+
 
     def new(self, **kw):
         WebSite.new(self, **kw)
@@ -71,6 +78,8 @@ class ExpertTravel(WebSite):
     #######################################################################
     # List last 5 jobs and 5 news items for Home page
     #######################################################################
+    view__access__ = True 
+    view__label__ = u'View'
     def view(self, context):
         root = context.root
         namespace = {}

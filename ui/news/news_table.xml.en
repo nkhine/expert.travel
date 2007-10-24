@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+      <h2>News</h2>
+      <p>
+        ${news_batch}
+        ${news_table}
+        <b stl:if="news_msg">${news_msg}</b>
+      </p>
+</stl:block>
