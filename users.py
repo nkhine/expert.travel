@@ -153,6 +153,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace = {}
         namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
+        #namespace['branches'] = self.enquiries(context)
         #namespace['branches'] = self.list_addresses(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
@@ -174,7 +175,8 @@ class User(iUser, WorkflowAware, Handler):
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Branches</span></a></li>
+                <li><a href="#fragment-3"><span>Enquiries</span></a></li>
+                <li><a href="#fragment-4"><span>Branches</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -183,6 +185,9 @@ class User(iUser, WorkflowAware, Handler):
               ${jobs}
             </div>
             <div id="fragment-3">
+              {enquiries}
+            </div>
+            <div id="fragment-4">
               {branches}
             </div>
         </div>
@@ -333,11 +338,12 @@ class User(iUser, WorkflowAware, Handler):
             if resolved:
                 continue
             user = users.get_handler(user_id)
-            results.append({
-                'index': row.number,
-                'email': user.get_property('ikaaro:email'),
-                'enquiry_subject': enquiry_subject})
-        results.reverse()
+            if user.get_property('ikaaro:user_must_confirm') is None:
+               results.append({
+                   'index': row.number,
+                   'email': user.get_property('ikaaro:email'),
+                   'enquiry_subject': enquiry_subject})
+            results.reverse()
         namespace['enquiries'] = results 
         namespace['howmany'] = len(results)
         
