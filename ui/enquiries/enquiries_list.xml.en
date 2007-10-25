@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <h1>Enquiries</h1>
+        <div align="right">
+          {batch}
+        </div>
+        <div id="List">
+          <stl:block repeat="enquiry enquiries"> 
+            <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+              onmouseout="this.className='ListItem';">  
+              <dt>
+              ${enquiry/enquiry_subject}
+              </dt>
+              <dd>
+              <a href="${url}?index=${enquiry/index}">
+              ${enquiry/email}</a>
+              </dd>
+            </dl>       
+          </stl:block>
+              <a href="${url}/;view_enquiries">
+              Check enquiries (${howmany})</a>
+        </div>
+</stl:block>

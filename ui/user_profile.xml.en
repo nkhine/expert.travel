@@ -119,19 +119,6 @@
             <a href=";edit_password_form">Change password.</a>
           </p>
         </td>
-        <tr stl:if="is_reviewer_or_member">
-          <td valign="top">
-            <h2>Enquiries</h2>
-            <p>
-            <div stl:repeat="enquiry enquiries">
-              ${enquiry/enquiry_subject} ${enquiry/email}
-            <a href="${address/address_path}/;view_enquiry?index=${enquiry/index}">View</a>
-            </div>    
-              <a href="${address/address_path}/;view_enquiries">Check enquiries
-                (${howmany})</a>
-            </p>
-          </td>
-        </tr>
       </tr>
     </table>
     

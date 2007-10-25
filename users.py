@@ -150,10 +150,26 @@ class User(iUser, WorkflowAware, Handler):
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
+        root = context.root
+        users = root.get_handler('users')
+
         namespace = {}
         namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
-        #namespace['branches'] = self.enquiries(context)
+        namespace['enquiries'] = self.enquiries_list(context)
+        address = self.get_address()
+        company = address.parent
+
+        csv = address.get_handler('log_enquiry.csv')
+        results = []
+        for row in csv.get_rows():
+            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+            if resolved:
+                continue
+            user = users.get_handler(user_id)
+            if user.get_property('ikaaro:user_must_confirm') is None:
+               results.append({'index': row.number})
+        namespace['howmany'] = len(results)
         #namespace['branches'] = self.list_addresses(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
@@ -175,7 +191,7 @@ class User(iUser, WorkflowAware, Handler):
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Enquiries</span></a></li>
+                <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
                 <li><a href="#fragment-4"><span>Branches</span></a></li>
             </ul>
             <div id="fragment-1">
@@ -184,8 +200,8 @@ class User(iUser, WorkflowAware, Handler):
             <div id="fragment-2">
               ${jobs}
             </div>
-            <div id="fragment-3">
-              {enquiries}
+            <div stl:if="howmany" id="fragment-3">
+              ${enquiries}
             </div>
             <div id="fragment-4">
               {branches}
@@ -660,6 +676,37 @@ class User(iUser, WorkflowAware, Handler):
         handler = self.get_handler('/ui/abakuc/jobs/jobs_table.xml')
         return stl(handler, namespace)
 
+
+    ########################################################################
+    # List Enquiries
+    def enquiries_list(self, context):
+        root = context.root
+        users = root.get_handler('users')
+
+        namespace = {}
+        address = self.get_address()
+        company = address.parent
+
+        csv = address.get_handler('log_enquiry.csv')
+        url = '/companies/%s/%s/;view_enquiry' % (company.name, address.name) 
+        results = []
+        for row in csv.get_rows():
+            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+            if resolved:
+                continue
+            user = users.get_handler(user_id)
+            if user.get_property('ikaaro:user_must_confirm') is None:
+               results.append({
+                   'index': row.number,
+                   'email': user.get_property('ikaaro:email'),
+                   'enquiry_subject': enquiry_subject})
+            results.reverse()
+        namespace['enquiries'] = results 
+        namespace['howmany'] = len(results)
+        namespace['url'] = url
+        
+        handler = self.get_handler('/ui/abakuc/enquiries/enquiries_list.xml')
+        return stl(handler, namespace)
 
     ########################################################################
     # Setup Company/Address
