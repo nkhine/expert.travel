@@ -3,6 +3,7 @@
 
 # Import from the standard library
 import datetime
+#from datetime import datetime
 from string import Template
 import mimetypes
 
@@ -34,7 +35,7 @@ application_fields_auth = [
     ('abakuc:applicant_note', True)]
 
 
-class Job(RoleAware, Folder):
+class Job(Folder, RoleAware):
 
     class_id = 'Job'
     class_title = u'Job'
@@ -46,7 +47,8 @@ class Job(RoleAware, Folder):
         ['application_form'],
         ['view_candidatures'],
         ['browse_content?mode=list'],
-        ['edit_metadata_form']]
+        ['edit_metadata_form'],
+        ['history_form']]
 
     
     def get_document_types(self):
@@ -106,6 +108,13 @@ class Job(RoleAware, Folder):
 
     @classmethod 
     def new_instance(cls, container, context):
+        from datetime import datetime
+        username = ''
+        if context is not None:
+            user = context.user
+            if user is not None:
+                username = user.name
+        
         # Check data
         keep = [ x for x, y in cls.job_fields ]
         error = context.check_form_input(cls.job_fields)
@@ -157,13 +166,19 @@ class Job(RoleAware, Folder):
                 message = u'Error of DataTypes.'
                 return context.come_back(message)
 
+        property = {
+            (None, 'user'): username,
+            ('dc', 'date'): datetime.now(),
+            #('dc', 'date'): datetime.date.now(),
+        } 
+        metadata.set_property('ikaaro:history', property)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
         
         goto = './%s/;%s' % (name, handler.get_firstview())
         message = u'New Job added.'
         return context.come_back(message, goto=goto) 
-    
+
     #######################################################################
     # View Job details
     ###
@@ -421,6 +436,8 @@ class Candidature(RoleAware, Folder):
     class_id = 'Candidature'
     class_title = u'Job Candidature'
     class_description = u'A Candidature'
+    class_icon16 = 'abakuc/images/Applicant16.png'
+    class_icon48 = 'abakuc/images/Applicant48.png'
     class_views = [
         ['view'],
         ['browse_content?mode=list'],

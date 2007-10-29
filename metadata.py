@@ -105,6 +105,7 @@ class Schema(BaseSchema):
         # Job
         'function': JobTitle,
         'salary': SalaryRange,
+        'posted_on': Date,
         'closing_date': Date, 
         'job_text': Unicode,
         'applicant_note': Unicode

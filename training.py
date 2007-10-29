@@ -9,6 +9,7 @@ from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.widgets import batch
+from itools.cms.skins import Skin 
 from itools.cms.file import File
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
@@ -29,16 +30,62 @@ class Trainings(Folder):
     def get_document_types(self):
         return [Training]
 
+    class_views = [
+                ['view'],
+                ['browse_content?mode=list'],
+                ['new_resource_form'],
+                ['edit_metadata_form']]
+
     #######################################################################
     # User Interface
     #######################################################################
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
-        return 'bobo'
+        here = context.handler
+        namespace = {}
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Training)
+        namespace['items'] = []
+        for item in items:
+            state = item.get_property('state')
+            if state == 'public':
+                get = item.get_property
+                url = '%s/;view' %  item.name
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                namespace['items'].append({'url': url,
+                          'description': description,
+                          'title': item.title_or_name})
 
+            namespace['title'] = title 
+            handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+            return stl(handler, namespace)
 
-class Training(WebSite):
+        # Set batch informations
+        #batch_start = int(context.get_form_value('batchstart', default=0))
+        #batch_size = 5
+        #batch_total = len(trainings)
+        #batch_fin = batch_start + batch_size
+        #if batch_fin > batch_total:
+        #    batch_fin = batch_total
+        #trainings = trainings[batch_start:batch_fin]
+        ## Namespace 
+        #if trainings:
+        #    msgs = (u'There is one training programme.',
+        #            u'There are ${n} training programmes.')
+        #    batch = batch(context.uri, batch_start, batch_size, 
+        #                  batch_total, msgs=msgs)
+        #    msg = None
+        #else:
+        #    batch = None
+        #    msg = u'Currently there no published training programmes.'
+        #
+        #namespace['batch'] = batch
+        #namespace['msg'] = msg 
+
+class Training(RoleAware, WorkflowAware, Folder):
 
     class_id = 'training'
     class_title = u'Training programme'
@@ -47,18 +94,19 @@ class Training(WebSite):
 
     site_format = 'module'
 
-    class_views = [['view'], 
-                   ['browse_content?mode=list',
-                    'browse_content?mode=thumbnails'],
-                   ['new_resource_form'],
-                   ['permissions_form', 'new_user_form'],
-                   ['edit_metadata_form']]
-    
+    class_views = [
+                ['view'],
+                ['browse_content?mode=list'],
+                ['new_resource_form'],
+                ['edit_metadata_form'],
+                ['state_form'],
+                ['permissions_form', 'new_user_form']]
+  
     new_resource_form__access__ = 'is_allowed_to_edit'
     new_resource__access__ = 'is_allowed_to_edit'
 
     def get_document_types(self):
-        return [Module, Folder]
+        return [Module]
 
     def get_level1_title(self, level1):
         return None
@@ -87,35 +135,24 @@ class Training(WebSite):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
-        return 'bobo'
-    #def view(self, context):
-    #    namespace = {}
-    #    namespace['title'] = self.get_property('dc:title')
-    #    namespace['description'] = self.get_property('dc:description')
-    #    namespace['modules'] = self.view_modules(context)
-
-    #    handler = self.get_handler('/ui/abakuc/training_view.xml')
-    #    return stl(handler, namespace)
-
-
-    ####################################################################
-    # View training modules 
-    view_modules__label__ = u'Training modules'
-    view_modules__access__ = True
-    def view_modules(self, context):
+        here = context.handler
         namespace = {}
-        modules = self.search_handlers(handler_class=Module)
-        namespace['modules'] = []
-        for module in modules:
-            get = module.get_property
-            url = '%s/;view' %  module.name
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Module)
+        namespace['items'] = []
+        for item in items:
+            get = item.get_property
+            url = '%s/;view' %  item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            namespace['modules'].append({'url': url,
+            namespace['items'].append({'url': url,
                       'description': description,
-                      'title': module.title_or_name})
+                      'title': item.title_or_name})
 
+        namespace['title'] = title 
+        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+        return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
         #batch_size = 5
@@ -137,10 +174,6 @@ class Training(WebSite):
         #
         #namespace['batch'] = batch
         #namespace['msg'] = msg 
-        namespace['modules'] = modules
-
-        handler = self.get_handler('/ui/abakuc/modules_view.xml')
-        return stl(handler, namespace)
 
     #######################################################################
     # User Interface / Edit
@@ -153,8 +186,10 @@ class Training(WebSite):
             namespace['referrer'] = str(context.request.referrer)
         # Title 
         title = self.get_property('dc:title')
+        namespace['title'] = title
         # Description
         description = self.get_property('dc:description')
+        namespace['description'] = description
 
         handler = self.get_handler('/ui/abakuc/training_edit_metadata.xml')
         return stl(handler, namespace)
@@ -189,35 +224,27 @@ class Module(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    #view__access__ = 'is_allowed_to_view'
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
+        here = context.handler
         namespace = {}
-        namespace['title'] = self.get_property('dc:title')
-        namespace['description'] = self.get_property('dc:description')
-        namespace['topics'] = self.view_topics(context)
-
-        handler = self.get_handler('/ui/abakuc/module_view.xml')
-        return stl(handler, namespace)
-
-
-    ####################################################################
-    # View training modules 
-    view_modules__label__ = u'Training modules'
-    view_modules__access__ = True
-    def view_topics(self, context):
-        namespace = {}
-        modules = self.search_handlers(handler_class=Topic)
-        namespace['topics'] = []
-        for topic in topics:
-            url = '%s/;view' %  topic.name
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Topic)
+        namespace['items'] = []
+        for item in items:
+            get = item.get_property
+            url = '%s/;view' %  item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            namespace['topics'].append({'url': url,
+            namespace['items'].append({'url': url,
                       'description': description,
-                      'title': topic.title_or_name})
+                      'title': item.title_or_name})
 
+        namespace['title'] = title 
+        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+        return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
         #batch_size = 5
@@ -229,20 +256,16 @@ class Module(Folder):
         ## Namespace 
         #if items:
         #    msgs = (u'There is one topic.',
-        #            u'There are ${n} topics.')
+        #            u'This module has ${n} topics.')
         #    batch = batch(context.uri, batch_start, batch_size, 
         #                  batch_total, msgs=msgs)
         #    msg = None
         #else:
         #    batch = None
-        #    msg = u'Currently there no published topics.'
+        #    msg = u'This module has no published topics.'
         #
         #namespace['batch'] = news_batch
         #namespace['msg'] = msg 
-        namespace['topics'] = topics
-
-        handler = self.get_handler('/ui/abakuc/topics_view.xml')
-        return stl(handler, namespace)
 
     #######################################################################
     # User Interface / Edit
@@ -291,34 +314,54 @@ class Topic(Folder):
         ['edit_metadata_form'],
         ['permissions_form', 'new_user_form']]
 
-    #def get_document_types(self):
-    #    return [Document, File]
+    def get_document_types(self):
+        return [Document, File]
 
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__label__ = u'Topic'
-    view__access__ = True
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
     def view(self, context):
+        here = context.handler
         namespace = {}
-        namespace['title'] = self.get_property('dc:title')
-        namespace['description'] = self.get_property('dc:description')
-        
-        documents = []
-        for document in self.parent.search_handlers(handler_class=Document):
-            module = document.parent
-            current_document = self.get_property('dc:title')
-            url = '/training/%s/%s/;view' % (module.name, document.name)
-            documents.append({
-                'name': document.name,
-                'is_current': document.name == current_document,
-                'url': url,
-                'description': document.get_property('dc:description')})
-        namespace['documents'] = documents
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Document)
+        namespace['items'] = []
+        for item in items:
+            get = item.get_property
+            url = '%s/;view' %  item.name
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            namespace['items'].append({'url': url,
+                      'description': description,
+                      'title': item.title_or_name})
 
-        handler = self.get_handler('/ui/abakuc/topic_view.xml')
+        namespace['title'] = title 
+        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
         return stl(handler, namespace)
-
+      # Set batch informations
+        #batch_start = int(context.get_form_value('batchstart', default=0))
+        #batch_size = 5
+        #batch_total = len(items)
+        #batch_fin = batch_start + batch_size
+        #if batch_fin > batch_total:
+        #    batch_fin = batch_total
+        #items = items[batch_start:batch_fin]
+        ## Namespace 
+        #if items:
+        #    msgs = (u'There is one topic.',
+        #            u'This module has ${n} topics.')
+        #    batch = batch(context.uri, batch_start, batch_size, 
+        #                  batch_total, msgs=msgs)
+        #    msg = None
+        #else:
+        #    batch = None
+        #    msg = u'This module has no published topics.'
+        #
+        #namespace['batch'] = news_batch
+        #namespace['msg'] = msg 
 
     #######################################################################
     # User Interface / Edit

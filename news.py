@@ -12,6 +12,7 @@ from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
 from itools.stl import stl
 from itools.web import get_context
+from itools import rest
 from itools.rest import checkid, to_html_events
 
 # Import from abakuc
@@ -173,7 +174,23 @@ class News(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/news/news_view.xml')
         return stl(handler, namespace)
 
+    view_rest__access__ = True
+    view_rest__sublabel__ = u"As reStructuredText"
+    def view_rest(self, context):
+        news_text = self.news_text.encode('utf-8')
+        return rest.to_html_events(news_text)
 
+
+    view_xml__access__ = True 
+    view_xml__sublabel__ = u"As reStructuredText"
+    def view_xml(self, context):
+        namespace = {}
+        news_text = self.news_text.encode('utf-8')
+        namespace['abakuc:news_text'] = rest.to_str(news_text, format='xml')
+
+
+        handler = self.get_handler('/ui/abakuc/news/news_view.xml')
+        return stl(handler, namespace)
     ###########################################################
     # Edit details
     ###########################################################

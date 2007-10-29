@@ -25,6 +25,29 @@
                 </dd>
               </dl>
               <h2>Description</h2>
+                    <div class="sidebar">
+      <div class="general-box">
+        <div class="title">
+          <h3>Additional resources</h3>
+        </div>
+        <div class="content">
+          <div class="info">
+            <div class="text">
+              <p>Application Form<span>PDF Format</span></p>
+            </div>
+          </div>
+           <ul>
+              <li>Download now!</li>
+           </ul>
+        </div>
+      </div>
+      <div class="job-company">
+        <h3>Resources</h3>
+        <div class="job-company-info">
+          <h4>Y</h4>
+        </div>
+      </div>
+    </div> 
                 <p>${dc:description}</p> 
                 <p>${abakuc:job_text}</p> 
               <div>        

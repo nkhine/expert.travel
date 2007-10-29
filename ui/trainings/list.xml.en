@@ -3,9 +3,16 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-    <h1>Modules</h1>
-    <div stl:repeat="module modules">
-        <a href="${module/url}">${module/title}</a>
-        ${module/description}
+    <h1>${title}</h1>
+    <stl:block if="items">
+    <div stl:repeat="item items">
+        <a href="${item/url}">${item/title}</a>
+        ${item/description}
     </div>
+    </stl:block>
+    <stl:block if="not items">
+    <div>
+    No training programmes
+    </div>
+    </stl:block>
 </stl:block>
