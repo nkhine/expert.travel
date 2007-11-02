@@ -7,7 +7,7 @@ from string import Template
 import mimetypes
 
 # Import from itools
-from itools.datatypes import Email, Integer, String, Unicode
+from itools.datatypes import Email, Integer, String, Unicode, FileName
 from itools.i18n.locale_ import format_datetime
 from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.stl import stl
@@ -19,7 +19,6 @@ from itools.cms.binary import Image
 from itools.cms.csv import CSV
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.utils import generate_password
-from itools.cms.tracker import Tracker
 from itools.cms.widgets import table, batch
 from itools.cms.catalog import schedule_to_reindex
 from itools.cms.utils import reduce_string
@@ -33,6 +32,10 @@ from website import WebSite
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
+from training import Training
+from product import Products
+from utils import get_sort_name
+
 
 class Companies(Folder):
 
@@ -58,7 +61,46 @@ class Companies(Folder):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
-        return 'bobo'
+        here = context.handler
+        namespace = {}
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Company)
+        namespace['items'] = []
+        for item in items:
+            get = item.get_property
+            url = '%s/;view' %  item.name
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            namespace['items'].append({'url': url,
+                      'description': description,
+                      'title': item.title_or_name})
+
+        namespace['title'] = title 
+        handler = self.get_handler('/ui/abakuc/companies/list.xml')
+        return stl(handler, namespace)
+        # Set batch informations
+        #batch_start = int(context.get_form_value('batchstart', default=0))
+        #batch_size = 5
+        #batch_total = len(modules)
+        #batch_fin = batch_start + batch_size
+        #if batch_fin > batch_total:
+        #    batch_fin = batch_total
+        #modules = modules[batch_start:batch_fin]
+        ## Namespace 
+        #if modules:
+        #    msgs = (u'There is one module.',
+        #            u'There are ${n} modules.')
+        #    batch = batch(context.uri, batch_start, batch_size, 
+        #                  batch_total, msgs=msgs)
+        #    msg = None
+        #else:
+        #    batch = None
+        #    msg = u'Currently there no published training modules.'
+        #
+        #namespace['batch'] = batch
+        #namespace['msg'] = msg 
+
 
 
 class Company(WebSite):
@@ -82,7 +124,7 @@ class Company(WebSite):
     new_resource__access__ = 'is_allowed_to_edit'
 
     def get_document_types(self):
-        return [Address, Folder]
+        return [Address, Folder, Training]
 
 
     def get_level1_title(self, level1):
@@ -225,7 +267,7 @@ class Company(WebSite):
                                            'title': address.title_or_name})
 
         namespace['users'] = self.get_members_namespace(address)
-        handler = self.get_handler('/ui/abakuc/list_addresses.xml')
+        handler = self.get_handler('/ui/abakuc/companies/list_addresses.xml')
 
         return stl(handler, namespace)
 
@@ -296,7 +338,7 @@ class Company(WebSite):
         namespace['jobs'] = jobs        
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        handler = self.get_handler('/ui/abakuc/list_jobs.xml')
+        handler = self.get_handler('/ui/abakuc/companies/list_jobs.xml')
         return stl(handler, namespace)
 
 
@@ -364,7 +406,7 @@ class Company(WebSite):
         namespace['news_batch'] = news_batch
         namespace['msg'] = msg 
         namespace['news_items'] = news_items
-        handler = self.get_handler('/ui/abakuc/list_news.xml')
+        handler = self.get_handler('/ui/abakuc/companies/list_news.xml')
         return stl(handler, namespace)
 
 
@@ -389,7 +431,7 @@ class Company(WebSite):
         namespace['types'] = root.get_types_namespace(types)
         namespace['logo'] = logo
 
-        handler = root.get_handler('ui/abakuc/company_form.xml')
+        handler = root.get_handler('ui/abakuc/companies/company_form.xml')
         return stl(handler, namespace)
 
 
@@ -409,7 +451,7 @@ class Company(WebSite):
         logo = self.has_handler('logo')
         namespace['form'] = self.get_form(title, description, website, topics, types, logo)
 
-        handler = self.get_handler('/ui/abakuc/company_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/companies/company_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -510,6 +552,12 @@ class Address(RoleAware, WorkflowAware, Folder):
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
 
+        # Jobs folder 
+        title = u'Jobs folder'
+        kw = {'dc:title': {'en': title}}
+        products = Products()
+        cache['products'] = products
+        cache['products.metadata'] = products.build_metadata(**kw)
 
     def get_document_types(self):
         return [News, Job]
@@ -548,6 +596,25 @@ class Address(RoleAware, WorkflowAware, Folder):
     def get_title(self):
         address = self.get_property('abakuc:address')
         return address or self.name
+
+    def get_document_names(self):
+    #def get_document_names(self, prefix=None):
+        ac = self.get_access_control()
+        user = get_context().user
+
+        documents = []
+        for handler in self.get_handlers():
+            if not isinstance(handler, News):
+                continue
+            if handler.real_handler is not None:
+                continue
+            if ac.is_allowed_to_view(user, handler):
+                name = handler.name
+                sort_name = get_sort_name(FileName.decode(name)[0])
+                documents.append((sort_name, handler.name))
+        documents.sort()
+        return [ x[1] for x in documents ]
+
 
     def get_members_namespace(self, context):
         """
@@ -673,7 +740,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         # Branch Members
         namespace['users'] = self.get_members_namespace(address)
 
-        handler = self.get_handler('/ui/abakuc/address_view.xml')
+        handler = self.get_handler('/ui/abakuc/companies/address_view.xml')
         return stl(handler, namespace)
 
     ####################################################################
@@ -733,7 +800,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['news_batch'] = news_batch
         namespace['msg'] = msg 
         namespace['news_items'] = news_items
-        handler = self.get_handler('/ui/abakuc/list_news.xml')
+        handler = self.get_handler('/ui/abakuc/companies/list_news.xml')
         return stl(handler, namespace)
 
 
@@ -799,7 +866,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['jobs'] = jobs        
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        handler = self.get_handler('/ui/abakuc/list_jobs.xml')
+        handler = self.get_handler('/ui/abakuc/companies/list_jobs.xml')
         return stl(handler, namespace)
 
 
@@ -822,7 +889,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                                            'title': address.title_or_name})
 
         namespace['users'] = self.get_members_namespace(address)
-        handler = self.get_handler('/ui/abakuc/list_addresses.xml')
+        handler = self.get_handler('/ui/abakuc/companies/list_addresses.xml')
 
         return stl(handler, namespace)
 
@@ -859,7 +926,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
-        handler = root.get_handler('ui/abakuc/address_form.xml')
+        handler = root.get_handler('ui/abakuc/companies/address_form.xml')
         return stl(handler, namespace)
 
 
@@ -889,7 +956,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                                           address_country, address_region,
                                           address_county)
 
-        handler = self.get_handler('/ui/abakuc/address_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/companies/address_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -950,7 +1017,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
 
-        handler = self.get_handler('/ui/abakuc/enquiry_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/companies/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -1066,7 +1133,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['user_id'] = user_id
         namespace['key'] = must_confirm
 
-        handler = self.get_handler('/ui/abakuc/address_enquiry_confirm.xml')
+        handler = self.get_handler('/ui/abakuc/companies/address_enquiry_confirm.xml')
         return stl(handler, namespace)
 
 
@@ -1186,7 +1253,7 @@ class Address(RoleAware, WorkflowAware, Folder):
             enquiries.reverse()
         namespace['enquiries'] = enquiries
 
-        handler = self.get_handler('/ui/abakuc/address_view_enquiries.xml')
+        handler = self.get_handler('/ui/abakuc/companies/address_view_enquiries.xml')
         return stl(handler, namespace)
 
     
@@ -1210,7 +1277,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['email'] = user.get_property('ikaaro:email')
         namespace['phone'] = phone
 
-        handler = root.get_handler('ui/abakuc/address_view_enquiry.xml')
+        handler = root.get_handler('ui/abakuc/companies/address_view_enquiry.xml')
         return stl(handler, namespace)
 
     

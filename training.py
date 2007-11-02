@@ -13,11 +13,11 @@ from itools.cms.skins import Skin
 from itools.cms.file import File
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
-from itools.xhtml import Document
 
 # Import from abakuc
 from base import Handler, Folder
 from website import WebSite
+from document import Document
 
 class Trainings(Folder):
 
@@ -118,11 +118,12 @@ class Training(RoleAware, WorkflowAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    #def is_allowed_to_edit(self, user, object):
-    #    for address in self.search_handlers(handler_class=Address):
-    #        if address.is_allowed_to_edit(user, address):
-    #            return True
-    #    return False
+    def is_allowed_to_edit(self, user, object):
+        from companies import Address
+        for address in self.parent.search_handlers(handler_class=Address):
+            if address.is_allowed_to_edit(user, address):
+                return True
+        return False
 
     def is_reviewer(self, user, object):
         for module in self.search_handlers(handler_class=Module):
@@ -132,7 +133,7 @@ class Training(RoleAware, WorkflowAware, Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = 'is_allowed_to_edit'
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -191,7 +192,7 @@ class Training(RoleAware, WorkflowAware, Folder):
         description = self.get_property('dc:description')
         namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/training_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/trainings/training_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -224,7 +225,7 @@ class Module(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = True 
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -278,10 +279,12 @@ class Module(Folder):
             namespace['referrer'] = str(context.request.referrer)
         # Title 
         title = self.get_property('dc:title')
+        namespace['title'] = title
         # Description
         description = self.get_property('dc:description')
+        namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/module_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/trainings/module_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -374,10 +377,12 @@ class Topic(Folder):
             namespace['referrer'] = str(context.request.referrer)
         # Title 
         title = self.get_property('dc:title')
+        namespace['title'] = title
         # Description
         description = self.get_property('dc:description')
+        namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/topic_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/trainings/topic_edit_metadata.xml')
         return stl(handler, namespace)
 
 

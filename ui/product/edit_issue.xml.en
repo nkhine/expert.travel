@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Issue #${number}</h2>
+
+  <p if="reported_by">
+    Reported by <em>${reported_by}</em>
+  </p>
+
+  <form action=";edit" method="post" enctype="multipart/form-data">
+    <table>
+      <tr>
+        <td colspan="2">
+          <label for="title">Title (mandatory)</label><br/>
+          <input type="text" name="title" id="title" value="${title}"
+            size="48" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="version">Version (mandatory)</label><br/>
+        </td>
+        <td valign="top">
+          <label for="module">Module</label><br/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <label for="type">Type (mandatory)</label><br/>
+        </td>
+        <td valign="top">
+          <label for="priority">Priority</label><br/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <label for="state">Status (mandatory)</label><br/>
+        </td>
+        <td valign="top">
+          <label for="assigned_to">Assign To</label><br/>
+          <select name="assigned_to" id="assigned_to" class="tracker_select">
+            <option value=""></option>
+            <option stl:repeat="item users" value="${item/id}"
+              selected="${item/is_selected}">${item/title}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" colspan="2">
+          <label for="comment">New Comment</label><br/>
+          <textarea name="comment" id="comment" cols="60" rows="10"
+          
+            >${comment}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" colspan="2">
+          <label for="attachement">New Attachement</label><br/>
+          <input type="file" name="file" id="attachement" size="36" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="submit" class="button_ok" value="Edit" />
+        </td>
+      </tr>
+    </table>
+  </form>
+
+</stl:block>

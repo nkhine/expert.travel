@@ -45,9 +45,10 @@ class Job(Folder, RoleAware):
     class_views = [
         ['view'],
         ['application_form'],
-        ['view_candidatures'],
         ['browse_content?mode=list'],
         ['edit_metadata_form'],
+        ['view_candidatures'],
+        ['new_resource_form'],
         ['history_form']]
 
     

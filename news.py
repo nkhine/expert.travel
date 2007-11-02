@@ -11,12 +11,14 @@ from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
 from itools.stl import stl
+from itools.vfs import vfs 
 from itools.web import get_context
 from itools import rest
 from itools.rest import checkid, to_html_events
 
 # Import from abakuc
 from base import Handler, Folder
+from utils import get_sort_name
 
 class News(RoleAware, Folder):
 
@@ -37,8 +39,8 @@ class News(RoleAware, Folder):
     def get_document_types(self):
         return [File]
 
-    new_resource_form__access__ = True
-    new_resource__access__ = True
+    new_resource_form__access__ = 'is_reviewer_or_member'
+    new_resource__access__ = 'is_reviewer_or_member' 
 
     ###################################################################
     ## API 
@@ -79,7 +81,6 @@ class News(RoleAware, Folder):
     def new_instance_form(cls, context):
         namespace = context.build_form_namespace(cls.news_fields)
         namespace['class_id'] = News.class_id
-
         path = '/ui/abakuc/news/news_new_resource_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
@@ -93,34 +94,20 @@ class News(RoleAware, Folder):
         if error is not None:
             return context.come_back(error, keep=keep)
         #
-        name = context.get_form_value('name')
+        name = cls.get_new_id()
+        #name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         
         # Check the name 
-        name = name.strip() or title.strip()
-        if not name:
-            message = u'Please give a title to your job'
-            return context.come_back(message)
-        
-        name = checkid(name)
-        if name is None:
-            message = (u'The title contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
-        # Name already used?
-        while container.has_handler(name):
-              try:
-                  names = name.split('_')
-                  if len(names) > 1:
-                      name = '_'.join(names[:-1])
-                      number = str(int(names[-1]) + 1) 
-                      name = [name, number]
-                      name = '_'.join(name)
-                  else:
-                      name = '_'.join(names) + '_1'
-              except:
-                  name = '_'.join(names) + '_1'
-        
+        #here = container.handler
+        #document_names = [ x for x in here.get_document_names()
+        #                   if x.startswith('page') ]
+        #if document_names:
+        #    i = get_sort_name(document_names[-1])[1] + 1
+        #    name = 'page%d' % i
+        #else:
+        #    name = 'page1'
+        #    
         # Set properties
         handler = cls()
         metadata = handler.build_metadata()

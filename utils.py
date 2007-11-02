@@ -88,4 +88,25 @@ class VersioningAware(object):
         handler = self.get_handler('/ui/abakuc/history.xml')
         return stl(handler, namespace)
 
+def get_sort_name(name):
+    """ 
+    Return a tuple for ex. ('page', 4) for 'page4', and 
+    and (1, 'a') for '1a' used for sort by id
+    """
+    name = name.strip()
+    if not name:
+        return ()
+    # Split the name in sequences of digits and non-digits
+    last = name[0]
+    result = [last]
+    for i in name[1:]:
+        if last.isdigit() is i.isdigit():
+            result[-1] += i
+        else:
+            result.append(i)
+        last = i
+    # Cast to int the digit segments
+    result = [ x.isdigit() and int(x) or x for x in result ]
+
+    return tuple(result)
 

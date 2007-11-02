@@ -8,6 +8,7 @@ from itools.cms.folder import Folder as DBFolder
 from itools.cms.widgets import tree, build_menu
 from itools.cms.base import Node
 from itools.cms.utils import reduce_string
+from itools.uri.generic import decode_query 
 # Import from abakuc
 from companies import Company, Address
 from countries import Country
@@ -65,9 +66,10 @@ class FrontOffice(Skin):
         # FIXME Hard-Coded
         from jobs import Job
         from news import News
+        from training import Training, Module, Topic
         here = context.handler
         while here is not None:
-            if isinstance(here, (Job, News)):
+            if isinstance(here, (Job, News, Training, Module, Topic)):
                 break
             here = here.parent
         else:
@@ -78,7 +80,11 @@ class FrontOffice(Skin):
         menu = []
         for view in here.get_views():
             # Find out the title
-            name, args = view, {}
+            if '?' in view:
+                name, args = view.split('?')
+                args = decode_query(args)
+            else:    
+                name, args = view, {}
             title = getattr(here, '%s__label__' % name)
             if callable(title):
                 title = title(**args)

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<!-- Progression bar -->
+<br/>
+<div id="progression_bar">
+  <stl:block content="topic/title" />:
+  <a class="link" stl:if="prev_doc" stl:attributes="href prev_doc"
+    title="Click here to go to previous document"><img
+    stl:attributes="src prev_doc_img" border="0" /></a>
+  <stl:block repeat="doc documents">
+    <span stl:if="doc/is_current" class="selected" stl:content="doc/index" />
+    <a stl:if="not doc/is_current" stl:attributes="href doc/url"
+      stl:content="doc/index" />
+    <stl:block if="not repeat/doc/end">-</stl:block>
+  </stl:block>
+
+  <a class="link" stl:if="next_doc" stl:attributes="href next_doc"
+    title="Click here to go to next document"><img
+    stl:attributes="src next_doc_img" border="0" /></a>
+</div>
+
+<span class="navclear" />
+<br/>
+
+<!--Rollovers -->
+<div>
+  <div class="rollover" stl:if="dyk_description">
+    <span class="rollover_title" stl:content="dyk_title"
+      onmouseover="show_element('rollover_dyk')"
+      onmouseout="hide_element('rollover_dyk')" />
+    <div class="rollover_body" id="rollover_dyk"
+      stl:content="dyk_description" />
+  </div>
+
+  <div class="rollover" style="background: red;" stl:if="map_image">
+    <span class="rollover_title"
+      onmouseover="show_element('rollover_mapimage')"
+      onmouseout="hide_element('rollover_mapimage')">
+      Where is it?</span>
+    <div class="rollover_body" id="rollover_mapimage"><img
+      stl:attributes="src map_image" /></div>
+  </div>
+
+  <div class="rollover" stl:if="is_top_events">
+    <span class="rollover_title"
+      onmouseover="show_element('rollover_topevents')"
+      onmouseout="hide_element('rollover_topevents')">
+      Top 4 Festivals &amp; Events</span>
+    <div class="rollover_body" id="rollover_topevents"
+      stl:content="top_events" />
+  </div>
+</div>
+<br />
+<br />
+
+<!-- Document -->
+<h1 class="document_title" stl:content="title" />
+<p class="document_description" stl:content="description" />
+
+<table class="document_body">
+  <tr>
+    <td>
+      <div class="document_image" stl:if="image1">
+        <img stl:attributes="src image1" />
+        <div class="document_image_title" stl:content="image1_title" />
+        <div class="document_image_credits" stl:content="image1_credits" />
+      </div>
+
+      <div class="document_image" stl:if="image2">
+        <img stl:attributes="src image2" />
+        <div class="document_image_title" stl:content="image2_title" />
+        <div class="document_image_credits" stl:content="image2_credits" />
+      </div>
+    </td>
+    <td class="document_text" stl:content="body"></td>
+  </tr>
+</table>
+
+</stl:block>
