@@ -2,8 +2,34 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 <h1>${title}</h1>
+        <p>${description}</p>
+      <div class="newslist">
+        <p>${tabs}</p>
+      </div>
 <!-- <img stl:if="logo" border="0" src="logo" style="float: right" />
 <a href="${website}">${website}</a> -->
-<p>${description}</p>
-<p>${tabs}</p>
+    <div class="sidebar">
+      <div class="general-box">
+        <div class="title">
+          <h3>Recent jobs</h3>
+        </div>
+        <div class="content">
+          <div class="info">
+            <div class="text">
+              <p>Electronics, RF, Semiconductor, Software Recruitment &amp; Headhunting Co. Director of Twinserve Ltd <span>(Recruiting / Staffing Firm)</span></p>
+            </div>
+          </div>
+           <ul>
+              <li>Apply now</li>
+           </ul>
+        </div>
+      </div>
+      <div class="job-company">
+        <h3>Resources</h3>
+        <div class="job-company-info">
+          <h4>Y</h4>
+        </div>
+      </div>
+    </div> 
+
 </stl:block>

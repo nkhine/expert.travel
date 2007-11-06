@@ -1,20 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2007 Luis Arturo Belmar-Letelier <luis@itaapy.com>
-# Copyright (C) 2007 Nicolas Deram <nicolas@itaapy.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
 from datetime import datetime
@@ -41,6 +26,8 @@ from itools.cms.text import Text
 from itools.cms.utils import generate_name
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms import widgets
+# Import from abakuc
+from jobs import Candidature 
 
 # Definition of the fields of the forms to add and edit an issue
 issue_fields = [('title', True), ('assigned_to', False),
@@ -55,6 +42,7 @@ class Products(Folder):
     class_icon16 = 'images/tracker16.png'
     class_icon48 = 'images/tracker48.png'
     class_views = [
+        ['view'],
         ['add_form'],
         ['browse_content?mode=list'],
         ['edit_metadata_form']]
@@ -112,7 +100,7 @@ class Products(Folder):
 
         return members
 
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = True 
     view__label__ = u'View'
     def view(self, context):
         return '0'
@@ -294,6 +282,7 @@ class Product(Folder, VersioningAware):
     class_views = [
         ['edit_form'],
         ['browse_content?mode=list'],
+        ['new_resource_form'],
         ['history']]
 
 
@@ -304,7 +293,7 @@ class Product(Folder, VersioningAware):
 
 
     def get_document_types(self):
-        return [File]
+        return [Candidature, File]
 
 
     #######################################################################

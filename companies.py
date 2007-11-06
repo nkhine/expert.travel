@@ -219,7 +219,7 @@ class Company(WebSite):
 
         namespace['tabs'] = self.get_tabs_stl(context)
 
-        handler = self.get_handler('/ui/abakuc/company_view.xml')
+        handler = self.get_handler('/ui/abakuc/companies/company_view.xml')
         return stl(handler, namespace)
 
 

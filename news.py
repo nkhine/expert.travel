@@ -94,7 +94,7 @@ class News(RoleAware, Folder):
         if error is not None:
             return context.come_back(error, keep=keep)
         #
-        name = cls.get_new_id()
+        name = cls.get_new_id
         #name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         

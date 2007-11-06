@@ -171,6 +171,7 @@ input:focus, textarea:focus { background: #efefef; color: #000; }
 /**************************************************************************
  * Footer
  **************************************************************************/
+#container-1 { width: 450px;float: left;margin: 5px 5px; }
 #footer {
   text-align: center;
   border-top: 1px solid #6899FF;
