@@ -75,6 +75,20 @@ class ExpertTravel(WebSite):
 
         raise KeyError
 
+    def get_user_menu(self, context):
+        """Return a dict {user_icon, user, joinisopen}."""
+        user = context.user
+
+        if user is None:
+            root = context.site_root
+            joinisopen = root.get_property('ikaaro:website_is_open')
+            return {'info': None, 'joinisopen': joinisopen}
+
+        home = '/users/%s/;%s' % (user.name, user.get_firstview())
+        info = {'name': user.name, 'title': user.get_title(),
+                'home': home}
+        return {'info': info, 'joinisopen': False}
+
     #######################################################################
     # List last 5 jobs and 5 news items for Home page
     #######################################################################
@@ -82,7 +96,10 @@ class ExpertTravel(WebSite):
     view__label__ = u'View'
     def view(self, context):
         root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
         namespace = {}
+        namespace['user']= self.get_user_menu(context)
         # Get the 5 last Jobs
         # XXX Fix so that it lists only jobs specific for the Country
         catalog = context.server.catalog
@@ -125,6 +142,10 @@ class ExpertTravel(WebSite):
                          'title': news.title})
         namespace['news'] = news_items
         # Return the page
+        namespace['action'] = '%s/;login' % here.get_pathto(site_root)
+        namespace['username'] = context.get_form_value('username')
+
+
         handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
 

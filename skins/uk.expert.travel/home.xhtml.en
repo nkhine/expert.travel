@@ -24,27 +24,50 @@
     </p>
     </div>
     <div class="sidebar">
-      <div class="general-box">
-        <div class="title">
-          <h3>Recent jobs</h3>
-        </div>
-        <div class="content">
-          <div class="info">
-            <div class="text">
-              <p>Electronics, RF, Semiconductor, Software Recruitment &amp; Headhunting Co. Director of Twinserve Ltd <span>(Recruiting / Staffing Firm)</span></p>
+      <stl:block if="not user/info">
+          <div class="general-box">
+            <div class="title">
+              <h3>Sign in to Expert Travel</h3>
+            </div>
+            <div class="content">
+              <div class="info">
+                <div class="text">
+                    <form id="loginform" name="loginform" method="post" action="${action}">
+                        <dl>
+                          <dt><label for="username">Email address</label></dt>
+                          <dd>
+                            <input type="text" id="username" name="username" value="${username}" />
+                          </dd>
+                          <dt><label for="password">Password</label></dt>
+                          <dd>
+                            <input type="password" id="password" name="password" />
+                          </dd>
+                        </dl>
+                        <p>
+                          <input type="submit" value="Sign in" class="button_ok"/>
+                        </p>
+                      </form>
+
+                      <script language="javascript">
+                        <stl:inline if="not username">focus("username");</stl:inline>
+                        <stl:inline if="username">focus("password");</stl:inline>
+                      </script>
+                </div>
+              </div>
+               <ul>
+                  <li><a href=";forgotten_password_form">I cannot access my account</a></li>
+               </ul>
             </div>
           </div>
-           <ul>
-              <li>Apply now</li>
-           </ul>
-        </div>
-      </div>
-      <div class="job-company">
-        <h3>Resources</h3>
-        <div class="job-company-info">
-          <h4>Y</h4>
-        </div>
-      </div>
+      </stl:block>
+      <stl:block if="user/info">
+          <div class="job-company">
+            <h3>Resources</h3>
+            <div class="job-company-info">
+                    <li><a href="${user/info/home}">My Profile</a></li>
+            </div>
+          </div>
+      </stl:block>
     </div> 
 
 
