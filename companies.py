@@ -64,44 +64,46 @@ class Companies(Folder):
         here = context.handler
         namespace = {}
         title = here.get_title()
-        items = self.search_handlers(handler_class=Company)
-        namespace['items'] = []
-        for item in items:
+        companies = self.search_handlers(handler_class=Company)
+        items = []
+        for item in companies:
             get = item.get_property
             url = '%s/;view' %  item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            namespace['items'].append({'url': url,
+            company = {'url': url,
+                      'id': item.name,
                       'description': description,
-                      'title': item.title_or_name})
-
+                      'title': item.title_or_name}
+            items.append(company)
+            items.sort(key=lambda x: x['id'])
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        items = items[batch_start:batch_fin]
+        # Namespace 
+        if items:
+            msgs = (u'There is one company.',
+                    u'There are ${n} companies.')
+            items_batch = batch(context.uri, batch_start, batch_size, 
+                          batch_total, msgs=msgs)
+            msg = None
+        else:
+            items_batch = None
+            msg = u'Currently there no published companies.'
+        
+        namespace['batch'] = items_batch
+        namespace['msg'] = msg 
         namespace['title'] = title 
+        namespace['items'] = items
+
         handler = self.get_handler('/ui/abakuc/companies/list.xml')
         return stl(handler, namespace)
-        # Set batch informations
-        #batch_start = int(context.get_form_value('batchstart', default=0))
-        #batch_size = 5
-        #batch_total = len(modules)
-        #batch_fin = batch_start + batch_size
-        #if batch_fin > batch_total:
-        #    batch_fin = batch_total
-        #modules = modules[batch_start:batch_fin]
-        ## Namespace 
-        #if modules:
-        #    msgs = (u'There is one module.',
-        #            u'There are ${n} modules.')
-        #    batch = batch(context.uri, batch_start, batch_size, 
-        #                  batch_total, msgs=msgs)
-        #    msg = None
-        #else:
-        #    batch = None
-        #    msg = u'Currently there no published training modules.'
-        #
-        #namespace['batch'] = batch
-        #namespace['msg'] = msg 
-
-
 
 class Company(WebSite):
 
@@ -213,7 +215,11 @@ class Company(WebSite):
     def view(self, context):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
-        namespace['description'] = self.get_property('dc:description')
+        description = reduce_string(self.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+        namespace['description'] = description
+        #namespace['description'] = self.get_property('dc:description')
         namespace['website'] = self.get_website()
         namespace['logo'] = self.has_handler('logo')
 

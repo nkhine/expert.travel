@@ -4,15 +4,25 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
     <h1>${title}</h1>
-    <stl:block if="items">
-    <div stl:repeat="item items">
-        <a href="${item/url}">${item/title}</a>
-        ${item/description}
-    </div>
+      <div align="right">
+        ${batch}
+      </div>
+    <div id="List">
+    <stl:block stl:repeat="item items">
+          <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+            onmouseout="this.className='ListItem';">  
+            <dt>
+              <a href="${item/url}">${item/title}</a>
+            </dt>
+            <dd>
+                ${item/description}
+            </dd>
+          </dl>       
     </stl:block>
+    </div>
     <stl:block if="not items">
     <div>
-    No training programmes
+    No companies listed. 
     </div>
     </stl:block>
 </stl:block>

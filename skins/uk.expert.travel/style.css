@@ -1,15 +1,9 @@
 /*Copyright 2007 Abakuc Limited */
 
-*{margin:0;padding:0}
-
-/* body{font-size:76%;line-height:1.5;font-family:Verdana, Arial, Helvetica,
- * sans-serif;color:#666;}*/
-
 #height{position:relative;min-height:100%;}
 
 body,html{height:100%;}
 * html #height{height:100%;}
-
 .width{position:relative;min-width: 770px;max-width: 960px;width:auto !important;width:960px;}
 
 .clearfix { display: inline-block; }
@@ -268,8 +262,10 @@ a.action:visited {color: #000;}
 /* SIDEBAR */
 .sidebar { float: right; width: 300px; margin: 10px 20px; }
 .sidebar .adblock { margin-bottom: 20px; }
-.sidebar .general-box .title h3 { margin-top: 0; padding-top: 10px; color: #069; font-size: 100%; }
+.sidebar .general-box .title h3 { margin-top: 0; padding-top: 10px; color: #069;
+font-size: 100%; border-bottom: none !important;/* Overide #body h3  */}
 .sidebar .content { padding-bottom: 15px; _height: 1%; }
+.sidebar .content .test ul li { list-style: none; }
 .sidebar .info, .viewjob .sidebar .job-stats { overflow: hidden; margin-bottom: 12px; }
 .sidebar .text { float: right; width: 218px; }
 .sidebar .text h4 { margin: 0; font-size: 110%; }
@@ -303,10 +299,11 @@ div.general-box, div.general-box div.content, div.general-box div.title, div.gen
 div.details, div.details div.content, div.details div.title, div.details div.title * { background-image: url(images/bg_box_details_blue.gif); }
 div.general-box { padding: 0 20px 0 0; margin: 0 0 20px 0; }
 div.general-box div.title { background-position: 100% 0; margin: 0 -20px 0 0; padding: 0 20px 0 0; }
-div.general-box div.title * { background-position: 0 0; margin: 0; border: 0; padding: 20px 0 10px 20px; height: 1%; }
-div.details div.title * { padding: 26px 0px 16px 26px; }
+div.general-box div.title * { background-position: 0 0; margin: 0; border: 0; padding: 20px 0 5px 20px; height: 1%; }
+div.details div.title * { padding: 26px 0px 16px 26px;}
 div.general-box div.title * * { background: none; padding: 0; margin: 0; }
 div.general-box div.content { background-position: 0 100%; margin-right: 0px; padding: 0 0 24px 20px; }
+div.general-box .content ul li { list-style-type: none !important; font-size: 80%;}
 div.details div.content { padding-left: 26px !important; }
 <<<<<<< HEAD:skins/uk.expert.travel/style.css
 =======
