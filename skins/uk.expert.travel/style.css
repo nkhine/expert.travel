@@ -260,7 +260,7 @@ a.action:visited {color: #000;}
 /* HOME PAGE NEWS LIST */
 .newslist {width: 430px; margin: 10px 10px; }
 /* SIDEBAR */
-.sidebar { float: right; width: 300px; margin: 10px 20px; }
+.sidebar { float: right; width: 280px; margin-left: -300px;}
 .sidebar .adblock { margin-bottom: 20px; }
 .sidebar .general-box .title h3 { margin-top: 0; padding-top: 10px; color: #069;
 font-size: 100%; border-bottom: none !important;/* Overide #body h3  */}

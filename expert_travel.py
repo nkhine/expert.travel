@@ -66,7 +66,6 @@ class ExpertTravel(WebSite):
     #######################################################################
     site_format = 'address'
 
-
     def get_level1_title(self, level1):
         topics = self.get_handler('../topics.csv')
         for row in topics.get_rows():
@@ -145,7 +144,8 @@ class ExpertTravel(WebSite):
         namespace['action'] = '%s/;login' % here.get_pathto(site_root)
         namespace['username'] = context.get_form_value('username')
 
-
+        #XXX Fix as this does not work when viewing from Back-Office
+        #XXX See [#119] http://bugs.abakuc.com/show_bug.cgi?id=119
         handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
 
