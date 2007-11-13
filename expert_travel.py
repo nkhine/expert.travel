@@ -130,22 +130,30 @@ class ExpertTravel(WebSite):
         results = catalog.search(query)
         documents = results.get_documents()
         namespace['nb_news'] = len(documents)
-        documents = documents[0:4]
+        documents = documents[0:3]
         news_items = []
         for news in documents:
             news = root.get_handler(news.abspath)
+            get = news.get_property
             address = news.parent
             company = address.parent
             url = '/companies/%s/%s/%s' % (company.name, address.name, news.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
             news_items.append({'url': url,
-                         'title': news.title})
+                               'title': news.title,
+                               'closing_date': get('abakuc:closing_date'),
+                               'description': description})
         namespace['news'] = news_items
-        # Return the page
+
+        # Login Form 
         namespace['action'] = '%s/;login' % here.get_pathto(site_root)
         namespace['username'] = context.get_form_value('username')
 
         #XXX Fix as this does not work when viewing from Back-Office
         #XXX See [#119] http://bugs.abakuc.com/show_bug.cgi?id=119
+        # Return the page
         handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
 

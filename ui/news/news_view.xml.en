@@ -4,9 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-      <h1>${dc:title}</h1>
-<p>${dc:description}</p>
-<p>Closing date: ${abakuc:closing_date}</p>
-<p>${abakuc:news_text}</p>
+    <h1>${dc:title}</h1>
+    <p>Posted on: ${date}</p>
+    <p>Posted: ${posted}</p>
+    <p>Posted by: ${user}</p>
+    <p>${dc:description}</p>
+    <p>${abakuc:news_text}</p>
 
 </stl:block>

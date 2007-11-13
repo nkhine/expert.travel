@@ -23,7 +23,7 @@
     is incorrect please login or re-register.
     </p>
     </div>
-    <div class="sidebar">
+    <div class="login-box">
       <stl:block if="not user/info">
           <div class="general-box">
             <div class="title">
@@ -61,10 +61,12 @@
           </div>
       </stl:block>
       <stl:block if="user/info">
-          <div class="job-company">
+          <div class="user">
             <h3>Resources</h3>
-            <div class="job-company-info">
+            <div class="user-info">
+               <ul>
                     <li><a href="${user/info/home}">My Profile</a></li>
+               </ul>
             </div>
           </div>
       </stl:block>
@@ -78,7 +80,7 @@
                       <a href="${news_items/url}">${news_items/title}</a>
                     </dt>
                     <dd>
-                      Short Description<br/>
+                      ${news_items/description} 
                     </dd>
                   </dl>       
           <p class="viewall"><strong><a href="/jobs?runSearch=" name="_viewAll">View all »</a></strong></p>

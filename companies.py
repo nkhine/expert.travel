@@ -559,7 +559,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
 
         # Jobs folder 
-        title = u'Jobs folder'
+        title = u'Products folder'
         kw = {'dc:title': {'en': title}}
         products = Products()
         cache['products'] = products

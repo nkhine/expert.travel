@@ -88,26 +88,49 @@ class News(RoleAware, Folder):
 
     @classmethod 
     def new_instance(cls, container, context):
+        from datetime import datetime
+        username = ''
+        if context is not None:
+            user = context.user
+            if user is not None:
+                username = user.name
+        
         # Check data
         keep = [ x for x, y in cls.news_fields ]
         error = context.check_form_input(cls.news_fields)
         if error is not None:
             return context.come_back(error, keep=keep)
         #
-        name = cls.get_new_id
-        #name = context.get_form_value('name')
+        name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         
         # Check the name 
-        #here = container.handler
-        #document_names = [ x for x in here.get_document_names()
-        #                   if x.startswith('page') ]
-        #if document_names:
-        #    i = get_sort_name(document_names[-1])[1] + 1
-        #    name = 'page%d' % i
-        #else:
-        #    name = 'page1'
-        #    
+        name = name.strip() or title.strip()
+        if not name:
+            message = u'Please give a title to your job'
+            return context.come_back(message)
+        
+        name = name.lower()
+        name = checkid(name)
+        if name is None:
+            message = (u'The title contains illegal characters,'
+                       u' choose another one.')
+            return context.come_back(message)
+        # Name already used?
+        while container.has_handler(name):
+              try:
+                  names = name.split('_')
+                  if len(names) > 1:
+                      name = '_'.join(names[:-1])
+                      number = str(int(names[-1]) + 1) 
+                      name = [name, number]
+                      name = '_'.join(name)
+                  else:
+                      name = '_'.join(names) + '_1'
+              except:
+                  name = '_'.join(names) + '_1'
+        
+
         # Set properties
         handler = cls()
         metadata = handler.build_metadata()
@@ -124,30 +147,48 @@ class News(RoleAware, Folder):
                 message = u'Error of DataTypes.'
                 return context.come_back(message)
 
+        # Set the date the news was posted 
+        date = datetime.now() 
+        metadata.set_property('dc:date', date)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
         
         goto = './%s/;%s' % (name, handler.get_firstview())
-        message = u'News has been added.'
+        message = u'News item has been added.'
         return context.come_back(message, goto=goto) 
     
     #######################################################################
     # View news details
     ###
-
     view__access__ = True
     view__label__ = u'News'
     def view(self, context):
+        username = self.get_property('owner')
+        users = self.get_handler('/users')
+        user_exist = users.has_handler(username) 
+        usertitle = (user_exist and 
+                     users.get_handler(username).get_title() or username)
+
         company = self.parent.parent
+        #date the item was posted
+        date = self.get_property('dc:date')
         #namespace
         namespace = {}
         namespace['company'] = company.get_property('dc:title')
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
-        
+
         news_text = to_html_events(self.get_property('abakuc:news_text'))
         namespace['abakuc:news_text'] = news_text
+        namespace['user'] = usertitle
 
+        from datetime import datetime
+        now = datetime.now()
+        posted = date
+        difference = now - posted
+
+        namespace['date'] = date
+        namespace['posted'] = difference
         # if reviewer or members , show users who apply
         is_reviewer_or_member = False
         user = context.user

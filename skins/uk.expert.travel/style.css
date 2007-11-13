@@ -294,6 +294,28 @@ font-size: 100%; border-bottom: none !important;/* Overide #body h3  */}
 .sidebar .job-tip .tip { margin-bottom: 5px; }
 
 
+/* LOGIN BOX */
+.login-box { float: right; width: 300px; margin-left: -300px;}
+.login-box .general-box .title h3 { margin-top: 0; padding-top: 10px; color: #069;
+font-size: 100%; border-bottom: none !important;/* Overide #body h3  */}
+.login-box .content { padding-bottom: 15px; _height: 1%; }
+.login-box .content .user ul li { list-style: none; }
+.login-box .info { overflow: hidden; margin-bottom: 12px; }
+.login-box .text { float: right; width: 218px; }
+.login-box .text h4 { margin: 0; font-size: 110%; }
+.login-box .text p { margin: 0; }
+.login-box .text p span { display: block; color: #666; }
+.login-box .user p { margin: 0; }
+.login-box .user ul { list-style-type: none !important; border-top: 1px solid #CCC; list-style: none; margin: 0; padding: 0; font-weight: bold; }
+.login-box .user li { margin-top: 7px; padding-left: 12px; }
+.login-box .user { position: relative; }
+.login-box .user h3 { background: #5CA0C7 url(images/bg_insideconx_300x25.gif) no-repeat; padding: 4px 10px; margin: 0; font-size: 100%; color: #FFF; }
+.login-box .user h4 { font-size: 140%; color: #F60; padding: 0 10px 5px 50px; margin: 0; background: url(images/con_building_on_30x37.gif) 10px 0 no-repeat; font-weight: normal; }
+.login-box .user h4 strong { display: block; }
+.login-box .user h4.noin { background-image: url(/img/icon/icon_building_off_30x37.gif); color: #4F97C1; margin-bottom: 3px; }
+.login-box .user-info { background: #CBE7FE url(images/bg_trans_bot_300x7.gif) 0 100% no-repeat; padding: 10px; }
+
+
 /* FLEXIBLE ROUNDED BOXES */
 div.general-box, div.general-box div.content, div.general-box div.title, div.general-box  div.title * { background: #fff url(images/bg_box_general_blue.gif) 100% 100% no-repeat; }
 div.details, div.details div.content, div.details div.title, div.details div.title * { background-image: url(images/bg_box_details_blue.gif); }

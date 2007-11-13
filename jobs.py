@@ -131,6 +131,7 @@ class Job(Folder, RoleAware):
             message = u'Please give a title to your job'
             return context.come_back(message)
         
+        name = name.lower()
         name = checkid(name)
         if name is None:
             message = (u'The title contains illegal characters,'
@@ -170,7 +171,6 @@ class Job(Folder, RoleAware):
         property = {
             (None, 'user'): username,
             ('dc', 'date'): datetime.now(),
-            #('dc', 'date'): datetime.date.now(),
         } 
         metadata.set_property('ikaaro:history', property)
         # Add the object
