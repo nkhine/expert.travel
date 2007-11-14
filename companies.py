@@ -246,8 +246,13 @@ class Company(WebSite):
         for address in addresses:
             branch_members = address.get_members()
             for username in branch_members:
+                users = self.get_handler('/users')
+                user_exist = users.has_handler(username) 
+                usertitle = (user_exist and 
+                             users.get_handler(username).get_title() or username)
                 url = '/users/%s/;profile' % username 
                 members.append({'id': username,
+                                'title': usertitle, 
                                 'url': url})
         # List users 
 
@@ -263,8 +268,9 @@ class Company(WebSite):
         addresses = self.search_handlers(handler_class=Address)
         namespace['addresses'] = []
         for address in addresses:
-            url = '%s/;view' %  address.name
-            enquire = '%s/;enquiry_form' % address.name
+            company = address.parent
+            url = '/companies/%s/%s/;view' % (company.name, address.name)
+            enquire = '/companies/%s/%s/;enquiry_form' % (company.name, address.name)
             namespace['addresses'].append({'url': url,
                                            'enquire': enquire,
                                            'address': address.get_property('abakuc:address'),
@@ -272,7 +278,22 @@ class Company(WebSite):
                                            'phone': address.get_property('abakuc:phone'),
                                            'title': address.title_or_name})
 
-        namespace['users'] = self.get_members_namespace(address)
+            members = []
+            branch_members = address.get_members()
+            for username in branch_members:
+                users = self.get_handler('/users')
+                user_exist = users.has_handler(username) 
+                usertitle = (user_exist and 
+                             users.get_handler(username).get_title() or username)
+                url = '/users/%s/;profile' % username 
+                members.append({'id': username,
+                                'title': usertitle, 
+                                'url': url})
+
+                namespace['members'] = members 
+            namespace['users'] = self.get_members_namespace(address)
+            #namespace['users'] = self.get_members_namespace(address)
+
         handler = self.get_handler('/ui/abakuc/companies/list_addresses.xml')
 
         return stl(handler, namespace)
@@ -355,16 +376,7 @@ class Company(WebSite):
     def list_news(self, context):
         namespace = {}
         namespace['batch'] = ''
-        columns = [('title', u'Title'),
-                   ('address', u'Address'),
-                   ('description', u'Short description'),
-                   ('closing_date', u'Closing Date')]
-        all_news = []
-        for address in self.search_handlers(handler_class=Address):
-            address_news = list(address.search_handlers(handler_class=News))
-            all_news = all_news + address_news
-
-        # Construct the lines of the table
+        #Search the catalogue, list all news items in company 
         root = context.root
         catalog = context.server.catalog
         query = []
@@ -377,9 +389,14 @@ class Company(WebSite):
         documents = results.get_documents()
         news_items = []
         for news in list(documents):
+            users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the job
+            # Information about the news item 
+            username = news.get_property('owner')
+            user_exist = users.has_handler(username) 
+            usertitle = (user_exist and 
+                         users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
@@ -389,6 +406,8 @@ class Company(WebSite):
             news_items.append({'url': url,
                                'title': news.title,
                                'closing_date': get('abakuc:closing_date'),
+                               'date_posted': get('dc:date'),
+                               'owner': usertitle,
                                'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -756,16 +775,12 @@ class Address(RoleAware, WorkflowAware, Folder):
     def list_news(self, context):
         namespace = {}
         namespace['batch'] = ''
-        columns = [('title', u'Title'),
-                   ('address', u'Address'),
-                   ('description', u'Short description'),
-                   ('closing_date', u'Closing Date')]
-        all_news = self.search_handlers(handler_class=News)
-        # Construct the lines of the table
+        #Search the catalogue, list all news items in address 
         root = context.root
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'news'))
+        query.append(EqQuery('address', self.name))
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
@@ -773,16 +788,25 @@ class Address(RoleAware, WorkflowAware, Folder):
         documents = results.get_documents()
         news_items = []
         for news in list(documents):
+            users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the job
-            url = '%s/;view' % news.name
+            # Information about the news item 
+            username = news.get_property('owner')
+            user_exist = users.has_handler(username) 
+            usertitle = (user_exist and 
+                         users.get_handler(username).get_title() or username)
+            address = news.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
             news_items.append({'url': url,
                                'title': news.title,
                                'closing_date': get('abakuc:closing_date'),
+                               'date_posted': get('dc:date'),
+                               'owner': usertitle,
                                'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -885,8 +909,9 @@ class Address(RoleAware, WorkflowAware, Folder):
         addresses = self.parent.search_handlers(handler_class=Address)
         namespace['addresses'] = []
         for address in addresses:
-            url = '%s/;view' % address.name
-            enquire = '%s/;enquiry_form' % address.name
+            company = address.parent
+            url = '/companies/%s/%s/;view' % (company.name, address.name)
+            enquire = '/companies/%s/%s/;enquiry_form' % (company.name, address.name)
             namespace['addresses'].append({'url': url,
                                            'enquire': enquire,
                                            'address': address.get_property('abakuc:address'),

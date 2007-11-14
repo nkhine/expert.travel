@@ -11,6 +11,6 @@
         <a href="${address/enquire}">Send Enquiry</a>
     </div>
     <div stl:repeat="item users">
-        <a href="${item/url}">${item/id}</a>
+        <a href="${item/url}">${item/id} ${item/title}</a>
     </div>
 </stl:block>

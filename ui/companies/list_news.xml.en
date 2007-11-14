@@ -14,6 +14,8 @@
             <a href="${news_items/url}">${news_items/title}</a>
           </dt>
           <dd>
+            ${news_items/date_posted}<br />
+            ${news_items/owner}<br />
             ${news_items/closing_date}<br />
             ${news_items/description}<br />
           </dd>
