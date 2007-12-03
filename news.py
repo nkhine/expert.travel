@@ -168,7 +168,9 @@ class News(RoleAware, Folder):
         user_exist = users.has_handler(username) 
         usertitle = (user_exist and 
                      users.get_handler(username).get_title() or username)
-
+        user = (user_exist and 
+                     users.get_handler(username).name)
+        userurl = '/users/%s/;view' % user
         company = self.parent.parent
         #date the item was posted
         date = self.get_property('dc:date')
@@ -180,7 +182,6 @@ class News(RoleAware, Folder):
 
         news_text = to_html_events(self.get_property('abakuc:news_text'))
         namespace['abakuc:news_text'] = news_text
-        namespace['user'] = usertitle
 
         from datetime import datetime
         now = datetime.now()
@@ -189,6 +190,9 @@ class News(RoleAware, Folder):
 
         namespace['date'] = date
         namespace['posted'] = difference
+        # Person who added the job
+        namespace['user'] = usertitle
+        namespace['user_uri'] = userurl
         # if reviewer or members , show users who apply
         is_reviewer_or_member = False
         user = context.user

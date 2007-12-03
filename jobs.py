@@ -187,6 +187,14 @@ class Job(Folder, RoleAware):
     view__access__ = True
     view__label__ = u'Job details'
     def view(self, context):
+        username = self.get_property('owner')
+        users = self.get_handler('/users')
+        user_exist = users.has_handler(username) 
+        usertitle = (user_exist and 
+                     users.get_handler(username).get_title() or username)
+        user = (user_exist and 
+                     users.get_handler(username).name)
+        userurl = '/users/%s/;view' % user
         root = context.root
         company = self.parent.parent
         # Country, Region, County
@@ -242,6 +250,9 @@ class Job(Folder, RoleAware):
                                                  job.name)
             jobs.append({'url': url,
                          'title': job.title})
+        # Person who added the job
+        namespace['user'] = usertitle
+        namespace['user_uri'] = userurl
         #XXX Can we list all other jobs excluding the one we
         #XXX are looking at
         namespace['jobs'] = jobs

@@ -21,7 +21,8 @@
                 <dt>Closing date:</dt>
                 <dd>${abakuc:closing_date} </dd>
                 <dt>Posted on:</dt>
-                <dd>${abakuc:closing_date} <strong>by <a href="#" title="View Nathalie's profile">Nathalie Lang</a></strong> 
+                <dd>${abakuc:closing_date} <strong>by <a href="${user_uri}" title="View
+                ${user}'s profile">${user}</a></strong> 
                 </dd>
               </dl>
               <h2>Description</h2>

@@ -5,7 +5,42 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <h2>Registration</h2>
+        <div class="login-box">
+          <div class="general-box">
+            <div class="title">
+              <h3>Sign in to Expert Travel</h3>
+            </div>
+            <div class="content">
+              <div class="info">
+                <div class="text">
+                        <dl>
+                          <dt><label for="username">Email address</label></dt>
+                          <dd>
+                            <input type="text" id="username" name="username" value="" />
+                          </dd>
+                          <dt><label for="password">Password</label></dt>
+                          <dd>
+                            <input type="password" id="password" name="password" />
+                          </dd>
+                        </dl>
+                </div>
+              </div>
+               <ul>
+                  <li><a href=";forgotten_password_form">I cannot access my account</a></li>
+               </ul>
+            </div>
+          </div>
+          <div class="user">
+            <h3>Resources</h3>
+            <div class="user-info">
+               <ul>
+                    <li><a href="#">My Profile</a></li>
+               </ul>
+            </div>
+          </div>
+    </div> 
 
+<div class="newslist">
   <p>
   The <span class="field_required">emphasized</span> fields are required.
   </p>
@@ -45,15 +80,13 @@
             selected="${job_function/is_selected}">${job_function/title}</option> 
         </select>
       </dd>
-
     </dl>
     <p>
       <input type="submit" value="Register" class="button_ok"/>
     </p>
   </form>
-
   <script language="javascript">
     focus("ikaaro:firstname")
   </script>
-
+</div>
 </stl:block>

@@ -27,6 +27,7 @@ from itools.xml import Parser
 from itools.datatypes import Email
 from itools.cms.workflow import WorkflowAware
 from itools.xhtml import Document as XHTMLDocument
+from itools.cms.utils import reduce_string
 
 # Import from our product
 from companies import Company, Address 
@@ -193,6 +194,7 @@ class User(iUser, WorkflowAware, Handler):
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
                 <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
                 <li><a href="#fragment-4"><span>Branches</span></a></li>
+                <li><a href="#fragment-5"><span>Administrate</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -204,6 +206,9 @@ class User(iUser, WorkflowAware, Handler):
               ${enquiries}
             </div>
             <div id="fragment-4">
+              {branches}
+            </div>
+            <div id="fragment-5">
               {branches}
             </div>
         </div>
@@ -542,12 +547,15 @@ class User(iUser, WorkflowAware, Handler):
             # Information about the news 
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  news.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=10,
+                                        phrase_treshold=40)
             news_to_add ={'id': news.name, 
                          'checkbox': is_reviewer,
                          'img': '/ui/abakuc/images/JobBoard16.png',
                          'title': (get('dc:title'),url),
                          'closing_date': get('abakuc:closing_date'),
-                         'description': get('dc:description')}
+                         'description': description}
             news_items.append(news_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -626,6 +634,9 @@ class User(iUser, WorkflowAware, Handler):
             # Information about the job
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=10,
+                                        phrase_treshold=40)
             job_to_add ={'id': job.name, 
                          'checkbox': is_reviewer,
                          'img': '/ui/abakuc/images/JobBoard16.png',
@@ -633,7 +644,7 @@ class User(iUser, WorkflowAware, Handler):
                          'closing_date': get('abakuc:closing_date'),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
-                         'description': get('dc:description')}
+                         'description': description}
             jobs.append(job_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))

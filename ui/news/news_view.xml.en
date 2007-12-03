@@ -5,9 +5,10 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
     <h1>${dc:title}</h1>
-    <p>Posted on: ${date}</p>
-    <p>Posted: ${posted}</p>
-    <p>Posted by: ${user}</p>
+    <p>Posted on: ${date}<strong>by <a href="${user_uri}" title="View
+                ${user}'s profile">${user}</a></strong></p>
+    <p>Time: ${posted} ago</p>
+    
     <p>${dc:description}</p>
     <p>${abakuc:news_text}</p>
 
