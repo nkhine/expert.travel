@@ -14,12 +14,12 @@
       </td>
   </tr>
   <tr>
-      <td>Keywords: (e.g. Sales Manager)</td>
-      <td>Sector:</td>
+      <td>Keywords: (e.g. Whats new)</td>
+      <td>Industry Sector:</td>
       <td>Salary band:</td>
   </tr>
   <tr>
-      <td><input type="text" size="25" name="job_title" value="${news_title}"/></td>
+      <td><input type="text" size="25" name="news_title" value="${news_title}"/></td>
       <td>
          <!--  <select name="function">
             <option stl:repeat="f function" value="${f/name}"

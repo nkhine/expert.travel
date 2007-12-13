@@ -306,11 +306,6 @@ class Company(WebSite):
     def list_jobs(self, context):
         namespace = {}
         namespace['batch'] = ''
-        all_jobs = []
-        for address in self.search_handlers(handler_class=Address):
-            address_jobs = list(address.search_handlers(handler_class=Job))
-            all_jobs = all_jobs + address_jobs
-
         root = context.root
         catalog = context.server.catalog
         query = []
@@ -848,6 +843,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'Job'))
+        query.append(EqQuery('address', self.name))
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
@@ -1048,7 +1044,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
 
-        handler = self.get_handler('/ui/abakuc/companies/enquiry_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/enquiries/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
 
 

@@ -114,14 +114,21 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
  **************************************************************************/
 #categories		{
 	background-color: #F5F5F5;
-  margin-left: .5em;
 	border: 1px solid #a5a5a5;
 }
-#categories a { 
-  text-decoration: none;
+#category { 
+	margin: 0 0 0 0.5em;
+}
+#category span { 
 	font-size: 11px;
 }
-#categories a:hover {
+#category .divider { 
+  margin-left: -0.5em;
+}
+#category a { 
+  text-decoration: none;
+}
+#category a:hover {
   text-decoration: underline;
 }
 
@@ -134,8 +141,8 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 }
 .ListItem			{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #BBBBBB; background-color: #FFFFE1; }
 .ListItem_Hover		{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #CCCCCC; background-color: #FFFFCC; }
-.ListItem dt { font-size: 1.4em; font-weight: bold; }
-.ListItem_Hover dt { font-size: 1.4em; font-weight: bold; }
+.ListItem dt { font-size: 1.2em; font-weight: bold; }
+.ListItem_Hover dt { font-size: 1.2em; font-weight: bold; }
 .ListItem dt a { text-decoration: none; color: #000; }
 .ListItem_Hover dt a { text-decoration: none; color: #000; }
 .SmallText				{ font-size: 10px; color: #666666; }
@@ -306,8 +313,8 @@ font-size: 100%; border-bottom: none !important;/* Overide #body h3  */}
 .login-box .text p { margin: 0; }
 .login-box .text p span { display: block; color: #666; }
 .login-box .user p { margin: 0; }
-.login-box .user ul { list-style-type: none !important; border-top: 1px solid #CCC; list-style: none; margin: 0; padding: 0; font-weight: bold; }
-.login-box .user li { margin-top: 7px; padding-left: 12px; }
+.login-box .user ul { border-top: 1px solid #CCC; margin: 0; padding: 0; font-weight: bold; }
+.login-box .user li { margin-top: 7px; padding-left: 12px; list-style-type: none !important; }
 .login-box .user { position: relative; }
 .login-box .user h3 { background: #5CA0C7 url(images/bg_insideconx_300x25.gif) no-repeat; padding: 4px 10px; margin: 0; font-size: 100%; color: #FFF; }
 .login-box .user h4 { font-size: 140%; color: #F60; padding: 0 10px 5px 50px; margin: 0; background: url(images/con_building_on_30x37.gif) 10px 0 no-repeat; font-weight: normal; }

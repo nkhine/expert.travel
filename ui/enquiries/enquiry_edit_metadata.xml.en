@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h1>Submit your enquiry to<br /> ${company}</h1>
+<h1>Submit your enquiry to ${company}</h1>
 <form action=";enquiry" method="post">
   <p>
     <label for="abakuc:enquiry_subject">Subject</label><br/>

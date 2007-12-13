@@ -8,6 +8,7 @@
   <tr>
     <td valign="top">
       <div id="categories">
+        <div id="category">
         <span stl:repeat="bread bread_path">
           <a stl:if="bread/url" href="${bread/url}">
             ${bread/value}
@@ -16,13 +17,14 @@
             ${bread/value}
           </span>
           &nbsp;
-          <span stl:if="not bread/last_level">»&nbsp;</span>
+          <span stl:if="not bread/last_level" class="divider">»&nbsp;</span>
         </span>
         <span  stl:if="level">
           <a stl:repeat="option level" href="${option/href}">
             ${option/title}
           </a>
         </span>
+        </div>
       </div>
       <div align="right">
         ${batch}

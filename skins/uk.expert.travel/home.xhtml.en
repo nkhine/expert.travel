@@ -4,10 +4,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
-    <title>Welcome to the UK Travel List</title>
+    <title>Welcome to the UK.Expert.Travel</title>
   </head>
   <body>
-    <h2>Welcome to the UK Travel List on-line portal!</h2>
+    <h2>Welcome to the UK.Expert.Travel on-line portal!</h2>
     <div class="content">
     <p>
     An on-line directory of the UK Travel market covers: travel trade
@@ -23,6 +23,9 @@
     is incorrect please login or re-register.
     </p>
     </div>
+    <p>
+    ${tabs}
+    </p>
     <div class="login-box">
       <stl:block if="not user/info">
           <div class="general-box">
@@ -62,10 +65,13 @@
       </stl:block>
       <stl:block if="user/info">
           <div class="user">
-            <h3>Resources</h3>
+            <h3>${user/info/title} Resources</h3>
             <div class="user-info">
                <ul>
                     <li><a href="${user/info/home}">My Profile</a></li>
+                    <li><a href="${user/info/home}">Add news item</a></li>
+                    <li><a href="${user/info/home}">Add job item</a></li>
+                    <li><a href="${user/info/home}">Administrate</a></li>
                </ul>
             </div>
           </div>
@@ -73,7 +79,7 @@
     </div> 
 
 
-              <div class="newslist">
+          <!--    <div class="newslist">
                   <dl stl:repeat="news_items news" class="ListItem" onmouseover="this.className='ListItem_Hover';"
                     onmouseout="this.className='ListItem';">  
                     <dt>
@@ -83,8 +89,8 @@
                       ${news_items/description} 
                     </dd>
                   </dl>       
-          <p class="viewall"><strong><a href="/jobs?runSearch=" name="_viewAll">View all »</a></strong></p>
-          </div>
+          <p class="viewall"><strong><a href="${news_url}">View all »</a></strong></p>
+          </div> -->
 
         
         

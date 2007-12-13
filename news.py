@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the standard library
+import time
 import datetime
 from string import Template
 import mimetypes
@@ -187,9 +188,18 @@ class News(RoleAware, Folder):
         now = datetime.now()
         posted = date
         difference = now - posted
+        weeks, days = divmod(difference.days, 7)
+        minutes, seconds = divmod(difference.seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+
+        time_posted = []
+        time_posted.append({'weeks': weeks,
+                            'days': days,
+                            'hours': hours,
+                            'minutes': minutes})
 
         namespace['date'] = date
-        namespace['posted'] = difference
+        namespace['posted'] = difference 
         # Person who added the job
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
