@@ -121,7 +121,7 @@ class ExpertTravel(WebSite):
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Branches</span></a></li>
+                <li><a href="#fragment-3"><span>Training</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -130,7 +130,9 @@ class ExpertTravel(WebSite):
               ${jobs}
             </div>
             <div id="fragment-3">
-              {branches}
+              {Training Programmes}
+              Available training programmes for Travel Agents &amp; Tour
+              Operator staff
             </div>
         </div>
         </stl:block>
