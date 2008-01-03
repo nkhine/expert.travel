@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+    <dl>
+      <dt>
+        <label for="title">Company Name</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="dc:title" id="title"
+          value="${title}" />
+      </dd>    
+      <dt>
+        <label for="dc:description">Short Description</label>
+      </dt>
+      <dd>
+        <textarea  cols="100" id="description" name="dc:description"
+        rows="8">${description}</textarea>
+      </dd>
+      <dt>
+        <label for="website">Company Website</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="abakuc:website" id="website"
+          value="${website}" />
+      </dd>
+      <dt>
+        <label for="topic">Business Function</label>
+      </dt>
+      <dd>
+        <select id="topic" name="topic" size="8" multiple="multiple"
+          style="width: 90%">
+          <option stl:repeat="topic topics" value="${topic/id}"
+            selected="${topic/is_selected}">${topic/title}</option> 
+        </select>
+      </dd>
+      <dt>
+        <label for="type">Business Type</label>
+      </dt>
+      <dd>
+        <stl:block stl:repeat="type types">
+          <input type="radio" name="type" value="${type/id}"
+            checked="${type/is_selected}" />${type/title} 
+        </stl:block>
+      </dd>
+      <dt>
+        <label for="logo">Logo</label>
+      </dt>
+      <dd>
+        <input type="file" name="logo" id="logo" size="36" />
+        <stl:block if="logo">
+          <br/>
+          <img src="logo" align="left" />
+          <input type="checkbox" name="remove_logo" value="1" />
+          Check to remove the logo.
+        </stl:block>
+      </dd>
+    </dl>
+
+</stl:block>

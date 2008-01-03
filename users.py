@@ -31,6 +31,7 @@ from itools.cms.utils import reduce_string
 
 # Import from our product
 from companies import Company, Address 
+from training import Training
 from news import News
 from jobs import Job
 from utils import title_to_name
@@ -936,6 +937,67 @@ class User(iUser, WorkflowAware, Handler):
             old_address.set_user_role(self.name, None)
 
         message = u'Company/Address setup done.'
+        goto = context.uri.resolve(';profile')
+        return context.come_back(message, goto=goto)
+
+    ########################################################################
+    # Setup training 
+    setup_training_form__access__ = 'is_self_or_admin'
+    setup_training_form__sublabel__ = u'Setup a training programme'
+    def setup_training_form(self, context):
+        name = context.get_form_value('dc:title')
+        name = name.strip()
+
+        namespace = {}
+        namespace['name'] = name
+
+        if name:
+            name = name.lower()
+            found = []
+            trainings = self.get_handler('/trainings')
+            for training in trainings.search_handlers():
+                title = training.get_property('dc:title')
+                if name not in title.lower():
+                    continue
+                found.append({'name': training.name, 'title': title})
+            found.sort()
+            namespace['n_found'] = len(found)
+            namespace['found'] = found
+            namespace['form'] = Training.get_form()
+        else:
+            namespace['found'] = None
+            namespace['form'] = None
+
+        handler = self.get_handler('/ui/abakuc/user_setup_training.xml')
+        return stl(handler, namespace)
+ 
+
+    setup_company__access__ = 'is_self_or_admin'
+    def setup_training(self, context):
+        # Add Company
+        title = context.get_form_value('dc:title')
+        
+        if not title:
+            message = u'Please give a Name to your training'
+            return context.come_back(message)
+        
+        # Add the company  
+        root = context.root
+        trainings = root.get_handler('/trainings')
+        name = title_to_name(title)
+        if trainings.has_handler(name):
+            message = u'The training already exist'
+            return context.come_back(message)
+
+        company, metadata = self.set_object('/trainings/%s' % name, Training())
+        
+        # Set Properties
+        website = context.get_form_value('abakuc:website')
+        metadata.set_property('dc:title', title, language='en')
+        metadata.set_property('abakuc:website', website)
+        metadata.set_property('ikaaro:website_is_open', True) 
+
+        message = u'trainings setup done.'
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
 

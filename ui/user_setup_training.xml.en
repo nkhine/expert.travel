@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h2>Setup a training programme</h2>
+
+<p>
+Please first search whether there is a training programme 
+</p>
+
+<p>
+Type the name of your training:
+</p>
+
+<form action=";setup_training_form" method="get" style="margin-left: 2em">
+  <input type="text" name="dc:title" value="${name}" size="40" />
+  <input type="submit" value="Search" />
+</form>
+
+<stl:block if="name">
+  <stl:block if="found">
+    <p>${n_found} trainings found. Select one:</p>
+    <p>Or create your own:</p>
+  </stl:block>
+  <stl:block if="not found">
+    <p>No companies found. Create your own:</p>
+  </stl:block>
+  <form action=";setup_training" method="post" enctype="multipart/form-data"
+    style="margin-left: 2em">
+    ${form}
+    <input type="submit" value="Create" />
+  </form>
+</stl:block>
+
+</stl:block>

@@ -25,43 +25,42 @@ class Trainings(Folder):
     class_title = u'Training programmes'
     class_icon16 = 'abakuc/images/Trainings16.png'
     class_icon48 = 'abakuc/images/Trainings48.png'
+    class_views = [
+                #['view'],
+                ['browse_content?mode=list'],
+                ['new_resource_form'],
+                ['edit_metadata_form']]
 
     
     def get_document_types(self):
         return [Training]
 
-    class_views = [
-                ['view'],
-                ['browse_content?mode=list'],
-                ['new_resource_form'],
-                ['edit_metadata_form']]
-
     #######################################################################
     # User Interface
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
-    view__label__ = u'View'
-    def view(self, context):
-        here = context.handler
-        namespace = {}
-        title = here.get_title()
-        items = self.search_handlers(handler_class=Training)
-        namespace['items'] = []
-        for item in items:
-            state = item.get_property('state')
-            if state == 'public':
-                get = item.get_property
-                url = '%s/;view' %  item.name
-                description = reduce_string(get('dc:description'),
-                                            word_treshold=90,
-                                            phrase_treshold=240)
-                namespace['items'].append({'url': url,
-                          'description': description,
-                          'title': item.title_or_name})
+    #view__access__ = 'is_allowed_to_view'
+    #view__label__ = u'View'
+    #def view(self, context):
+    #    here = context.handler
+    #    namespace = {}
+    #    title = here.get_title()
+    #    items = self.search_handlers(handler_class=Training)
+    #    namespace['items'] = []
+    #    for item in items:
+    #        state = item.get_property('state')
+    #        if state == 'public':
+    #            get = item.get_property
+    #            url = '%s/;view' %  item.name
+    #            description = reduce_string(get('dc:description'),
+    #                                        word_treshold=90,
+    #                                        phrase_treshold=240)
+    #            namespace['items'].append({'url': url,
+    #                      'description': description,
+    #                      'title': item.title_or_name})
 
-            namespace['title'] = title 
-            handler = self.get_handler('/ui/abakuc/trainings/list.xml')
-            return stl(handler, namespace)
+    #        namespace['title'] = title 
+    #        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+    #        return stl(handler, namespace)
 
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -85,15 +84,12 @@ class Trainings(Folder):
         #namespace['batch'] = batch
         #namespace['msg'] = msg 
 
-class Training(RoleAware, WorkflowAware, Folder):
+class Training(WebSite):
 
     class_id = 'training'
     class_title = u'Training programme'
     class_icon16 = 'abakuc/images/Training16.png'
     class_icon48 = 'abakuc/images/Training48.png'
-
-    site_format = 'module'
-
     class_views = [
                 ['view'],
                 ['browse_content?mode=list'],
@@ -101,6 +97,9 @@ class Training(RoleAware, WorkflowAware, Folder):
                 ['edit_metadata_form'],
                 ['state_form'],
                 ['permissions_form', 'new_user_form']]
+
+    site_format = 'training'
+
   
     new_resource_form__access__ = 'is_allowed_to_edit'
     new_resource__access__ = 'is_allowed_to_edit'
@@ -109,7 +108,7 @@ class Training(RoleAware, WorkflowAware, Folder):
         return [Module]
 
     def get_level1_title(self, level1):
-        return None
+        return level1
 
     #######################################################################
     # ACL
@@ -212,7 +211,7 @@ class Training(RoleAware, WorkflowAware, Folder):
 #######################################################################
 # Training module 
 #######################################################################
-class Module(Folder):
+class Module(Folder, WorkflowAware, Handler):
 
     class_id = 'module'
     class_title = u'Trainig module'
