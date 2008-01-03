@@ -13,7 +13,7 @@ from itools.cms.skins import Skin
 from itools.cms.file import File
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
-
+from itools.web import get_context
 # Import from abakuc
 from base import Handler, Folder
 from website import WebSite
@@ -90,45 +90,65 @@ class Training(WebSite):
     class_title = u'Training programme'
     class_icon16 = 'abakuc/images/Training16.png'
     class_icon48 = 'abakuc/images/Training48.png'
-    class_views = [
-                ['view'],
-                ['browse_content?mode=list'],
-                ['new_resource_form'],
-                ['edit_metadata_form'],
-                ['state_form'],
-                ['permissions_form', 'new_user_form']]
-
-    site_format = 'training'
+    class_views = [['view'], 
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
+                   ['new_resource_form'],
+                   ['permissions_form', 'new_user_form'],
+                   ['edit_metadata_form']]
 
   
-    new_resource_form__access__ = 'is_allowed_to_edit'
-    new_resource__access__ = 'is_allowed_to_edit'
+    new_resource_form__access__ = 'is_reviewer' 
+    new_resource__access__ = 'is_reviewer'
 
     def get_document_types(self):
         return [Module]
 
     def get_level1_title(self, level1):
-        return level1
+        return None 
 
     #######################################################################
-    # ACL
+    # User Interface / Edit
     #######################################################################
+    @staticmethod
+    def get_training_form(name=None, description=None):
+        root = get_context().root
 
+        namespace = {}
+        namespace['title'] = name
+        namespace['description'] = description 
+
+        handler = root.get_handler('ui/abakuc/trainings/training_form.xml')
+        return stl(handler, namespace)
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_allowed_to_edit(self, user, object):
-        from companies import Address
-        for address in self.parent.search_handlers(handler_class=Address):
-            if address.is_allowed_to_edit(user, address):
-                return True
-        return False
+    def is_reviewer_or_member(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is reviewer or member
+        return (self.has_user_role(user.name, 'ikaaro:reviewers') or
+                self.has_user_role(user.name, 'ikaaro:members'))
+    
+
+    def is_admin(self, user, object):
+        return self.is_reviewer(user, object)
+
 
     def is_reviewer(self, user, object):
-        for module in self.search_handlers(handler_class=Module):
-            if module.is_reviewer(user, module):
-                return True
-        return False
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is reviewer or member
+        return self.has_user_role(user.name, 'ikaaro:reviewers') 
+
     #######################################################################
     # User Interface / View
     #######################################################################
@@ -178,7 +198,7 @@ class Training(WebSite):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    #edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_reviewer'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -195,7 +215,7 @@ class Training(WebSite):
         return stl(handler, namespace)
 
 
-    #edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -270,7 +290,7 @@ class Module(Folder, WorkflowAware, Handler):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    #edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_reviewer'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -287,7 +307,7 @@ class Module(Folder, WorkflowAware, Handler):
         return stl(handler, namespace)
 
 
-    #edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -368,7 +388,7 @@ class Topic(Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    #edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_reviewer'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -385,7 +405,7 @@ class Topic(Folder):
         return stl(handler, namespace)
 
 
-    #edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')

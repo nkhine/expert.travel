@@ -963,7 +963,7 @@ class User(iUser, WorkflowAware, Handler):
             found.sort()
             namespace['n_found'] = len(found)
             namespace['found'] = found
-            namespace['form'] = Training.get_form()
+            namespace['form'] = Training.get_training_form()
         else:
             namespace['found'] = None
             namespace['form'] = None
@@ -972,7 +972,7 @@ class User(iUser, WorkflowAware, Handler):
         return stl(handler, namespace)
  
 
-    setup_company__access__ = 'is_self_or_admin'
+    setup_training__access__ = 'is_self_or_admin'
     def setup_training(self, context):
         # Add Company
         title = context.get_form_value('dc:title')
@@ -989,12 +989,11 @@ class User(iUser, WorkflowAware, Handler):
             message = u'The training already exist'
             return context.come_back(message)
 
-        company, metadata = self.set_object('/trainings/%s' % name, Training())
+        training, metadata = self.set_object('/trainings/%s' % name, Training())
         
         # Set Properties
         website = context.get_form_value('abakuc:website')
         metadata.set_property('dc:title', title, language='en')
-        metadata.set_property('abakuc:website', website)
         metadata.set_property('ikaaro:website_is_open', True) 
 
         message = u'trainings setup done.'

@@ -23,7 +23,7 @@ Type the name of your training:
     <p>Or create your own:</p>
   </stl:block>
   <stl:block if="not found">
-    <p>No companies found. Create your own:</p>
+    <p>No training found. Create your own:</p>
   </stl:block>
   <form action=";setup_training" method="post" enctype="multipart/form-data"
     style="margin-left: 2em">

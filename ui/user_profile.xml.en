@@ -72,6 +72,9 @@
               <li>
                 <a href=";setup_company_form">Switch to another company</a>.
               </li>
+              <li>
+                <a href=";setup_training_form">Create a new training programme</a>.
+              </li>
             </ul>
             <p stl:if="contact">
               To manage these records, please contact ${contact} who is

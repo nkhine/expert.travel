@@ -158,9 +158,9 @@ class Root(Handler, BaseRoot):
         # Training 
         title = u'Training Programmes'
         kw = {'dc:title': {'en': title}}
-        training = Trainings()
-        cache['training'] = training
-        cache['training.metadata'] = training.build_metadata(**kw)
+        trainings = Trainings()
+        cache['trainings'] = trainings
+        cache['trainings.metadata'] = trainings.build_metadata(**kw)
 
         # Help
         help = XHTMLFile()

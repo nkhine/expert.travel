@@ -32,7 +32,6 @@ from website import WebSite
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
-from training import Training
 from product import Products
 from utils import get_sort_name
 
@@ -126,7 +125,7 @@ class Company(WebSite):
     new_resource__access__ = 'is_allowed_to_edit'
 
     def get_document_types(self):
-        return [Address, Folder, Training]
+        return [Address, Folder]
 
 
     def get_level1_title(self, level1):
