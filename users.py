@@ -172,6 +172,18 @@ class User(iUser, WorkflowAware, Handler):
                results.append({'index': row.number})
         namespace['howmany'] = len(results)
         #namespace['branches'] = self.list_addresses(context)
+        is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
+        namespace['is_reviewer'] = is_reviewer
+        # Company
+        namespace['company'] = {'name': company.name,
+                                'title': company.get_property('dc:title'),
+                                'website': company.get_website(),
+                                'path': self.get_pathto(company)}
+        # Address
+        addr = {'name': address.name,
+                'address_path': self.get_pathto(address)}
+
+        namespace['address'] = addr
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -193,8 +205,9 @@ class User(iUser, WorkflowAware, Handler):
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
                 <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
-                <li><a href="#fragment-4"><span>Branches</span></a></li>
-                <li><a href="#fragment-5"><span>Administrate</span></a></li>
+                <li><a href="#fragment-4"><span>Training</span></a></li>
+                <li><a href="#fragment-5"><span>Branches</span></a></li>
+                <li><a href="#fragment-6"><span>Administrate</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -206,11 +219,36 @@ class User(iUser, WorkflowAware, Handler):
               ${enquiries}
             </div>
             <div id="fragment-4">
-              {branches}
+              {Training programmes}
             </div>
             <div id="fragment-5">
               {branches}
             </div>
+          <stl:block if="is_reviewer">
+            <div id="fragment-6">
+                      <h2>Administrative actions</h2>
+                        <p>
+                        <a href="${company/path}/;edit_metadata_form?referrer=1">
+                          Modify company details
+                        </a>
+                        </p>
+                        <p>
+                        <a href="${address/address_path}/;edit_metadata_form?referrer=1">
+                          Modify address details
+                        </a>
+                        </p>
+                        <p>
+                         <a href="${address/address_path}/;permissions_form">
+                           Users associate to the address
+                         </a>
+                        </p>
+                        <p>
+                          <a href="${address/address_path}/;new_user_form">
+                            Associate a new user to the address
+                          </a>
+                        </p>
+            </div>
+          </stl:block>
         </div>
         </stl:block>
                   """
@@ -599,8 +637,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['news_msg'] = msg 
         handler = self.get_handler('/ui/abakuc/news/news_table.xml')
         return stl(handler, namespace)
-
-
    
     
     ########################################################################

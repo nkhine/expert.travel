@@ -121,42 +121,11 @@
         </td>
       </tr>
     </table>
-    
     <p stl:if="is_reviewer_or_member">
         <!-- Tabs -->
         <stl:block if="address">
             ${tabs}
         </stl:block>
     </p>
-    <!-- Reviewer Actions -->
-    <stl:block if="is_reviewer">
-      <h2>Actions</h2>
-      <ul>
-        <li>
-        <a href="${company/path}/;edit_metadata_form?referrer=1">
-          Modify company details
-        </a>
-        </li>
-        
-        <li>
-        <a href="${address/address_path}/;edit_metadata_form?referrer=1">
-          Modify address details
-        </a>
-        </li>
-        
-        <li>
-         <a href="${address/address_path}/;permissions_form">
-           Users associate to the address
-         </a>
-        </li>
-        
-        <li>
-          <a href="${address/address_path}/;new_user_form">
-            Associate a new user to the address
-          </a>
-        </li>
-      </ul>
-    </stl:block>
-  
   </stl:block>
 </stl:block>

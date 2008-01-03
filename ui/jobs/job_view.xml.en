@@ -12,7 +12,7 @@
               <dl>
                 <dt>Sector:</dt>
                 <dd><span name="__jobType">${abakuc:function}</span>
-                  <a href=";new_resource_form?type=Candidature"
+                  <a href=";application_form"
                   class="action"><span>Apply Now</span></a> </dd>
                 <dt>Location:</dt>
                 <dd><span name="__jobExperienceLevel">${region} / ${county}</span></dd>
@@ -26,33 +26,10 @@
                 </dd>
               </dl>
               <h2>Description</h2>
-                    <div class="sidebar">
-      <div class="general-box">
-        <div class="title">
-          <h3>Additional resources</h3>
-        </div>
-        <div class="content">
-          <div class="info">
-            <div class="text">
-              <p>Application Form<span>PDF Format</span></p>
-            </div>
-          </div>
-           <ul>
-              <li>Download now!</li>
-           </ul>
-        </div>
-      </div>
-      <div class="job-company">
-        <h3>Resources</h3>
-        <div class="job-company-info">
-          <h4>Y</h4>
-        </div>
-      </div>
-    </div> 
                 <p>${dc:description}</p> 
                 <p>${abakuc:job_text}</p> 
               <div>        
-        <a href=";new_resource_form?type=Candidature" class="action"><span>Apply Now</span></a> 
+        <a href=";application_form" class="action"><span>Apply Now</span></a> 
               </div>        
               <h3>Additional Information</h3>
               <div id="message">

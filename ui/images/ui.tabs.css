@@ -89,9 +89,12 @@
 .ui-tabs-nav .ui-tabs-disabled {
     opacity: .4;
 }
-.ui-tabs-container {
+.ui-tabs-panel {
     border-top: 1px solid #97a5b0;
-    padding: 1em 8px;
+    border-right: 4px ridge #FFFFE1;
+    border-bottom: 4px ridge #FFFFE1;
+    border-left: 1px solid #97a5b0;
+    padding: 0.2em 8px;
     background: #fff; /* declare background color for container to avoid distorted fonts in IE while fading */
 }
 .ui-tabs-loading em {

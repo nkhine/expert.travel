@@ -5,12 +5,12 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <script type="text/javascript" src="/ui/abakuc/ajax.js" />
-<table width="100%" border="0">
+<table width="100%">
   <tr>
      <td colspan="2" valign="top">
-          <table width="100%" border="0">
+          <table width="100%">
                <tr> 
-                <td colspan="3" align="left">
+                <td align="left">
                     <a href="../;view"><h1>${company}</h1></a>
                     <img stl:if="logo" border="0" src="../logo" style="float: right" />
                     <address>
@@ -21,30 +21,15 @@
                       ${country}<br/><br/>
                     </address>
                 </td> 
-                <td valign="top" bgcolor="#E9E9E9"> 
-                <h1>
-                <!-- AddThis Bookmark Button BEGIN 
-                <script type="text/javascript">
-                  addthis_url    = location.href;   
-                  addthis_title  = document.title;  
-                  addthis_pub    = 'qsqgeekyogdty';     
-                </script><script type="text/javascript" src="http://s7.addthis.com/js/addthis_widget.php?v=12" ></script>
-                 AddThis Bookmark Button END -->
-                </h1>
-                </td> 
                 </tr>
                <tr> 
-                <td colspan="3" align="left">
-                  P: ${phone}&nbsp;-&nbsp;F: ${fax}
-                </td> 
-                <td align="right" bgcolor="#E9E9E9"> 
-                  <a href=";enquiry_form">
-                      <img border="0" src="/ui/abakuc/images/btn_ask_113x18.gif" alt="Make an enquiry" />
-                  </a>
+                <td>
+                  P: ${phone}&nbsp;-&nbsp;F: ${fax} 
+                  <a href=";enquiry_form" class="action"><span>Make an enquiry</span></a>
                 </td> 
                 </tr>
           <tr>
-            <td colspan="4">
+            <td>
             ${tabs}
             </td>
           </tr>  

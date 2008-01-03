@@ -45,10 +45,9 @@ class Job(Folder, RoleAware):
     class_views = [
         ['view'],
         ['application_form'],
-        ['browse_content?mode=list'],
         ['edit_metadata_form'],
         ['view_candidatures'],
-        ['new_resource_form'],
+        ['add_job_form'],
         ['history_form']]
 
     
@@ -337,6 +336,23 @@ class Job(Folder, RoleAware):
         path = '/ui/abakuc/jobs/new_instance_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)    
+
+    add_job_form__access__ = 'is_reviewer_or_member' 
+    add_job_form__label__ = u'Add new job'
+    def add_job_form(self, context):
+        url = '../;new_resource_form?type=Job'
+        goto = context.uri.resolve(url)
+        message = u'Please use this form to add a new job'
+        return context.come_back(message, goto=goto)
+        # Check input data
+        #error = context.check_form_input(application_fields)
+        #if error is not None:
+        #    return context.come_back(error, keep=keep)
+
+        # Add
+        #path = '/ui/abakuc/jobs/job_new_resource_form.xml'
+        #handler = context.root.get_handler(path)
+        #return stl(handler)    
     #######################################################################
     # XXX User Interface / Edit
     #######################################################################
