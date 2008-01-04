@@ -3,6 +3,7 @@
 
 # Import from itools
 from itools import get_abspath, get_version
+from itools.cms.registry import register_object_class
 from itools.cms.skins import register_skin
 
 # Import from abakuc
@@ -10,9 +11,7 @@ import metadata
 from root import Root
 from skins import websites
 
-
 __version__ = get_version(globals())
-
 
 # Register the skins
 path = get_abspath(globals(), 'ui')

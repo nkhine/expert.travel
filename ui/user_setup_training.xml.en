@@ -20,6 +20,15 @@ Type the name of your training:
 <stl:block if="name">
   <stl:block if="found">
     <p>${n_found} trainings found. Select one:</p>
+    <form action=";setup_address_form" method="get" style="margin-left: 2em">
+      <select name="training">
+        <option value=""></option>
+        <option stl:repeat="item found" value="${item/name}"
+          >${item/title}</option>
+      </select>
+      <input type="submit" value="Select" />
+    </form>
+
     <p>Or create your own:</p>
   </stl:block>
   <stl:block if="not found">

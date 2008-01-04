@@ -11,13 +11,15 @@ from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.widgets import batch
 from itools.cms.skins import Skin 
 from itools.cms.file import File
+from itools.cms.html import XHTMLFile
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
 from itools.web import get_context
 # Import from abakuc
 from base import Handler, Folder
 from website import WebSite
-from document import Document
+#from document import Document
+from news import News
 
 class Trainings(Folder):
 
@@ -324,7 +326,7 @@ class Module(Folder, WorkflowAware, Handler):
 #######################################################################
 # Training topic 
 #######################################################################
-class Topic(Folder):
+class Topic(Trainings):
 
     class_id = 'topic'
     class_title = u'Module topic'
@@ -338,7 +340,7 @@ class Topic(Folder):
         ['permissions_form', 'new_user_form']]
 
     def get_document_types(self):
-        return [Document, File]
+        return [XHTMLFile, File]
 
     #######################################################################
     # User Interface / View

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h1>Add a training programme</h1>
+<form action=";new_resource" enctype="multipart/form-data" method="post">
+      <dl>
+      <dt>
+        <label for="title">Training Programme Name</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="dc:name" id="name"
+          value="${name}" />
+      </dd>    
+      <dt>
+        <label for="dc:description">Short Description</label>
+      </dt>
+      <dd>
+        <textarea  cols="100" id="description" name="dc:description"
+        rows="8">${description}</textarea>
+      </dd>
+    </dl>
+  <p>
+    Only genuine enquiries will be sent !
+    <input type="submit" value="Add Training Programme" class="button_ok" />
+    <input type="hidden" value="${name}" name="name"/>
+  </p>
+</form>
+
+</stl:block>

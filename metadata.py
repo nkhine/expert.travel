@@ -108,8 +108,16 @@ class Schema(BaseSchema):
         'posted_on': Date,
         'closing_date': Date, 
         'job_text': Unicode,
-        'applicant_note': Unicode
-        }
-
+        'applicant_note': Unicode,
+        'credits': Unicode,
+        'image1': String(default=''),
+        'image2': String(default=''),
+        'map_image': String(default=''),
+        'dyk_title': Unicode,
+        'dyk_description': Unicode,
+        'top1': Unicode,
+        'top2': Unicode,
+        'top3': Unicode,
+        'top4': Unicode }
 
 register_schema(Schema)
