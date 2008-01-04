@@ -18,7 +18,6 @@ from itools.web import get_context
 # Import from abakuc
 from base import Handler, Folder
 from website import WebSite
-#from Document import Document
 
 class Trainings(Folder):
 
@@ -339,7 +338,7 @@ class Topic(Trainings):
         ['permissions_form', 'new_user_form']]
 
     def get_document_types(self):
-        return [XHTMLFile, File]
+        return [XHTMLFile]
 
     #######################################################################
     # User Interface / View
@@ -350,7 +349,7 @@ class Topic(Trainings):
         here = context.handler
         namespace = {}
         title = here.get_title()
-        items = self.search_handlers(handler_class=Document)
+        items = self.search_handlers(handler_class=XHTMLFile)
         namespace['items'] = []
         for item in items:
             get = item.get_property
