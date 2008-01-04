@@ -12,7 +12,7 @@ from itools.cms.html import XHTMLFile as ikaaroHTML
 from itools.cms.registry import register_object_class
 
 # Import from here
-from Handler import Handler
+#from Handler import Handler
 
 
 
@@ -56,7 +56,7 @@ class TraveluniWorkflowAware(ikaaroWorkflowAware):
 
     
 
-class iHTML(Handler, TraveluniWorkflowAware, ikaaroHTML):
+class iHTML(TraveluniWorkflowAware, ikaaroHTML):
     pass
 
 register_object_class(iHTML)

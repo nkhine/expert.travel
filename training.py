@@ -18,8 +18,7 @@ from itools.web import get_context
 # Import from abakuc
 from base import Handler, Folder
 from website import WebSite
-#from document import Document
-from news import News
+#from Document import Document
 
 class Trainings(Folder):
 
