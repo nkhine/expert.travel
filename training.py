@@ -111,12 +111,13 @@ class Training(WebSite):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_training_form(name=None, description=None):
+    def get_training_form(name=None, description=None, topics=None):
         root = get_context().root
 
         namespace = {}
         namespace['title'] = name
         namespace['description'] = description 
+        namespace['topics'] = root.get_topics_namespace(topics)
 
         handler = root.get_handler('ui/abakuc/trainings/training_form.xml')
         return stl(handler, namespace)

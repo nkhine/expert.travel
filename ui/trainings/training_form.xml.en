@@ -17,6 +17,16 @@
         <textarea  cols="100" id="description" name="dc:description"
         rows="8">${description}</textarea>
       </dd>
+      <dt>
+        <label for="topic">Business Function</label>
+      </dt>
+      <dd>
+        <select id="topic" name="topic" size="8" multiple="multiple"
+          style="width: 90%">
+          <option stl:repeat="topic topics" value="${topic/id}"
+            selected="${topic/is_selected}">${topic/title}</option> 
+        </select>
+      </dd>
     </dl>
 
 </stl:block>

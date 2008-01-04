@@ -992,8 +992,9 @@ class User(iUser, WorkflowAware, Handler):
         training, metadata = self.set_object('/trainings/%s' % name, Training())
         
         # Set Properties
-        website = context.get_form_value('abakuc:website')
+        topics = context.get_form_values('topic')
         metadata.set_property('dc:title', title, language='en')
+        metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('ikaaro:website_is_open', True) 
 
         message = u'trainings setup done.'
