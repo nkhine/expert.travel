@@ -1,528 +1,227 @@
-# -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
-# Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+import os
 import re
-from cStringIO import StringIO
+from datetime import datetime
 
 # Import from itools
-from itools.xml import Parser
-from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
-    XML as XMLContent, XMLAttribute)
-from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
-    register_schema)
-from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument, XML_DECL, DOCUMENT_TYPE,
-    START_ELEMENT, END_ELEMENT, TEXT, COMMENT, AbstractNamespace,
-    set_namespace, stream_to_str, get_qname, get_attribute_qname, is_empty,
-    get_end_tag, get_element)
+from itools.uri import get_reference
+from itools import i18n
+from itools.web import get_context
+from itools.xml import xml 
+from itools.stl import stl
+from itools.cms.widgets import Breadcrumb
+from itools.cms.html import XHTMLFile
+from itools.handlers.file import File as itoolsFile
+from itools.cms.registry import register_object_class, get_object_class
+from itools.i18n import get_language_name
+from itools.cms.messages import *
+from itools.rest import checkid
+from itools.datatypes import FileName
+from itools.datatypes import DateTime
+from itools.html import Parser as HTMLParser
+# Import from abakuc 
+#from workflow import iHTML, TraveluniWorkflowAware
+#from namespaces import BusinessFunction
+from utils import get_sort_name
 
+class Document(XHTMLFile):
 
-xhtml_uri = 'http://www.w3.org/1999/xhtml'
+    class_id = 'document'
+    class_aliases = []
+    class_title = u'Training Document'
+    class_views = [['view'],
+                   ['edit_form'],
+                   ['state_form']]
 
+    @classmethod
+    def new_instance_form(cls, context, name=''):
+        root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
 
-#############################################################################
-# Types
-#############################################################################
+        namespace = {}
+        # The class id
+        namespace['class_id'] = cls.class_id
+        # Languages
+        document_names = [ x for x in here.get_handler_names()
+                           if x.startswith('page') ]
+        if document_names:
+            i = get_sort_name(document_names[-1])[1] + 1
+            name = 'page%d' % i
+        else:
+            name = 'page1'
+        namespace['name'] = name
+        website_languages = site_root.get_property('ikaaro:website_languages')
+        default_language = website_languages[0]
+        languages = []
+        for code in website_languages:
+            language_name = get_language_name(code)
+            languages.append({'code': code,
+                              'name': cls.gettext(language_name),
+                              'isdefault': code == default_language})
+        namespace['languages'] = languages
 
-class Boolean(Boolean):
-
-    @staticmethod
-    def decode(value):
-        return value
-
-
-    @staticmethod
-    def encode(value):
-        return value
-
-
-
-def stream_to_html(stream, encoding='UTF-8'):
-    data = []
-    for event in stream:
-        type, value, line = event
-        if type == TEXT:
-            value = XMLContent.encode(value)
-            data.append(value)
-        elif type == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            qname = get_qname(tag_uri, tag_name)
-            s = '<%s' % qname
-            # Output the attributes
-            for attr_uri, attr_name in attributes:
-                value = attributes[(attr_uri, attr_name)]
-                qname = get_attribute_qname(attr_uri, attr_name)
-                type = get_datatype_by_uri(attr_uri, attr_name)
-                value = XMLAttribute.encode(value)
-                s += ' %s="%s"' % (qname, value)
-            data.append(s + '>')
-        elif type == END_ELEMENT:
-            tag_uri, tag_name = value
-            data.append(get_end_tag(tag_uri, tag_name))
-        elif type == COMMENT:
-            data.append('<!--%s-->' % value)
-        elif type == XML_DECL:
-            pass
-        elif type == DOCUMENT_TYPE:
-            # FIXME
-            pass
-    return ''.join(data)
-
-
-def set_content_type(stream, content_type):
-    key1 = (xhtml_uri, 'http-equiv')
-    key2 = (xhtml_uri, 'content')
-    for event in stream:
-        type, value, line = event
-        if type == START_ELEMENT:
-            ns_uri, name, attributes = value
-            if ns_uri == xhtml_uri:
-                # Skip <meta http-equiv="Content-Type">
-                if name == 'meta':
-                    if key1 in attributes:
-                        if attributes[key1] == 'Content-Type':
-                            continue
-                elif name == 'head':
-                    yield event
-                    # Add <meta http-equiv="Content-Type">
-                    attributes = {}
-                    attributes[key1] = 'Content-Type'
-                    attributes[key2] = content_type
-                    yield START_ELEMENT, (xhtml_uri, 'meta', attributes), line
-                    yield END_ELEMENT, (xhtml_uri, 'meta'), line
-                    continue
-        elif type == END_ELEMENT:
-            ns_uri, name = value
-            if ns_uri == xhtml_uri:
-                # Skip <meta http-equiv="Content-Type">
-                if name == 'meta':
-                    # XXX This will fail if there is another element
-                    # within the "<meta>" element (something that should
-                    # not happen).
-                    if key1 in attributes:
-                        if attributes[key1] == 'Content-Type':
-                            continue
-        yield event
-
-
-def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
-    content_type = 'application/xhtml+xml; charset=%s' % encoding
-    stream = set_content_type(stream, content_type)
-    return stream_to_str(stream, encoding)
-
-
-
-def stream_to_str_as_html(stream, encoding='UTF-8'):
-    content_type = 'text/html; charset=%s' % encoding
-    stream = set_content_type(stream, content_type)
-    return stream_to_html(stream, encoding)
-
-
-def sanitize_stream(stream):
-    """
-    Method that removes potentially dangerous HTML tags and attributes
-    from the events
-    """
-    safe_tags = frozenset(['a', 'abbr', 'acronym', 'address', 'area',
-        'b', 'big', 'blockquote', 'br', 'button', 'caption', 'center',
-        'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir',
-        'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2',
-        'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'ins', 'kbd',
-        'label', 'legend', 'li', 'map', 'menu', 'ol', 'optgroup',
-        'option', 'p', 'pre', 'q', 's', 'samp', 'select', 'small',
-        'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody',
-        'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul',
-        'var'])
-
-    safe_attrs = frozenset(['abbr', 'accept', 'accept-charset',
-        'accesskey', 'action', 'align', 'alt', 'axis', 'border',
-        'cellpadding', 'cellspacing', 'char', 'charoff', 'charset',
-        'checked', 'cite', 'class', 'clear', 'cols', 'colspan', 'color',
-        'compact', 'coords', 'datetime', 'dir', 'disabled', 'enctype',
-        'for', 'frame', 'headers', 'height', 'href', 'hreflang',
-        'hspace', 'id', 'ismap', 'label', 'lang', 'longdesc',
-        'maxlength', 'media', 'method', 'multiple', 'name', 'nohref',
-        'noshade', 'nowrap', 'prompt', 'readonly', 'rel', 'rev', 'rows',
-        'rowspan', 'rules', 'scope', 'selected', 'shape', 'size',
-        'span', 'src', 'start', 'style', 'summary', 'tabindex',
-        'target', 'title', 'type', 'usemap', 'valign', 'value',
-        'vspace', 'width'])
-
-    safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
-
-    uri_attrs = frozenset(['action', 'background', 'dynsrc', 'href', 'lowsrc',
-                           'src'])
-
-    events_to_remove = []
-    events = list(stream)
-    remove_next = False
-    for c_event in events:
-        event, value, line = c_event
-        if event == START_ELEMENT:
-            _, name, attributes = value
-            # Remove unsafe Tag
-            if name not in safe_tags:
-                events_to_remove.append(c_event)
-                # Remove until end tad
-                remove_next = True
-                continue
-            # Remove unsafe attributes
-            attributes_to_remove = []
-            for c_attribute in attributes:
-                attr_uri, attr_name = c_attribute
-                # Remove unauthorized attributes
-                if attr_name not in safe_attrs:
-                    attributes_to_remove.append(c_attribute)
-                # Check attributes with Uri
-                if attr_name in uri_attrs:
-                    href = attributes[c_attribute]
-                    if ':' in href:
-                        scheme = href.split(':')[0]
-                        if scheme not in safe_schemes:
-                            attributes_to_remove.append(c_attribute)
-                # Check CSS
-                if attr_name in 'style':
-                    value = attributes[c_attribute]
-                    for m in re.finditer(r'url\s*\(([^)]+)', value):
-                        href = m.group(1)
-                        if ':' in href:
-                            scheme = href.split(':')[0]
-                            if scheme not in safe_schemes:
-                                attributes_to_remove.append(c_attribute)
-            for attr_to_remove in attributes_to_remove:
-                attributes.pop(attr_to_remove)
-        elif event == END_ELEMENT:
-            _, name = value
-            if name not in safe_tags:
-                events_to_remove.append(c_event)
-                remove_next = False
-                continue
-        elif event == COMMENT:
-            events_to_remove.append(c_event)
-            continue
-        if remove_next==True:
-            events_to_remove.append(c_event)
-    # Remove unsafe events
-    for event_to_remove in events_to_remove:
-        events.remove(event_to_remove)
-    return events
-
-
-def sanitize_str(str):
-    stream = Parser(str)
-    events = sanitize_stream(stream)
-    return events
-
-#############################################################################
-# Namespace
-#############################################################################
-
-elements_schema = {
-    # XHTML 1.0 strict
-    'a': {'is_empty': False, 'is_inline': True},
-    'abbr': {'is_empty': False, 'is_inline': True},
-    'acronym': {'is_empty': False, 'is_inline': True},
-    'area': {'is_empty': True, 'is_inline': False},
-    'b': {'is_empty': False, 'is_inline': True},
-    'base': {'is_empty': True, 'is_inline': False},
-    'bdo': {'is_empty': False, 'is_inline': True},
-    'big': {'is_empty': False, 'is_inline': True},
-    'br': {'is_empty': True, 'is_inline': True},
-    'cite': {'is_empty': False, 'is_inline': True},
-    'code': {'is_empty': False, 'is_inline': True},
-    'col': {'is_empty': True, 'is_inline': False},
-    'dfn': {'is_empty': False, 'is_inline': True},
-    'em': {'is_empty': False, 'is_inline': True},
-    'head': {'is_empty': False, 'is_inline': False},
-    'hr': {'is_empty': True, 'is_inline': False},
-    'i': {'is_empty': False, 'is_inline': True},
-    'img': {'is_empty': True, 'is_inline': True},
-    'input': {'is_empty': True, 'is_inline': True},
-    'kbd': {'is_empty': False, 'is_inline': True},
-    'link': {'is_empty': True, 'is_inline': False},
-    'meta': {'is_empty': True, 'is_inline': False},
-    'param': {'is_empty': True, 'is_inline': False},
-    'q': {'is_empty': False, 'is_inline': True},
-    'samp': {'is_empty': False, 'is_inline': True},
-    # FIXME This is a lie, <select> elements *are* inline
-    # TODO Do not use the inline/block for i18n, define instead another
-    # variable for this purpose.
-    'select': {'is_empty': False, 'is_inline': False},
-    'small': {'is_empty': False, 'is_inline': True},
-    'span': {'is_empty': False, 'is_inline': True},
-    'strong': {'is_empty': False, 'is_inline': True},
-    'sub': {'is_empty': False, 'is_inline': True},
-    'sup': {'is_empty': False, 'is_inline': True},
-    'textarea': {'is_empty': False, 'is_inline': True},
-    'tt': {'is_empty': False, 'is_inline': True},
-    'var': {'is_empty': False, 'is_inline': True},
-    # XHTML 1.0 transitional
-    'basefont': {'is_empty': True, 'is_inline': True},
-    'font': {'is_empty': False, 'is_inline': True},
-    'isindex': {'is_empty': True, 'is_inline': False},
-    's': {'is_empty': False, 'is_inline': True},
-    'strike': {'is_empty': False, 'is_inline': True},
-    'u': {'is_empty': False, 'is_inline': True},
-    # XHTML 1.0 frameset
-    'frame': {'is_empty': True, 'is_inline': False},
-    # Vendor specific, not approved by W3C
-    # See http://alistapart.com/articles/byebyeembed for a talk about <embed>
-    'embed': {'is_empty': True, 'is_inline': False},
-    # Unclassified
-    'script': {'is_empty': False, 'is_inline': False,
-        'translate_content': False},
-    'style': {'is_empty': False, 'is_inline': False,
-        'translate_content': False},
-    }
-
-
-class Namespace(AbstractNamespace):
-
-    class_uri = xhtml_uri
-    class_prefix = None
-
-
-    @staticmethod
-    def get_element_schema(name):
-        default_schema = {'is_empty': False, 'is_inline': False}
-        return elements_schema.get(name, default_schema)
+        handler = root.get_handler('/ui/abakuc/training/document/new_instance.xml')
+        return stl(handler, namespace)
 
 
     @classmethod
-    def is_translatable(cls, tag_uri, tag_name, attributes, attribute_name):
-        # Attributes
-        if attribute_name == 'title':
-            return True
-        if tag_name == 'img' and attribute_name == 'alt':
-            return True
-        if tag_name == 'input' and attribute_name == 'value':
-            value = attributes.get((cls.class_uri, 'type'))
-            return value == 'submit'
-        return False
+    def new_instance(cls, container, context):
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+        language = context.get_form_value('dc:language')
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            return context.come_back(MSG_NAME_MISSING)
+
+        name = checkid(name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        name = FileName.encode((name, cls.class_extension, language))
+
+        # Check the name is free
+        if container.has_handler(name):
+            return context.come_back(MSG_NAME_CLASH)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        metadata.set_property('dc:title', title, language=language)
+        metadata.set_property('dc:language', language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+    #######################################################################
+    # View
+    view__access__ = 'is_allowed_to_view'
+    view__label__ = u'View'
+    view__title__ = u'View'
+    def view(self, context):
+        here = context.handler
+        # Module and Topic
+        topic = self.parent
+        module = topic.parent
+        # List of topics
+        topics = module.get_topics()
+        topic_index = topics.index(topic)
+        is_first_topic = topic_index == 0
+        is_last_topic = topic_index == len(topics) - 1
+        # List of documents
+        namespace = {}
+        # Navigation in documents
+        document_names = topic.get_document_names()
+        doc_index = document_names.index(self.name)
+        is_first_document = doc_index == 0
+        is_last_document = doc_index == len(document_names) - 1
+        namespace['next_doc'] = None
+        namespace['prev_doc'] = None
+        next_doc_img = self.get_handler('/ui/abakuc/images/next_doc.gif')
+        namespace['next_doc_img'] = self.get_pathto(next_doc_img)
+        prev_doc_img = self.get_handler('/ui/abakuc/images/prev_doc.gif')
+        namespace['prev_doc_img'] = self.get_pathto(prev_doc_img)
+        if document_names:
+            # Next document
+            if is_last_document:
+                if is_last_topic:
+                    namespace['next_doc'] = '../../;end_training'
+                else:
+                    next_topic = topics[topic_index + 1]
+                    next_topic_documents = next_topic.get_document_names()
+                    if next_topic_documents:
+                        namespace['next_doc'] = (
+                            '../../%s/%s/;view'
+                            % (next_topic.name, next_topic_documents[0]))
+                    else:
+                        namespace['next_doc'] = '../../;end_training'
+            else:
+                namespace['next_doc'] = (
+                    '../%s/;view' % document_names[doc_index + 1])
+            # Previous document
+            prev_doc = None
+            if is_first_document:
+                if is_first_topic:
+                    namespace['prev_doc'] = None
+                else:
+                    prev_topic = topics[topic_index - 1]
+                    prev_topic_documents = prev_topic.get_document_names()
+                    if prev_topic_documents:
+                        namespace['prev_doc'] = (
+                            '../../%s/%s/;view'
+                            % (prev_topic.name, prev_topic_documents[-1]))
+                    else:
+                        namespace['prev_doc'] = None
+            else:
+                namespace['prev_doc'] = (
+                    '../%s/;view' % document_names[doc_index - 1])
+
+        namespace['documents'] = []
+        i = 1
+        for document_name in document_names:
+            namespace['documents'].append(
+                {'url': '../%s/;view' % document_name,
+                 'index': i, 'is_current': document_name == self.name})
+            i += 1
+        
+        namespace['topic'] = {'title': topic.title_or_name}
+        body = self.get_body()
+        if body is None:
+            namespace['text'] = None
+        else:
+            namespace['text'] = body.get_content_elements()
+
+        handler = self.get_handler('/ui/abakuc/training/document/view.xml')
+        return stl(handler, namespace)
+
+    #######################################################################
+    # Edit / Inline / edit form
+    edit_form__access__ = 'is_allowed_to_edit'
+    edit_form__label__ = u'Edit'
+    edit_form__sublabel__ = u'Inline'
+    def edit_form(self, context):
+        """WYSIWYG editor for HTML documents."""
+        data = self.get_epoz_data()
+        # If the document has not a body (e.g. a frameset), edit as plain text
+        if data is None:
+            return Text.edit_form(self, context)
+
+        # Edit with a rich text editor
+        namespace = {}
+        namespace['timestamp'] = DateTime.encode(datetime.now())
+        namespace['rte'] = self.get_rte(context, 'data', data)
+
+        handler = self.get_handler('/ui/abakuc/training/document/edit.xml')
+        return stl(handler, namespace)
 
 
-set_namespace(Namespace)
+    #######################################################################
+    # Edit / Inline / edit
+    edit__access__ = 'is_allowed_to_edit'
+    def edit(self, context, sanitize=False):
+        timestamp = context.get_form_value('timestamp', type=DateTime)
+        if timestamp is None or timestamp < self.timestamp:
+            return context.come_back(MSG_EDIT_CONFLICT)
 
+        new_body = context.get_form_value('data')
+        new_body = HTMLParser(new_body)
+        if sanitize:
+            new_body = sanitize_stream(new_body)
+        # Save the changes
+        # "get_epoz_document" is to set in your editable handler
+        document = self.get_epoz_document()
+        old_body = document.get_body()
+        document.set_changed()
+        document.events = (document.events[:old_body.start+1]
+                           + new_body
+                           + document.events[old_body.end:])
 
+        return context.come_back(MSG_CHANGES_SAVED)
 
-class Schema(BaseSchema):
-
-    class_uri = xhtml_uri
-    class_prefix = None
-
-    datatypes = {'abbr': Unicode,
-                 'accept-charsert': String,
-                 'accept': String,
-                 'accesskey': Unicode,
-                 'action': URI,
-                 'align': String,
-                 'alink': String,
-                 'alt': Unicode,
-                 'archive': Unicode,
-                 'axis': Unicode,
-                 'background': URI,
-                 'bgcolor': String,
-                 'border': Integer,
-                 # XXX Check, http://www.w3.org/TR/html4/index/attributes.html
-                 'cellpadding': Unicode,
-                 'cellspacing': Unicode,
-                 'char': Unicode,
-                 'charoff': Unicode,
-                 'charset': Unicode,
-                 'checked': Boolean,
-                 'cite': Unicode,
-                 'class': Unicode,
-                 'classid': Unicode,
-                 'clear': Unicode,
-                 'code': Unicode,
-                 'codebase': Unicode,
-                 'codetype': Unicode,
-                 'color': Unicode,
-                 'cols': Unicode,
-                 'colspan': Unicode,
-                 'compact': Boolean,
-                 'content': Unicode,
-                 'coords': Unicode,
-                 'data': Unicode,
-                 'datetime': Unicode,
-                 'declare': Boolean,
-                 'defer': Boolean,
-                 'dir': Unicode,
-                 'disabled': Boolean,
-                 'enctype': Unicode,
-                 'face': Unicode,
-                 'for': Unicode,
-                 'frame': Unicode,
-                 'frameborder': Unicode,
-                 'headers': Unicode,
-                 'height': Unicode,
-                 'href': URI,
-                 'hreflang': Unicode,
-                 'hspace': Unicode,
-                 'http-equiv': Unicode,
-                 'id': Unicode,
-                 'ismap': Boolean,
-                 'label': Unicode,
-                 'lang': Unicode,
-                 'language': Unicode,
-                 'link': Unicode,
-                 'longdesc': Unicode,
-                 'marginheight': Unicode,
-                 'marginwidth': Unicode,
-                 'media': Unicode,
-                 'method': Unicode,
-                 'multiple': Boolean,
-                 'name': Unicode,
-                 'nohref': Unicode,
-                 'noresize': Boolean,
-                 'noshade': Boolean,
-                 'nowrap': Boolean,
-                 'object': Unicode,
-                 'onblur': Unicode,
-                 'onchange': Unicode,
-                 'onclick': Unicode,
-                 'ondblclick': Unicode,
-                 'onfocus': Unicode,
-                 'onkeydown': Unicode,
-                 'onkeypress': Unicode,
-                 'onkeyup': Unicode,
-                 'onload': Unicode,
-                 'onmousedown': Unicode,
-                 'onmousemove': Unicode,
-                 'onmouseout': Unicode,
-                 'onmouseover': Unicode,
-                 'onmouseup': Unicode,
-                 'onreset': Unicode,
-                 'onselect': Unicode,
-                 'onsubmit': Unicode,
-                 'onunload': Unicode,
-                 'profile': Unicode,
-                 'prompt': Unicode,
-                 'readonly': Boolean,
-                 'rel': Unicode,
-                 'rev': Unicode,
-                 'rows': Unicode,
-                 'rowspan': Unicode,
-                 'rules': Unicode,
-                 'scheme': Unicode,
-                 'scope': Unicode,
-                 'scrolling': Unicode,
-                 'selected': Boolean,
-                 'shape': Unicode,
-                 'size': Unicode,
-                 'span': Unicode,
-                 'src': URI,
-                 'standby': Unicode,
-                 'start': Unicode,
-                 'style': Unicode,
-                 'summary': Unicode,
-                 'tabindex': Unicode,
-                 'target': Unicode,
-                 'text': Unicode,
-                 'title': Unicode,
-                 'type': Unicode,
-                 'usemap': Unicode,
-                 'valign': Unicode,
-                 'value': Unicode,
-                 'valuetype': Unicode,
-                 'version': Unicode,
-                 'vlink': Unicode,
-                 'vspace': Unicode,
-                 'width': Unicode,
-                 }
-
-
-    @classmethod
-    def get_datatype(cls, name):
-        return cls.datatypes.get(name, Unicode)
-
-register_schema(Schema)
-
-
-
-#############################################################################
-# Document
-#############################################################################
-class Document(XMLDocument):
-    """
-    This class adds one thing to the XML class, the semantics of translatable
-    text.
-    """
-
-    class_mimetypes = ['application/xhtml+xml']
-    class_extension = 'xhtml'
-
-    namespace = xhtml_uri
-
-    __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                 'events']
-
-
-    #########################################################################
-    # The skeleton
-    #########################################################################
-    def new(self, title=''):
-        skeleton = self.get_skeleton(title)
-        file = StringIO()
-        file.write(skeleton)
-        file.seek(0)
-        self.load_state_from_file(file)
-
-
-    @classmethod
-    def get_skeleton(cls, title=''):
-        data = (
-            '<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
-            '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
-            '<html xmlns="http://www.w3.org/1999/xhtml">\n'
-            '  <head>\n'
-            '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
-            '    <title>%(title)s</title>\n'
-            '  </head>\n'
-            '  <body></body>\n'
-            '</html>')
-        return data % {'title': title}
-
-
-    def to_xhtml(self, encoding='utf-8'):
-        return stream_to_str_as_xhtml(self.events, encoding)
-
-
-    def to_html(self, encoding='utf-8'):
-        return stream_to_str_as_html(self.events, encoding)
-
-
-    to_str = to_xhtml
-
-
-    ########################################################################
-    # API
-    ########################################################################
-    def get_head(self):
-        """Returns the head element."""
-        return get_element(self.events, 'head')
-
-
-    def get_body(self):
-        """Returns the body element."""
-        return get_element(self.events, 'body')
-
-
-register_handler_class(Document)
+register_object_class(Document)

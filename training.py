@@ -11,13 +11,15 @@ from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.widgets import batch
 from itools.cms.skins import Skin 
 from itools.cms.file import File
-from itools.cms.html import XHTMLFile
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
+from itools.datatypes import FileName
 from itools.web import get_context
 # Import from abakuc
 from base import Handler, Folder
 from website import WebSite
+from document import Document
+from utils import get_sort_name
 
 class Trainings(Folder):
 
@@ -59,7 +61,7 @@ class Trainings(Folder):
     #                      'title': item.title_or_name})
 
     #        namespace['title'] = title 
-    #        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+    #        handler = self.get_handler('/ui/abakuc/training/list.xml')
     #        return stl(handler, namespace)
 
         # Set batch informations
@@ -119,7 +121,7 @@ class Training(WebSite):
         namespace['description'] = description 
         namespace['topics'] = root.get_topics_namespace(topics)
 
-        handler = root.get_handler('ui/abakuc/trainings/training_form.xml')
+        handler = root.get_handler('ui/abakuc/training/training_form.xml')
         return stl(handler, namespace)
     #######################################################################
     # Security / Access Control
@@ -172,7 +174,7 @@ class Training(WebSite):
                       'title': item.title_or_name})
 
         namespace['title'] = title 
-        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+        handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -212,7 +214,7 @@ class Training(WebSite):
         description = self.get_property('dc:description')
         namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/trainings/training_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/training/training_edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -243,6 +245,14 @@ class Module(Folder, WorkflowAware, Handler):
         return [Topic]
 
     #######################################################################
+    # API 
+    #######################################################################
+    def get_topics(self):
+        topics = list(self.search_handlers(format=Topic.class_id))
+        topics.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
+        return topics
+    #######################################################################
     # User Interface / View
     #######################################################################
     view__access__ = True 
@@ -264,7 +274,7 @@ class Module(Folder, WorkflowAware, Handler):
                       'title': item.title_or_name})
 
         namespace['title'] = title 
-        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+        handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -300,16 +310,26 @@ class Module(Folder, WorkflowAware, Handler):
         # Title 
         title = self.get_property('dc:title')
         namespace['title'] = title
+        # Generate the module name
+        module_names = [ x for x in here.get_handler_names()
+                           if x.startswith('module') ]
+        if module_names:
+            i = get_sort_name(module_names[-1])[1] + 1
+            name = 'module%d' % i
+        else:
+            name = 'module1'
+        namespace['name'] = name 
         # Description
         description = self.get_property('dc:description')
         namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/trainings/module_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/training/edit_metadata.xml')
         return stl(handler, namespace)
 
 
     edit_metadata__access__ = 'is_reviewer'
     def edit_metadata(self, context):
+        name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
 
@@ -324,7 +344,7 @@ class Module(Folder, WorkflowAware, Handler):
 #######################################################################
 # Training topic 
 #######################################################################
-class Topic(Trainings):
+class Topic(Folder):
 
     class_id = 'topic'
     class_title = u'Module topic'
@@ -338,8 +358,27 @@ class Topic(Trainings):
         ['permissions_form', 'new_user_form']]
 
     def get_document_types(self):
-        return [XHTMLFile]
+        return [Document]
 
+    #######################################################################
+    # API 
+    #######################################################################
+    def get_document_names(self):
+        ac = self.get_access_control()
+        user = get_context().user
+
+        documents = []
+        for handler in self.get_handlers():
+            if not isinstance(handler, Document):
+                continue
+            if handler.real_handler is not None:
+                continue
+            if ac.is_allowed_to_view(user, handler):
+                name = handler.name
+                sort_name = get_sort_name(FileName.decode(name)[0])
+                documents.append((sort_name, handler.name))
+        documents.sort()
+        return [ x[1] for x in documents ]
     #######################################################################
     # User Interface / View
     #######################################################################
@@ -349,7 +388,7 @@ class Topic(Trainings):
         here = context.handler
         namespace = {}
         title = here.get_title()
-        items = self.search_handlers(handler_class=XHTMLFile)
+        items = self.search_handlers(handler_class=Document)
         namespace['items'] = []
         for item in items:
             get = item.get_property
@@ -362,7 +401,7 @@ class Topic(Trainings):
                       'title': item.title_or_name})
 
         namespace['title'] = title 
-        handler = self.get_handler('/ui/abakuc/trainings/list.xml')
+        handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
       # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -402,7 +441,7 @@ class Topic(Trainings):
         description = self.get_property('dc:description')
         namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/trainings/topic_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/training/topic_edit_metadata.xml')
         return stl(handler, namespace)
 
 

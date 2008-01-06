@@ -76,9 +76,6 @@ class Root(Handler, BaseRoot):
     site_format =''
     #######################################################################
     # Administrator Email
-
-    #contact_email = 'sylvain@itaapy.com'
-    #contact_email = 'jdavid@itaapy.com'
     contact_email = 'norman@khine.net'
     
     #######################################################################
@@ -158,9 +155,9 @@ class Root(Handler, BaseRoot):
         # Training 
         title = u'Training Programmes'
         kw = {'dc:title': {'en': title}}
-        trainings = Trainings()
-        cache['trainings'] = trainings
-        cache['trainings.metadata'] = trainings.build_metadata(**kw)
+        training = Trainings()
+        cache['training'] = training
+        cache['training.metadata'] = training.build_metadata(**kw)
 
         # Help
         help = XHTMLFile()

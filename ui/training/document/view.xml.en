@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<div id="progression_bar">
+  ${topic/title}:
+  <a class="link" stl:if="prev_doc" href="${prev_doc}"
+    title="Click here to go to previous document"><img border="0"
+    src="${prev_doc_img}"/></a>
+  <stl:block stl:repeat="doc documents">
+    <span stl:if="doc/is_current" class="selected">${doc/index}</span>
+    <a stl:if="not doc/is_current" href="${doc/url}">${doc/index}</a>
+    <stl:block stl:if="not repeat/doc/end">-</stl:block>
+  </stl:block>
+
+  <a class="link" stl:if="next_doc" title="Click here to go to next document"
+    href="${next_doc}"><img border="0" src="${next_doc_img}"/></a>
+</div> 
+${text}
+</stl:block>

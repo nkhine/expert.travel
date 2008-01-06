@@ -954,7 +954,7 @@ class User(iUser, WorkflowAware, Handler):
         if name:
             name = name.lower()
             found = []
-            trainings = self.get_handler('/trainings')
+            trainings = self.get_handler('/training')
             for training in trainings.search_handlers():
                 title = training.get_property('dc:title')
                 if name not in title.lower():
@@ -983,13 +983,13 @@ class User(iUser, WorkflowAware, Handler):
         
         # Add the company  
         root = context.root
-        trainings = root.get_handler('/trainings')
+        trainings = root.get_handler('/training')
         name = title_to_name(title)
         if trainings.has_handler(name):
             message = u'The training already exist'
             return context.come_back(message)
 
-        training, metadata = self.set_object('/trainings/%s' % name, Training())
+        training, metadata = self.set_object('/training/%s' % name, Training())
         
         # Set Properties
         topics = context.get_form_values('topic')

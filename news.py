@@ -81,7 +81,16 @@ class News(RoleAware, Folder):
     @classmethod
     def new_instance_form(cls, context):
         namespace = context.build_form_namespace(cls.news_fields)
+        here = get_context().handler
+        document_names = [ x for x in here.get_handler_names()
+                           if x.startswith('page') ]
+        if document_names:
+            i = get_sort_name(document_names[-1])[1] + 1
+            name = 'page%d' % i
+        else:
+            name = 'page1'
         namespace['class_id'] = News.class_id
+        namespace['name'] = name
         path = '/ui/abakuc/news/news_new_resource_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
