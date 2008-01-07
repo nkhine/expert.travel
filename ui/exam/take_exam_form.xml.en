@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+<table align="center" border="0" width="80%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="20">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="examtext" height="20">
+      <p>Exam: ${title}</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+      <table border="0" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="100%">
+            <table class="profile" border="0" width="100%" cellspacing="0" cellpadding="2">
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  User id
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${user/title_or_name}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  Time Limit
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${exam_time}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  Attempt
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">
+                  ${user_attempts}
+                </td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  No questions
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${questions_nums}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- Timer here -->
+<script type="text/javascript">
+<!--
+function submitExamForm() {
+  alert("Your exam time limit is over, please submit or you will loose points for extra time taken to complete the exam.");
+}
+
+function clockTick() {
+  currentTime = new Date();
+  var delay_time = 10000;
+  var timeRemaining = Math.round((endTime-currentTime)/60000+19.9905166752);
+  document.clock_form.time.value = timeRemaining;
+  if (parseInt(timeRemaining) <= 0) {
+    var delay_time = 90000;
+    submitExamForm();
+  }
+  setTimeout("clockTick()", delay_time);
+}
+
+var endTime = new Date()
+setTimeout("clockTick()", 100);
+-->
+</script>
+<br/>
+<form name="clock_form">
+  Time Remaining
+  <input name="time" type="text" value="${exam_time}" disabled="1"/>
+  minutes
+</form>
+<br/><br/>
+
+<!-- Exam Questions here -->
+<table cellspacing="0" cellpadding="2" width="80%" class="profile" align="center" border="0">
+  <tr>
+    <td class="examBody">
+    <form method="post" action=";take_exam">
+      <input name="questions" type="hidden" stl:repeat="question questions" value="${question/code}"/>
+      <ol>
+        <li stl:repeat="question questions">
+          ${question/title}
+          <p stl:if="question/is_mcq">
+            <stl:block stl:repeat="option question/options">
+              <input name="${question/code}" type="radio" value="${repeat/option/index}"/>
+              ${option}<br/>
+            </stl:block>
+            <input name="${question/code}" type="radio" value="42" checked="checked"/>
+            Don't know<br/>
+          </p>
+
+          <p stl:if="not question/is_mcq">
+            <stl:block stl:repeat="option question/options">
+              <input name="${question/code}" type="checkbox" value="${repeat/option/index}"/>
+              ${option}<br/>
+            </stl:block>
+          </p>
+        </li>
+      </ol>
+      <input type="submit" value="Submit Exam"/>
+    </form>
+    </td>
+  </tr>
+</table>
+
+</stl:block>
+

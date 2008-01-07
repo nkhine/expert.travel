@@ -7,7 +7,7 @@
 from itools.stl import stl
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
-from itools.cms.registry import register_object_class, get_object_class
+from itools.cms.registry import register_object_class
 from itools.cms.widgets import batch
 from itools.cms.skins import Skin 
 from itools.cms.file import File
@@ -20,6 +20,7 @@ from base import Handler, Folder
 from website import WebSite
 from document import Document
 from utils import get_sort_name
+from exam import Exam
 
 class Trainings(Folder):
 
@@ -109,6 +110,14 @@ class Training(WebSite):
     def get_level1_title(self, level1):
         return None 
 
+    #######################################################################
+    # API 
+    #######################################################################
+    def get_modules(self):
+        modules = list(self.search_handlers(format=Module.class_id))
+        modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
+        return modules
     #######################################################################
     # User Interface / Edit
     #######################################################################
@@ -203,6 +212,7 @@ class Training(WebSite):
     #######################################################################
     edit_metadata_form__access__ = 'is_reviewer'
     def edit_metadata_form(self, context):
+        root = get_context().root
         namespace = {}
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
@@ -213,8 +223,9 @@ class Training(WebSite):
         # Description
         description = self.get_property('dc:description')
         namespace['description'] = description
-
-        handler = self.get_handler('/ui/abakuc/training/training_edit_metadata.xml')
+        topics = self.get_property('abakuc:topic')
+        namespace['topics'] = root.get_topics_namespace(topics)
+        handler = self.get_handler('/ui/abakuc/training/edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -222,10 +233,11 @@ class Training(WebSite):
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
+        topics = context.get_form_values('topic')
 
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description, language='en')
-
+        self.set_property('abakuc:topic', tuple(topics))
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
@@ -242,7 +254,9 @@ class Module(Folder, WorkflowAware, Handler):
     class_icon48 = 'abakuc/images/Resources48.png'
 
     def get_document_types(self):
-        return [Topic]
+        return [Topic, Exam]
+
+    new_resource_form__access__ = 'is_admin'
 
     #######################################################################
     # API 
@@ -392,7 +406,10 @@ class Topic(Folder):
         namespace['items'] = []
         for item in items:
             get = item.get_property
-            url = '%s/;view' %  item.name
+            # XXX Had to hard link the .en in the uri
+            # item name seems to strip the language
+            language = item.get_property('dc:language')
+            url = '%s.%s/;view' %  (item.name, language)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)

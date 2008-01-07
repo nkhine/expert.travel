@@ -131,7 +131,7 @@ class Document(XHTMLFile):
             # Next document
             if is_last_document:
                 if is_last_topic:
-                    namespace['next_doc'] = '../../;end_training'
+                    namespace['next_doc'] = '../../;end'
                 else:
                     next_topic = topics[topic_index + 1]
                     next_topic_documents = next_topic.get_document_names()
@@ -140,7 +140,7 @@ class Document(XHTMLFile):
                             '../../%s/%s/;view'
                             % (next_topic.name, next_topic_documents[0]))
                     else:
-                        namespace['next_doc'] = '../../;end_training'
+                        namespace['next_doc'] = '../../;end'
             else:
                 namespace['next_doc'] = (
                     '../%s/;view' % document_names[doc_index + 1])

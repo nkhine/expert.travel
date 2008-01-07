@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+<table align="center" border="0" width="80%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="20">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="examtext" height="20">
+      <p>Exam: ${title}</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <table width="100%">
+	<tr>
+	  <td>
+	    <a href="${profile_url}">Back to profile</a>
+	  </td>
+	  <td>
+	    <a stl:if="not next_module_url" href="${try_again_url}">Try again</a>
+	    <a stl:if="next_module_url" href="${next_module_url}">Go now to the next 
+	      module ! congratulation. >>
+	    </a>
+	  </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+      <table border="0" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="100%">
+            <table class="profile" border="0" width="100%" cellspacing="0" cellpadding="2">
+              <tr>
+                <td class="examtext" align="right" width="104"> User id</td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${user/title_or_name}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                Time Limit</td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${exam_time}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  Attempt
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">
+                  ${user_attempts}
+                </td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  Time taken
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${time_taken}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
+                  Score
+                </td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${score}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">No
+                questions</td>
+                <td class="examtext" width="4">:</td>
+                <td class="examtext">${questions_nums}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<br/><br/>
+
+<!-- Exam Questions here -->
+<table cellspacing="0" cellpadding="2" width="80%" class="profile" align="center" border="0">
+  <tr>
+    <td class="examBody">
+      <ol>
+        <li stl:repeat="question questions">
+          ${question/title}
+          <br/>
+          <stl:block stl:repeat="option question/options">
+            <input name="${question/code}" type="${question/input_type}" value="${repeat/option/index}" checked="${option/is_checked}" disabled="1"/>
+            ${option/value}<br/>
+          </stl:block>
+          <br/>
+          <strong>
+            <span stl:if="question/is_correct" style="color: green">Correct:</span>
+            <span stl:if="not question/is_correct" style="color: red">Wrong:</span>
+          </strong>
+          ${question/answer}
+          <br/><br/>
+        </li>
+      </ol>
+    </td>
+  </tr>
+</table>
+
+</stl:block>
+

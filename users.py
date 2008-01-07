@@ -130,6 +130,19 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # API
     ########################################################################
+    # Return the profile url relative to the given handler
+    def get_profile_url(self, where_from):
+        views = self.get_views()
+        if 'to_home' in views:
+            home = '/;profile'
+        elif 'bmi_home' in views:
+            home = '/;profile'
+        else:
+            home = '/;profile'
+
+        url = str(where_from.get_pathto(self)) + home
+        return url
+
     def get_address(self):
         root = self.get_root()
         results = root.search(format='address', members=self.name)

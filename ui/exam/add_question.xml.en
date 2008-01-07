@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:stl="http://xml.itools.org/namespaces/stl">
+<form name="addquesansform" method="post" action=";add_question" 
+      id="addquesansform">
+
+  <table border="0" cellpadding="0" cellspacing="0" width="90%" align="center">
+
+    <tr>
+      <td width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="headbg">&nbsp; Add Question Answer &nbsp;</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr>
+      <td width="100%" class="headbg">
+        <p align="right"><img border="0" src="images/2-tb-2-tr.gif" 
+                              width="9" height="9" /></p>
+      </td>
+    </tr>
+
+    <tr>
+      <td width="100%">
+        <table class="profile" width="100%">
+          <tr>
+            <td width="100%" align="center">
+              <table width="100%">
+                <tr class="rowodd">
+                  <td width="50%">Question Type :</td>
+
+                  <td>Code (a number followed by a letter):</td>
+                </tr>
+
+                <tr class="roweven">
+                  <td><select name="type">
+                    <option value=""> --Select One-- </option>
+                    <option value="MCQ"> Exam MCQ </option>
+                    <option value="MAQ"> Exam MAQ </option>
+                  </select></td>
+
+                  <td><input name="code" size="25" /></td>
+                </tr>
+
+                <tr class="rowodd">
+                  <td width="50%">Question:</td>
+                  <td>Answer<br />(<b>Enter one below the other</b>)</td>
+                </tr>
+
+                <tr class="roweven">
+                  <td>
+                    <textarea name="title" cols="40" rows="6"/>
+                  </td>
+                  <td>
+                    <textarea name="options" cols="40" rows="6"/>
+                  </td>
+                </tr>
+
+                <tr class="rowodd">
+                  <td width="50%">Correct Answer Index</td>
+                  <td>Feedback about correct Answer</td>
+                </tr>
+
+                <tr class="roweven">
+                  <td valign="top">
+                    <input name="correct_options" size="25" />
+                  </td>
+                  <td>
+                    <textarea name="answer" cols="40" rows="6" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr>
+      <td width="100%" align="right">
+        <table border="0" cellpadding="0" cellspacing="0" width=
+        "109">
+          <tr>
+            <td width="100%" class="headbg" align="center">
+            <input type="Submit" value="Add" />
+            <img border="0" src="images/trans-space.gif" 
+                 width="3" height="22" /></td>
+          </tr>
+
+          <tr>
+            <td width="100%" class="headbg">
+              <img border="0" width="109" height="8" 
+                   src="images/2-tb-bot.gif"/></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+</stl:block>
+

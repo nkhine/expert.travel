@@ -100,6 +100,10 @@ class Schema(BaseSchema):
         'enquiry_subject': Unicode,
         'enquiry': Unicode,
         'enquiry_type': String,
+        # Exam
+        'exam_time': Integer(default=20),
+        'questions_nums': Integer(default=20),
+        'pass_marks_percentage': Integer(default=70),
         # News 
         'news_text': Unicode,
         # Job
