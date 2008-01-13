@@ -130,6 +130,41 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # API
     ########################################################################
+    confirm_registration__access__ = True
+    def confirm_registration(self, context):
+        keep = ['key']
+        register_fields = [('newpass', True),
+                           ('newpass2', True)]
+
+        # Check register key
+        must_confirm = self.get_property('ikaaro:user_must_confirm')
+        if context.get_form_value('key') != must_confirm:
+            return self.gettext(u"Bad key.").encode('utf-8')
+
+        # Check input data
+        error = context.check_form_input(register_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+
+        # Check passwords
+        password = context.get_form_value('newpass')
+        password2 = context.get_form_value('newpass2')
+        if password != password2:
+            return context.come_back(MSG_PASSWORD_MISMATCH, keep=keep)
+
+        # Set user
+        self.set_password(password)
+        self.del_property('ikaaro:user_must_confirm')
+
+        # Set cookie
+        self.set_auth_cookie(context, password)
+
+        message = (u"Operation successful!\n Welcome to Expert.Travel your FREE"
+                  u" application for the Travel Trade industry.\n"
+                  u"Please setup your company details")
+        goto = "./;profile"
+        return context.come_back(message, goto=goto)
+
     # Return the profile url relative to the given handler
     def get_profile_url(self, where_from):
         views = self.get_views()
@@ -172,6 +207,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
+        namespace['sub_tabs'] = self.get_sub_tabs_stl(context)
         address = self.get_address()
         company = address.parent
 
@@ -204,7 +240,7 @@ class User(iUser, WorkflowAware, Handler):
             <script type="text/javascript">
                 var TABS_COOKIE = 'profile_cookie'; 
                 $(function() {
-                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                    $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                         var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
                        $.cookie(TABS_COOKIE, lastTab, {path: '/'});
                     },
@@ -214,7 +250,7 @@ class User(iUser, WorkflowAware, Handler):
                     });
                 });
             </script>
-        <div id="container-1">
+        <div id="container-user">
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
@@ -233,7 +269,7 @@ class User(iUser, WorkflowAware, Handler):
               ${enquiries}
             </div>
             <div id="fragment-4">
-              {Training programmes}
+              ${sub_tabs}
             </div>
             <div id="fragment-5">
               {branches}
@@ -270,6 +306,84 @@ class User(iUser, WorkflowAware, Handler):
         return stl(template, namespace)
 
 
+    def get_sub_tabs_stl(self, context):
+        root = context.root
+        users = root.get_handler('users')
+
+        namespace = {}
+        namespace['news'] = self.news_table(context)
+        namespace['jobs'] = self.jobs_table(context)
+        namespace['enquiries'] = self.enquiries_list(context)
+        namespace['training'] = self.training_table(context)
+        address = self.get_address()
+        company = address.parent
+
+        csv = address.get_handler('log_enquiry.csv')
+        results = []
+        for row in csv.get_rows():
+            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+            if resolved:
+                continue
+            user = users.get_handler(user_id)
+            if user.get_property('ikaaro:user_must_confirm') is None:
+               results.append({'index': row.number})
+        namespace['howmany'] = len(results)
+        #namespace['branches'] = self.list_addresses(context)
+        is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
+        namespace['is_reviewer'] = is_reviewer
+        # Company
+        namespace['company'] = {'name': company.name,
+                                'title': company.get_property('dc:title'),
+                                'website': company.get_website(),
+                                'path': self.get_pathto(company)}
+        # Address
+        addr = {'name': address.name,
+                'address_path': self.get_pathto(address)}
+
+        namespace['address'] = addr
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <script type="text/javascript">
+                var TABS_COOKIE2 = 'sub_tab_cookie'; 
+                $(function() {
+                    $('#container-2 ul').tabs((parseInt($.cookie(TABS_COOKIE2))) || 1,{click: function(clicked) {
+                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                       $.cookie(TABS_COOKIE2, lastTab, {path: '/'});
+                    },
+                    fxFade: true,
+                    fxSpeed: 'fast',
+                    fxSpeed: "normal" 
+                    });
+                });
+            </script>
+        <div id="container-2">
+            <ul>
+                <li><a href="#fragment-12"><span>Training Programme</span></a></li>
+                <li><a href="#fragment-22"><span>Other Programmes</span></a></li>
+                <li><a href="#fragment-42"><span>Available TP's</span></a></li>
+                <li><a href="#fragment-52"><span>Expert.Travel Rank</span></a></li>
+            </ul>
+            <div id="fragment-12">
+              ${training}
+            </div>
+            <div id="fragment-22">
+             List of other Training Programmes, you are registered on.... 
+            </div>
+            <div id="fragment-42">
+             New programmes, you're not registered on... Registration is free,
+             simply use your existing email and password to login and become an
+             Expert.
+            </div>
+            <div id="fragment-52">
+              {branches}
+            </div>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace)
+
     #######################################################################
     # Edit Account 
     account_fields = iUser.account_fields + ['abakuc:phone']
@@ -294,7 +408,7 @@ class User(iUser, WorkflowAware, Handler):
         else:
             namespace['must_confirm'] = True
 
-        handler = self.get_handler('/ui/abakuc/user_edit_account.xml')
+        handler = self.get_handler('/ui/abakuc/users/edit_account_form.xml')
         return stl(handler, namespace)
 
     edit_account__access__ = 'is_allowed_to_edit'
@@ -380,7 +494,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['email'] = self.get_property('ikaaro:email')
         namespace['portrait'] = portrait
         if address is None:
-            handler = self.get_handler('/ui/abakuc/user_profile.xml')
+            handler = self.get_handler('/ui/abakuc/users/profile.xml')
             return stl(handler, namespace)
         company = address.parent
         
@@ -434,7 +548,7 @@ class User(iUser, WorkflowAware, Handler):
             else:
                 contact = '<span style="color:red;">The administrator</span>'
                 namespace['contact'] = Parser(contact)
-        handler = self.get_handler('/ui/abakuc/user_profile.xml')
+        handler = self.get_handler('/ui/abakuc/users/profile.xml')
         return stl(handler, namespace)
 
     #######################################################################
@@ -768,6 +882,95 @@ class User(iUser, WorkflowAware, Handler):
         
         handler = self.get_handler('/ui/abakuc/enquiries/enquiries_list.xml')
         return stl(handler, namespace)
+    ########################################################################
+    # Training table used in the 'tabs' method
+    def training_table(self, context):
+        namespace = {}
+        user = context.user
+        root = context.root
+        training = root.get_handler('training')
+        address = self.get_address()
+        company = address.parent
+        if address:
+            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
+            is_member = address.has_user_role(self.name, 'ikaaro:members')
+            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
+            is_reviewer_or_member = is_reviewer or is_member
+        else:
+            is_reviewer = False
+            is_member = False
+            is_guest = False
+            is_reviewer_or_member = False
+            # Table
+        columns = [('title', u'Title'),
+                   ('function', u'Function'),
+                   ('description', u'Short description')]
+        # Get all Jobs
+        list_training = training.search_handlers(handler_class=Training)
+        # Construct the lines of the table
+        trainings = []
+        for training in list(list_training):
+            #job = root.get_handler(job.abspath)
+            get = training.get_property
+            # Information about the training
+            url = 'http://%s' % (training.get_vhosts())
+            # XXX fix so that we can extract the first uri
+            # from the tuple
+            #url = training.get_vhosts()
+            #if url.startswith('http://'):
+            #    return url
+            #return 'http://' + url
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=10,
+                                        phrase_treshold=40)
+            training_to_add ={'id': training.name, 
+                         'checkbox': is_reviewer,
+                         'img': '/ui/abakuc/images/JobBoard16.png',
+                         'title': (get('dc:title'),url),
+                         #'function': JobTitle.get_value(
+                         #               get('abakuc:function')),
+                         'description': description}
+            trainings.append(training_to_add)
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(trainings)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        trainings = trainings[batch_start:batch_fin]
+        # Order 
+        sortby = context.get_form_value('sortby', 'id')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        trainings.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            trainings.reverse()
+        # Set batch informations
+        # Namespace 
+        if trainings:
+            actions = [('select', u'Select All', 'button_select_all',
+                        "return select_checkboxes('browse_list', true);"),
+                       ('select', u'Select None', 'button_select_none',
+                        "return select_checkboxes('browse_list', false);"),
+                       ('create_job', u'Add new job', 'button_ok',
+                        None),
+                       ('remove_job', 'Delete Job/s', 'button_delete', None)]
+            training_table = table(columns, trainings, [sortby], sortorder, actions)
+            msgs = (u'There is one job.', u'There are ${n} jobs.')
+            training_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            training_table = None
+            training_batch = None
+            msg = u'No training programmes'
+
+        namespace['training_table'] = training_table
+        namespace['training_batch'] = training_batch
+        namespace['training_msg'] = msg 
+        handler = self.get_handler('/ui/abakuc/training/table.xml')
+        return stl(handler, namespace)
 
     ########################################################################
     # Setup Company/Address
@@ -797,7 +1000,7 @@ class User(iUser, WorkflowAware, Handler):
             namespace['found'] = None
             namespace['form'] = None
 
-        handler = self.get_handler('/ui/abakuc/user_setup_company.xml')
+        handler = self.get_handler('/ui/abakuc/users/setup_company.xml')
         return stl(handler, namespace)
  
 
@@ -881,7 +1084,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['addresses'].sort(key=lambda x: x['postcode'])
         namespace['form'] = Address.get_form()
 
-        handler = self.get_handler('/ui/abakuc/user_setup_address.xml')
+        handler = self.get_handler('/ui/abakuc/users/setup_address.xml')
         return stl(handler, namespace)
 
 
@@ -981,7 +1184,7 @@ class User(iUser, WorkflowAware, Handler):
             namespace['found'] = None
             namespace['form'] = None
 
-        handler = self.get_handler('/ui/abakuc/user_setup_training.xml')
+        handler = self.get_handler('/ui/abakuc/training/user_setup_training.xml')
         return stl(handler, namespace)
  
 
@@ -1006,7 +1209,9 @@ class User(iUser, WorkflowAware, Handler):
         
         # Set Properties
         topics = context.get_form_values('topic')
+        vhosts = context.get_form_values('ikaaro:vhosts')
         metadata.set_property('dc:title', title, language='en')
+        metadata.set_property('ikaaro:vhosts', vhosts)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('ikaaro:website_is_open', True) 
 

@@ -205,6 +205,14 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # API
     #######################################################################
+    def get_training(self):
+        root = get_context().root
+        handler = root.get_handler('training')
+        training = list(handler.search_handlers(format=Training.class_id))
+        training.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
+        return training
+
     def get_topics_namespace(self, ids=None):
         topics = self.get_handler('topics.csv')
         namespace = []

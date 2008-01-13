@@ -22,7 +22,7 @@ from document import Document
 from utils import get_sort_name
 from exam import Exam
 
-class Trainings(Folder):
+class Trainings(WebSite):
 
     class_id = 'trainings'
     class_title = u'Training programmes'
@@ -35,9 +35,9 @@ class Trainings(Folder):
                 ['edit_metadata_form']]
 
     
+    site_format = 'training'
     def get_document_types(self):
         return [Training]
-
     #######################################################################
     # User Interface
     #######################################################################
@@ -97,12 +97,20 @@ class Training(WebSite):
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
-                   ['permissions_form', 'new_user_form'],
-                   ['edit_metadata_form']]
+                   ['edit_metadata_form',
+                    'virtual_hosts_form',
+                    'anonymous_form',
+                    'languages_form',
+                    'contact_options_form'],
+                   ['permissions_form',
+                    'new_user_form'],
+                   ['last_changes']]
 
   
     new_resource_form__access__ = 'is_reviewer' 
     new_resource__access__ = 'is_reviewer'
+
+    site_format = 'module'
 
     def get_document_types(self):
         return [Module]
@@ -113,6 +121,10 @@ class Training(WebSite):
     #######################################################################
     # API 
     #######################################################################
+    def get_vhosts(self):
+        vhosts = self.get_property('ikaaro:vhosts')
+        return vhosts
+
     def get_modules(self):
         modules = list(self.search_handlers(format=Module.class_id))
         modules.sort(lambda x, y: cmp(get_sort_name(x.name),
@@ -122,12 +134,12 @@ class Training(WebSite):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_training_form(name=None, description=None, topics=None):
+    def get_training_form(name=None, description=None, vhosts=None, topics=None):
         root = get_context().root
-
         namespace = {}
         namespace['title'] = name
         namespace['description'] = description 
+        namespace['vhosts'] = vhosts
         namespace['topics'] = root.get_topics_namespace(topics)
 
         handler = root.get_handler('ui/abakuc/training/training_form.xml')
@@ -164,6 +176,26 @@ class Training(WebSite):
     #######################################################################
     # User Interface / View
     #######################################################################
+    def login(self, context):
+        response = WebSite.login(self, context)
+        if str(response.path[-1]) == ';login_form':
+            return response
+
+        user = context.user
+        if self.is_admin(user, self): #or self.is_tourist_office_manager(user):
+            return response
+
+        username = context.get_form_value('username')
+        root = context.root
+        if not root.has_handler('users/%s' % username):
+            return response
+        # Register the travel agent if he is not already registered
+        # TEST 015
+        if not self.has_user_role(user.name, 'ikaaro:members'):
+            self.set_user_role(usernameu, 'ikaaro:members')
+            user = root.get_handler('users/%s' % username)
+            schedule_to_reindex(user)
+
     view__access__ = 'is_allowed_to_edit'
     view__label__ = u'View'
     def view(self, context):
@@ -183,7 +215,14 @@ class Training(WebSite):
                       'title': item.title_or_name})
 
         namespace['title'] = title 
-        handler = self.get_handler('/ui/abakuc/training/list.xml')
+        namespace['vhosts'] = []
+        vhosts = self.get_vhosts()
+        for vhost in vhosts:
+            url = '%s' % vhost
+            namespace['vhosts'].append({'url': url})
+
+        #namespace['vhosts'] = self.get_vhosts() 
+        handler = self.get_handler('/ui/abakuc/training/view.xml')
         return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -246,12 +285,18 @@ class Training(WebSite):
 #######################################################################
 # Training module 
 #######################################################################
-class Module(Folder, WorkflowAware, Handler):
+class Module(Folder):
 
     class_id = 'module'
     class_title = u'Trainig module'
     class_icon16 = 'abakuc/images/Resources16.png'
     class_icon48 = 'abakuc/images/Resources48.png'
+    class_views = [['view'], 
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form'],
+                   ['state_form']]
 
     def get_document_types(self):
         return [Topic, Exam]
@@ -261,6 +306,14 @@ class Module(Folder, WorkflowAware, Handler):
     #######################################################################
     # API 
     #######################################################################
+    def get_prev_module(self):
+        programme = self.parent
+        modules = programme.get_modules()
+        index = modules.index(self)
+        if index == 0:
+            return None
+        return modules[index - 1]
+
     def get_topics(self):
         topics = list(self.search_handlers(format=Topic.class_id))
         topics.sort(lambda x, y: cmp(get_sort_name(x.name),
@@ -273,6 +326,7 @@ class Module(Folder, WorkflowAware, Handler):
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
+        programme = self.parent
         namespace = {}
         title = here.get_title()
         items = self.search_handlers(handler_class=Topic)
@@ -288,6 +342,7 @@ class Module(Folder, WorkflowAware, Handler):
                       'title': item.title_or_name})
 
         namespace['title'] = title 
+        namespace['to_name'] = programme.get_vhosts() 
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
         # Set batch informations
@@ -325,19 +380,19 @@ class Module(Folder, WorkflowAware, Handler):
         title = self.get_property('dc:title')
         namespace['title'] = title
         # Generate the module name
-        module_names = [ x for x in here.get_handler_names()
-                           if x.startswith('module') ]
-        if module_names:
-            i = get_sort_name(module_names[-1])[1] + 1
-            name = 'module%d' % i
-        else:
-            name = 'module1'
-        namespace['name'] = name 
+        #module_names = [ x for x in here.get_handler_names()
+        #                   if x.startswith('module') ]
+        #if module_names:
+        #    i = get_sort_name(module_names[-1])[1] + 1
+        #    name = 'module%d' % i
+        #else:
+        #    name = 'module1'
+        #namespace['name'] = name 
         # Description
         description = self.get_property('dc:description')
         namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/training/edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/training/module/edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -364,12 +419,11 @@ class Topic(Folder):
     class_title = u'Module topic'
     class_icon16 = 'abakuc/images/Topic16.png'
     class_icon48 = 'abakuc/images/Topic48.png'
-    class_views = [
-        ['view'],
-        ['browse_content?mode=list'],
-        ['new_resource_form'],
-        ['edit_metadata_form'],
-        ['permissions_form', 'new_user_form']]
+    class_views = [['view'], 
+                   ['browse_content?mode=list',
+                    'browse_content?mode=thumbnails'],
+                   ['new_resource_form'],
+                   ['edit_metadata_form']]
 
     def get_document_types(self):
         return [Document]
@@ -409,7 +463,7 @@ class Topic(Folder):
             # XXX Had to hard link the .en in the uri
             # item name seems to strip the language
             language = item.get_property('dc:language')
-            url = '%s.%s/;view' %  (item.name, language)
+            url = './%s.%s/;view' %  (item.name, language)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
@@ -418,7 +472,7 @@ class Topic(Folder):
                       'title': item.title_or_name})
 
         namespace['title'] = title 
-        handler = self.get_handler('/ui/abakuc/training/list.xml')
+        handler = self.get_handler('/ui/abakuc/training/topic/view.xml')
         return stl(handler, namespace)
       # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -458,7 +512,7 @@ class Topic(Folder):
         description = self.get_property('dc:description')
         namespace['description'] = description
 
-        handler = self.get_handler('/ui/abakuc/training/topic_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/training/topic/edit_metadata.xml')
         return stl(handler, namespace)
 
 

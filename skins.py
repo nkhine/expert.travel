@@ -11,6 +11,7 @@ from itools.cms.utils import reduce_string
 from itools.uri.generic import decode_query 
 # Import from abakuc
 from companies import Company, Address
+from training import Training 
 from countries import Country
 
 
@@ -110,6 +111,19 @@ class FrontOffice(Skin):
         menus = []
         root =  context.handler.get_site_root()
         if isinstance(root, Company):
+            # Main Menu
+            menu = self.get_main_menu(context)
+            if menu is not None:
+                menus.append(menu)
+            # Parent's Menu
+            menu = self.get_context_menu(context)
+            if menu is not None:
+                menus.append(menu)
+            # Navigation
+            menu = self.get_navigation_menu(context)
+            menus.append(menu)
+
+        elif isinstance(root, Training):
             # Main Menu
             menu = self.get_main_menu(context)
             if menu is not None:
@@ -252,6 +266,7 @@ websites = {
     # Companies
     'abakuc.expert.travel': CompanySkin,
     '.expert.travel': CompanySkin,
+    'training.expert.travel': CompanySkin,
     # Countries
     'angola.destinationsguide.info': CountrySkin,
     '.destinationsguide.info': CountrySkin,

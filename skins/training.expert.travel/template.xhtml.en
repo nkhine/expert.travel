@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>${title}</title>
+    <!-- Meta -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta stl:repeat="meta meta_tags" name="${meta/name}"
+          content="${meta/content}" />
+
+    <!-- CSS -->
+    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
+    href="${style}"/>
+
+    <!-- JavaScript -->
+    <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
+      />
+
+  </head>
+  <body>
+
+      <div id="header"><!-- header -->
+          <h1 title="Abakuc Expert.Travel">
+            <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
+          </h1>
+          <div id="navbar" class="clearfix"><!-- navbar -->
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/;view_news">News</a></li>
+              <li><a href="/;view_jobs">Jobs</a></li>
+              <li><a href="/">FAQ</a></li>
+              <li><a href="/">More&nbsp;»</a></li>
+            </ul>
+          </div><!-- /navbar -->
+          <form action="/;search" method="get">
+            <div id="search"><!-- search -->
+              <input name="search_text" type="text" class="searchinput" 
+                  value="" size="20" />
+              <input type="submit" value="Search"/>
+            </div><!-- /search -->
+          </form>
+          <div id="bar"><!-- bar -->
+            <ul>
+              <stl:block if="not user/info">
+                <li><a href="/;login_form">Log in</a></li>
+                <li>
+                  <a href="/;register_form" stl:if="user/joinisopen">Register</a>
+                </li>
+              </stl:block>
+              <stl:block if="user/info">
+                <li><a href="${user/info/home}">My Profile</a></li>
+                <li><a href="/;logout">Log out</a></li>
+              </stl:block>
+              <li><a href="/;contact_form">Help</a></li>
+              <li><a href="/;contact_form">Contact</a></li>
+            </ul>
+          </div><!-- /bar -->
+        </div><!-- /header -->
+
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td id="left" class="column" valign="top"><!-- left column -->
+                  <div stl:repeat="option level1">
+                      <a href="/;search?level1=${option/name}">${option/title}</a>
+                  </div>
+                  <div class="navigation" stl:repeat="menu left_menus">
+                    <label>${menu/title}</label>
+                    ${menu/content}
+                  </div>
+            </td><!-- /left column --> 
+            <td id="center" class="column" valign="top"><!-- center column -->
+              <div id="maintitle">
+                <div class="information"><!-- user information -->
+                <stl:block if="not user/info">
+                  (not logged in)
+                </stl:block>
+                <stl:block if="user/info">
+                  (logged in as <a href="${user/info/home}">${user/info/title}</a>)
+                </stl:block>
+                </div><!-- /user information -->
+                <div id="breadcrumbs"><!-- breadcrumbs -->
+                  <label>Location:</label>
+                  <span stl:repeat="item breadcrumb">
+                    <a stl:if="item/url" href="${item/url}"
+                      title="${item/name}">${item/short_name}</a>
+                    <span stl:if="not item/url"
+                      title="${item/name}">${item/short_name}</span>
+                    <stl:inline if="not repeat/item/end">/</stl:inline> 
+                  </span>
+                </div><!-- /breadcrumbs -->
+                <div class="clear"></div>
+              </div>
+              <div id="body">
+                <div id="message" stl:if="message">${message}</div>
+                <div id="content">${body}</div>
+              </div>
+            </td><!-- /center column -->
+          </tr>
+        </table>
+      <div id="footer"><!-- footer -->
+        <a href="/;about">About</a>
+        <a href="/;credits">Credits</a>
+        <a href="/;license">License</a>
+      </div><!-- /footer -->
+
+  </body>
+</html>

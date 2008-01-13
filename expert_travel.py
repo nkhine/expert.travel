@@ -60,6 +60,8 @@ class ExpertTravel(WebSite):
         name = segment.name
         if name == 'companies':
             return self.get_handler('/companies')
+        if name == 'training':
+            return self.get_handler('/training')
         return WebSite._get_virtual_handler(self, segment)
 
       
@@ -89,6 +91,14 @@ class ExpertTravel(WebSite):
         info = {'name': user.name, 'title': user.get_title(),
                 'home': home}
         return {'info': info, 'joinisopen': False}
+
+    #def get_training_uri(self, context):
+    #    """Return a dict {training_icon, training}."""
+    #    root = context.site_root
+    #    home = '/training/%s/;%s' % (training.name, training.get_firstview())
+    #    get_training = {'name': training.name, 'title': training.get_title(),
+    #            'home': home}
+    #    return {'info': get_training}
 
     def get_tabs_stl(self, context):
         # Set Style
