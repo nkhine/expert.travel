@@ -322,7 +322,7 @@ class Module(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = True 
+    view__access__ = 'is_allowed_to_view'
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
