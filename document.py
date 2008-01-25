@@ -32,6 +32,7 @@ class Document(XHTMLFile):
     class_title = u'Training Document'
     class_views = [['view'],
                    ['edit_form'],
+                   ['edit_metadata_form'],
                    ['state_form']]
 
     @classmethod
@@ -172,6 +173,36 @@ class Document(XHTMLFile):
             i += 1
         
         namespace['topic'] = {'title': topic.title_or_name}
+        namespace['title'] = self.get_property('dc:title')
+        namespace['description'] = self.get_property('dc:description')
+        namespace['image1'] = image1 = self.get_property('abakuc:image1')
+        namespace['image1_title'] = ''
+        namespace['image1_credit'] = ''
+        namespace['image1_keywords'] = ''
+        if image1:
+            try:
+                image1 = self.parent.get_handler(image1[3:])
+            except:
+                pass
+            else:
+                namespace['image1_title'] = image1.get_property('dc:title')
+                namespace['image1_credit'] = image1.get_property('dc:description')
+                namespace['image1_keywords'] = image1.get_property('dc:subject')
+        # Image 2
+        namespace['image2'] = image2 = self.get_property('abakuc:image2')
+        namespace['image2_title'] = ''
+        namespace['image2_credit'] = ''
+        namespace['image2_keywords'] = ''
+        if image1:
+            try:
+                image2 = self.parent.get_handler(image2[3:])
+            except:
+                pass
+            else:
+                namespace['image2_title'] = image2.get_property('dc:title')
+                namespace['image2_credit'] = image2.get_property('dc:description')
+                namespace['image2_keywords'] = image2.get_property('dc:subject')
+        # Body text
         body = self.get_body()
         if body is None:
             namespace['text'] = None
@@ -195,13 +226,54 @@ class Document(XHTMLFile):
 
         # Edit with a rich text editor
         namespace = {}
+        namespace['title'] = self.get_property('dc:title')
+        namespace['description'] = self.get_property('dc:description')
         namespace['timestamp'] = DateTime.encode(datetime.now())
         namespace['rte'] = self.get_rte(context, 'data', data)
+        # Images
+        get_property = self.get_metadata().get_property
+        namespace['image1'] = image1 = get_property('abakuc:image1')
+        namespace['image1_title'] = ''
+        namespace['image1_credit'] = ''
+        namespace['image1_keywords'] = ''
+        if image1:
+            try:
+                image1 = self.parent.get_handler(image1[3:])
+            except:
+                pass
+            else:
+                namespace['image1_title'] = image1.get_property('dc:title')
+                namespace['image1_credit'] = image1.get_property('dc:description')
+                namespace['image1_keywords'] = image1.get_property('dc:subject')
 
+        # Image 2
+        namespace['image2'] = image2 = self.get_property('abakuc:image2')
+        namespace['image2_title'] = ''
+        namespace['image2_credit'] = ''
+        namespace['image2_keywords'] = ''
+        if image1:
+            try:
+                image2 = self.parent.get_handler(image2[3:])
+            except:
+                pass
+            else:
+                namespace['image2_title'] = image2.get_property('dc:title')
+                namespace['image2_credit'] = image2.get_property('dc:description')
+                namespace['image2_keywords'] = image2.get_property('dc:subject')
         handler = self.get_handler('/ui/abakuc/training/document/edit.xml')
         return stl(handler, namespace)
 
 
+    edit_image__access__ = 'is_admin'
+    def edit_image(self, context):
+        namespace = {}
+        namespace['bc'] = Breadcrumb(filter_type=itoolsFile, start=self.parent)
+        # Avoid general template
+        response = context.response
+        response.set_header('Content-Type', 'text/html; charset=UTF-8')
+
+        handler = self.get_handler('/ui/abakuc/training/document/edit_image.xml')
+        return stl(handler, namespace)
     #######################################################################
     # Edit / Inline / edit
     edit__access__ = 'is_allowed_to_edit'
@@ -223,6 +295,36 @@ class Document(XHTMLFile):
                            + new_body
                            + document.events[old_body.end:])
 
+        #Image 1
+        image1_title = context.get_form_value('image1_title')
+        image1_credit = context.get_form_value('image1_credit')
+        image1_keywords = context.get_form_value('image1_keywords')
+        image1 = context.get_form_value('abakuc:image1')
+        self.set_property('abakuc:image1', image1)
+        if image1:
+            image1 = self.parent.get_handler(image1[3:])
+            image1_title = unicode(image1_title, 'utf8')
+            image1.set_property('dc:title', image1_title, language='en')
+            image1_keywords = unicode(image1_keywords, 'utf8')
+            image1.set_property('dc:subject', image1_keywords)
+            image1_credit = unicode(image1_credit, 'utf8')
+            image1.set_property('dc:description', image1_credit,
+                                language='en')
+        # Image 2
+        image2_title = context.get_form_value('image2_title')
+        image2_credit = context.get_form_value('image2_credit')
+        image2_keywords = context.get_form_value('image2_keywords')
+        image2 = context.get_form_value('abakuc:image2')
+        self.set_property('abakuc:image2', image2)
+        if image2:
+            image2 = self.parent.get_handler(image2[3:])
+            image2_title = unicode(image2_title, 'utf8')
+            image2.set_property('dc:title', image2_title, language='en')
+            image2_keywords = unicode(image2_keywords, 'utf8')
+            image2.set_property('dc:subject', image2_keywords)
+            image2_credit = unicode(image2_credit, 'utf8')
+            image2.set_property('dc:description', image2_credit,
+                                language='en')
         return context.come_back(MSG_CHANGES_SAVED)
 
 register_object_class(Document)

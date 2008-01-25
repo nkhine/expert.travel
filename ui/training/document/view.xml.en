@@ -15,5 +15,40 @@
   <a class="link" stl:if="next_doc" title="Click here to go to next document"
     href="${next_doc}"><img border="0" src="${next_doc_img}"/></a>
 </div> 
-${text}
+<h1>${title}</h1>
+<i>${description}</i>
+    <p>
+     <table stl:if="image1" style="float: right;" width="25%">
+        <tr>
+            <td stl:if="image1">
+            <img src="${image1}" alt="${image1_title}, credit: ${image1_credit}" />
+            </td>
+        </tr>
+        <tr>
+            <td stl:if="image1_title">
+            ${image1_title} 
+            </td>
+        </tr>
+        <tr>
+            <td stl:if="image1_credit">
+            ${image1_credit} 
+            </td>
+        </tr>
+        <tr>
+            <td stl:if="image2">
+            <img src="${image2}" alt="${image2_title}, credit: ${image2_credit}" />
+            </td>
+        </tr>
+        <tr>
+            <td stl:if="image2_title">
+            ${image2_title} 
+            </td>
+        </tr>
+        <tr>
+            <td stl:if="image2_credit">
+            ${image2_credit} 
+            </td>
+        </tr>
+    </table>
+    ${text}</p>
 </stl:block>

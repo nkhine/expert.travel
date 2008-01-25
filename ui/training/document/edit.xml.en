@@ -9,6 +9,75 @@
 <form name="edit" action=";edit" method="post">
   <input type="hidden" name="timestamp" value="${timestamp}" />
   ${rte}
+  <hr />
+        <dl>
+            <dt>
+              <label for="abakuc:image1">Image 1</label>
+            </dt>
+            <stl:block if="image1">
+            <img src="${image1}" />
+            </stl:block>
+            <dd>
+              <input value="${image1}" name="abakuc:image1" size="50" 
+                id="image1" type="text"/>
+              <a onclick="popup(';edit_image?bc_id=image1', 640, 480); return false;"
+                href="#">Edit...</a><br />
+                please make sure the image has a maximum width of 250px
+
+            </dd>
+            <dt>
+              <label for="abakuc:image1">Title</label>
+            </dt>
+        <dd>
+          <input name="image1_title" size="50" type="text"
+            value="${image1_title}"/>
+        </dd>
+            <dt>
+              <label for="abakuc:image1">Credits</label>
+            </dt>
+        <dd>
+          <input name="image1_credit" size="50" type="text" 
+            value="${image1_credit}"/>
+        </dd>
+        <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
+      <dd>
+        <input id="dc:subject" name="image1_keywords" size="40" type="text"
+        value="${image1_keywords}" />
+      </dd>
+  <hr />
+            <dt>
+              <label for="abakuc:image2">Image 2</label>
+            </dt>
+            <stl:block if="image2">
+            <img src="${image2}" />
+            </stl:block>
+            <dd>
+              <input value="${image2}" name="abakuc:image2" size="50" 
+                id="image2" type="text"/>
+              <a onclick="popup(';edit_image?bc_id=image2', 640, 480); return false;"
+                href="#">Edit...</a>
+            </dd>
+            <dt>
+              <label for="abakuc:image2">Title</label>
+            </dt>
+        <dd>
+          <input name="image2_title" size="50" type="text"
+            value="${image2_title}"/>
+        </dd>
+            <dt>
+              <label for="abakuc:image2">Credits</label>
+            </dt>
+        <dd>
+          <input name="image2_credit" size="50" type="text" 
+            value="${image2_credit}"/>
+        </dd>
+        <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
+      <dd>
+        <input id="dc:subject" name="image2_keywords" size="40" type="text"
+        value="${image2_keywords}" />
+      </dd>
+        </dl>
+
   <p>
     <input type="submit" value="Change" class="button_ok" />
   </p>

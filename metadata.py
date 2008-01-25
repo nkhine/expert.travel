@@ -100,6 +100,11 @@ class Schema(BaseSchema):
         'enquiry_subject': Unicode,
         'enquiry': Unicode,
         'enquiry_type': String,
+        # Document
+        'image1': String(default=''),
+        'image1_credit': Unicode,
+        'image2': String(default=''),
+        'image2_credit': Unicode,
         # Exam
         'exam_time': Integer(default=20),
         'questions_nums': Integer(default=20),

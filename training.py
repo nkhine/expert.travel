@@ -426,7 +426,7 @@ class Topic(Folder):
                    ['edit_metadata_form']]
 
     def get_document_types(self):
-        return [Document]
+        return [Document, File]
 
     #######################################################################
     # API 
