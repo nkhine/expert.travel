@@ -266,7 +266,7 @@ websites = {
     # Companies
     'abakuc.expert.travel': CompanySkin,
     '.expert.travel': CompanySkin,
-    'training.expert.travel': CompanySkin,
+    #'training.expert.travel': CompanySkin,
     # Countries
     'angola.destinationsguide.info': CountrySkin,
     '.destinationsguide.info': CountrySkin,

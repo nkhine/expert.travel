@@ -182,7 +182,7 @@ class Training(WebSite):
             return response
 
         user = context.user
-        if self.is_admin(user, self): #or self.is_tourist_office_manager(user):
+        if self.is_admin(user, self) or self.is_reviewer(user, self):
             return response
 
         username = context.get_form_value('username')
