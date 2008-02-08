@@ -6,7 +6,7 @@
       ${news_batch}
     </div>
     <div stl:if="msg" align="right">${msg}</div>
-    <div id="List">
+    <div class="List">
       <stl:block repeat="news_items news_items"> 
         <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
           onmouseout="this.className='ListItem';">  

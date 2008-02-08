@@ -758,7 +758,7 @@ class User(iUser, WorkflowAware, Handler):
                         None)]
             news_table = table(columns, news_items, [sortby], sortorder, actions)
             news_batch = None
-            msg = u'No news has been posted.'
+            msg = None 
 
         namespace['news_table'] = news_table
         namespace['news_batch'] = news_batch
@@ -841,9 +841,11 @@ class User(iUser, WorkflowAware, Handler):
                               batch_total, msgs=msgs)
             msg = None
         else:
-            job_table = None
+            actions = [('create_job', u'Add new job', 'button_ok',
+                        None)]
+            job_table = table(columns, jobs, [sortby], sortorder, actions)
             job_batch = None
-            msg = u'No jobs'
+            msg = None 
 
         namespace['job_table'] = job_table
         namespace['job_batch'] = job_batch

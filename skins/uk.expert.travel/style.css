@@ -135,7 +135,7 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 /**************************************************************************
  * Lists   
  **************************************************************************/
-#List {
+.List {
     margin-left: 5px;
     padding-right: 12px;
 }
