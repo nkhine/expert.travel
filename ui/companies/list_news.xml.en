@@ -2,10 +2,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <h1>News</h1>
-    <div align="right">
+    <div>
       ${news_batch}
     </div>
-    <div stl:if="msg" align="right">${msg}</div>
+    <div stl:if="msg">${msg}</div>
     <div class="List">
       <stl:block repeat="news_items news_items"> 
         <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
