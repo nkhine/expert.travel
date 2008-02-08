@@ -131,7 +131,8 @@ class ExpertTravel(WebSite):
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Training</span></a></li>
+                <li><a href="#fragment-3"><span>Marketplace</span></a></li>
+                <li><a href="#fragment-4"><span>Training</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -144,22 +145,38 @@ class ExpertTravel(WebSite):
               Available training programmes for Travel Agents &amp; Tour
               Operator staff
             </div>
+            <div id="fragment-4">
+              {marketplace}
+            </div>
         </div>
         </stl:block>
                   """
         template = XHTMLDocument(string=template)
         return stl(template, namespace)
+
+
+    def get_address(self):
+        root = self.get_root()
+        results = root.search(format='address', members=self.name)
+        for address in results.get_documents():
+            return root.get_handler(address.abspath)
+        return None
+
     #######################################################################
     # List last 5 jobs and 5 news items for Home page
     #######################################################################
     view__access__ = True 
     view__label__ = u'View'
     def view(self, context):
+        from root import world
         root = context.root
         here = context.handler
         site_root = here.get_site_root()
         namespace = {}
         namespace['user']= self.get_user_menu(context)
+        # Get Company and Address
+        namespace['address'] = None
+        address = self.get_address()
         # Get the 5 last Jobs
         # XXX Fix so that it lists only jobs specific for the Country
         catalog = context.server.catalog
@@ -214,6 +231,29 @@ class ExpertTravel(WebSite):
         namespace['username'] = context.get_form_value('username')
 
         namespace['tabs'] = self.get_tabs_stl(context)
+        if address is None:
+            handler = root.get_skin().get_handler('home.xhtml')
+            return stl(handler, namespace)
+        company = address.parent
+        
+        
+        # Company
+        namespace['company'] = {'name': company.name,
+                                'website': company.get_website(),
+                                'path': self.get_pathto(company)}
+        # Add news
+        add_news = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,
+                                                                address.name)
+        add_jobs = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
+                                                                address.name)
+        # Address
+        county = address.get_property('abakuc:county')
+        addr = {'name': address.name,
+                'add_news': add_news,
+                'add_jobs': add_jobs,
+                'address_path': self.get_pathto(address)}
+
+        namespace['address'] = addr
         #XXX Fix as this does not work when viewing from Back-Office
         #XXX See [#119] http://bugs.abakuc.com/show_bug.cgi?id=119
         # Return the page

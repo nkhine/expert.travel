@@ -22,6 +22,7 @@ from itools.catalog import EqQuery, AndQuery, RangeQuery
 from base import Handler, Folder
 from handlers import ApplicationsLog
 from metadata import JobTitle, SalaryRange
+from utils import get_sort_name
 
 # Definition of the fields of the forms to add new job application 
 application_fields = [
@@ -96,7 +97,16 @@ class Job(Folder, RoleAware):
         county = context.root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
         namespace = context.build_form_namespace(cls.job_fields)
+        here = get_context().handler
+        document_names = [ x for x in here.get_handler_names()
+                           if x.startswith('job') ]
+        if document_names:
+            i = get_sort_name(document_names[-1])[1] + 1
+            name = 'job%d' % i
+        else:
+            name = 'job1'
         namespace['class_id'] = Job.class_id
+        namespace['name'] = name
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
@@ -125,6 +135,8 @@ class Job(Folder, RoleAware):
         title = context.get_form_value('dc:title')
         
         # Check the name 
+        # We use this as fall back, should someone
+        # hacks the submit form
         name = name.strip() or title.strip()
         if not name:
             message = u'Please give a title to your job'
@@ -178,6 +190,15 @@ class Job(Folder, RoleAware):
         goto = './%s/;%s' % (name, handler.get_firstview())
         message = u'New Job added.'
         return context.come_back(message, goto=goto) 
+
+    add_job_form__access__ = 'is_reviewer_or_member' 
+    add_job_form__label__ = u'Add new job'
+    def add_job_form(self, context):
+        url = '../;new_resource_form?type=Job'
+        goto = context.uri.resolve(url)
+        message = u'Please use this form to add a new job'
+        return context.come_back(message, goto=goto)
+
 
     #######################################################################
     # View Job details
@@ -337,22 +358,6 @@ class Job(Folder, RoleAware):
         handler = context.root.get_handler(path)
         return stl(handler, namespace)    
 
-    add_job_form__access__ = 'is_reviewer_or_member' 
-    add_job_form__label__ = u'Add new job'
-    def add_job_form(self, context):
-        url = '../;new_resource_form?type=Job'
-        goto = context.uri.resolve(url)
-        message = u'Please use this form to add a new job'
-        return context.come_back(message, goto=goto)
-        # Check input data
-        #error = context.check_form_input(application_fields)
-        #if error is not None:
-        #    return context.come_back(error, keep=keep)
-
-        # Add
-        #path = '/ui/abakuc/jobs/job_new_resource_form.xml'
-        #handler = context.root.get_handler(path)
-        #return stl(handler)    
     #######################################################################
     # XXX User Interface / Edit
     #######################################################################

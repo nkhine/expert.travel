@@ -30,15 +30,8 @@ class News(RoleAware, Folder):
     class_icon48 = 'abakuc/images/News48.png'
     class_views = [
         ['view'],
-        ['view_candidatures'],
-        ['browse_content?mode=list'],
-        ['new_resource_form'],
         ['edit_metadata_form'],
-        ['permissions_form']]
-
-    
-    def get_document_types(self):
-        return [File]
+        ['add_news_form']]
 
     new_resource_form__access__ = 'is_reviewer_or_member'
     new_resource__access__ = 'is_reviewer_or_member' 
@@ -83,12 +76,12 @@ class News(RoleAware, Folder):
         namespace = context.build_form_namespace(cls.news_fields)
         here = get_context().handler
         document_names = [ x for x in here.get_handler_names()
-                           if x.startswith('page') ]
+                           if x.startswith('news') ]
         if document_names:
             i = get_sort_name(document_names[-1])[1] + 1
-            name = 'page%d' % i
+            name = 'news%d' % i
         else:
-            name = 'page1'
+            name = 'news1'
         namespace['class_id'] = News.class_id
         namespace['name'] = name
         path = '/ui/abakuc/news/news_new_resource_form.xml'
@@ -167,11 +160,20 @@ class News(RoleAware, Folder):
         message = u'News item has been added.'
         return context.come_back(message, goto=goto) 
     
+    add_news_form__access__ = 'is_reviewer_or_member' 
+    add_news_form__label__ = u'Add news'
+    def add_news_form(self, context):
+        url = '../;new_resource_form?type=news'
+        goto = context.uri.resolve(url)
+        message = u'Please use this form to add a new news item'
+        return context.come_back(message, goto=goto)
+
+
     #######################################################################
     # View news details
     ###
     view__access__ = True
-    view__label__ = u'News'
+    view__label__ = u'View news'
     def view(self, context):
         username = self.get_property('owner')
         users = self.get_handler('/users')
@@ -251,6 +253,7 @@ class News(RoleAware, Folder):
     
 
     edit_metadata_form__access__ = 'is_reviewer_or_member'
+    edit_metadata_form__label__ = 'Edit news'
     def edit_metadata_form(self, context):
         namespace = {}
         for key in self.edit_news_fields:
@@ -295,7 +298,7 @@ class News(RoleAware, Folder):
         return address.is_reviewer_or_member(user, object)
 
     def is_allowed_to_remove(self, user, object):
-        address = self.parent.parent
-        return address.is_reviewer(user, object)
+        address = self.parent
+        return address.is_reviewer_or_member(user, object)
 
 register_object_class(News)
