@@ -23,9 +23,9 @@
     </p>
    </stl:block> 
     </div>
-    <p>
+    <div>
     ${tabs}
-    </p>
+    </div>
     <div class="login-box">
       <stl:block if="not user/info">
           <div class="general-box">
