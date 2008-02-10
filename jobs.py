@@ -22,7 +22,6 @@ from itools.catalog import EqQuery, AndQuery, RangeQuery
 from base import Handler, Folder
 from handlers import ApplicationsLog
 from metadata import JobTitle, SalaryRange
-from utils import get_sort_name
 
 # Definition of the fields of the forms to add new job application 
 application_fields = [
@@ -73,6 +72,7 @@ class Job(Folder, RoleAware):
         ('abakuc:function', True),
         ('abakuc:salary', True),
         ('abakuc:closing_date', True),
+        ('abakuc:county', True),
         ('abakuc:job_text', True)]
 
 
@@ -97,21 +97,13 @@ class Job(Folder, RoleAware):
         county = context.root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
         namespace = context.build_form_namespace(cls.job_fields)
-        here = get_context().handler
-        document_names = [ x for x in here.get_handler_names()
-                           if x.startswith('job') ]
-        if document_names:
-            i = get_sort_name(document_names[-1])[1] + 1
-            name = 'job%d' % i
-        else:
-            name = 'job1'
+        # XXX Someone can change this on the form
         namespace['class_id'] = Job.class_id
-        namespace['name'] = name
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
 
-        path = '/ui/abakuc/jobs/job_new_resource_form.xml'
+        path = '/ui/abakuc/jobs/new_instance_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
@@ -130,38 +122,12 @@ class Job(Folder, RoleAware):
         error = context.check_form_input(cls.job_fields)
         if error is not None:
             return context.come_back(error, keep=keep)
-        #
-        name = context.get_form_value('name')
+        # Generate the name(id)
+        x = container.search_handlers(handler_class=cls)
+        y =  str(len(list(x))+1)
+        name = 'job%s' % y 
+        # Job title
         title = context.get_form_value('dc:title')
-        
-        # Check the name 
-        # We use this as fall back, should someone
-        # hacks the submit form
-        name = name.strip() or title.strip()
-        if not name:
-            message = u'Please give a title to your job'
-            return context.come_back(message)
-        
-        name = name.lower()
-        name = checkid(name)
-        if name is None:
-            message = (u'The title contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
-        # Name already used?
-        while container.has_handler(name):
-              try:
-                  names = name.split('_')
-                  if len(names) > 1:
-                      name = '_'.join(names[:-1])
-                      number = str(int(names[-1]) + 1) 
-                      name = [name, number]
-                      name = '_'.join(name)
-                  else:
-                      name = '_'.join(names) + '_1'
-              except:
-                  name = '_'.join(names) + '_1'
-        
         # Set properties
         handler = cls()
         metadata = handler.build_metadata()
@@ -296,7 +262,7 @@ class Job(Folder, RoleAware):
                 if user.has_property('ikaaro:user_must_confirm') is False:
                     nb_candidatures += 1 
             namespace['nb_candidatures'] = nb_candidatures
-        handler = self.get_handler('/ui/abakuc/jobs/job_view.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/view.xml')
         return stl(handler, namespace)
 
     view_candidatures__access__ = 'is_reviewer_or_member'
@@ -331,7 +297,7 @@ class Job(Folder, RoleAware):
             namespace['table'] = None
             namespace['msg'] = u'No candidature'
         
-        handler = self.get_handler('/ui/abakuc/jobs/view_applications.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/applications.xml')
         return stl(handler, namespace)
 
 
@@ -354,7 +320,7 @@ class Job(Folder, RoleAware):
         #    return context.come_back(error, keep=keep)
 
         # Add
-        path = '/ui/abakuc/jobs/new_instance_form.xml'
+        path = '/ui/abakuc/jobs/applications/application_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)    
 
@@ -384,7 +350,7 @@ class Job(Folder, RoleAware):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
-        handler = root.get_handler('ui/abakuc/jobs/jobs_form.xml')
+        handler = root.get_handler('ui/abakuc/jobs/form.xml')
         return stl(handler, namespace)
 
 
@@ -423,7 +389,7 @@ class Job(Folder, RoleAware):
         namespace['form'] = self.get_form(address_country, address_region,
                                           address_county)
         # Return stl
-        handler = self.get_handler('/ui/abakuc/jobs/job_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/edit_metadata.xml')
         return stl(handler, namespace)
 
     
@@ -801,7 +767,7 @@ class Candidature(RoleAware, Folder):
         namespace['cv'] = {'icon': cv_icon,
                            'path': cv_path}
         
-        handler = self.get_handler('/ui/abakuc/jobs/view_application.xml')
+        handler = self.get_handler('/ui/abakuc/jobs/applications/view.xml')
         return stl(handler, namespace)
 
   

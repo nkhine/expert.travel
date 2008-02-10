@@ -79,7 +79,6 @@
       </table>
       <!-- End message -->
     <p>
-      <input name="name" size="40" value="${name}" />
       <input name="class_id" type="hidden" value="${class_id}"/>
       <input class="button_ok" type="submit" value="Ok"/>
     </p>
