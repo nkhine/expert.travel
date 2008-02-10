@@ -13,7 +13,7 @@ from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
 from itools.stl import stl
 from itools.web import get_context
-from itools.rest import checkid, to_html_events
+from itools.rest import to_html_events
 from itools.cms.widgets import table
 from itools.cms.utils import generate_password
 from itools.catalog import EqQuery, AndQuery, RangeQuery
@@ -503,9 +503,9 @@ class Candidature(RoleAware, Folder):
             return context.come_back(u'Your CV must be an DOC, ODT or PDF')
 
         # Name already used?
-        candidatures = container.search_handlers(handler_class=cls)
-        nb_candidatures =  str(len(list(candidatures))+1)
-        name = 'Candidature_%s' % nb_candidatures
+        x = container.search_handlers(handler_class=cls)
+        y =  str(len(list(x))+1)
+        name = 'candidature%s' % y 
         while container.has_handler(name):
               try:
                   names = name.split('_')
@@ -543,6 +543,7 @@ class Candidature(RoleAware, Folder):
                     confirm = user.get_property('ikaaro:user_must_confirm')
         user_id = str(user.name)
         
+        # Check to see if the user has previously applied for this post 
         for x in container.search_handlers(handler_class=Candidature):
             if user_id == x.get_property('user_id'):
                 msg = u"""
@@ -644,7 +645,7 @@ class Candidature(RoleAware, Folder):
         namespace['user_id'] = user_id
         namespace['key'] = must_confirm
 
-        url = '/ui/abakuc/jobs/confirm_form.xml'
+        url = '/ui/abakuc/jobs/applications/confirm_form.xml'
         handler = self.get_handler(url)
         return stl(handler, namespace)
 

@@ -15,7 +15,7 @@ from itools.stl import stl
 from itools.vfs import vfs 
 from itools.web import get_context
 from itools import rest
-from itools.rest import checkid, to_html_events
+from itools.rest import to_html_events
 
 # Import from abakuc
 from base import Handler, Folder
@@ -36,30 +36,6 @@ class News(RoleAware, Folder):
     new_resource__access__ = 'is_reviewer_or_member' 
 
     ###################################################################
-    ## API 
-    ####
-    def get_new_id(self, prefix=''):
-        ids = []
-        for name in self.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            if prefix:
-                if not name.startswith(prefix):
-                    continue
-                name = name[len(prefix):]
-            try:
-                id = int(name)
-            except ValueError:
-                continue
-            ids.append(id)
-
-        if ids:
-            ids.sort()
-            return prefix + str(ids[-1] + 1)
-        
-        return prefix + '0'
-
-    ###################################################################
     ## Create a new news item 
     ####
 
@@ -69,7 +45,6 @@ class News(RoleAware, Folder):
         ('abakuc:closing_date', True),
         ('abakuc:news_text', True)]
 
-
     @classmethod
     def new_instance_form(cls, context):
         namespace = context.build_form_namespace(cls.news_fields)
@@ -77,7 +52,6 @@ class News(RoleAware, Folder):
         path = '/ui/abakuc/news/news_new_resource_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
-
 
     @classmethod 
     def new_instance(cls, container, context):
@@ -97,6 +71,19 @@ class News(RoleAware, Folder):
         x = container.search_handlers(handler_class=cls)
         y =  str(len(list(x))+1)
         name = 'news%s' % y 
+        while container.has_handler(name):
+              try:
+                  names = name.split('-')
+                  if len(names) > 1:
+                      name = '-'.join(names[:-1])
+                      number = str(int(names[-1]) + 1) 
+                      name = [name, number]
+                      name = '-'.join(name)
+                  else:
+                      name = '-'.join(names) + '-1'
+              except:
+                  name = '-'.join(names) + '-1'
+        
         # Job title
         title = context.get_form_value('dc:title')
         # Set properties

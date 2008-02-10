@@ -22,7 +22,7 @@ from itools.cms.registry import register_object_class
 from itools.cms.users import UserFolder as iUserFolder, User as iUser
 from itools.cms.utils import get_parameters
 from itools.rest import checkid
-from itools.cms.widgets import table, batch
+from itools.cms.widgets import batch, table
 from itools.xml import Parser
 from itools.datatypes import Email
 from itools.cms.workflow import WorkflowAware
@@ -33,11 +33,9 @@ from itools.cms.utils import reduce_string
 from companies import Company, Address 
 from training import Training
 from news import News
-from jobs import Job
+from jobs import Job, Candidature
 from utils import title_to_name
 from metadata import JobTitle, SalaryRange
-
-
 
 class UserFolder(iUserFolder):
 
@@ -700,9 +698,9 @@ class User(iUser, WorkflowAware, Handler):
             is_guest = False
             is_reviewer_or_member = False
         # Table with News
-        columns = [('title', u'Title'),
-                   ('closing_date', u'Closing Date'),
-                   ('description', u'Short description')]
+        columns = [('c1', u'Title'),
+                   ('c2', u'To be archived on'),
+                   ('c3', u'Short description')]
         # Get all News 
         address_news = address.search_handlers(handler_class=News)
         # Construct the lines of the table
@@ -718,10 +716,10 @@ class User(iUser, WorkflowAware, Handler):
                                         phrase_treshold=40)
             news_to_add ={'id': news.name, 
                          'checkbox': is_reviewer,
-                         'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
-                         'closing_date': get('abakuc:closing_date'),
-                         'description': description}
+                         'img': '/ui/abakuc/images/News16.png',
+                         'c1': (get('dc:title'),url),
+                         'c2': get('abakuc:closing_date'),
+                         'c3': description}
             news_items.append(news_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -732,13 +730,12 @@ class User(iUser, WorkflowAware, Handler):
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
         # Order 
-        sortby = context.get_form_value('sortby', 'closing_date')
+        sortby = context.get_form_value('sortby', 'c2')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
         news_items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
         if reverse:
             news_items.reverse()
-        # Set batch informations
         # Namespace 
         if news_items:
             actions = [('select', u'Select All', 'button_select_all',
@@ -770,6 +767,7 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # Job table used in the 'tabs' method
     def jobs_table(self, context):
+        root = context.root
         namespace = {}
         address = self.get_address()
         company = address.parent
@@ -784,31 +782,42 @@ class User(iUser, WorkflowAware, Handler):
             is_guest = False
             is_reviewer_or_member = False
             # Table with Jobs
-        columns = [('title', u'Title'),
-                   ('closing_date', u'Closing Date'),
-                   ('function', u'Function'),
-                   ('description', u'Short description')]
+        columns = [('c1', u'Title'),
+                   ('c2', u'To be archived on'),
+                   ('c3', u'Applications'),
+                   ('c4', u'Short description')]
         # Get all Jobs
         address_jobs = address.search_handlers(handler_class=Job)
         # Construct the lines of the table
         jobs = []
         for job in list(address_jobs):
-            #job = root.get_handler(job.abspath)
             get = job.get_property
             # Information about the job
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+            url = '/companies/%s/%s/%s/' % (company.name, address.name,
                                                  job.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=40)
+            #Get no of applicants
+            users = root.get_handler('users')
+            nb_candidatures = 0
+            y = root.get_handler(url)
+            candidatures = y.search_handlers(handler_class=Candidature)
+            for x in candidatures:
+                user_id = x.get_property('user_id')
+                user = users.get_handler(user_id)
+                if user.has_property('ikaaro:user_must_confirm') is False:
+                        nb_candidatures += 1 
             job_to_add ={'id': job.name, 
                          'checkbox': is_reviewer,
                          'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
-                         'closing_date': get('abakuc:closing_date'),
-                         'function': JobTitle.get_value(
-                                        get('abakuc:function')),
-                         'description': description}
+                         'c1': (get('dc:title'),url+';view'),
+                         'c2': get('abakuc:closing_date'),
+                         'c4': description}
+            if nb_candidatures > 0: 
+                job_to_add['c3'] = nb_candidatures,url+';view_candidatures'
+            else:
+                job_to_add['c3'] = None
             jobs.append(job_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -819,7 +828,7 @@ class User(iUser, WorkflowAware, Handler):
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
         # Order 
-        sortby = context.get_form_value('sortby', 'closing_date')
+        sortby = context.get_form_value('sortby', 'c2')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
         jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
@@ -841,9 +850,9 @@ class User(iUser, WorkflowAware, Handler):
                               batch_total, msgs=msgs)
             msg = None
         else:
-            actions = [('create_job', u'Add new job', 'button_ok',
+            jobs_actions = [('create_job', u'Add new job', 'button_ok',
                         None)]
-            job_table = table(columns, jobs, [sortby], sortorder, actions)
+            job_table = table(columns, jobs, [jobs_sortby], jobs_sortorder, jobs_actions)
             job_batch = None
             msg = None 
 
