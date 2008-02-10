@@ -283,7 +283,7 @@ class ExpertTravel(WebSite):
             # Information about the job
             address = job.parent
             company = address.parent
-            url = '%s/%s/;view' % (address.name, job.name)
+            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)

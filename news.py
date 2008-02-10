@@ -104,35 +104,43 @@ class News(RoleAware, Folder):
         if error is not None:
             return context.come_back(error, keep=keep)
         #
-        name = context.get_form_value('name')
+        here = get_context().handler
+        document_names = [ x for x in here.get_handler_names()
+                           if x.startswith('news') ]
+        if document_names:
+            i = get_sort_name(document_names[-1])[1] + 1
+            name = 'news%d' % i
+        else:
+            name = 'news1'
+        #name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         
         # Check the name 
-        name = name.strip() or title.strip()
-        if not name:
-            message = u'Please give a title to your job'
-            return context.come_back(message)
-        
-        name = name.lower()
-        name = checkid(name)
-        if name is None:
-            message = (u'The title contains illegal characters,'
-                       u' choose another one.')
-            return context.come_back(message)
-        # Name already used?
-        while container.has_handler(name):
-              try:
-                  names = name.split('_')
-                  if len(names) > 1:
-                      name = '_'.join(names[:-1])
-                      number = str(int(names[-1]) + 1) 
-                      name = [name, number]
-                      name = '_'.join(name)
-                  else:
-                      name = '_'.join(names) + '_1'
-              except:
-                  name = '_'.join(names) + '_1'
-        
+        #name = name.strip() or title.strip()
+        #if not name:
+        #    message = u'Please give a title to your job'
+        #    return context.come_back(message)
+        #
+        #name = name.lower()
+        #name = checkid(name)
+        #if name is None:
+        #    message = (u'The title contains illegal characters,'
+        #               u' choose another one.')
+        #    return context.come_back(message)
+        ## Name already used?
+        #while container.has_handler(name):
+        #      try:
+        #          names = name.split('_')
+        #          if len(names) > 1:
+        #              name = '_'.join(names[:-1])
+        #              number = str(int(names[-1]) + 1) 
+        #              name = [name, number]
+        #              name = '_'.join(name)
+        #          else:
+        #              name = '_'.join(names) + '_1'
+        #      except:
+        #          name = '_'.join(names) + '_1'
+        #
 
         # Set properties
         handler = cls()
