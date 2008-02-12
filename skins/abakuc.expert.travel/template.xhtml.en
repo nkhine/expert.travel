@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" 
@@ -11,107 +10,37 @@
           content="${meta/content}" />
 
     <!-- CSS -->
-    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
-    href="${style}"/>
-
+    <link href="fonts-min.css" rel="stylesheet" type="text/css" />
+    <link href="grids-min.css" rel="stylesheet" type="text/css" />
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
       />
-
-  </head>
-  <body>
-
-<div id="height">
-  <div id="header">
-    <div class="width">
-      <h1 class="title" title="Abakuc Expert.Travel">
-        <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
-      </h1>
-      <div id="navbar">
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/view_jobs">News</a></li>
-          <li><a href="/;view_jobs">Jobs</a></li>
-          <li><a href="/">FAQ</a></li>
-          <li><a href="/">More&nbsp;»</a></li>
-        </ul>
-      </div>
-      <form action="/;search" method="get">
-        <div id="search">
-          <input name="search_text" type="text" class="searchinput" 
-              value="" size="20" />
-          <input type="submit" value="Search"/>
+</head>
+<body>
+    <!-- choose fluid page and Template Preset -->
+    <div id="doc3" class="yui-t4">
+        <!-- main content block -->
+        <div id="yui-main">
+            <div class="yui-b">
+                <!-- stacked grid structure, Special Grid "b" -->
+                <div class="yui-gb">
+                    <div class="yui-u first">Special Grid "b" First</div>
+                    <div class="yui-u">yiu-u</div>
+                    <div class="yui-u">yui-u</div>
+                </div>
+                <!-- stacked grid structure, Special Grid "c" -->
+                <div class="yui-gc">
+                    <div class="yui-u first">Special Grid "c" First</div>
+                    <div class="yui-u">Special Grid "c"</div>
+                </div>
+                <!-- stacked grid structure -->
+                <div class="yui-g">
+                    <div class="yui-u first">stacked grid structure - first</div>
+                    <div class="yui-u">stacked grid structure</div>
+                </div>
+            </div>
         </div>
-      </form>
-      <div id="bar">
-        <ul>
-          <stl:block if="not user/info">
-            <li><a href="/;login_form">Log in</a></li>
-            <li>
-              <a href="/;register_form" stl:if="user/joinisopen">Register</a>
-            </li>
-          </stl:block>
-          <stl:block if="user/info">
-            <li><a href="${user/info/home}">My Profile</a></li>
-            <li><a href="/;logout">Log out</a></li>
-          </stl:block>
-          <li><a href="/;contact_form">Help</a></li>
-          <li><a href="/;contact_form">Contact</a></li>
-        </ul>
-      </div>
-    </div><!-- /header -->
-  </div><!--/width-->
-
-    <table width="100%" border="0" cellpadding="0" cellspacing="0">
-      <tr>
-        <td id="left" class="column" valign="top">
-          <table width="100%" border="0" cellpadding="0" cellspacing="0">
-            <!-- Left Menu -->
-            <tr>
-              <td>
-              <div class="navigation" stl:repeat="menu left_menus">
-                <label>${menu/title}</label>
-                ${menu/content}
-              </div>
-              </td>
-            </tr>
-            <tr stl:repeat="option level1">
-              <td>
-                <a href="/;search?level1=${option/name}">${option/title}</a>
-              </td>
-            </tr>
-          </table>
-        </td> 
-        <td id="center" class="column">
-          <div id="maintitle">
-            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-                <td id="message" stl:if="message">${message}</td>
-            <td id="logged">
-            <stl:block if="not user/info">
-              (not logged in)
-            </stl:block>
-            <stl:block if="user/info">
-              (logged in as <a href="${user/info/home}">${user/info/title}</a>)
-            </stl:block>
-            </td>
-            </tr>
-            </table>
-            <div class="clear"></div>
-          </div>
-          <!-- The Body -->
-          <div id="body">
-            <div id="content">${body}</div>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </div><!--/height-->
-  <div id="footer">
-    <a href="/;about">About</a>
-    <a href="/;credits">Credits</a>
-    <a href="/;license">License</a>
-  </div>
-
-  </body>
-</html>
+        <!-- secondary content block -->
+        <div class="yui-b">secondary content block</div>
+    </div>
+</body>
