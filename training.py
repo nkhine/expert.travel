@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
+import datetime
 
 # Import from itools
 from itools.stl import stl
@@ -21,6 +22,11 @@ from website import WebSite
 from document import Document
 from utils import get_sort_name
 from exam import Exam
+from namespaces import Region, BusinessFunction, JobFunction, BusinessProfile
+
+month_names = [
+    u'January', u'February', u'March', u'April', u'May', u'June',
+    u'July', u'August', u'September', u'October', u'November', u'December']
 
 class Trainings(WebSite):
 
@@ -97,6 +103,7 @@ class Training(WebSite):
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
+                   ['statistics', 'league'],
                    ['edit_metadata_form',
                     'virtual_hosts_form',
                     'anonymous_form',
@@ -196,7 +203,151 @@ class Training(WebSite):
             user = root.get_handler('users/%s' % username)
             schedule_to_reindex(user)
 
-    view__access__ = 'is_allowed_to_edit'
+    ########################################################################
+    # Statistics
+    statistics__access__ = True 
+    #statistics__access__ = 'is_allowed_to_view_statistics'
+    statistics__label__ = u'Statistics'
+    statistics__sublabel__ = u'Statistics'
+    def statistics(self, context):
+        year = context.get_form_value('year')
+        month = context.get_form_value('month')
+        module = context.get_form_value('module')
+        layout = context.get_form_value('layout', 'region/business_profile')
+        region = context.get_form_value('region')
+
+        # Build the namespace
+        namespace = {}
+        layout_options = [
+            ('region/business_profile', u'Region x Business profile'),
+            ('region/business_function', u'Region x Business function'),
+            ('region/job_function', u'Region x Job function'),
+            ('job_function/business_profile',
+             u'Job function x Business profile'),
+            ('job_function/business_function',
+             u'Job function x Business function'),
+            ('business_function/business_profile',
+             u'Business function x Business profile')]
+
+        namespace['layout'] = [
+            {'name': name, 'value': value, 'selected': name == layout}
+            for name, value in layout_options ]
+
+        namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
+                                 'selected': str(i+1) == month}
+                                for i, title in enumerate(month_names) ]
+        years = range(2001, datetime.date.today().year + 1)
+        namespace['years'] = [
+            {'name': x, 'value': x, 'selected': str(x) == year}
+            for x in years ]
+        namespace['modules'] = [
+            {'name': x.name, 'title': '%d - %s' % (i+1, x.title),
+             'selected': x.name == module}
+            for i, x in enumerate(self.get_modules()) ]
+
+        # Statistics criterias
+        vertical, horizontal = layout.split('/')
+        regions = Region.get_namespace(None)
+        criterias = {'region': regions,
+                     'business_function': BusinessFunction.get_options(),
+                     'job_function':  JobFunction.get_options(),
+                     'business_profile': BusinessProfile.get_options()}
+        horizontal_criterias = criterias[horizontal]
+        vertical_criterias = criterias[vertical]
+
+        # Filter the users
+        root = context.root
+        query = {'training_programmes': self.name}
+        if month:
+            query['registration_month'] = month
+        if year:
+            query['registration_year'] = year
+        if region:
+            query['region'] = region
+            vertical_criterias = Region.get_counties(region)
+            vertical = 'county'
+        # TEST 015
+        results = root.search(**query)
+        brains = results.get_documents()
+        if module:
+            aux = []
+            mod = self.get_handler(module)
+            for brain in brains:
+                exam = mod.get_exam(brain.name)
+                if exam is None:
+                    continue
+                has_passed = exam.get_result(brain.name)[0]
+                if has_passed:
+                    aux.append(brain)
+            brains = aux
+
+        # Classify the users
+        table = {}
+        table[('', '')] = 0
+        for x in horizontal_criterias:
+            table[(x['name'], '')] = 0
+        for y in vertical_criterias:
+            table[('', y['name'])] = 0
+        for x in horizontal_criterias:
+            x = x['name']
+            for y in vertical_criterias:
+                table[(x, y['name'])] = 0
+
+        for brain in brains:
+            x = getattr(brain, horizontal)
+            y = getattr(brain, vertical)
+            if x and y and (x, y) in table:
+                table[(x, y)] += 1
+                table[(x, '')] += 1
+                table[('', y)] += 1
+                table[('', '')] += 1
+
+        # Base URLs
+        base_stats = context.uri
+        base_show = get_reference(';show_users')
+        if month:
+            base_show = base_show.replace(month=month)
+        if year:
+            base_show = base_show.replace(year=year)
+        if module:
+            base_show = base_show.replace(module=module)
+
+        # Column headers
+        namespace['columns'] = [ x['value'] for x in horizontal_criterias ]
+
+        # The rows
+        rows = []
+        total = [{'name': '', 'value': self.gettext(u'Total')}]
+
+        query = {}
+        for y in vertical_criterias + total:
+            key, value = vertical, y['name']
+            if value:
+                query[key] = value
+            elif key in query:
+                del query[key]
+            rows.append({'title': y['value'], 'url': None, 'columns': []})
+            if vertical == 'region' and region is None:
+                rows[-1]['url'] = base_stats.replace(**query)
+
+            for x in horizontal_criterias + [{'name': ''}]:
+                if x['name']:
+                    query[horizontal] = x['name']
+                elif horizontal in query:
+                    del query[horizontal]
+                rows[-1]['columns'].append({'n': table[(x['name'], y['name'])],
+                                            'url': base_show.replace(**query)})
+
+        namespace['rows'] = rows
+
+        handler = self.get_handler('/ui/abakuc/training/statistics.xml')
+        return stl(handler, namespace)
+
+
+    ########################################################################
+    # View 
+    view__access__ = True 
+    #view__access__ = 'is_allowed_to_edit'
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -343,7 +494,7 @@ class Module(Folder):
 
         namespace['title'] = title 
         namespace['to_name'] = programme.get_vhosts() 
-        handler = self.get_handler('/ui/abakuc/training/list.xml')
+        handler = self.get_handler('/ui/abakuc/training/module/view.xml')
         return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))

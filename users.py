@@ -852,7 +852,7 @@ class User(iUser, WorkflowAware, Handler):
         else:
             jobs_actions = [('create_job', u'Add new job', 'button_ok',
                         None)]
-            job_table = table(columns, jobs, [jobs_sortby], jobs_sortorder, jobs_actions)
+            job_table = table(columns, jobs, [sortby], sortorder, jobs_actions)
             job_batch = None
             msg = None 
 

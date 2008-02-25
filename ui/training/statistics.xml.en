@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
+           xmlns="http://www.w3.org/1999/xhtml">
+<br/>
+<form method="get" action=";statistics">
+  <table>
+    <tr>
+      <td>
+        Registration date<br/>
+        <select name="month" style="font-size: 9px">
+          <option value="">[Month]</option>
+          <option stl:repeat="option months" value="${option/name}" 
+            selected="${option/selected}">${option/value}</option>
+        </select>
+        <select name="year" style="font-size: 9px">
+          <option value="">[Year]</option>
+          <option stl:repeat="option years" value="${option/name}" 
+            selected="${option/selected}">${option/value}</option>
+        </select>
+      </td>
+      <td>
+        Module<br/>
+        <select name="module" style="font-size: 9px">
+          <option value=""></option>
+          <option stl:repeat="module modules" stl:content="module/title"
+            stl:attributes="value module/name; selected module/selected" />
+        </select>
+      </td>
+    </tr>
+  </table>
+  <br/>
+  Table layout<br/>
+  <select name="layout" style="font-size: 9px">
+    <option stl:repeat="option layout" value="${option/name}"   
+      selected="${option/selected}">${option/value}</option>
+  </select>
+  <input style="font-size: 11px" type="submit" value=">> GO"/>
+</form>
+<br/>
+
+<table style="font-size: 11px">
+  <tr style="border-bottom: 1px solid black">
+    <th></th>
+    <th style="border-bottom: 1px solid black" valign="bottom" 
+      stl:repeat="column columns">${column}</th>
+    <th style="border-bottom: 1px solid black">Total</th>
+  </tr>
+  <tr stl:repeat="row rows">
+    <th>
+      <a stl:if="row/url" href="${row/url}">${row/title}</a>
+      <stl:block stl:if="not row/url">${row/title}</stl:block>
+    </th>
+    <td align="right" stl:repeat="column row/columns" style="font-size: 10px">
+      <a stl:if="column/n" href="${column/url}">${column/n}</a>
+      <stl:block stl:if="not column/n">0</stl:block>
+    </td>
+  </tr>
+</table>
+
+<br/>
+<p style="font-size: 12px">
+  &raquo; Download all registred users as
+  <a href=";statistics_csv">CSV file</a>.
+</p>
+
+</stl:block>
