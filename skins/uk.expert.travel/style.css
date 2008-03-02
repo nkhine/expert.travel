@@ -207,6 +207,34 @@ a.action:hover { background: #c8e7fa url(images/bg_action_hover_right.gif) no-re
 a.action:hover span { background: url(images/bg_action_hover_left.gif) no-repeat 0 0; }
 a.action:visited {color: #000;}
 
+/* PAGE NAVIGATION */
+.pagenav {
+    clear: both;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 2.4;
+    margin: 18px 0pt 0pt;
+    text-align: right;
+}
+
+.pagenav a:link, .pagenav a:visited, .pagenav a:active {
+    background: #FFFFFF none repeat scroll 0%;
+    border: 1px solid #AAAAAA;
+    color: #000000;
+    line-height: 2.2;
+    margin: 0pt 1px;
+    padding: 0pt 3px;
+    text-decoration: none;
+}
+
+.pagenav b, pagenav a:hover {
+    background: #000000 none repeat scroll 0%;
+    border: 1px solid #000000;
+    color: #FFFFFF;
+    padding: 0pt 3px;
+}
+
+
 /* SEEKER HOME */
 .jobseek a { text-decoration: none; }
 .jobseek a:hover { text-decoration: underline; }
