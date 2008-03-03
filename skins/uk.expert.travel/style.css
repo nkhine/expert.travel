@@ -31,6 +31,7 @@ no-repeat;width:400px;height:62px;}
 /**************************************************************************
  * Bar 
  **************************************************************************/
+
 #hd #bar{position:absolute;top:62px;right:15px;text-align:right;}
 #hd #bar ul{float:right;list-style:none;margin:0;padding:0;}
 #hd #bar li{float:left;margin:0;padding:0;}
@@ -41,25 +42,28 @@ no-repeat;width:400px;height:62px;}
  * Left menu style 
  **************************************************************************/
 #left {
-  float: left;
-  width: 180px;
+  background:url(images/right_nav_bkg.gif) top right no-repeat;
+  border:1px solid; border-color:#6899FF;
+  margin-top: 1em;
 }
-#left table {
-  border-collapse: collapse;
-  font-weight: bold;
-}
-
-#left label {
+#left ul {
   display: block;
+  border:1px solid; border-color:transparent;
   margin: 0.3em;
   padding: 0.3em 0.6em;
-  color: #fff;
-  background: #6899FF;
 }
 
-#left a {
-  padding-left: 0.4em;
+#left ul:hover {
+  background:#6899FF;
+  border:1px solid; border-color:#000000;
+  font-color: #ffffff;
 }
+#left a {
+  padding-left: 0.2em;
+  font-size: 93%;
+  text-decoration:none;
+}
+
 
 /**************************************************************************
  * Center column style

@@ -60,7 +60,7 @@
               </div><!-- /user information -->
             </div><!-- hd -->
             <div id="bd">
-                    <div class="yui-b">
+                    <div id="left" class="yui-b">
                         <ul stl:repeat="option level1">
                             <li>
                                 <a href="/;search?level1=${option/name}">
