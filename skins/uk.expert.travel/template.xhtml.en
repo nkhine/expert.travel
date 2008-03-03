@@ -94,13 +94,13 @@
                     <li><a href="/;about">About</a></li>
                     <li><a href="/;credits">Credits</a></li>
                     <li><a href="/;license">License</a></li>
-                    <li> <stl:block if="not user/info">
-                         (not logged in)
+                     <stl:block if="not user/info">
+                        <li><a href="/;login_form">(not logged in)</a></li>
                       </stl:block>
                       <stl:block if="user/info">
-                          (logged in as <a href="${user/info/home}">
-                          ${user/info/title}</a>)
-                      </stl:block></li>
+                          <li><a href="${user/info/home}">
+                          ${user/info/title}</a></li>
+                      </stl:block>
                 </ul>
             </div><!-- ft -->
         </div><!-- doc -->

@@ -3,8 +3,10 @@
 
 # Import from the standard library
 from datetime import date
+from string import Template
 
 # Import from itools
+from itools.datatypes import XMLAttribute
 from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 from itools import get_abspath
 from itools.cms.csv import CSV
@@ -19,7 +21,7 @@ from itools.xhtml import Document as XHTMLDocument
 # Import from abakuc
 from metadata import JobTitle, SalaryRange
 from website import WebSite
-
+from utils import t1, t2, t3, t4
 
 class ExpertTravel(WebSite):
  
@@ -298,7 +300,7 @@ class ExpertTravel(WebSite):
                          'description': description}
             jobs.append(job_to_add)
         # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_start = int(context.get_form_value('t2', default=0))
         batch_size = 5
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
@@ -309,7 +311,7 @@ class ExpertTravel(WebSite):
         if jobs:
             msgs = (u'There is one job.',
                     u'There are ${n} jobs.')
-            job_batch = batch(context.uri, batch_start, batch_size, 
+            job_batch = t2(context.uri, batch_start, batch_size, 
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -362,8 +364,9 @@ class ExpertTravel(WebSite):
                                'date_posted': get('dc:date'),
                                'owner': usertitle,
                                'description': description})
+
         # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_start = int(context.get_form_value('t1', default=0))
         batch_size = 5
         batch_total = len(news_items)
         batch_fin = batch_start + batch_size
@@ -374,7 +377,7 @@ class ExpertTravel(WebSite):
         if news_items:
             msgs = (u'There is one news item.',
                     u'There are ${n} news items.')
-            news_batch = batch(context.uri, batch_start, batch_size, 
+            news_batch = t1(context.uri, batch_start, batch_size, 
                               batch_total, msgs=msgs)
             msg = None
         else:

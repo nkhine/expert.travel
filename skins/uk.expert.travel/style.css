@@ -49,8 +49,7 @@ no-repeat;width:400px;height:62px;}
 #left ul {
   display: block;
   border:1px solid; border-color:transparent;
-  margin: 0.3em;
-  padding: 0.3em 0.6em;
+  padding: 0.1em 0.3em;
 }
 
 #left ul:hover {
@@ -150,24 +149,11 @@ input:focus, textarea:focus { background: #efefef; color: #000; }
 #document  P, IMG { margin: 0em; }
 
 
-#footer {
-  text-align: center;
-  border-top: 1px solid #6899FF;
-  font-size: 1.0em;
-  margin: 3.5em auto 0 auto;
-  padding: 0.3em;
-  width: 500px;
-}
-
-#footer a {
-  margin-left: 2em;
-  margin-right: 2em;
-  text-decoration: none;
-}
-
-#footer a:hover {
-  text-decoration: underline;
-}
+#ft {border-top: 1px solid #6899FF; font-size: 85%;} 
+#ft ul {list-style:none;margin:0;padding:0;}
+#ft li {float:left;margin:0;padding:0;}
+#ft a {margin-left: 1em; margin-right: 1em; text-decoration: none;}
+#ft a:hover {text-decoration: underline;}
 
 /* LINKS */
 a img { border: 0; }
