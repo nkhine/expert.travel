@@ -63,46 +63,52 @@ no-repeat;width:400px;height:62px;}
   text-decoration:none;
 }
 
-
-/**************************************************************************
- * Center column style
- **************************************************************************/
-#center {
-  vertical-align: top; 
-  width: 100%;
-}
 /**************************************************************************
  * Right column style 
  **************************************************************************/
-#right {
-  float: right;
-  width: 160px;
-  vertical-align: top; 
-}
-#right .adverts { text-align: left; }
+#bread { margin: 0.3em 0 0 0; font-size: 77%; }
+#batch { text-align:right; margin: 0.2em; font-size: 77%; }
 /**************************************************************************
  * Categories style 
  **************************************************************************/
-#categories		{
+#wrap	{
+	margin: 0.5em 0.5em 0.2em 0.5em;
 	background-color: #F5F5F5;
 	border: 1px solid #a5a5a5;
 }
-#category { 
-	margin: 0 0 0 0.5em;
+
+#categories { 
+	margin: 0.1em 0.5em 0.1em 0.5em;
+	font-size: 85%;
 }
-#category span { 
-	font-size: 11px;
-}
-#category .divider { 
-  margin-left: -0.5em;
-}
-#category a { 
+
+#categories a { 
   text-decoration: none;
 }
-#category a:hover {
+
+#categories a:hover {
   text-decoration: underline;
 }
 
+/**************************************************************************
+ * Form   
+ **************************************************************************/
+#form {
+	margin: 0.5em;
+  white-space: nowrap;
+}
+
+#form fieldset { border: 1px solid #000; }
+
+#form legend { padding: 0; color: #000; }
+
+#form label { color: #333fff; font-size: 77%; }
+#form input, textarea, select {
+	margin: 0;
+	padding: 1px;
+	}
+
+#form input:focus, textarea:focus { background: #efefef; color: #000; }
 /**************************************************************************
  * Lists   
  **************************************************************************/
@@ -112,33 +118,11 @@ no-repeat;width:400px;height:62px;}
 }
 .ListItem			{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #BBBBBB; background-color: #FFFFE1; }
 .ListItem_Hover		{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #CCCCCC; background-color: #FFFFCC; }
-.ListItem dt { font-size: 1.2em; font-weight: bold; }
-.ListItem_Hover dt { font-size: 1.2em; font-weight: bold; }
+.ListItem dt { font-size: 93%; font-weight: bold; }
+.ListItem_Hover dt { font-size: 93%; font-weight: bold; }
 .ListItem dt a { text-decoration: none; color: #000; }
 .ListItem_Hover dt a { text-decoration: none; color: #000; }
-.SmallText				{ font-size: 10px; color: #666666; }
-
-
-/**************************************************************************
- * 
- * ***********************************************************************/
-
-/* Registration Form
-fieldset { border: 1px solid #000; }
-
-legend { padding: 0; color: #000; }
-
-label { color: #333fff; }
-
-input, textarea, select {
-	margin: 0;
-	padding: 1px;
-	font-size: 100%;
-  width: 100px;
-	font-family: inherit;
-	}
-
-input:focus, textarea:focus { background: #efefef; color: #000; }
+.SmallText				{ font-size: 77%; color: #666666; }
 
 /**************************************************************************
  * Footer

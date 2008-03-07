@@ -11,8 +11,9 @@
           content="${meta/content}" />
 
     <!-- CSS -->
-    <link href="http://developer.yahoo.com/yui/build/reset-fonts-grids/reset-fonts-grids.css"
-    rel="stylesheet" type="text/css" />
+    <!--<link href="http://developer.yahoo.com/yui/build/reset-fonts-grids/reset-fonts-grids.css"
+    rel="stylesheet" type="text/css" /> -->
+    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
     <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <!-- JavaScript -->
@@ -74,7 +75,7 @@
                     </div><!-- yui-b -->
                     <div id="yui-main">
                         <div class="yui-b">
-                            <div id="breadcrumbs"><!-- breadcrumbs -->
+                            <div id="bread"><!-- breadcrumbs -->
                                 <label>Location:</label>
                                 <span stl:repeat="item breadcrumb">
                                     <a stl:if="item/url" href="${item/url}"
