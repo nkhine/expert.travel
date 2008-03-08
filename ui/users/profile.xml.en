@@ -2,62 +2,26 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <stl:block if="is_self_or_admin">
-    <table width="100%" border="0">
-      <tr>
+  <div class="yui-g">
+    <div class="yui-u first">
         <stl:block if="not address">
-        <td><h2>Company Name/Address</h2></td>
-            <stl:block if="not lastname">
-            <td><h2>Personnal Details</h2></td>
-            </stl:block>
-        </stl:block>
-        <stl:block if="address">
-        <td><h2>${company/title}</h2></td>
-            <stl:block if="not lastname">
-            <td><h2>Personnal Details</h2></td>
-            </stl:block>
-            <stl:block if="lastname">
-            <td><h2>${firstname} ${lastname}</h2></td>
-            </stl:block>
-        </stl:block>
-      </tr>
-      <tr>
-        <td rowspan="2">
-          <stl:block if="not address">
+        <h2>Company Name/Address</h2>
             <em>You are not attached to any company</em>.
               Please <a href=";setup_company_form">set up your company</a>
               before proceeding.
-          </stl:block>
-          <stl:block if="address">
-            <table>
-              <tr>
-                <th align="right" valign="top">Website</th>
-                <td><a href="${company/website}">${company/website}</a></td>
-              </tr>
-              <tr>
-                <th align="right" valign="top">Address</th>
-                <td><address>${address/address}</address></td>
-              </tr>
-              <tr>
-                <th align="right">Town</th>
-                <td>${address/town}</td>
-              </tr>
-              <tr>
-                <th align="right">County</th>
-                <td>${address/county}</td>
-              </tr>
-              <tr>
-                <th align="right">Postcode</th>
-                <td>${address/postcode}</td>
-              </tr>
-              <tr stl:if="address/phone">
-                <th align="right">Phone</th>
-                <td>${address/phone}</td>
-              </tr>
-              <tr stl:if="address/fax">
-                <th align="right">Fax</th>
-                <td>${address/fax}</td>
-              </tr>
-            </table>
+        </stl:block>
+        <stl:block if="address">
+            <h2>${company/title}</h2>
+              <dt><a href="${company/website}">${company/website}</a></dt>
+              <dd>
+                <address>${address/address}<br />
+                ${address/town}<br />
+                ${address/county}<br />
+                ${address/postcode}
+                </address>
+              </dd>
+              <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
+              <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
             <ul>
               <li>
                 <a href="${company/path}/;view">
@@ -80,9 +44,19 @@
               To manage these records, please contact ${contact} who is
               the Manager for this record or contact the site administrator.
             </p>
-          </stl:block>
-        </td>
-        <td valign="top">
+        <div stl:if="is_reviewer_or_member">
+            <!-- Tabs -->
+                ${tabs}
+        </div>
+    </stl:block>
+    </div> <!-- yui-u first -->
+    <div class="yui-u">
+            <stl:block if="not lastname">
+            <h2>Personnal Details</h2>
+            </stl:block>
+            <stl:block if="lastname">
+            <h2>${firstname} ${lastname}</h2>
+            </stl:block>
           <table>
             <tr>
               <td rowspan="4">
@@ -114,21 +88,12 @@
                 class="wf_${statename}">${state}</strong></a>
               </td>
             </tr>
-
           </table>
           <p>
             <a href=";portrait_form">Modify portrait.</a>
             <a href=";edit_account_form">Edit account details.</a>
             <a href=";edit_password_form">Change password.</a>
           </p>
-        </td>
-      </tr>
-    </table>
-    <p stl:if="is_reviewer_or_member">
-        <!-- Tabs -->
-        <stl:block if="address">
-            ${tabs}
-        </stl:block>
-    </p>
+      </div> <!-- yui-u -->
+  </div> <!-- yui-g -->
   </stl:block>
-</stl:block>

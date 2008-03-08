@@ -271,11 +271,13 @@ class Company(WebSite):
             url = '/companies/%s/%s/;view' % (company.name, address.name)
             enquire = '/companies/%s/%s/;enquiry_form' % (company.name, address.name)
             namespace['addresses'].append({'url': url,
-                                           'enquire': enquire,
-                                           'address': address.get_property('abakuc:address'),
-                                           'postcode': address.get_property('abakuc:postcode'),
-                                           'phone': address.get_property('abakuc:phone'),
-                                           'title': address.title_or_name})
+                               'enquire': enquire,
+                               'address': address.get_property('abakuc:address'),
+                               'town': address.get_property('abakuc:town'),
+                               'postcode': address.get_property('abakuc:postcode'),
+                               'phone': address.get_property('abakuc:phone'),
+                               'fax': address.get_property('abakuc:fax'),
+                               'title': address.title_or_name})
 
             members = []
             branch_members = address.get_members()
@@ -292,7 +294,27 @@ class Company(WebSite):
                 namespace['members'] = members 
             namespace['users'] = self.get_members_namespace(address)
             #namespace['users'] = self.get_members_namespace(address)
+        # Set batch informations
+        #batch_start = int(context.get_form_value('batchstart', default=0))
+        #batch_size = 5
+        #batch_total = len(addresses)
+        #batch_fin = batch_start + batch_size
+        #if batch_fin > batch_total:
+        #    batch_fin = batch_total
+        #addresses = addresses[batch_start:batch_fin]
+        ## Namespace 
+        #if addresses:
+        #    msgs = (u'There is one addresse.',
+        #            u'There are ${n} addresses.')
+        #    address_batch = batch(context.uri, batch_start, batch_size, 
+        #                      batch_total, msgs=msgs)
+        #    msg = None
+        #else:
+        #    address_table = None
+        #    address_batch = None
+        #    msg = u'Sorry but there is no address associated with this company.'
 
+        #namespace['address_batch'] = address_batch
         handler = self.get_handler('/ui/abakuc/companies/list_addresses.xml')
 
         return stl(handler, namespace)
@@ -1032,11 +1054,13 @@ class Address(RoleAware, WorkflowAware, Folder):
             url = '/companies/%s/%s/;view' % (company.name, address.name)
             enquire = '/companies/%s/%s/;enquiry_form' % (company.name, address.name)
             namespace['addresses'].append({'url': url,
-                                           'enquire': enquire,
-                                           'address': address.get_property('abakuc:address'),
-                                           'postcode': address.get_property('abakuc:postcode'),
-                                           'phone': address.get_property('abakuc:phone'),
-                                           'title': address.title_or_name})
+                               'enquire': enquire,
+                               'address': address.get_property('abakuc:address'),
+                               'town': address.get_property('abakuc:town'),
+                               'postcode': address.get_property('abakuc:postcode'),
+                               'phone': address.get_property('abakuc:phone'),
+                               'fax': address.get_property('abakuc:fax'),
+                               'title': address.title_or_name})
 
         namespace['users'] = self.get_members_namespace(address)
         handler = self.get_handler('/ui/abakuc/companies/list_addresses.xml')

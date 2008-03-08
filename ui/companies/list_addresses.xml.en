@@ -4,13 +4,27 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
     <h1>Branches</h1>
-    <div stl:repeat="address addresses">
-        <a href="${address/url}">${address/address}</a>
-        ${address/postcode}
-        ${address/phone}
-        <a href="${address/enquire}">Send Enquiry</a>
+        <div class="List">
+      <stl:block stl:repeat="address addresses"> 
+        <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+          onmouseout="this.className='ListItem';">  
+          <dt>
+            <a href="${address/url}">${address/address}</a>
+          </dt>
+            <dd>
+              <address>
+              ${address/town}, ${address/postcode}<br/>
+              </address>
+              Phone: ${address/phone}, Fax: ${address/fax}
+            </dd>
+            <div class="info">
+                <a href="${address/enquire}">Send Enquiry</a>
+            </div>
+        </dl>       
+      </stl:block>
     </div>
-    <div stl:repeat="item users">
+
+    <!--<div stl:repeat="item users">
         <a href="${item/url}">${item/id} ${item/title}</a>
-    </div>
+    </div> -->
 </stl:block>
