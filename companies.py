@@ -847,6 +847,7 @@ class Address(RoleAware, WorkflowAware, Folder):
     list_jobs__label__ = u'Our jobs'
     list_jobs__access__ = True
     def list_jobs(self, context):
+        from root import world
         namespace = {}
         namespace['batch'] = ''
         all_jobs = self.search_handlers(handler_class=Job)
