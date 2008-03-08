@@ -19,7 +19,7 @@
         </stl:block>
         <stl:block  stl:if="level">
           <a stl:repeat="option level" href="${option/href}">
-            ${option/title}
+            ${option/title}&nbsp;»&nbsp;
           </a>
         </stl:block>
         </div>
