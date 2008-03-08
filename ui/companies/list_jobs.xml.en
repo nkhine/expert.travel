@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <h1>Jobs</h1>
-        <div>
+        <div class="batch">
           ${batch}
         </div>
         <div stl:if="msg">${msg}</div>
@@ -14,8 +14,11 @@
                 <a href="${job/url}">${job/title}</a>
               </dt>
               <dd>
-                ${job/function} - ${job/salary} - ${job/closing_date}<br />
-                ${job/description}<br />
+                ${job/description}
+                  <div class="info">
+                    ${job/function} - ${job/region} - ${job/salary} - <a href="${job/apply}"
+                    title="Apply for ${job/title}, by ${job/closing_date}">${job/closing_date}</a>
+                  </div>
               </dd>
             </dl>       
           </stl:block>

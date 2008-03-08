@@ -24,7 +24,7 @@
         </stl:block>
         </div>
       </div>
-      <div id="batch">
+      <div class="batch">
         ${batch}
       </div>
       <div id="List">

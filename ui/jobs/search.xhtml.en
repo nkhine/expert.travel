@@ -7,32 +7,46 @@
 <div class="yui-ge first">
     <div class="yui-u first">
       <div id="wrap">
-        <form method="get" action="/;view_news" id="form">
+        <form method="get" action="/;jobs" id="form">
                <dl>
-                    <dt><label for="news_title">Keywords: (e.g. Whats
-                    new)</label></dt>
                     <dd>
-                    <input name="news_title" type="text" size="25" />
-                    <input name="news_title" type="text" size="25" />
+                    <input type="text" size="20" name="job_title" value="${job_title}"/>
+                      <select name="function">
+                        <option stl:repeat="f function" value="${f/name}"
+                         selected="${f/selected}">
+                         ${f/value}
+                        </option>
+                      </select>
+                      <select name="salary">
+                        <option stl:repeat="j salary" value="${j/name}"
+                         selected="${j/selected}">
+                         ${j/value}
+                        </option>
+                      </select>
                     <input name="search" type="submit" value="Search..." />
                     </dd>
+                    <dt><label for="news_title">Keywords: (e.g. Sales Manager)
+                    </label></dt>
            </dl>
         </form>
       </div>
-      <div id="batch">
+      <div class="batch">
         ${batch}
         <span stl:if="msg">${msg}</span>
       </div>
       <div id="List">
-          <stl:block repeat="news news_items"> 
+          <stl:block repeat="job jobs"> 
             <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
               onmouseout="this.className='ListItem';">  
               <dt>
-                <a href="${news/url}">${news/title}</a>
+                <a href="${job/url}">${job/title}</a>
               </dt>
               <dd>
-                ${news/closing_date}<br />
-                <dd>${news/description}</dd>
+                <dd>${job/description}</dd>
+                  <div class="info">
+                    ${job/function} - ${job/region} - ${job/salary} - <a href="${job/apply}"
+                    title="Apply for ${job/title}, by ${job/closing_date}">${job/closing_date}</a>
+                  </div>
               </dd>
             </dl>       
           </stl:block>
@@ -78,22 +92,4 @@
         </script>
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->
-
-        <a href="http://www.jdoqocy.com/l5115r09608ORTXPYRYOQPTPTYVV?sid=SearchForm" target="_blank" onmouseover="window.status='http://www.salestarget.co.uk';return true;" onmouseout="window.status=' ';return true;">
-        <img src="http://www.lduhtrp.net/1o117y7B-53PSUYQZSZPRQUQUZWW" alt="Sales jobs at salestarget.co.uk " border="0"/></a>
-      
-      Industry Sector:
-      Salary band:
-         <!--  <select name="function">
-            <option stl:repeat="f function" value="${f/name}"
-             selected="${f/selected}">
-             ${f/value}
-            </option>
-          </select> -->
-        <!--   <select name="salary">
-            <option stl:repeat="j salary" value="${j/name}"
-             selected="${j/selected}">
-             ${j/value}
-            </option>
-          </select> -->
 </stl:block>

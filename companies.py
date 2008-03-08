@@ -303,6 +303,7 @@ class Company(WebSite):
     list_jobs__label__ = u'List jobs'
     list_jobs__access__ = True
     def list_jobs(self, context):
+        from root import world
         namespace = {}
         namespace['batch'] = ''
         root = context.root
@@ -322,13 +323,26 @@ class Company(WebSite):
             # Information about the job
             address = job.parent
             company = address.parent
-            url = '%s/%s/;view' % (address.name, job.name)
+            county_id = get('abakuc:county')
+            if county_id is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
+            url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
+            apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                          'url': url,
+                         'apply': apply,
                          'title': get('dc:title'),
+                         'county': county,
+                         'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(), 
                          'function': JobTitle.get_value(

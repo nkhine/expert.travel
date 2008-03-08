@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <h1>News</h1>
-    <div>
+    <div class="batch">
       ${news_batch}
     </div>
     <div stl:if="msg">${msg}</div>
@@ -14,11 +14,11 @@
             <a href="${news_items/url}">${news_items/title}</a>
           </dt>
           <dd>
-            ${news_items/date_posted}<br />
-            ${news_items/owner}<br />
-            ${news_items/closing_date}<br />
-            ${news_items/description}<br />
+            ${news_items/description}
           </dd>
+            <div class="info">
+            Posted on ${news_items/date_posted} by ${news_items/owner}
+            </div>
         </dl>       
       </stl:block>
     </div>
