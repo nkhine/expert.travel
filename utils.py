@@ -4,13 +4,19 @@
 # Import from the Standard Library
 from datetime import datetime
 from operator import itemgetter
+from string import Template
 
 # Import from itools
 from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.web import get_context
+from itools.datatypes import XMLAttribute
+from itools.cms.base import Handler
+from itools.xml import Parser
 
-
+namespaces = {
+    None: 'http://www.w3.org/1999/xhtml',
+    'stl': 'http://xml.itools.org/namespaces/stl'}
 
 def title_to_name(title):
     title = title.encode('ascii', 'replace')
@@ -110,3 +116,222 @@ def get_sort_name(name):
 
     return tuple(result)
 
+def t1(uri, start, size, total, gettext=Handler.gettext,
+          msgs=(u"There is 1 object.", u"There are ${n} objects.")):
+    # Plural forms (XXX do it the gettext way)
+    if total == 1:
+        msg1 = gettext(msgs[0])
+    else:
+        msg1 = gettext(msgs[1])
+        msg1 = Template(msg1).substitute(n=total)
+    msg1 = msg1.encode('utf-8')
+
+    # Calculate end
+    end = min(start + size, total)
+
+    # Previous
+    previous = None
+    if start > 0:
+        previous = max(start - size, 0)
+        previous = str(previous)
+        previous = uri.replace(t1=previous)
+        previous = str(previous)
+        previous = XMLAttribute.encode(previous)
+        previous = '<a href="%s" title="%s">&lt;&lt;</a>' \
+                   % (previous, gettext(u'Previous'))
+    # Next
+    next = None
+    if end < total:
+        next = str(end)
+        next = uri.replace(t1=next)
+        next = str(next)
+        next = XMLAttribute.encode(next)
+        next = '<a href="%s" title="%s">&gt;&gt;</a>' \
+               % (next, gettext(u'Next'))
+
+    # Output
+    if previous is None and next is None:
+        msg = msg1
+    else:
+        # View more
+        if previous is None:
+            link = next
+        elif next is None:
+            link = previous
+        else:
+            link = '%s %s' % (previous, next)
+
+        msg2 = gettext(u"View from ${start} to ${end} (${link}):")
+        msg2 = Template(msg2)
+        msg2 = msg2.substitute(start=(start+1), end=end, link=link)
+        msg2 = msg2.encode('utf-8')
+
+        msg = '%s %s' % (msg1, msg2)
+
+    # Wrap around a paragraph
+    return Parser('<p class="batchcontrol">%s</p>' % msg, namespaces)
+
+def t2(uri, start, size, total, gettext=Handler.gettext,
+          msgs=(u"There is 1 object.", u"There are ${n} objects.")):
+    # Plural forms (XXX do it the gettext way)
+    if total == 1:
+        msg1 = gettext(msgs[0])
+    else:
+        msg1 = gettext(msgs[1])
+        msg1 = Template(msg1).substitute(n=total)
+    msg1 = msg1.encode('utf-8')
+
+    # Calculate end
+    end = min(start + size, total)
+
+    # Previous
+    previous = None
+    if start > 0:
+        previous = max(start - size, 0)
+        previous = str(previous)
+        previous = uri.replace(t2=previous)
+        previous = str(previous)
+        previous = XMLAttribute.encode(previous)
+        previous = '<a href="%s" title="%s">&lt;&lt;</a>' \
+                   % (previous, gettext(u'Previous'))
+    # Next
+    next = None
+    if end < total:
+        next = str(end)
+        next = uri.replace(t2=next)
+        next = str(next)
+        next = XMLAttribute.encode(next)
+        next = '<a href="%s" title="%s">&gt;&gt;</a>' \
+               % (next, gettext(u'Next'))
+
+    # Output
+    if previous is None and next is None:
+        msg = msg1
+    else:
+        # View more
+        if previous is None:
+            link = next
+        elif next is None:
+            link = previous
+        else:
+            link = '%s %s' % (previous, next)
+
+        msg2 = gettext(u"View from ${start} to ${end} (${link}):")
+        msg2 = Template(msg2)
+        msg2 = msg2.substitute(start=(start+1), end=end, link=link)
+        msg2 = msg2.encode('utf-8')
+
+        msg = '%s %s' % (msg1, msg2)
+
+    # Wrap around a paragraph
+    return Parser('<p class="batchcontrol">%s</p>' % msg, namespaces)
+
+def t3(uri, start, size, total, gettext=Handler.gettext,
+          msgs=(u"There is 1 object.", u"There are ${n} objects.")):
+    # Plural forms (XXX do it the gettext way)
+    if total == 1:
+        msg1 = gettext(msgs[0])
+    else:
+        msg1 = gettext(msgs[1])
+        msg1 = Template(msg1).substitute(n=total)
+    msg1 = msg1.encode('utf-8')
+
+    # Calculate end
+    end = min(start + size, total)
+
+    # Previous
+    previous = None
+    if start > 0:
+        previous = max(start - size, 0)
+        previous = str(previous)
+        previous = uri.replace(t3=previous)
+        previous = str(previous)
+        previous = XMLAttribute.encode(previous)
+        previous = '<a href="%s" title="%s">&lt;&lt;</a>' \
+                   % (previous, gettext(u'Previous'))
+    # Next
+    next = None
+    if end < total:
+        next = str(end)
+        next = uri.replace(t3=next)
+        next = str(next)
+        next = XMLAttribute.encode(next)
+        next = '<a href="%s" title="%s">&gt;&gt;</a>' \
+               % (next, gettext(u'Next'))
+
+    # Output
+    if previous is None and next is None:
+        msg = msg1
+    else:
+        # View more
+        if previous is None:
+            link = next
+        elif next is None:
+            link = previous
+        else:
+            link = '%s %s' % (previous, next)
+
+        msg2 = gettext(u"View from ${start} to ${end} (${link}):")
+        msg2 = Template(msg2)
+        msg2 = msg2.substitute(start=(start+1), end=end, link=link)
+        msg2 = msg2.encode('utf-8')
+
+        msg = '%s %s' % (msg1, msg2)
+
+    # Wrap around a paragraph
+    return Parser('<p class="batchcontrol">%s</p>' % msg, namespaces)
+
+def t4(uri, start, size, total, gettext=Handler.gettext,
+          msgs=(u"There is 1 object.", u"There are ${n} objects.")):
+    # Plural forms (XXX do it the gettext way)
+    if total == 1:
+        msg1 = gettext(msgs[0])
+    else:
+        msg1 = gettext(msgs[1])
+        msg1 = Template(msg1).substitute(n=total)
+    msg1 = msg1.encode('utf-8')
+
+    # Calculate end
+    end = min(start + size, total)
+
+    # Previous
+    previous = None
+    if start > 0:
+        previous = max(start - size, 0)
+        previous = str(previous)
+        previous = uri.replace(t4=previous)
+        previous = str(previous)
+        previous = XMLAttribute.encode(previous)
+        previous = '<a href="%s" title="%s">&lt;&lt;</a>' \
+                   % (previous, gettext(u'Previous'))
+    # Next
+    next = None
+    if end < total:
+        next = str(end)
+        next = uri.replace(t4=next)
+        next = str(next)
+        next = XMLAttribute.encode(next)
+        next = '<a href="%s" title="%s">&gt;&gt;</a>' \
+               % (next, gettext(u'Next'))
+
+    # Output
+    if previous is None and next is None:
+        msg = msg1
+    else:
+        # View more
+        if previous is None:
+            link = next
+        elif next is None:
+            link = previous
+        else:
+            link = '%s %s' % (previous, next)
+
+        msg2 = gettext(u"View from ${start} to ${end} (${link}):")
+        msg2 = Template(msg2)
+        msg2 = msg2.substitute(start=(start+1), end=end, link=link)
+        msg2 = msg2.encode('utf-8')
+
+        msg = '%s %s' % (msg1, msg2)
+
+    # Wrap around a paragraph
+    return Parser('<p class="batchcontrol">%s</p>' % msg, namespaces)

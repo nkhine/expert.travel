@@ -1,50 +1,33 @@
 /*Copyright 2007 Abakuc Limited */
+h1, h2 {
+font-size:116%;
+font-weight:bold;
+}
 
-#height{position:relative;min-height:100%;}
-
-body,html{height:100%;}
-* html #height{height:100%;}
-.width{position:relative;min-width: 770px;max-width: 960px;width:auto !important;width:960px;}
-
-.clearfix { display: inline-block; }
 /**************************************************************************
  * Header 
  **************************************************************************/
-#header{width:100%;position:relative;z-index:10;background:#6899FF;
-  margin-bottom: 0px;
-  padding: 0px;
-  text-align: left;
-}
-#header h1{background:url(images/logo.png) top left
-no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bottom:
-0em;
-
-  padding: 0px;
-  color: none;
-  font-size: 1.1em;
-}
-
-#header h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
-
-#header h1 a:hover {background:none;border:none;text-decoration: none;}
+#hd{ background:#6899FF;}
+#hd h1 { background:url(images/logo.png) top left
+no-repeat;width:400px;height:62px;}
+#hd h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
+#hd h1 a:hover {background:none;border:none;text-decoration: none;}
 
 /**************************************************************************
  * Navigation Bar 
  **************************************************************************/
-#header #navbar{position:absolute;top:0;right:5px;text-align:right;margin:0;}
-#header #navbar ul{float:right;list-style:none;margin:0;padding:0;}
-#header #navbar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;color:white;}
-#header #navbar a{font-size: 1.1em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
-#header #navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
+#hd #navbar{position:absolute;top:0;right:15px;text-align:right;}
+#hd #navbar ul{float:right;list-style:none;}
+#hd #navbar li{float:left;color:white;}
+#hd #navbar a{float:left;display:block;color:#333;border:1px solid;border-color:#6899FF;background:#6899FF;margin:0 1px 0 0;padding:1px 8px;}
+#hd #navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
 
 /**************************************************************************
  * Search 
  **************************************************************************/
-#header #search {position:absolute;bottom:21px;right:5px;text-align:right;margin:0;}
+#hd #search {position:absolute;top:26px;right:15px;text-align:right;}
 
-#header .searchinput {
-    font:normal 11px Tahoma, Arial;
-    color:#000;
+#hd .searchinput {
     margin:0px 8px 0px 0px;
     background:#fff url(images/mag_glass.gif) no-repeat;
     padding:2px 2px 2px 17px
@@ -52,86 +35,91 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 /**************************************************************************
  * Bar 
  **************************************************************************/
-#header #bar{position:absolute;bottom:0;right:5px;text-align:right;margin:0;}
-#header #bar ul{float:right;list-style:none;margin:0;padding:0;}
-#header #bar li{float:left;font-family:"Lucida Grande", sans-serif;margin:0;padding:0;}
-#header #bar a{font-size: 1.0em;font-weight:bold;float:left;display:block;color:#333;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#F9E9A9 url(images/off_bg.gif) repeat-x top left;margin:0 1px 0 0;padding:1px 8px;}
-#header #bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
+
+#hd #bar{position:absolute;top:62px;right:15px;text-align:right;}
+#hd #bar ul{float:right;list-style:none;margin:0;padding:0;}
+#hd #bar li{float:left;margin:0;padding:0;}
+#hd #bar a{display:block;color:#333;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#F9E9A9;margin:0 1px 0 0;padding:1px 8px;}
+#hd #bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
 
 /**************************************************************************
  * Left menu style 
  **************************************************************************/
 #left {
-  float: left;
-  width: 180px;
+  background:url(images/right_nav_bkg.gif) top right no-repeat;
+  border:1px solid; border-color:#6899FF;
+  margin-top: 1em;
 }
-#left table {
-  border-collapse: collapse;
-  font-weight: bold;
-}
-
-#left label {
+#left ul {
   display: block;
-  margin: 0.3em;
-  padding: 0.3em 0.6em;
-  color: #fff;
-  background: #6899FF;
+  border:1px solid; border-color:transparent;
+  padding: 0.1em 0.3em;
 }
 
+#left ul:hover {
+  background:#6899FF;
+  border:1px solid; border-color:#000000;
+  font-color: #ffffff;
+}
 #left a {
-  padding-left: 0.4em;
+  padding-left: 0.2em;
+  font-size: 93%;
+  text-decoration:none;
 }
 
-/**************************************************************************
- * Main title style 
- **************************************************************************/
-#maintitle {
-  border-collapse: collapse;
-  height: 1.5em;
-}
-#maintitle a {
-  text-decoration: none;
-}
-#maintitle .information { float: right; }
-/**************************************************************************
- * Center column style
- **************************************************************************/
-#center {
-  vertical-align: top; 
-  width: 100%;
-}
 /**************************************************************************
  * Right column style 
  **************************************************************************/
-#right {
-  float: right;
-  width: 160px;
-  vertical-align: top; 
-}
-#right .adverts { text-align: left; }
+#bread { margin: 0.3em 0 0 0; font-size: 77%; }
+.batch { text-align:right; margin: 0.2em; font-size: 77%; }
+.info { text-align:right; margin: 0.3em; font-size: 85%; }
 /**************************************************************************
  * Categories style 
  **************************************************************************/
-#categories		{
+#wrap	{
+	margin: 0.5em 0.5em 0.2em 0.5em;
 	background-color: #F5F5F5;
 	border: 1px solid #a5a5a5;
 }
-#category { 
-	margin: 0 0 0 0.5em;
+
+#categories { 
+	margin: 0.1em 0.5em 0.1em 0.5em;
+	font-size: 85%;
 }
-#category span { 
-	font-size: 11px;
-}
-#category .divider { 
-  margin-left: -0.5em;
-}
-#category a { 
+
+#categories a { 
   text-decoration: none;
 }
-#category a:hover {
+
+#categories a:hover {
   text-decoration: underline;
 }
 
+/**************************************************************************
+ * Content box   
+ **************************************************************************/
+#content {
+	margin: 0.5em;
+}
+/**************************************************************************
+ * Form   
+ **************************************************************************/
+#form {
+	margin: 0.5em;
+  white-space: nowrap;
+}
+
+#form fieldset { border: 1px solid #000; }
+
+#form legend { padding: 0; color: #000; }
+
+#form label { color: #333fff; font-size: 77%; }
+#form input, textarea, select {
+	margin: 0;
+	padding: 1px;
+	}
+
+#form input:focus, textarea:focus { background: #efefef; color: #000; }
 /**************************************************************************
  * Lists   
  **************************************************************************/
@@ -141,33 +129,11 @@ no-repeat;width:400px;height:62px;position:relative;margin:0;padding:0;margin-bo
 }
 .ListItem			{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #BBBBBB; background-color: #FFFFE1; }
 .ListItem_Hover		{ margin: 0; padding: 1px; padding-left: 5px; padding-right: 5px; border-bottom: 1px dashed #CCCCCC; background-color: #FFFFCC; }
-.ListItem dt { font-size: 1.2em; font-weight: bold; }
-.ListItem_Hover dt { font-size: 1.2em; font-weight: bold; }
+.ListItem dt { font-size: 93%; font-weight: bold; }
+.ListItem_Hover dt { font-size: 93%; font-weight: bold; }
 .ListItem dt a { text-decoration: none; color: #000; }
 .ListItem_Hover dt a { text-decoration: none; color: #000; }
-.SmallText				{ font-size: 10px; color: #666666; }
-
-
-/**************************************************************************
- * 
- * ***********************************************************************/
-
-/* Registration Form
-fieldset { border: 1px solid #000; }
-
-legend { padding: 0; color: #000; }
-
-label { color: #333fff; }
-
-input, textarea, select {
-	margin: 0;
-	padding: 1px;
-	font-size: 100%;
-  width: 100px;
-	font-family: inherit;
-	}
-
-input:focus, textarea:focus { background: #efefef; color: #000; }
+.SmallText				{ font-size: 77%; color: #666666; }
 
 /**************************************************************************
  * Footer
@@ -178,24 +144,11 @@ input:focus, textarea:focus { background: #efefef; color: #000; }
 #document  P, IMG { margin: 0em; }
 
 
-#footer {
-  text-align: center;
-  border-top: 1px solid #6899FF;
-  font-size: 1.0em;
-  margin: 3.5em auto 0 auto;
-  padding: 0.3em;
-  width: 500px;
-}
-
-#footer a {
-  margin-left: 2em;
-  margin-right: 2em;
-  text-decoration: none;
-}
-
-#footer a:hover {
-  text-decoration: underline;
-}
+#ft {border-top: 1px solid #6899FF; font-size: 85%;} 
+#ft ul {list-style:none;margin:0;padding:0;}
+#ft li {float:left;margin:0;padding:0;}
+#ft a {margin-left: 1em; margin-right: 1em; text-decoration: none;}
+#ft a:hover {text-decoration: underline;}
 
 /* LINKS */
 a img { border: 0; }

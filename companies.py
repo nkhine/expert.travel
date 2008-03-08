@@ -303,6 +303,7 @@ class Company(WebSite):
     list_jobs__label__ = u'List jobs'
     list_jobs__access__ = True
     def list_jobs(self, context):
+        from root import world
         namespace = {}
         namespace['batch'] = ''
         root = context.root
@@ -322,13 +323,26 @@ class Company(WebSite):
             # Information about the job
             address = job.parent
             company = address.parent
-            url = '%s/%s/;view' % (address.name, job.name)
+            county_id = get('abakuc:county')
+            if county_id is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
+            url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
+            apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                          'url': url,
+                         'apply': apply,
                          'title': get('dc:title'),
+                         'county': county,
+                         'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(), 
                          'function': JobTitle.get_value(
@@ -828,12 +842,12 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
 
-
     ####################################################################
     # View jobs 
     list_jobs__label__ = u'Our jobs'
     list_jobs__access__ = True
     def list_jobs(self, context):
+        from root import world
         namespace = {}
         namespace['batch'] = ''
         all_jobs = self.search_handlers(handler_class=Job)
@@ -852,15 +866,29 @@ class Address(RoleAware, WorkflowAware, Folder):
         for job in list(documents):
             job = root.get_handler(job.abspath)
             address = job.parent
+            company = address.parent
             get = job.get_property
+            county_id = get('abakuc:county')
+            if county_id is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
             # Information about the job
-            url = '%s/;view' % job.name
+            url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
+            apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                          'url': url,
+                         'apply': apply,
                          'title': get('dc:title'),
+                         'county': county,
+                         'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(), 
                          'function': JobTitle.get_value(
@@ -894,6 +922,102 @@ class Address(RoleAware, WorkflowAware, Folder):
         handler = self.get_handler('/ui/abakuc/companies/list_jobs.xml')
         return stl(handler, namespace)
 
+    #######################################################################
+    # Jobs - Search Interface
+    #######################################################################
+    jobs__access__ = True
+    jobs__label__ = u'Jobs'
+    def jobs(self, context):
+        from root import world
+        root = context.root
+        namespace = {}
+        # Total number of jobs
+        today = date.today().strftime('%Y-%m-%d')
+        query = [EqQuery('format', 'Job'),
+                 RangeQuery('closing_date', today, None)]
+        results = root.search(AndQuery(*query))
+        namespace['number_of_jobs'] = results.get_n_documents()
+
+        # Search fields
+        function = context.get_form_value('function') or None
+        salary = context.get_form_value('salary') or None
+        county = context.get_form_value('county') or None
+        job_title = context.get_form_value('job_title') or None
+        if job_title:
+            job_title = job_title.lower()
+        # Get Jobs (construct the query for the search)
+        if function:
+            query.append(EqQuery('function', function))
+        if salary:
+            query.append(EqQuery('salary', salary))
+        if county:
+            query.append(EqQuery('county', county))
+        results = root.search(AndQuery(*query))
+        namespace['nb_jobs'] = results.get_n_documents()
+
+        # Construct the lines of the table
+        add_line = True
+        jobs = []
+        for job in results.get_documents():
+            job = root.get_handler(job.abspath)
+            get = job.get_property
+            address = job.parent
+            company = address.parent
+            county_id = get('abakuc:county')
+            if county_id is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
+            url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                           job.name)
+            apply = '%s/;application_form' % (url)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            if job_title is None or job_title in (job.title).lower():
+                jobs.append({
+                    'url': url,
+                    'title': job.title,
+                    'function': JobTitle.get_value(get('abakuc:function')),
+                    'salary': SalaryRange.get_value(get('abakuc:salary')),
+                    'county': county,
+                    'region': region,
+                    'apply': apply,
+                    'closing_date': get('abakuc:closing_date'),
+                    'description': description})
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5 
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Namespace 
+        if jobs:
+            job_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, 
+                              msgs=(u"There is 1 job announcement.",
+                                    u"There are ${n} job announcements."))
+            msg = None
+        else:
+            job_batch = None
+            msg = u"Appologies, currently we don't have any job announcements"
+        namespace['batch'] = job_batch
+        namespace['msg'] = msg 
+        namespace['jobs'] = jobs
+
+        # Search Namespace
+        namespace['function'] = JobTitle.get_namespace(function)
+        namespace['salary'] = SalaryRange.get_namespace(salary)
+        namespace['job_title'] = job_title
+        # Return the page
+        handler = self.get_handler('/ui/abakuc/jobs/search.xhtml')
+        return stl(handler, namespace)
 
     ####################################################################
     # View branches 
