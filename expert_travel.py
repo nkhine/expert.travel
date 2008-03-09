@@ -20,10 +20,10 @@ from itools.utils import get_version
 from itools.xhtml import Document as XHTMLDocument
 # Import from abakuc
 from metadata import JobTitle, SalaryRange
-from website import WebSite
+from website import SiteRoot
 from utils import t1, t2, t3, t4
 
-class ExpertTravel(WebSite):
+class ExpertTravel(SiteRoot):
  
     class_id = 'expert_travel'
     class_title = u'Expert Travel Website'
@@ -38,7 +38,7 @@ class ExpertTravel(WebSite):
 
 
     def new(self, **kw):
-        WebSite.new(self, **kw)
+        SiteRoot.new(self, **kw)
         cache = self.cache
         # Add extra handlers here
         terms = XHTMLFile()
@@ -64,7 +64,7 @@ class ExpertTravel(WebSite):
             return self.get_handler('/companies')
         if name == 'training':
             return self.get_handler('/training')
-        return WebSite._get_virtual_handler(self, segment)
+        return SiteRoot._get_virtual_handler(self, segment)
 
       
     #######################################################################

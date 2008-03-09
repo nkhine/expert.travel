@@ -28,7 +28,7 @@ from itools.uri import encode_query, Reference, Path
 # Import from abakuc
 from base import Handler, Folder
 from handlers import EnquiriesLog, EnquiryType
-from website import WebSite
+from website import SiteRoot
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange 
@@ -104,7 +104,7 @@ class Companies(Folder):
         handler = self.get_handler('/ui/abakuc/companies/list.xml')
         return stl(handler, namespace)
 
-class Company(WebSite):
+class Company(SiteRoot):
 
     class_id = 'company'
     class_title = u'Company'

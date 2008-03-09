@@ -11,7 +11,7 @@ from itools.csv import CSV, Row
 from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.cms.root import Root as BaseRoot
 from itools.cms.folder import Folder as ikaaroFolder
-from itools.cms.website import WebSite
+#from itools.cms.website import WebSite
 from itools.cms.workflow import WorkflowAware as ikaaroWorkflowAware
 from itools.cms.access import RoleAware
 from itools.cms.file import File as ikaaroFile
@@ -23,7 +23,7 @@ from itools.cms.registry import register_object_class
 from base import Handler
 from metadata import Continent, SubContinent
 import users
-# XXX from website import WebSite
+from website import SiteRoot
 
 
 ############################################################################
@@ -63,7 +63,7 @@ class Rivers(Handler, ikaaroFolder):
 ############################################################################
 # River 
 ############################################################################
-class River(WebSite):
+class River(SiteRoot):
 
     class_id = 'river'
     class_title = u'River'
@@ -83,7 +83,7 @@ class River(WebSite):
         name = segment.name
         if name == 'Rivers':
             return self.get_handler('/rivers')
-        return WebSite._get_virtual_handler(self, segment)
+        return SiteRoot._get_virtual_handler(self, segment)
 
 
     #######################################################################
@@ -99,7 +99,7 @@ class River(WebSite):
 
 
     def get_catalog_indexes(self):
-        indexes = WebSite.get_catalog_indexes(self)
+        indexes = SiteRoot.get_catalog_indexes(self)
         indexes['level1'] = self.get_property('abakuc:continent')
         indexes['level2'] = self.get_property('abakuc:sub_continent')
         return indexes

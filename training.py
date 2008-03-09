@@ -16,9 +16,11 @@ from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
 from itools.datatypes import FileName
 from itools.web import get_context
+from itools.cms.catalog import schedule_to_reindex
+
 # Import from abakuc
 from base import Handler, Folder
-from website import WebSite
+from website import SiteRoot 
 from document import Document
 from utils import get_sort_name
 from exam import Exam
@@ -28,7 +30,7 @@ month_names = [
     u'January', u'February', u'March', u'April', u'May', u'June',
     u'July', u'August', u'September', u'October', u'November', u'December']
 
-class Trainings(WebSite):
+class Trainings(SiteRoot):
 
     class_id = 'trainings'
     class_title = u'Training programmes'
@@ -93,7 +95,7 @@ class Trainings(WebSite):
         #namespace['batch'] = batch
         #namespace['msg'] = msg 
 
-class Training(WebSite):
+class Training(SiteRoot):
 
     class_id = 'training'
     class_title = u'Training programme'
@@ -180,28 +182,6 @@ class Training(WebSite):
         # Is reviewer or member
         return self.has_user_role(user.name, 'ikaaro:reviewers') 
 
-    #######################################################################
-    # User Interface / View
-    #######################################################################
-    def login(self, context):
-        response = WebSite.login(self, context)
-        if str(response.path[-1]) == ';login_form':
-            return response
-
-        user = context.user
-        if self.is_admin(user, self) or self.is_reviewer(user, self):
-            return response
-
-        username = context.get_form_value('username')
-        root = context.root
-        if not root.has_handler('users/%s' % username):
-            return response
-        # Register the travel agent if he is not already registered
-        # TEST 015
-        if not self.has_user_role(user.name, 'ikaaro:members'):
-            self.set_user_role(usernameu, 'ikaaro:members')
-            user = root.get_handler('users/%s' % username)
-            schedule_to_reindex(user)
 
     ########################################################################
     # Statistics

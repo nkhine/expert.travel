@@ -8,12 +8,97 @@ from itools.cms import widgets
 from itools.cms.utils import generate_password
 from itools.cms.website import WebSite as BaseWebSite
 from itools.web import get_context
+from itools.cms.catalog import schedule_to_reindex
+from itools.uri import Path, get_reference
 
 # Import from abakuc
 from base import Handler
 
 
-class WebSite(Handler, BaseWebSite):
+class SiteRoot(Handler, BaseWebSite):
+    ########################################################################
+    # Login
+    login_form__access__ = True
+    login_form__label__ = u'Login'
+    def login_form(self, context):
+        namespace = {}
+        here = context.handler
+        site_root = here.get_site_root()
+        namespace['action'] = '%s/;login' % here.get_pathto(site_root)
+        namespace['username'] = context.get_form_value('username')
+
+        handler = self.get_handler('/ui/abakuc/login.xml')
+        return stl(handler, namespace)
+
+
+    login__access__ = True
+    def login(self, context, goto=None):
+        email = context.get_form_value('username', type=Unicode)
+        password = context.get_form_value('password')
+
+        # Don't send back the password
+        keep = ['username']
+
+        # Check the email field has been filed
+        email = email.strip()
+        if not email:
+            message = u'Type your email please.'
+            return context.come_back(message, keep=keep)
+
+        # Check the user exists
+        root = context.root
+
+        # Search the user by username (login name)
+        results = root.search(username=email)
+        if results.get_n_documents() == 0:
+            message = u'The user "$username" does not exist.'
+            return context.come_back(message, username=email, keep=keep)
+
+        # Get the user
+        brain = results.get_documents()[0]
+        user = root.get_handler('users/%s' % brain.name)
+
+        # Check the user is active
+        if user.get_property('ikaaro:user_must_confirm'):
+            message = u'The user "$username" is not active.'
+            return context.come_back(message, username=email, keep=keep)
+
+        # Check the password is right
+        if not user.authenticate(password):
+            return context.come_back(u'The password is wrong.', keep=keep)
+
+        # Set cookie
+        user.set_auth_cookie(context, password)
+
+        # Set context
+        context.user = user
+
+        # Come back
+        referrer = context.request.referrer
+        if referrer:
+            if not referrer.path:
+                return referrer
+            params = referrer.path[-1].params
+            if not params:
+                return referrer
+            if params[0] != 'login_form':
+                return referrer
+
+        if goto is not None:
+            return get_reference(goto)
+
+        # Add user to current Training Programme 
+        # XXX need to fix this as now it adds the user to all
+        # folders that have membership.
+        #training = root.get_handler('training')
+        #if training == training:
+        if not self.has_user_role(user.name, 'ikaaro:reviewers') and \
+           not self.has_user_role(user.name, 'ikaaro:members') and \
+           not self.has_user_role(user.name, 'ikaaro:guests'):
+            self.set_user_role(user.name, 'ikaaro:guests')
+            schedule_to_reindex(user)
+
+        return get_reference('users/%s' % user.name)
 
     ########################################################################
     # Register

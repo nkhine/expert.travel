@@ -8,10 +8,10 @@ from itools.stl import stl
 from itools.cms import widgets
 
 # Import from abakuc
-from website import WebSite
+from website import SiteRoot
 
 
-class Destinations(WebSite):
+class Destinations(SiteRoot):
  
     class_id = 'destinations'
     class_title = u'Destinations Guide'
@@ -24,7 +24,7 @@ class Destinations(WebSite):
             return self.get_handler('/countries')
         if name == 'companies':
             return self.get_handler('/companies')
-        return WebSite._get_virtual_handler(self, segment)
+        return SiteRoot._get_virtual_handler(self, segment)
 
 
     #######################################################################
