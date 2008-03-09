@@ -66,6 +66,30 @@ no-repeat;width:400px;height:62px;}
   font-size: 93%;
   text-decoration:none;
 }
+/**************************************************************************
+ * Right-box style 
+ **************************************************************************/
+#right-box {
+  background:url(images/right_box_bkg.gif) top left no-repeat;
+  border:1px solid; border-color:#6899FF;
+  margin-top: 1em;
+}
+#right-box ul {
+  display: block;
+  border:1px solid; border-color:transparent;
+  padding: 0.1em 0.3em;
+}
+
+#right-box ul:hover {
+  background:#6899FF;
+  border:1px solid; border-color:#000000;
+  font-color: #ffffff;
+}
+#right-box a {
+  padding-left: 0.2em;
+  font-size: 93%;
+  text-decoration:none;
+}
 
 /**************************************************************************
  * Right column style 
@@ -95,6 +119,12 @@ no-repeat;width:400px;height:62px;}
   text-decoration: underline;
 }
 
+/**************************************************************************
+ * Portrait box   
+ **************************************************************************/
+.portrait {
+	margin: 0.5em;
+}
 /**************************************************************************
  * Content box   
  **************************************************************************/

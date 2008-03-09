@@ -4,6 +4,7 @@
 
 # Import from the standard library
 import mimetypes
+from datetime import datetime, date
 
 # Import from itools
 from itools import uri
@@ -28,6 +29,7 @@ from itools.datatypes import Email
 from itools.cms.workflow import WorkflowAware
 from itools.xhtml import Document as XHTMLDocument
 from itools.cms.utils import reduce_string
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 
 # Import from our product
 from companies import Company, Address 
@@ -450,6 +452,7 @@ class User(iUser, WorkflowAware, Handler):
     profile__label__ = u'Profile'
     def profile(self, context):
         from root import world
+        from datetime import datetime, date
 
         namespace = {}
         user = context.user
@@ -531,7 +534,50 @@ class User(iUser, WorkflowAware, Handler):
             results.reverse()
         namespace['enquiries'] = results 
         namespace['howmany'] = len(results)
+
+        #Search the catalogue, list last 4 jobs.  
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'Job'))
+        today = date.today().strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        namespace['nb_jobs'] = len(documents)
+        documents = documents[0:4]
+        jobs = []
+        for job in documents:
+            job = root.get_handler(job.abspath)
+            address = job.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
+            jobs.append({'url': url,
+                         'title': job.title})
+        namespace['jobs'] = jobs
+        #Search the catalogue, list 3 news items. 
+        query = []
+        query.append(EqQuery('format', 'news'))
+        today = date.today().strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        namespace['nb_news'] = len(documents)
+        documents = documents[0:3]
+        news_items = []
+        for news in list(documents):
+            news = root.get_handler(news.abspath)
+            get = news.get_property
+            address = news.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            news_items.append({'url': url,
+                               'title': news.title})
         
+        namespace['news_items'] = news_items
+
+
         # Tabs
         namespace['tabs'] = self.get_tabs_stl(context)
 

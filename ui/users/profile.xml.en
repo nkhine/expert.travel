@@ -2,7 +2,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <stl:block if="is_self_or_admin">
-  <div class="yui-g">
+  <div class="yui-gd">
     <div class="yui-u first">
         <stl:block if="not address">
         <h2>Company Name/Address</h2>
@@ -57,43 +57,79 @@
             <stl:block if="lastname">
             <h2>${firstname} ${lastname}</h2>
             </stl:block>
-          <table>
-            <tr>
-              <td rowspan="4">
-                <stl:block if="portrait">
-                  <img src="portrait" align="left" />
-                </stl:block>
-                <stl:block if="not portrait">
-                  <a href=";portrait_form"><img name=""
-                  src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
-                  /></a>
-                </stl:block>
-              </td>
-              <th valign="top" height="99%">Email</th>
-              <td valign="top">${email}</td>
-            </tr>
-            <tr>
-              <th valign="top">Role</th>
-              <td valign="top">
-                <span stl:if="is_admin">Admin,</span>
-                <span stl:if="is_reviewer">Reviewer</span>
-                <span stl:if="is_member">Member</span>
-                <span stl:if="is_guest">Guest</span>
-              </td>
-            </tr>
-            <tr>
-              <th valign="top">State</th>
-              <td valign="top">
-                <a href=";state_form"><strong
-                class="wf_${statename}">${state}</strong></a>
-              </td>
-            </tr>
-          </table>
-          <p>
-            <a href=";portrait_form">Modify portrait.</a>
-            <a href=";edit_account_form">Edit account details.</a>
-            <a href=";edit_password_form">Change password.</a>
-          </p>
+            <dt>${email}</dt>
+                    <div class="yui-g first">
+                        <div class="yui-u first">
+                            <stl:block if="portrait" class="portrait">
+                              <img src="portrait" align="left" />
+                            </stl:block>
+                            <stl:block if="not portrait" class="portrait">
+                              <a href=";portrait_form"><img name=""
+                              src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
+                              /></a>
+                            </stl:block>
+                        </div>
+                        <div class="yui-u">
+                        <ul>
+                            <li>
+                            <span stl:if="is_admin">Admin,</span>
+                            </li>
+                            <li>
+                            <span stl:if="is_reviewer">Reviewer</span>
+                            </li>
+                            <li>
+                            <span stl:if="is_member">Member</span>
+                            </li>
+                            <li>
+                            <span stl:if="is_guest">Guest</span>
+                            </li>
+                            <li>
+                            <a href=";state_form"><strong
+                            class="wf_${statename}">${state}</strong></a>
+                            </li>
+                          </ul>  
+                        </div>
+                    </div>
+                    <div class="yui-g">
+                        <div class="yui-u first">
+                        <ul>
+                            <li>
+                            <a href=";portrait_form">Modify portrait.</a>
+                            </li>
+                            <li>
+                            <a href=";edit_account_form">Edit account details.</a>
+                            </li>
+                            <li>
+                            <a href=";edit_password_form">Change password.</a>
+                            </li>
+                          </ul>  
+                        </div>
+                        <div class="yui-u">
+                        <div id="right-box">
+                        <h2>Latest news</h2>
+                          <stl:block repeat="news_items news_items"> 
+                            <ul>  
+                              <li>
+                                <a href="${news_items/url}">${news_items/title}</a>
+                              </li>
+                            </ul>       
+                          </stl:block>
+                        <div class="info"><a href="/;news">
+                            (view&nbsp;all&nbsp;${nb_news}&nbsp;news&nbsp;items&nbsp;»)</a></div>
+                        <h2>Latest jobs</h2>
+                          <stl:block repeat="jobs jobs"> 
+                            <ul>  
+                              <li>
+                                <a href="${jobs/url}">${jobs/title}</a>
+                              </li>
+                            </ul>       
+                          </stl:block>
+                            <div class="info">
+                                (view&nbsp;all&nbsp;${nb_jobs}&nbsp;job&nbsp;items&nbsp;»)
+                            </div>
+                          </div><!--left-->
+                        </div><!--yui-u first -->
+                    </div><!--yui-g -->
       </div> <!-- yui-u -->
   </div> <!-- yui-g -->
   </stl:block>
