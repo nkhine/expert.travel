@@ -72,15 +72,15 @@ no-repeat;width:400px;height:62px;}
 #right-box {
   background:url(images/right_box_bkg.gif) top left no-repeat;
   border:1px solid; border-color:#6899FF;
-  margin-top: 1em;
+  margin: 1em;
 }
-#right-box ul {
+#right-box li {
   display: block;
   border:1px solid; border-color:transparent;
   padding: 0.1em 0.3em;
 }
 
-#right-box ul:hover {
+#right-box li:hover {
   background:#6899FF;
   border:1px solid; border-color:#000000;
   font-color: #ffffff;

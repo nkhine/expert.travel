@@ -230,12 +230,14 @@ class Job(Folder, RoleAware):
             # Information about the job
             address = job.parent
             company = address.parent
-            #logo = company.has_handler('logo')
             namespace['logo'] = company.has_handler('logo')
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
-            jobs.append({'url': url,
-                         'title': job.title})
+            jobs.append({'title': job.title,
+                         'url': url, 
+                         'salary': SalaryRange.get_value(
+                                    get('abakuc:salary'))
+                         })
         # Person who added the job
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl

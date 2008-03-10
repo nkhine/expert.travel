@@ -16,6 +16,7 @@ from itools.vfs import vfs
 from itools.web import get_context
 from itools import rest
 from itools.rest import to_html_events
+#from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 
 # Import from abakuc
 from base import Handler, Folder
@@ -174,7 +175,35 @@ class News(RoleAware, Folder):
             member = self.parent.has_user_role(user.name,'ikaaro:members')
             is_reviewer_or_member = reviewer or member 
         namespace['is_reviewer_or_member'] = is_reviewer_or_member
-
+        
+        # Navigation in news 
+        #Search the catalogue, list all news items in company 
+        #root = context.root
+        #catalog = context.server.catalog
+        #query = []
+        #query.append(EqQuery('format', 'news'))
+        #today = (date.today()).strftime('%Y-%m-%d')
+        #query.append(RangeQuery('closing_date', today, None))
+        #query = AndQuery(*query)
+        #results = catalog.search(query)
+        #document_names = results.get_documents() 
+        #doc_index = document_names.index(self.name)
+        #is_first_document = doc_index == 0
+        #is_last_document = doc_index == len(document_names) - 1
+        #namespace['next_doc'] = None
+        #namespace['prev_doc'] = None
+        #next_doc_img = self.get_handler('/ui/abakuc/images/next_doc.gif')
+        #namespace['next_doc_img'] = self.get_pathto(next_doc_img)
+        #prev_doc_img = self.get_handler('/ui/abakuc/images/prev_doc.gif')
+        #namespace['prev_doc_img'] = self.get_pathto(prev_doc_img)
+        #if document_names:
+        #    # Next document
+        #    if is_last_document:
+        #        namespace['next_doc'] = '../../;view'
+        #    else:
+        #        namespace['next_doc'] = (
+        #            '../%s/;view' % document_names[doc_index + 1])
+        #    # Previous document
 
         handler = self.get_handler('/ui/abakuc/news/news_view.xml')
         return stl(handler, namespace)
