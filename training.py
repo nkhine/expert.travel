@@ -19,6 +19,7 @@ from itools.web import get_context
 from itools.cms.catalog import schedule_to_reindex
 
 # Import from abakuc
+from companies import Company
 from base import Handler, Folder
 from website import SiteRoot 
 from document import Document
@@ -146,6 +147,7 @@ class Training(SiteRoot):
         modules.sort(lambda x, y: cmp(get_sort_name(x.name),
                                      get_sort_name(y.name)))
         return modules
+
     #######################################################################
     # User Interface / Edit
     #######################################################################
@@ -188,7 +190,39 @@ class Training(SiteRoot):
             return True
         # Is reviewer or member
         return self.has_user_role(user.name, 'ikaaro:reviewers') 
+   
+   
+    def is_travel_agent(self, user, object):
+        if user is None:
+            return False
 
+        # TEST 015
+        return self.has_user_role(user.name, 'ikaaro:members')
+
+    # Exam Access Control
+    def is_allowed_to_take_exam(self, user, object):
+        if self.is_admin(user, object):
+            return True
+
+        if not self.is_travel_agent(user, object):
+            return False
+
+        # Has the user already passed this exam?
+        passed = object.get_result()[0]
+        if passed:
+            return False
+        # Is this the first module?
+        module = object.parent
+        prev_module = module.get_prev_module()
+        if prev_module is None:
+            return True
+        exam = prev_module.get_exam()
+        # Previous module has no exam? (BahamaBay has just one exam at end)
+        if exam is None:
+            return True
+        # Has the user passed the previous exam?
+        passed = exam.get_result()[0]
+        return bool(passed)
 
     ########################################################################
     # Statistics
@@ -457,6 +491,39 @@ class Module(Folder):
         topics.sort(lambda x, y: cmp(get_sort_name(x.name),
                                      get_sort_name(y.name)))
         return topics
+
+    def get_address(self):
+        root = self.get_root()
+        results = root.search(format='address', members=self.name)
+        for address in results.get_documents():
+            return root.get_handler(address.abspath)
+        return None
+
+    def get_exam(self, username=None):
+        """
+        Returns the exam for the given username (it checks the business
+        function). Or None if none exam matches.
+        """
+        business_function = None
+        if username is None:
+            username = get_context().user.name
+
+        for exam in self.search_handlers(format=Exam.class_id):
+            business_functions = exam.definition.business_functions
+            if 'all' in business_functions:
+                return exam
+            #if business_function is None:
+            #    site_root = self.get_site_root()
+            #    user = site_root.get_handler('users/%s' % username)
+            #    address = user.get_address()
+            #    company = address.parent
+            #    business_function = company.get_property('abakuc:business_function')
+
+            if business_function in business_functions:
+                return exam
+
+        return None
+
     #######################################################################
     # User Interface / View
     #######################################################################
@@ -547,6 +614,49 @@ class Module(Folder):
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
 
+
+    #########################################################################
+    # End training
+    #########################################################################
+    end__access__ = 'is_allowed_to_view'
+    def end(self, context):
+        user = context.user
+        # Build the namespace
+        namespace = {}
+        #namespace['marketing'] = None
+        namespace['exam'] = None
+        #namespace['game'] = None
+        namespace['next'] = None
+        namespace['finished'] = False
+        #game = self.get_game()
+        #if game:
+        #    popup = ("window.open('%s/;play',null,'scrollbars=no,"
+        #            "width=800,height=700'); return false;") % game.name
+        #    namespace['game'] = popup
+        # The marketing form
+        #marketing_form = self.get_marketing_form(user.name)
+        #if marketing_form is None:
+            # The exam
+        exam = self.get_exam(user.name)
+        if exam is not None:
+            result = exam.get_result(user.name)
+            passed, n_attempts, time, mark, kk = result
+            if passed:
+                modules = self.parent.get_modules()
+                module_index = modules.index(self)
+                if module_index == len(modules) - 1:
+                    namespace['finished'] = True
+                else:
+                    next = modules[module_index + 1]
+                    namespace['next'] = '../%s/;list_view' % next.name
+            else:
+                exam_path = self.get_pathto(exam)
+                namespace['exam'] = '%s/;take_exam_form' % exam_path
+        #else:
+        #    namespace['marketing'] = '%s/;take_exam_form' % marketing_form.name
+
+        handler = self.get_handler('/ui/abakuc/training/module/end.xml')
+        return stl(handler, namespace)
 
 #######################################################################
 # Training topic 

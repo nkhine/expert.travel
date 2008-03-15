@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+
+<h2>What To Do Next?</h2>
+
+<p>Now that you have finished the module, it is time for you to:</p>
+<!-- <stl:block stl:if="marketing">
+  &raquo; Fill <a href="${marketing}">the marketing form</a>.
+</stl:block> -->
+<stl:block stl:if="exam">
+  &raquo; Take <a href="${exam}">the exam</a>.
+  <br/> 
+</stl:block>
+<!-- <stl:block stl:if="game">
+  &raquo; <a href="#" onclick="{game}">Let's play game</a>.
+  <br/> 
+</stl:block> -->
+<stl:block stl:if="next">
+  &raquo; Go to <a href="${next}">the next module</a>.
+</stl:block>
+
+</stl:block>

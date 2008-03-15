@@ -94,8 +94,8 @@ class SiteRoot(Handler, BaseWebSite):
         #if training == training:
         if not self.has_user_role(user.name, 'ikaaro:reviewers') and \
            not self.has_user_role(user.name, 'ikaaro:members') and \
-           not self.has_user_role(user.name, 'ikaaro:guests'):
-            self.set_user_role(user.name, 'ikaaro:guests')
+           not self.has_user_role(user.name, 'ikaaro:members'):
+            self.set_user_role(user.name, 'ikaaro:members')
             schedule_to_reindex(user)
 
         return get_reference('users/%s' % user.name)

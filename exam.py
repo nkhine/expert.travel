@@ -456,7 +456,7 @@ class Exam(Folder):
     #########################################################################
 
     #########################################################################
-    # View
+    # Edit 
     edit__access__ = 'is_allowed_to_edit'
     edit__label__ = u'Edit'
     def edit(self, context):
@@ -570,12 +570,12 @@ class Exam(Folder):
             namespace[pname] = self.get_property(pname)
 
         # Business functions
-        #namespace['business_functions'] = BusinessFunction.get_options()
-        #namespace['business_functions'].insert(0, {'name': 'all',
-        #                                           'value': 'All'})
-        #business_functions = self.definition.business_functions
-        #for x in namespace['business_functions']:
-        #    x['selected'] = x['name'] in business_functions
+        namespace['abakuc:topic'] = BusinessFunction.get_options()
+        namespace['abakuc:topic'].insert(0, {'id': 'all',
+                                                   'label': 'All'})
+        business_functions = self.definition.business_functions
+        for x in namespace['abakuc:topic']:
+            x['selected'] = x['id'] in business_functions
 
         handler = self.get_handler('/ui/abakuc/exam/edit_metadata.xml')
         return stl(handler, namespace)
@@ -591,10 +591,11 @@ class Exam(Folder):
                     'abakuc:pass_marks_percentage']:
              self.set_property(key, context.get_form_value(key))
         # Business functions
-        self.definition.set_changed()
-        business_functions = context.get_form_values('business_functions')
+        business_functions = context.get_form_values('topic')
+        self.set_property('abakuc:topic', tuple(business_functions))
         self.definition.business_functions = business_functions
 
+        self.definition.set_changed()
         return context.come_back(u'Metadata changed.')
 
 
@@ -635,8 +636,8 @@ class Exam(Folder):
 
     #########################################################################
     # Take Exam
-    take_exam_form__access__ = True 
-    #take_exam_form__access__ = 'is_allowed_to_take_exam'
+    #take_exam_form__access__ = True 
+    take_exam_form__access__ = 'is_allowed_to_take_exam'
     take_exam_form__label__ = u'Take exam'
     def take_exam_form(self, context):
         user = context.user
@@ -666,8 +667,8 @@ class Exam(Folder):
         return data
 
 
-    take_exam__access__ = True 
-    #take_exam__access__ = 'is_allowed_to_take_exam'
+    #take_exam__access__ = True 
+    take_exam__access__ = 'is_allowed_to_take_exam'
     def take_exam(self, context):
         questions = context.get_form_values('questions')
         time_submit = context.get_cookie('exam_time')

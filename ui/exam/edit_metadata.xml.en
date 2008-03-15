@@ -37,12 +37,12 @@
       </td>
     </tr>
     <tr>
-      <th valign="top">Business functions</th>
+      <th valign="top">Business Functions</th>
       <td>
-<!--        <select name="business_functions" multiple="1">
-          <option stl:repeat="item business_functions" value="${item/name}" 
-            selected="${item/selected}">${item/value}</option>
-        </select> -->
+        <select name="topic" multiple="multiple">
+          <option stl:repeat="item abakuc:topic" value="${item/id}" 
+            selected="${item/selected}">${item/label}</option>
+        </select> 
       </td>
     </tr>
     <tr>

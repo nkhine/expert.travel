@@ -124,9 +124,8 @@
                               </li>
                             </ul>       
                           </stl:block>
-                            <div class="info">
-                                (view&nbsp;all&nbsp;${nb_jobs}&nbsp;job&nbsp;items&nbsp;»)
-                            </div>
+                            <div class="info"><a href="/;news">
+                                (view&nbsp;all&nbsp;${nb_jobs}&nbsp;job&nbsp;items&nbsp;»)</a></div>
                           </div><!--left-->
                         </div><!--yui-u first -->
                     </div><!--yui-g -->
