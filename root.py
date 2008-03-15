@@ -192,13 +192,12 @@ class Root(Handler, BaseRoot):
 
         # Default
         return ui.get_handler('aruni')
+        #return ui.get_handler('uk.expert.travel')
 
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         # XXX While testing, uncomment the right line
-        #to_addr = 'jdavid@itaapy.com'
         to_addr = 'norman@khine.net'
-        #to_addr = 'sylvain@itaapy.com'
         BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
 
 

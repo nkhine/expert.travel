@@ -207,7 +207,8 @@ class User(iUser, WorkflowAware, Handler):
         namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
-        namespace['sub_tabs'] = self.get_sub_tabs_stl(context)
+        #namespace['sub_tabs'] = self.tabs_training_stl(context)
+        namespace['training'] = self.training_table(context)
         address = self.get_address()
         company = address.parent
 
@@ -269,7 +270,7 @@ class User(iUser, WorkflowAware, Handler):
               ${enquiries}
             </div>
             <div id="fragment-4">
-              ${sub_tabs}
+              ${training}
             </div>
             <div id="fragment-5">
               {branches}
@@ -306,41 +307,10 @@ class User(iUser, WorkflowAware, Handler):
         return stl(template, namespace)
 
 
-    def get_sub_tabs_stl(self, context):
-        root = context.root
-        users = root.get_handler('users')
+    def tabs_training_stl(self, context):
 
         namespace = {}
-        namespace['news'] = self.news_table(context)
-        namespace['jobs'] = self.jobs_table(context)
-        namespace['enquiries'] = self.enquiries_list(context)
         namespace['training'] = self.training_table(context)
-        address = self.get_address()
-        company = address.parent
-
-        csv = address.get_handler('log_enquiry.csv')
-        results = []
-        for row in csv.get_rows():
-            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-            if resolved:
-                continue
-            user = users.get_handler(user_id)
-            if user.get_property('ikaaro:user_must_confirm') is None:
-               results.append({'index': row.number})
-        namespace['howmany'] = len(results)
-        #namespace['branches'] = self.list_addresses(context)
-        is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
-        namespace['is_reviewer'] = is_reviewer
-        # Company
-        namespace['company'] = {'name': company.name,
-                                'title': company.get_property('dc:title'),
-                                'website': company.get_website(),
-                                'path': self.get_pathto(company)}
-        # Address
-        addr = {'name': address.name,
-                'address_path': self.get_pathto(address)}
-
-        namespace['address'] = addr
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -981,12 +951,10 @@ class User(iUser, WorkflowAware, Handler):
                                         word_treshold=10,
                                         phrase_treshold=40)
             training_to_add ={'id': training.name, 
-                         'checkbox': is_reviewer,
-                         'img': '/ui/abakuc/images/JobBoard16.png',
-                         'title': (get('dc:title'),url),
-                         #'function': JobTitle.get_value(
-                         #               get('abakuc:function')),
-                         'description': description}
+                             'checkbox': is_reviewer, # XXX fix this.
+                             'img': '/ui/abakuc/images/Training16.png',
+                             'title': (get('dc:title'),url),
+                             'description': description}
             trainings.append(training_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -1010,11 +978,11 @@ class User(iUser, WorkflowAware, Handler):
                         "return select_checkboxes('browse_list', true);"),
                        ('select', u'Select None', 'button_select_none',
                         "return select_checkboxes('browse_list', false);"),
-                       ('create_job', u'Add new job', 'button_ok',
+                       ('create_training', u'Add new training', 'button_ok',
                         None),
-                       ('remove_job', 'Delete Job/s', 'button_delete', None)]
+                       ('remove_training', 'Delete training/s', 'button_delete', None)]
             training_table = table(columns, trainings, [sortby], sortorder, actions)
-            msgs = (u'There is one job.', u'There are ${n} jobs.')
+            msgs = (u'There is one training.', u'There are ${n} training programmes.')
             training_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
@@ -1026,7 +994,8 @@ class User(iUser, WorkflowAware, Handler):
         namespace['training_table'] = training_table
         namespace['training_batch'] = training_batch
         namespace['training_msg'] = msg 
-        handler = self.get_handler('/ui/abakuc/training/table.xml')
+        #handler = self.get_handler('/ui/abakuc/training/table.xml')
+        handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
 
     ########################################################################

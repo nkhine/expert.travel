@@ -131,6 +131,13 @@ class Company(SiteRoot):
     def get_level1_title(self, level1):
         return None
 
+    def _get_virtual_handler(self, segment):
+        name = segment.name
+        if name == 'countries':
+            return self.get_handler('/countries')
+        if name == 'companies':
+            return self.get_handler('/companies')
+        return SiteRoot._get_virtual_handler(self, segment)
     #######################################################################
     # API
     #######################################################################

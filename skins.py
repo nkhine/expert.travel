@@ -258,6 +258,16 @@ class CountrySkin(FrontOffice):
             return self.get_handler('../.destinationsguide.info/template.xhtml')
 
 
+class TrainingSkin(FrontOffice):
+    """Skin for countries"""
+
+    def get_template(self):
+        try:
+            return self.get_handler('template.xhtml')
+        except LookupError:
+            # Default
+            return self.get_handler('../.traveluniversity.net/template.xhtml')
+
 websites = {
     # Main Sites
     'fr.expert.travel': FrontOffice,
@@ -268,7 +278,10 @@ websites = {
     '.expert.travel': CompanySkin,
     #'training.expert.travel': CompanySkin,
     # Countries
-    'angola.destinationsguide.info': CountrySkin,
-    '.destinationsguide.info': CountrySkin,
 }
 
+countries = {
+    '.destinationsguide.info': CountrySkin,
+    'angola.destinationsguide.info': CountrySkin,
+    #'afghanistan.destinationsguide.info': CountrySkin,
+}

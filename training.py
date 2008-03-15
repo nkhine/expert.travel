@@ -125,8 +125,15 @@ class Training(SiteRoot):
         return [Module]
 
     def get_level1_title(self, level1):
-        return None 
+        return None
 
+    def _get_virtual_handler(self, segment):
+        name = segment.name
+        if name == 'companies':
+            return self.get_handler('/companies')
+        if name == 'training':
+            return self.get_handler('/training')
+        return SiteRoot._get_virtual_handler(self, segment)
     #######################################################################
     # API 
     #######################################################################

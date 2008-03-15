@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+      <h2>Training programmes</h2>
+Use this page to list all the training programmes available to the user.
+
+<p>
+[TP1] [DESCRIPTION] [JOIN/ACCESS] [if manager] [No. of Members -> Stattistics]
+</p>
+
+
+
+</stl:block>
