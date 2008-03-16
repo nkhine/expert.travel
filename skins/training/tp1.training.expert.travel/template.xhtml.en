@@ -11,93 +11,93 @@
           content="${meta/content}" />
 
     <!-- CSS -->
-    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
-    href="${style}"/>
-
+    <!--<link href="http://developer.yahoo.com/yui/build/reset-fonts-grids/reset-fonts-grids.css"
+    rel="stylesheet" type="text/css" /> -->
+    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
+    <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
+    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <!-- JavaScript -->
-    <script type="text/javascript" stl:repeat="script scripts" src="${script}" 
-      />
-
+    <script type="text/javascript" stl:repeat="script scripts" src="${script}" />
   </head>
   <body>
-
-      <div id="header"><!-- header -->
-          <h1 title="Abakuc Expert.Travel">
-            <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
-          </h1>
-          <div id="navbar" class="clearfix"><!-- navbar -->
-            <ul>
-              <li><a href="/">Home TRAINING TP1</a></li>
-              <li><a href="/;view_news">News</a></li>
-              <li><a href="/;view_jobs">Jobs</a></li>
-              <li><a href="/">FAQ</a></li>
-              <li><a href="/">More&nbsp;»</a></li>
-            </ul>
-          </div><!-- /navbar -->
-          <form action="/;search" method="get">
-            <div id="search"><!-- search -->
-              <input name="search_text" type="text" class="searchinput" 
-                  value="" size="20" />
-              <input type="submit" value="Search"/>
-            </div><!-- /search -->
-          </form>
-          <div id="bar"><!-- bar -->
-            <ul>
-              <stl:block if="not user/info">
-                <li><a href="/;login_form">Log in</a></li>
-                <li>
-                  <a href="/;register_form" stl:if="user/joinisopen">Register</a>
-                </li>
-              </stl:block>
-              <stl:block if="user/info">
-                <li><a href="${user/info/home}">My Profile</a></li>
-                <li><a href="/;logout">Log out</a></li>
-              </stl:block>
-              <li><a href="/;contact_form">Help</a></li>
-              <li><a href="/;contact_form">Contact</a></li>
-            </ul>
-          </div><!-- /bar -->
-        </div><!-- /header -->
-
-        <table width="100%" border="0" cellpadding="0" cellspacing="0">
-          <tr>
-            <td id="left" class="column" valign="top"><!-- left column -->
-            left
-            </td><!-- /left column --> 
-            <td id="center" class="column" valign="top"><!-- center column -->
-              <div id="maintitle">
-                <div class="information"><!-- user information -->
-                <stl:block if="not user/info">
-                  (not logged in)
-                </stl:block>
-                <stl:block if="user/info">
-                  (logged in as <a href="${user/info/home}">${user/info/title}</a>)
-                </stl:block>
-                </div><!-- /user information -->
-                <div id="breadcrumbs"><!-- breadcrumbs -->
-                  <label>Location:</label>
-                  <span stl:repeat="item breadcrumb">
-                    <a stl:if="item/url" href="${item/url}"
-                      title="${item/name}">${item/short_name}</a>
-                    <span stl:if="not item/url"
-                      title="${item/name}">${item/short_name}</span>
-                    <stl:inline if="not repeat/item/end">/</stl:inline> 
-                  </span>
-                </div><!-- /breadcrumbs -->
-                <div class="clear"></div>
-              </div>
-              <div id="body">
-                <div id="message" stl:if="message">${message}</div>
-                <div id="content">${body}</div>
-              </div>
-            </td><!-- /center column -->
-          </tr>
-        </table>
-      <div id="footer"><!-- footer -->
-        <a href="/;about">About</a>
-        <a href="/;credits">Credits</a>
-        <a href="/;license">License</a>
-      </div><!-- /footer -->
-
+        <div id="doc3" class="yui-t1">
+            <div id="hd">
+              <h1 title="Abakuc Expert.Travel">
+                <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
+              </h1>
+              <div id="navbar">
+                <ul>
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/;news">News</a></li>
+                  <li><a href="/;jobs">Jobs</a></li>
+                  <li><a href="/;faq">FAQ</a></li>
+                  <li><a href="/;more">More&nbsp;»</a></li>
+                </ul>
+              </div><!-- /navbar -->
+              <div id="search"><!-- search -->
+                  <form action="/;search" method="get">
+                      <input name="search_text" type="text" class="searchinput" 
+                          value="" size="20" />
+                      <input type="submit" value="Search"/>
+                  </form>
+              </div><!-- /search -->
+              <div id="bar"><!-- bar -->
+                <ul>
+                  <stl:block if="not user/info">
+                    <li><a href="/;login_form">Log in</a></li>
+                    <li>
+                      <a href="/;register_form" stl:if="user/joinisopen">Register</a>
+                    </li>
+                  </stl:block>
+                  <stl:block if="user/info">
+                    <li><a href="${user/info/home}">My profile</a></li>
+                    <li><a href="/;logout">Log out</a></li>
+                  </stl:block>
+                  <li><a href="/;contact_form">Help</a></li>
+                  <li><a href="/;contact_form">Contact</a></li>
+                </ul>
+              </div><!-- /bar -->
+              <div id="user"><!-- user information -->
+              </div><!-- /user information -->
+            </div><!-- hd -->
+            <div id="bd">
+                    <div id="left" class="yui-b">
+                        <div stl:repeat="menu left_menus">
+                            <label>${menu/title}</label>
+                            ${menu/content}
+                        </div>
+                    </div><!-- yui-b -->
+                    <div id="yui-main">
+                        <div class="yui-b">
+                            <div id="bread"><!-- breadcrumbs -->
+                                <label>Location:</label>
+                                <span stl:repeat="item breadcrumb">
+                                    <a stl:if="item/url" href="${item/url}"
+                                    title="${item/name}">${item/short_name}</a>
+                                <span stl:if="not item/url"
+                                title="${item/name}">${item/short_name}</span>
+                                <stl:inline if="not repeat/item/end">/</stl:inline> 
+                                </span>
+                            </div><!-- /breadcrumbs -->
+                            <div id="message" stl:if="message">${message}</div>
+                            <div id="content">${body}</div>
+                        </div><!-- yui-b -->
+                     </div><!-- yui-main -->   
+            </div><!-- bd -->
+            <div id="ft">
+                <ul>
+                    <li><a href="/;about">About</a></li>
+                    <li><a href="/;credits">Credits</a></li>
+                    <li><a href="/;license">License</a></li>
+                     <stl:block if="not user/info">
+                        <li><a href="/;login_form">(not logged in)</a></li>
+                      </stl:block>
+                      <stl:block if="user/info">
+                          <li><a href="${user/info/home}">
+                          ${user/info/title}</a></li>
+                      </stl:block>
+                </ul>
+            </div><!-- ft -->
+        </div><!-- doc -->
   </body>
 </html>

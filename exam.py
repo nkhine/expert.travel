@@ -636,7 +636,6 @@ class Exam(Folder):
 
     #########################################################################
     # Take Exam
-    #take_exam_form__access__ = True 
     take_exam_form__access__ = 'is_allowed_to_take_exam'
     take_exam_form__label__ = u'Take exam'
     def take_exam_form(self, context):
@@ -666,8 +665,6 @@ class Exam(Folder):
         # Send data
         return data
 
-
-    #take_exam__access__ = True 
     take_exam__access__ = 'is_allowed_to_take_exam'
     def take_exam(self, context):
         questions = context.get_form_values('questions')
@@ -761,6 +758,8 @@ class Exam(Folder):
                 next_module_url = str(self.get_pathto(next_module))
                 next_module_url += '/;view'
                 namespace['next_module_url'] = next_module_url
+            else:
+                namespace['next_module_url'] = user.get_profile_url(self) 
 
         handler = self.get_handler('/ui/abakuc/exam/take_exam.xml')
         return stl(handler, namespace)

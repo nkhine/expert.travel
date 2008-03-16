@@ -38,41 +38,43 @@ class Trainings(SiteRoot):
     class_icon16 = 'abakuc/images/Trainings16.png'
     class_icon48 = 'abakuc/images/Trainings48.png'
     class_views = [
-                #['view'],
+                ['view'],
                 ['browse_content?mode=list'],
                 ['new_resource_form'],
                 ['edit_metadata_form']]
 
     
     site_format = 'training'
+
     def get_document_types(self):
         return [Training]
+
     #######################################################################
     # User Interface
     #######################################################################
-    #view__access__ = 'is_allowed_to_view'
-    #view__label__ = u'View'
-    #def view(self, context):
-    #    here = context.handler
-    #    namespace = {}
-    #    title = here.get_title()
-    #    items = self.search_handlers(handler_class=Training)
-    #    namespace['items'] = []
-    #    for item in items:
-    #        state = item.get_property('state')
-    #        if state == 'public':
-    #            get = item.get_property
-    #            url = '%s/;view' %  item.name
-    #            description = reduce_string(get('dc:description'),
-    #                                        word_treshold=90,
-    #                                        phrase_treshold=240)
-    #            namespace['items'].append({'url': url,
-    #                      'description': description,
-    #                      'title': item.title_or_name})
+    view__access__ = True 
+    view__label__ = u'View'
+    def view(self, context):
+        here = context.handler
+        namespace = {}
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Training)
+        namespace['items'] = []
+        for item in items:
+            state = item.get_property('state')
+            if state == 'public':
+                get = item.get_property
+                url = '%s/;view' %  item.name
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                namespace['items'].append({'url': url,
+                          'description': description,
+                          'title': item.title_or_name})
 
-    #        namespace['title'] = title 
-    #        handler = self.get_handler('/ui/abakuc/training/list.xml')
-    #        return stl(handler, namespace)
+            namespace['title'] = title 
+            handler = self.get_handler('/ui/abakuc/training/list.xml')
+            return stl(handler, namespace)
 
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -126,7 +128,7 @@ class Training(SiteRoot):
         return [Module]
 
     def get_level1_title(self, level1):
-        return None
+        return level1 
 
     def _get_virtual_handler(self, segment):
         name = segment.name
@@ -509,9 +511,9 @@ class Module(Folder):
             username = get_context().user.name
 
         for exam in self.search_handlers(format=Exam.class_id):
-            business_functions = exam.definition.business_functions
-            if 'all' in business_functions:
-                return exam
+            #business_functions = exam.definition.business_functions
+            #if 'all' in business_functions:
+            #    return exam
             #if business_function is None:
             #    site_root = self.get_site_root()
             #    user = site_root.get_handler('users/%s' % username)
@@ -519,8 +521,9 @@ class Module(Folder):
             #    company = address.parent
             #    business_function = company.get_property('abakuc:business_function')
 
-            if business_function in business_functions:
-                return exam
+            #if business_function in business_functions:
+            #    return exam
+            return exam
 
         return None
 
@@ -620,9 +623,12 @@ class Module(Folder):
     #########################################################################
     end__access__ = 'is_allowed_to_view'
     def end(self, context):
+        here = context.handler
         user = context.user
         # Build the namespace
         namespace = {}
+        title = here.get_title()
+        namespace['title'] = title 
         #namespace['marketing'] = None
         namespace['exam'] = None
         #namespace['game'] = None
@@ -636,7 +642,7 @@ class Module(Folder):
         # The marketing form
         #marketing_form = self.get_marketing_form(user.name)
         #if marketing_form is None:
-            # The exam
+        # The exam
         exam = self.get_exam(user.name)
         if exam is not None:
             result = exam.get_result(user.name)
@@ -646,12 +652,33 @@ class Module(Folder):
                 module_index = modules.index(self)
                 if module_index == len(modules) - 1:
                     namespace['finished'] = True
+                    namespace['profile'] = user.get_profile_url(self)
                 else:
                     next = modules[module_index + 1]
                     namespace['next'] = '../%s/;view' % next.name
             else:
                 exam_path = self.get_pathto(exam)
                 namespace['exam'] = '%s/;take_exam_form' % exam_path
+
+        else:
+            modules = self.parent.get_modules()
+            module_index = modules.index(self)
+            if module_index == len(modules) - 1:
+                namespace['finished'] = True
+                namespace['profile'] = user.get_profile_url(self)
+            else:
+                next = modules[module_index + 1]
+                namespace['next'] = '../%s/;view' % next.name
+
+        modules = self.parent.get_modules()
+        module_index = modules.index(self)
+        is_first_module = module_index == 0
+        prev_module = None
+        if is_first_module:
+            namespace['previous'] = None
+        else:
+            namespace['previous'] = ';view'
+
         #else:
         #    namespace['marketing'] = '%s/;take_exam_form' % marketing_form.name
 

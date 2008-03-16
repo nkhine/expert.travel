@@ -1184,7 +1184,7 @@ class User(iUser, WorkflowAware, Handler):
 
     ########################################################################
     # Setup training 
-    setup_training_form__access__ = 'is_self_or_admin'
+    setup_training_form__access__ = 'is_admin'
     setup_training_form__sublabel__ = u'Setup a training programme'
     def setup_training_form(self, context):
         name = context.get_form_value('dc:title')

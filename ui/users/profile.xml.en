@@ -36,7 +36,7 @@
               <li>
                 <a href=";setup_company_form">Switch to another company</a>.
               </li>
-              <li>
+              <li stl:if="is_admin">
                 <a href=";setup_training_form">Create a new training programme</a>.
               </li>
             </ul>

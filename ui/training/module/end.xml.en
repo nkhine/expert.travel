@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
-
+<h1>${title}</h1>
 <h2>What To Do Next?</h2>
 
 <p>Now that you have finished the module, it is time for you to:</p>
@@ -20,5 +20,8 @@
 <stl:block stl:if="next">
   &raquo; Go to <a href="${next}">the next module</a>.
 </stl:block>
-
+<a href="${previous}">retake</a> 
+<stl:block stl:if="finished">
+  &raquo; Well done!. Go to your <a href="${profile}">Profile Page</a>
+</stl:block>
 </stl:block>
