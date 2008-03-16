@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>Welcome to the UK.Expert.Travel</title>
+  </head>
+  <body>
+    <h2>Welcome to the UK.Expert.Travel on-line portal!</h2>
+    <div class="content">
+    <p>
+    An on-line directory of the UK Travel market covers: travel trade
+    services; land and sea travel; air travel; travel trade information;
+    national tourist offices; tour operators; travel agents and provides
+    travel professionals and site visitors with comprehensive and up to
+    date contact information about the UK travel industry.
+    </p>
+    <p>
+    Listing within this site is <b>FREE of Charge</b>, should you find
+    that your company is not listed, please go to
+    <a href=";register_form"><i>'Register'</i></a> and register. If your entry
+    is incorrect please login or re-register.
+    </p>
+    </div>
+    <p>
+    {tabs}
+    </p>
+
+  </body>
+</stl:block>

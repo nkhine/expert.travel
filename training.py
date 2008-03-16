@@ -648,7 +648,7 @@ class Module(Folder):
                     namespace['finished'] = True
                 else:
                     next = modules[module_index + 1]
-                    namespace['next'] = '../%s/;list_view' % next.name
+                    namespace['next'] = '../%s/;view' % next.name
             else:
                 exam_path = self.get_pathto(exam)
                 namespace['exam'] = '%s/;take_exam_form' % exam_path

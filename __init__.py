@@ -9,7 +9,7 @@ from itools.cms.skins import register_skin
 # Import from abakuc
 import metadata
 from root import Root
-from skins import countries, websites
+from skins import countries, trainings, websites
 
 __version__ = get_version(globals())
 
@@ -25,4 +25,9 @@ for name, cls in websites.items():
 country = get_abspath(globals(), 'skins/countries')
 for name, cls in countries.items():
     path = country + '/' + name
+    register_skin(name, cls(path))
+
+training = get_abspath(globals(), 'skins/training')
+for name, cls in trainings.items():
+    path = training + '/' + name
     register_skin(name, cls(path))

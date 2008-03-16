@@ -190,9 +190,14 @@ class Root(Handler, BaseRoot):
             if hostname.endswith(name):
                 return ui.get_handler(name)
 
+        # XXX
+        # I need to have 3 types of skins:
+        # 1) company.expert.travel
+        # 2) training.expert.travel
+        # 3) destinations.info
+
         # Default
         return ui.get_handler('aruni')
-        #return ui.get_handler('uk.expert.travel')
 
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
