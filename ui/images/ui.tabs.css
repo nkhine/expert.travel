@@ -16,6 +16,7 @@
 /* Skin */
 .ui-tabs-nav {
     margin: 0;
+    height: 25px;
     padding: 0 0 0 1px;
 }
 .ui-tabs-nav:after { /* clearing without presentational markup, IE gets extra treatment */

@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 
 # Import from itools
-from itools.uri import get_reference
+from itools.uri import get_reference, Path
 from itools import i18n
 from itools.web import get_context
 from itools.xml import xml 
@@ -273,6 +273,52 @@ class Document(XHTMLFile):
 
         handler = self.get_handler('/ui/abakuc/training/document/edit_image.xml')
         return stl(handler, namespace)
+
+
+    #######################################################################
+    # use epoz method to upload and link image 
+    addimage_form__access__ = 'is_allowed_to_edit'
+    def addimage_form(self, context):
+        from itools.cms.file import File
+        from itools.cms.binary import Image
+        from itools.cms.widgets import Breadcrumb
+        # Build the bc
+        if isinstance(self, File):
+            start = self.parent
+        else:
+            start = self
+        # Construct namespace
+        namespace = {}
+        namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
+        namespace['message'] = context.get_form_value('message')
+
+        prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/addimage.xml')
+        handler = self.get_handler('/ui/abakuc/training/document/addimage.xml')
+        return stl(handler, namespace, prefix=prefix)
+
+
+    addimage__access__ = 'is_allowed_to_edit'
+    def addimage(self, context):
+        """
+        Allow to upload and add an image to epoz
+        """
+        from itools.cms.binary import Image
+        root = context.root
+        # Get the container
+        container = root.get_handler(context.get_form_value('target_path'))
+        # Add the image to the handler
+        uri = Image.new_instance(container, context)
+        if ';addimage_form' not in uri.path:
+            handler = container.get_handler(uri.path[0])
+            return """
+            <script type="text/javascript">
+                window.opener.CreateImage('%s');
+            </script>
+                    """ % handler.abspath
+
+        return context.come_back(message=uri.query['message'])
+
+
     #######################################################################
     # Edit / Inline / edit
     edit__access__ = 'is_allowed_to_edit'
