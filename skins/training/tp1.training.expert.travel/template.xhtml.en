@@ -18,6 +18,7 @@
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" />
+    <script type="text/javascript" src="/ui/abakuc/office.js" />
   </head>
   <body>
         <div id="doc3" class="yui-t1">
@@ -66,6 +67,7 @@
                             <label>${menu/title}</label>
                             ${menu/content}
                         </div>
+                        ${context_menu_html}
                     </div><!-- yui-b -->
                     <div id="yui-main">
                         <div class="yui-b">

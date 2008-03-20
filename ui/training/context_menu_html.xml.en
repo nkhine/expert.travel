@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+
+<div id="left_menu">
+
+  <div class="menu1_block" stl:repeat="menu1 menus/submenus">
+    <div class="menu1">
+      <div stl:if="menu1/active" class="active">
+        <a title="${menu1/name}" href="${menu1/url}">${menu1/name}</a> 
+      </div>
+      <div stl:if="not menu1/active" class="inactive"> 
+        <a title="${menu1/name}" href="${menu1/url}">${menu1/name}</a> 
+      </div>
+    </div>
+
+    <div class="menu2_block" stl:repeat="menu2 menu1/submenus">
+      <div class="menu2">
+        <div class="${menu1/class2}">  
+          <a stl:if="menu2/active" title="${menu2/name}" class="active" href="${menu2/url}">${menu2/name}</a>
+          <a stl:if="not menu2/active" title="${menu2/name}" href="${menu2/url}">${menu2/name}</a>
+        </div>
+      </div>
+
+      <div class="menu3" stl:repeat="menu3 menu2/submenus">
+        <div class="${menu1/class2}">  
+          <a stl:if="menu3/active" title="${menu3/name}" class="active" href="${menu3/url}">${menu3/name}</a>
+          <a stl:if="not menu3/active" title="${menu3/name}" href="${menu3/url}">${menu3/name}</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</stl:block>

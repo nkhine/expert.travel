@@ -66,6 +66,70 @@ no-repeat;width:400px;height:62px;}
   font-size: 93%;
   text-decoration:none;
 }
+
+
+/**************************************************************************
+ * Left menu style 
+ **************************************************************************/
+#left_menu {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.menu1_block {
+  width: 156px;
+}
+
+.menu1 .inactive {
+  margin: 1px 1px 0px 0px;
+  padding: 4px 2px 4px 2px;
+}
+
+.menu1 a, .menu1 a:link, .menu1 a:visited, .menu1 a:hover, .menu1 a:active {
+  color: #000000;
+  font: normal 12px Arial, sans-serif;
+}
+
+.menu1 .active {
+  margin: 1px 1px 1px 0px;
+  padding: 2px 2px 2px 2px;
+  font-weight: bold;
+}
+
+.menu1 .active a {
+  font-weight: bold;
+}
+
+.menu2 {
+  margin: 1px 1px 1px 0px;
+  padding: 2px 2px 0px 0px;
+  border-color: #fff;
+}
+
+.menu2 a, .menu2 a:link, .menu2 a:visited, .menu2 a:hover, .menu2 a:active {
+  font: normal 11px Arial, sans-serif;
+  color: #000000;
+}
+
+.menu2 .active a, .menu2 a.active {
+  font-weight: bold;
+}
+
+.menu3 {
+  margin: 0px;
+  padding: 0px;
+}
+
+.menu3 a, .menu3 a:link, .menu3 a:visited, .menu3 a:hover, .menu3 a:active {
+  color: #003366;
+  font: normal 10px Arial, sans-serif;
+}
+
+.menu3 .active a, .menu3 a.active {
+  font-weight: bold;
+}
+
+
 /**************************************************************************
  * Right-box style 
  **************************************************************************/

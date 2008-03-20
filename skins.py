@@ -3,17 +3,66 @@
 
 # Import from itools
 from itools.cms.skins import Skin
+from itools.stl import stl
 from itools.web import get_context
-from itools.cms.folder import Folder as DBFolder
 from itools.cms.widgets import tree, build_menu
-from itools.cms.base import Node
 from itools.cms.utils import reduce_string
 from itools.uri.generic import decode_query 
+from itools.handlers import Folder
 # Import from abakuc
 from companies import Company, Address
-from training import Training, Module 
+from training import Training, Module, Topic 
+from document import Document
 from countries import Country
+from utils import get_sort_name
 
+class Node(object):
+
+    def __init__(self, handler):
+        self.children = []
+        self.handler = handler
+
+
+    def click(self, path):
+        handler =  self.handler
+        # fill children
+        if isinstance(handler, Folder):
+            allowed_instances = Address, Module, Topic, Document
+            handlers = [
+                handler.get_handler(x) for x in handler.get_handler_names()
+                if not x.startswith('.') ]
+            handlers = [
+                h for h in handlers if isinstance(h, allowed_instances) ]
+            handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                           get_sort_name(y.name)))
+            self.children = [ Node(h) for h in handlers ]
+        # parse the path
+        if path:
+            child_name, path = path[0], path[1:]
+            child_name = str(child_name)
+            for child in self.children:
+                if child.handler.name == child_name:
+                    child.click(path)
+                    break
+
+    def get_tree(self, here):
+        ns = {}
+        handler = self.handler
+        name = handler.title or handler.name
+        ns['name'] = name
+        ns['short_name'] = name # XXX
+        submenus = [ child.get_tree(here) for child in self.children ]
+        ns['submenus'] = submenus
+        ns['open'] = bool(len(submenus))
+        ns['class'] = ''
+        ns['class2'] = ''
+        ns['active'] = handler.name in str(get_context().uri.path)
+        if isinstance(handler, Module):
+            ns['url'] = '%s/;preview' % here.get_pathto(handler)
+        else:
+            ns['url'] = '%s/;view' % here.get_pathto(handler)
+
+        return ns
 
 class FrontOffice(Skin):
 
@@ -40,7 +89,8 @@ class FrontOffice(Skin):
                    for x in level1 ]
         level1.sort(key=lambda x: x['title'])
         namespace['level1'] = level1
-
+        context_menu_html = self.get_context_menu_html(context)
+        namespace['context_menu_html'] = context_menu_html
         return namespace
 
 
@@ -59,6 +109,9 @@ class FrontOffice(Skin):
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
         append({'path': path, 'method': 'addresses',
                 'title': u'Contact us',
+                'icon': '/ui/images/UserFolder16.png'})
+        append({'path': path, 'method': 'modules',
+                'title': u'Training Modules',
                 'icon': '/ui/images/UserFolder16.png'})
         return options
 
@@ -138,46 +191,27 @@ class FrontOffice(Skin):
 
         return menus
 
+    ########################################################################
+    # Training Programme left menu 
+    def get_context_menu_html(self, context):
+        root = context.root
+        # Not Found
+        here = context.handler
+        if here is None:
+            here = root
+        # Namespace
+        site_root = here.get_site_root()
+        tree = Node(site_root)
+        tree.click(context.path[1:])
+        menus = tree.get_tree(here)
+        template_path = \
+          'ui/abakuc/training/context_menu_html.xml'
 
-    #######################################################################
-    # Breadcrumb
-    #######################################################################
-    #def get_breadcrumb(self, context):
-    #    """Return a list of dicts [{name, url}...] """
-    #    here = context.handler
-    #    #root = context.site_root
-    #    root = here.get_site_root()
-    #    # Build the list of handlers that make up the breadcrumb
-    #    handlers = [root]
-    #    for segment in context.uri.path:
-    #        name = segment.name
-    #        if name:
-    #            try:
-    #                handler = handlers[-1].get_handler(name)
-    #            except LookupError:
-    #                continue
-    #            handlers.append(handler)
-
-    #    #  Build the namespace
-    #    breadcrumb = []
-    #    for handler in handlers:
-    #        if not isinstance(handler, Node):
-    #            break
-    #        # The link
-    #        view = handler.get_firstview()
-    #        if view is None:
-    #            url = None
-    #        else:
-    #            url = '%s/;%s' % (here.get_pathto(handler), view)
-    #        # The title
-    #        title = handler.get_title()
-    #        short_title = reduce_string(title, 15, 30) 
-    #        # Name
-    #        breadcrumb.append({'name': title, 'short_name': short_title,
-    #                           'url': url})
-
-    #    return breadcrumb
-
+        namespace = {}
+        namespace['menus'] = menus
+        #namespace['horiz_nav'] = self.get_global_menu_ns(context)
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
 
 class DestinationsSkin(FrontOffice):
     
@@ -310,8 +344,8 @@ class TrainingSkin(Skin):
         append({'path': path, 'method': 'jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'view_addresses',
-                'title': u'Branches',
+        append({'path': path, 'method': 'modules',
+                'title': u'Training Modules',
                 'icon': '/ui/images/UserFolder16.png'})
         return options
 

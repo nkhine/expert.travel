@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
-import datetime
+from datetime import datetime, date
 
 # Import from itools
 from itools.stl import stl
@@ -17,6 +17,8 @@ from itools.cms.workflow import WorkflowAware
 from itools.datatypes import FileName
 from itools.web import get_context
 from itools.cms.catalog import schedule_to_reindex
+from itools.catalog import EqQuery, AndQuery, RangeQuery
+from itools.uri import Path, get_reference
 
 # Import from abakuc
 from companies import Company
@@ -25,6 +27,9 @@ from website import SiteRoot
 from document import Document
 from utils import get_sort_name
 from exam import Exam
+from news import News
+from jobs import Job
+from metadata import JobTitle, SalaryRange
 from namespaces import Region, BusinessFunction, JobFunction, BusinessProfile
 
 month_names = [
@@ -152,6 +157,19 @@ class Training(SiteRoot, WorkflowAware):
         modules.sort(lambda x, y: cmp(get_sort_name(x.name),
                                      get_sort_name(y.name)))
         return modules
+
+    def login(self, context):
+        response = SiteRoot.login(self, context)
+        if str(response.path[-1]) == ';login_form':
+            return response
+        user = context.user
+        if not self.has_user_role(user.name, 'ikaaro:reviewers') and \
+           not self.has_user_role(user.name, 'ikaaro:members') and \
+           not self.has_user_role(user.name, 'ikaaro:members'):
+            self.set_user_role(user.name, 'ikaaro:members')
+            schedule_to_reindex(user)
+
+        return response
 
     #######################################################################
     # User Interface / Edit
@@ -457,6 +475,220 @@ class Training(SiteRoot, WorkflowAware):
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
+
+    ########################################################################
+    # List modules 
+    modules__access__ = True 
+    #view__access__ = 'is_allowed_to_edit'
+    modules__label__ = u'Modules'
+    def modules(self, context):
+        here = context.handler
+        namespace = {}
+        title = here.get_title()
+        items = self.search_handlers(handler_class=Module)
+        namespace['items'] = []
+        for item in items:
+            get = item.get_property
+            url = '%s/;view' %  item.name
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            namespace['items'].append({'url': url,
+                      'description': description,
+                      'title': item.title_or_name})
+
+        namespace['title'] = title 
+        namespace['vhosts'] = []
+        vhosts = self.get_vhosts()
+        for vhost in vhosts:
+            url = '%s' % vhost
+            namespace['vhosts'].append({'url': url})
+
+        #namespace['vhosts'] = self.get_vhosts() 
+        handler = self.get_handler('/ui/abakuc/training/view.xml')
+        return stl(handler, namespace)
+    #######################################################################
+    # Jobs - Search Interface
+    #######################################################################
+    jobs__access__ = True
+    jobs_label__ = u'Jobs'
+    def jobs(self, context):
+        from root import world
+        root = context.root
+        namespace = {}
+        # Total number of jobs
+        today = date.today().strftime('%Y-%m-%d')
+        query = [EqQuery('format', 'Job'),
+                 EqQuery('company', self.name),
+                 RangeQuery('closing_date', today, None)]
+        # Search fields
+        function = context.get_form_value('function') or None
+        salary = context.get_form_value('salary') or None
+        county = context.get_form_value('county') or None
+        job_title = context.get_form_value('job_title') or None
+        if job_title:
+            job_title = job_title.lower()
+        # Get Jobs (construct the query for the search)
+        if function:
+            query.append(EqQuery('function', function))
+        if salary:
+            query.append(EqQuery('salary', salary))
+        if county:
+            query.append(EqQuery('county', county))
+        results = root.search(AndQuery(*query))
+
+        # Construct the lines of the table
+        add_line = True
+        jobs = []
+        for job in results.get_documents():
+            job = root.get_handler(job.abspath)
+            get = job.get_property
+            address = job.parent
+            company = address.parent
+            county_id = get('abakuc:county')
+            if county_id is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                row = world.get_row(county_id)
+                region = row[7]
+                county = row[8]
+            url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                           job.name)
+            apply = '%s/;application_form' % (url)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            if job_title is None or job_title in (job.title).lower():
+                jobs.append({
+                    'url': url,
+                    'title': job.title,
+                    'function': JobTitle.get_value(get('abakuc:function')),
+                    'salary': SalaryRange.get_value(get('abakuc:salary')),
+                    'county': county,
+                    'region': region,
+                    'apply': apply,
+                    'closing_date': get('abakuc:closing_date'),
+                    'description': description})
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5 
+        batch_total = len(jobs)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        jobs = jobs[batch_start:batch_fin]
+        # Namespace 
+        if jobs:
+            job_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, 
+                              msgs=(u"There is 1 job announcement.",
+                                    u"There are ${n} job announcements."))
+            msg = None
+        else:
+            job_batch = None
+            msg = u"Appologies, currently we don't have any job announcements"
+        namespace['batch'] = job_batch
+        namespace['msg'] = msg 
+        namespace['jobs'] = jobs
+
+        # Search Namespace
+        namespace['function'] = JobTitle.get_namespace(function)
+        namespace['salary'] = SalaryRange.get_namespace(salary)
+        namespace['job_title'] = job_title
+        # Return the page
+        handler = self.get_handler('/ui/abakuc/jobs/search.xhtml')
+        return stl(handler, namespace)
+
+
+    #######################################################################
+    # News - Search Interface 
+    #######################################################################
+    news__access__ = True
+    news__label__ = u'Current news'
+    def news(self, context):
+        root = context.root
+        namespace = {}
+        # Total number of news items 
+        today = date.today().strftime('%Y-%m-%d')
+        query = [EqQuery('format', 'news'),
+                 EqQuery('company', self.name),
+                 RangeQuery('closing_date', today, None)]
+
+        # Search fields
+        #function = context.get_form_value('function') or None
+        #salary = context.get_form_value('salary') or None
+        #county = context.get_form_value('county') or None
+        news_title = context.get_form_value('news_title') or None
+        if news_title:
+            news_title = news_title.lower()
+        # Get Jobs (construct the query for the search)
+        #if function:
+        #    query.append(EqQuery('function', function))
+        #if salary:
+        #    query.append(EqQuery('salary', salary))
+        #if county:
+        #    query.append(EqQuery('county', county))
+        results = root.search(AndQuery(*query))
+        namespace['nb_news'] = results.get_n_documents()
+
+        # Construct the lines of the table
+        add_line = True
+        news_items = []
+        for news in results.get_documents():
+            users = self.get_handler('/users')
+            news = root.get_handler(news.abspath)
+            get = news.get_property
+            # Information about the news item 
+            username = news.get_property('owner')
+            user_exist = users.has_handler(username) 
+            usertitle = (user_exist and 
+                         users.get_handler(username).get_title() or username)
+            address = news.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                           news.name)
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            if news_title is None or news_title in (news.title).lower():
+                news_items.append({
+                    'url': url,
+                    'title': news.title,
+                    'closing_date': get('abakuc:closing_date'),
+                    'date_posted': get('dc:date'),
+                    'owner': usertitle,
+                    'description': description})
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5 
+        batch_total = len(news_items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        news_items = news_items[batch_start:batch_fin]
+        # Namespace 
+        if news_items:
+            news_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, 
+                              msgs=(u"There is 1 news item.",
+                                    u"There are ${n} news items."))
+            msg = None
+        else:
+            news_batch = None
+            msg = u"Appologies, currently we don't have any news announcements"
+        namespace['batch'] = news_batch
+        namespace['msg'] = msg 
+        namespace['news_items'] = news_items
+
+        # Search Namespace
+        #namespace['function'] = JobTitle.get_namespace(function)
+        #namespace['salary'] = SalaryRange.get_namespace(salary)
+        namespace['news_title'] = news_title
+        # Return the page
+        handler = self.get_handler('/ui/abakuc/news/search.xhtml')
+        return stl(handler, namespace)
 
 
 #######################################################################
