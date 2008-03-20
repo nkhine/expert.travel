@@ -526,6 +526,7 @@ class User(iUser, WorkflowAware, Handler):
                          'title': job.title})
         namespace['jobs'] = jobs
         #Search the catalogue, list 3 news items. 
+        catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'news'))
         today = date.today().strftime('%Y-%m-%d')
@@ -536,9 +537,9 @@ class User(iUser, WorkflowAware, Handler):
         namespace['nb_news'] = len(documents)
         documents = documents[0:3]
         news_items = []
-        for news in list(documents):
+        for news in documents:
             news = root.get_handler(news.abspath)
-            get = news.get_property
+            #get = news.get_property
             address = news.parent
             company = address.parent
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
@@ -546,7 +547,6 @@ class User(iUser, WorkflowAware, Handler):
                                'title': news.title})
         
         namespace['news_items'] = news_items
-
 
         # Tabs
         namespace['tabs'] = self.get_tabs_stl(context)
@@ -932,15 +932,15 @@ class User(iUser, WorkflowAware, Handler):
         columns = [('title', u'Title'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
-        # Get all Jobs
-        list_training = training.search_handlers(handler_class=Training)
+        # Get all Training programmes 
+        items = training.search_handlers(handler_class=Training)
         # Construct the lines of the table
         trainings = []
-        for training in list(list_training):
+        for item in list(items):
             #job = root.get_handler(job.abspath)
-            get = training.get_property
+            get = item.get_property
             # Information about the training
-            url = 'http://%s' % (training.get_vhosts())
+            url = 'http://%s' % (item.get_vhosts())
             # XXX fix so that we can extract the first uri
             # from the tuple
             #url = training.get_vhosts()
@@ -950,10 +950,11 @@ class User(iUser, WorkflowAware, Handler):
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=40)
-            training_to_add ={'id': training.name, 
+            training_to_add ={'id': item.name, 
                              'checkbox': is_reviewer, # XXX fix this.
+                             'url': url, 
                              'img': '/ui/abakuc/images/Training16.png',
-                             'title': (get('dc:title'),url),
+                             'title': get('dc:title'),
                              'description': description}
             trainings.append(training_to_add)
         # Set batch informations
@@ -963,12 +964,12 @@ class User(iUser, WorkflowAware, Handler):
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        trainings = trainings[batch_start:batch_fin]
+        items = trainings[batch_start:batch_fin]
         # Order 
         sortby = context.get_form_value('sortby', 'id')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
-        trainings.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
         if reverse:
             trainings.reverse()
         # Set batch informations
@@ -981,7 +982,7 @@ class User(iUser, WorkflowAware, Handler):
                        ('create_training', u'Add new training', 'button_ok',
                         None),
                        ('remove_training', 'Delete training/s', 'button_delete', None)]
-            training_table = table(columns, trainings, [sortby], sortorder, actions)
+            training_table = table(columns, items, [sortby], sortorder, actions)
             msgs = (u'There is one training.', u'There are ${n} training programmes.')
             training_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
@@ -992,8 +993,9 @@ class User(iUser, WorkflowAware, Handler):
             msg = u'No training programmes'
 
         namespace['training_table'] = training_table
-        namespace['training_batch'] = training_batch
-        namespace['training_msg'] = msg 
+        namespace['batch'] = training_batch
+        namespace['items'] = trainings
+        namespace['msg'] = msg 
         #handler = self.get_handler('/ui/abakuc/training/table.xml')
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)

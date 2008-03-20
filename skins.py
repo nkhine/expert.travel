@@ -51,13 +51,13 @@ class FrontOffice(Skin):
 
         options = []
         append = options.append
-        append({'path': path, 'method': 'list_news',
+        append({'path': path, 'method': 'news',
                 'title': u'News',
                 'icon': '/ui/abakuc/images/News16.png'})
-        append({'path': path, 'method': 'list_jobs',
+        append({'path': path, 'method': 'jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'list_addresses',
+        append({'path': path, 'method': 'addresses',
                 'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
         return options
@@ -227,7 +227,7 @@ class DestinationsSkin(FrontOffice):
         append({'path': path, 'method': 'view',
                 'title': u'Country details',
                 'icon': '/ui/abakuc/images/AddressBook16.png'})
-        append({'path': path, 'method': 'view_jobs',
+        append({'path': path, 'method': 'jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
         append({'path': path, 'method': 'view_addresses',
@@ -307,7 +307,7 @@ class TrainingSkin(Skin):
         append({'path': path, 'method': 'view',
                 'title': u'Country details',
                 'icon': '/ui/abakuc/images/AddressBook16.png'})
-        append({'path': path, 'method': 'view_jobs',
+        append({'path': path, 'method': 'jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
         append({'path': path, 'method': 'view_addresses',

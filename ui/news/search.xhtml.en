@@ -7,7 +7,7 @@
 <div class="yui-ge first">
     <div class="yui-u first">
       <div id="wrap">
-        <form method="get" action="/;news" id="form">
+        <form method="get" action=";news" id="form">
                <dl>
                     <dd>
                     <input name="news_title" type="text" size="25" />

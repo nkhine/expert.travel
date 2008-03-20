@@ -59,7 +59,7 @@ class Trainings(SiteRoot):
         namespace = {}
         title = here.get_title()
         items = self.search_handlers(handler_class=Training)
-        namespace['items'] = []
+        items = []
         for item in items:
             state = item.get_property('state')
             if state == 'public':
@@ -68,37 +68,39 @@ class Trainings(SiteRoot):
                 description = reduce_string(get('dc:description'),
                                             word_treshold=90,
                                             phrase_treshold=240)
-                namespace['items'].append({'url': url,
+                items_to_add = {'url': url,
                           'description': description,
-                          'title': item.title_or_name})
+                          'title': item.title_or_name}
+                items.append(items_to_add)
 
-            namespace['title'] = title 
-            handler = self.get_handler('/ui/abakuc/training/list.xml')
-            return stl(handler, namespace)
 
         # Set batch informations
-        #batch_start = int(context.get_form_value('batchstart', default=0))
-        #batch_size = 5
-        #batch_total = len(trainings)
-        #batch_fin = batch_start + batch_size
-        #if batch_fin > batch_total:
-        #    batch_fin = batch_total
-        #trainings = trainings[batch_start:batch_fin]
-        ## Namespace 
-        #if trainings:
-        #    msgs = (u'There is one training programme.',
-        #            u'There are ${n} training programmes.')
-        #    batch = batch(context.uri, batch_start, batch_size, 
-        #                  batch_total, msgs=msgs)
-        #    msg = None
-        #else:
-        #    batch = None
-        #    msg = u'Currently there no published training programmes.'
-        #
-        #namespace['batch'] = batch
-        #namespace['msg'] = msg 
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        items = items[batch_start:batch_fin]
+        # Namespace 
+        if items:
+            msgs = (u'There is one training programme.',
+                    u'There are ${n} training programmes.')
+            batch = batch(context.uri, batch_start, batch_size, 
+                          batch_total, msgs=msgs)
+            msg = None
+        else:
+            batch = None
+            msg = u'Currently there no published training programmes.'
+        
+        namespace['batch'] = batch
+        namespace['msg'] = msg 
+        namespace['items'] = items
+        namespace['title'] = title 
+        handler = self.get_handler('/ui/abakuc/training/list.xml')
+        return stl(handler, namespace)
 
-class Training(SiteRoot):
+class Training(SiteRoot, WorkflowAware):
 
     class_id = 'training'
     class_title = u'Training programme'
@@ -113,6 +115,7 @@ class Training(SiteRoot):
                     'virtual_hosts_form',
                     'anonymous_form',
                     'languages_form',
+                    'state_form',
                     'contact_options_form'],
                    ['permissions_form',
                     'new_user_form'],
@@ -469,8 +472,7 @@ class Module(Folder):
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
-                   ['edit_metadata_form'],
-                   ['state_form']]
+                   ['edit_metadata_form']]
 
     def get_document_types(self):
         return [Topic, Exam]

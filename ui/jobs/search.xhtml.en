@@ -7,7 +7,7 @@
 <div class="yui-ge first">
     <div class="yui-u first">
       <div id="wrap">
-        <form method="get" action="/;jobs" id="form">
+        <form method="get" action=";jobs" id="form">
                <dl>
                     <dd>
                     <input type="text" size="20" name="job_title" value="${job_title}"/>

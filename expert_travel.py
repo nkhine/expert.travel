@@ -325,7 +325,7 @@ class ExpertTravel(SiteRoot):
         namespace['news_batch'] = news_batch
         namespace['msg'] = msg 
         namespace['news_items'] = news_items
-        handler = self.get_handler('/ui/abakuc/companies/list_news.xml')
+        handler = self.get_handler('/ui/abakuc/companies/company/news.xml')
         return stl(handler, namespace)
 
     #######################################################################
@@ -490,7 +490,7 @@ class ExpertTravel(SiteRoot):
         namespace['jobs'] = jobs        
         namespace['batch'] = job_batch
         namespace['msg'] = msg 
-        handler = self.get_handler('/ui/abakuc/companies/list_jobs.xml')
+        handler = self.get_handler('/ui/abakuc/companies/company/jobs.xml')
         return stl(handler, namespace)
 
     #######################################################################
@@ -506,9 +506,6 @@ class ExpertTravel(SiteRoot):
         today = date.today().strftime('%Y-%m-%d')
         query = [EqQuery('format', 'Job'),
                  RangeQuery('closing_date', today, None)]
-        results = root.search(AndQuery(*query))
-        namespace['number_of_jobs'] = results.get_n_documents()
-
         # Search fields
         function = context.get_form_value('function') or None
         salary = context.get_form_value('salary') or None
@@ -524,7 +521,6 @@ class ExpertTravel(SiteRoot):
         if county:
             query.append(EqQuery('county', county))
         results = root.search(AndQuery(*query))
-        namespace['nb_jobs'] = results.get_n_documents()
 
         # Construct the lines of the table
         add_line = True
