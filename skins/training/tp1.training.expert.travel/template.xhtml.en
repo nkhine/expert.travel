@@ -63,11 +63,9 @@
             </div><!-- hd -->
             <div id="bd">
                     <div id="left" class="yui-b">
-                        <div stl:repeat="menu left_menus">
-                            <label>${menu/title}</label>
-                            ${menu/content}
-                        </div>
+                        <div>
                         ${context_menu_html}
+                        </div>
                     </div><!-- yui-b -->
                     <div id="yui-main">
                         <div class="yui-b">

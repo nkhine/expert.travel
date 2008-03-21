@@ -22,12 +22,11 @@ class Node(object):
         self.children = []
         self.handler = handler
 
-
     def click(self, path):
         handler =  self.handler
         # fill children
         if isinstance(handler, Folder):
-            allowed_instances = Address, Module, Topic, Document
+            allowed_instances = Module, Topic, Document
             handlers = [
                 handler.get_handler(x) for x in handler.get_handler_names()
                 if not x.startswith('.') ]
@@ -57,8 +56,12 @@ class Node(object):
         ns['class'] = ''
         ns['class2'] = ''
         ns['active'] = handler.name in str(get_context().uri.path)
-        if isinstance(handler, Module):
-            ns['url'] = '%s/;preview' % here.get_pathto(handler)
+        if isinstance(handler, Address):
+            ns['url'] = '%s/;view' % here.get_pathto(handler)
+        elif isinstance(handler, Module):
+            ns['url'] = '%s/;view' % here.get_pathto(handler)
+        elif isinstance(handler, Topic):
+            ns['url'] = '%s/;page' % here.get_pathto(handler)
         else:
             ns['url'] = '%s/;view' % here.get_pathto(handler)
 
@@ -89,10 +92,11 @@ class FrontOffice(Skin):
                    for x in level1 ]
         level1.sort(key=lambda x: x['title'])
         namespace['level1'] = level1
+        # Returns the Address, Module etc...
         context_menu_html = self.get_context_menu_html(context)
         namespace['context_menu_html'] = context_menu_html
-        return namespace
 
+        return namespace
 
     def get_main_menu_options(self, context):
         handler = context.handler
@@ -115,15 +119,18 @@ class FrontOffice(Skin):
                 'icon': '/ui/images/UserFolder16.png'})
         return options
 
-
     def get_context_menu(self, context):
+        """
+        Lists contents of objects menu.
+        """
         # FIXME Hard-Coded
         from jobs import Job
         from news import News
         from training import Training, Module, Topic
         here = context.handler
         while here is not None:
-            if isinstance(here, (Job, News, Training, Module, Topic)):
+            if isinstance(here, (Job, News,\
+                          Training, Module, Topic)):
                 break
             here = here.parent
         else:
@@ -150,6 +157,27 @@ class FrontOffice(Skin):
         return {'title': self.gettext(here.class_title),
                 'content': build_menu(menu)}
 
+    ########################################################################
+    # Training Programme left menu 
+    def get_context_menu_html(self, context):
+        root = context.root
+        # Not Found
+        here = context.handler
+        if here is None:
+            here = root
+        # Namespace
+        site_root = here.get_site_root()
+        tree = Node(site_root)
+        tree.click(context.path[0])
+        menus = tree.get_tree(here)
+        template_path = \
+          'ui/abakuc/training/context_menu_html.xml'
+
+        namespace = {}
+        namespace['menus'] = menus
+        #namespace['horiz_nav'] = self.get_global_menu_ns(context)
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
@@ -191,27 +219,6 @@ class FrontOffice(Skin):
 
         return menus
 
-    ########################################################################
-    # Training Programme left menu 
-    def get_context_menu_html(self, context):
-        root = context.root
-        # Not Found
-        here = context.handler
-        if here is None:
-            here = root
-        # Namespace
-        site_root = here.get_site_root()
-        tree = Node(site_root)
-        tree.click(context.path[1:])
-        menus = tree.get_tree(here)
-        template_path = \
-          'ui/abakuc/training/context_menu_html.xml'
-
-        namespace = {}
-        namespace['menus'] = menus
-        #namespace['horiz_nav'] = self.get_global_menu_ns(context)
-        template = root.get_handler(template_path)
-        return stl(template, namespace)
 
 class DestinationsSkin(FrontOffice):
     
@@ -291,102 +298,6 @@ class CountrySkin(FrontOffice):
             # Default
             return self.get_handler('../.destinationsguide.info/template.xhtml')
 
-
-class TrainingSkin(Skin):
-    """Skin for countries"""
-
-    def build_namespace(self, context):
-        root = context.root
-        namespace = Skin.build_namespace(self, context)
-
-        # Navigation (level 1)
-        site_root = context.handler.get_site_root()
-        results = root.search(format=site_root.site_format)
-        # Flat
-        level1 = []
-        for x in results.get_documents():
-            x = x.level1
-            if isinstance(x, list):
-                level1.extend(x)
-            else:
-                level1.append(x)
-        # Unique
-        level1 = set(level1)
-        level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
-                   for x in level1 ]
-        level1.sort(key=lambda x: x['title'])
-        namespace['level1'] = level1
-
-        return namespace
-
-    def get_left_menus(self, context):
-        menus = []
-
-        root =  context.handler.get_site_root()
-        if isinstance(root, Module):
-            # Main Menu
-            menu = self.get_main_menu(context)
-            if menu is not None:
-                menus.append(menu)
-
-        return menus
-
-    def get_main_menu_options(self, context):
-        options = []
-        append = options.append
-        handler = context.handler
-        root = handler.get_site_root()
-        path = root.abspath
-
-        append({'path': path, 'method': 'view',
-                'title': u'Country details',
-                'icon': '/ui/abakuc/images/AddressBook16.png'})
-        append({'path': path, 'method': 'jobs',
-                'title': u'Jobs',
-                'icon': '/ui/abakuc/images/JobBoard16.png'})
-        append({'path': path, 'method': 'modules',
-                'title': u'Training Modules',
-                'icon': '/ui/images/UserFolder16.png'})
-        return options
-
-    def get_context_menu(self, context):
-        # FIXME Hard-Coded
-        from training import Module, Topic
-        here = context.handler
-        while here is not None:
-            if isinstance(here, (Module, Topic)):
-                break
-            here = here.parent
-        else:
-            return None
-
-        base = context.handler.get_pathto(here)
-
-        menu = []
-        for view in here.get_views():
-            # Find out the title
-            if '?' in view:
-                name, args = view.split('?')
-                args = decode_query(args)
-            else:    
-                name, args = view, {}
-            title = getattr(here, '%s__label__' % name)
-            if callable(title):
-                title = title(**args)
-            # Append to the menu
-            menu.append({'href': '%s/;%s' % (base, view),
-                         'title': self.gettext(title),
-                         'class': '', 'src': None, 'items': []})
-
-        return {'title': self.gettext(here.class_title),
-                'content': build_menu(menu)}
-
-    def get_template(self):
-        try:
-            return self.get_handler('template.xhtml')
-        except LookupError:
-            # Default
-            return self.get_handler('../training/training.expert.travel/template.xhtml')
 
 websites = {
     # Main Sites
