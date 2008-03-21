@@ -126,7 +126,16 @@ class Training(SiteRoot, WorkflowAware):
                    ['permissions_form',
                     'new_user_form'],
                    ['last_changes']]
-
+    __roles__ = [
+        {'name': 'abakuc:training_manager', 'title': u"Training Manager",
+         'unit': u"Training Manager"},
+        {'name': 'abakuc:branch_manager', 'title': u"Branch Manager",
+         'unit': u"Branch Manager"},
+        {'name': 'abakuc:partner', 'title': u"Partner",
+         'unit': u"Partner"},
+        {'name': 'abakuc:branch_member', 'title': u"Branch Member",
+         'unit': u"Branch Member"},
+    ]
   
     new_resource_form__access__ = 'is_reviewer' 
     new_resource__access__ = 'is_reviewer'
@@ -164,10 +173,10 @@ class Training(SiteRoot, WorkflowAware):
         if str(response.path[-1]) == ';login_form':
             return response
         user = context.user
-        if not self.has_user_role(user.name, 'ikaaro:reviewers') and \
-           not self.has_user_role(user.name, 'ikaaro:members') and \
-           not self.has_user_role(user.name, 'ikaaro:members'):
-            self.set_user_role(user.name, 'ikaaro:members')
+        if not self.has_user_role(user.name, 'abakuc:branch_manager') and \
+           not self.has_user_role(user.name, 'abakuc:partner') and \
+           not self.has_user_role(user.name, 'abakuc:branch_member'):
+            self.set_user_role(user.name, 'abakuc:branch_member')
             schedule_to_reindex(user)
 
         return response
@@ -879,7 +888,7 @@ class Module(Folder):
         namespace = {}
         title = here.get_title()
         namespace['title'] = title 
-        #namespace['marketing'] = None
+        namespace['marketing'] = None
         namespace['exam'] = None
         #namespace['game'] = None
         namespace['next'] = None
@@ -920,17 +929,11 @@ class Module(Folder):
                     next = modules[module_index + 1]
                     namespace['next'] = '../%s/;view' % next.name
 
-            modules = self.parent.get_modules()
-            module_index = modules.index(self)
-            is_first_module = module_index == 0
-            prev_module = None
-            if is_first_module:
-                namespace['previous'] = None
-            else:
-                namespace['previous'] = ';view'
-
         else:
             namespace['marketing'] = '%s/;fill_form' % marketing_form.name
+
+        namespace['previous'] = ';view'
+
 
         handler = self.get_handler('/ui/abakuc/training/module/end.xml')
         return stl(handler, namespace)

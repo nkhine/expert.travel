@@ -83,6 +83,11 @@ class Schema(BaseSchema):
 
         'sub_continent': Unicode(title=u'Sub continent', is_mandatory=True),
         # User
+        'company_manager': Tokens(default=()),
+        'branch_manager': Tokens(default=()),
+        'branch_member': Tokens(default=()),
+        'training_manager': Tokens(default=()),
+        'partner': Tokens(default=()),
         'job_function': String,
         # Company
         'website': String,

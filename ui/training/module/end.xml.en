@@ -3,25 +3,31 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
 <h1>${title}</h1>
-<h2>What To Do Next?</h2>
-
-<p>Now that you have finished the module, it is time for you to:</p>
-<!-- <stl:block stl:if="marketing">
-  &raquo; Fill <a href="${marketing}">the marketing form</a>.
-</stl:block> -->
-<stl:block stl:if="exam">
-  &raquo; Take <a href="${exam}">the exam</a>.
-  <br/> 
+<stl:block stl:if="not finished">
+<p>Well done, you have reached the end of <strong>${title}</strong>, 
+<span stl:if="marketing"> before you
+proceed to the next step, please take the time to answer few questions,
+with this <a href="${marketing}">Talkback</a> form.</span> 
+<span stl:if="exam"> you can now proceed to take the <a href="${exam}">the
+exam.</a></span>
+<span stl:if="next">please go to the <a href="${next}">next
+module.</a></span>
+</p>
+<p>
+If you like, you can go back and review the contents of <a
+href="${previous}">${title}</a>, again.
+</p>
 </stl:block>
 <!-- <stl:block stl:if="game">
   &raquo; <a href="#" onclick="{game}">Let's play game</a>.
   <br/> 
 </stl:block> -->
-<stl:block stl:if="next">
-  &raquo; Go to <a href="${next}">the next module</a>.
-</stl:block>
-<a href="${previous}">retake</a> 
 <stl:block stl:if="finished">
-  &raquo; Well done!. Go to your <a href="${profile}">Profile Page</a>
+  <p>Congratulations, you have succesfully completed the {training
+  programme}!. Go to your <a href="${profile}">Profile Page</a> and make sure
+  you add some bookings, as these could win you FAM trips and prizes.</p>
 </stl:block>
+<p>
+The marketing team.
+</p>
 </stl:block>

@@ -80,62 +80,63 @@ class Marketing(exam.Exam):
                 attempt.questions[key] = value
 
         # Send an email to all manager in this Tourist Office
-        office = self.get_site_root()
-        manager_names = office.get_managers_names()
-        if manager_names:
-            # Build the "to" address
-            user_folder = root.get_handler('users')
-            manager_emails = [
-                user_folder.get_handler(x).get_property('ikaaro:email')
-                for x in manager_names ]
-            to_addr = ', '.join(manager_emails)
+        #office = self.get_site_root()
+        #manager_names = office.get_managers_names()
+        #if manager_names:
+        #    # Build the "to" address
+        #    user_folder = root.get_handler('users')
+        #    manager_emails = [
+        #        user_folder.get_handler(x).get_property('ikaaro:email')
+        #        for x in manager_names ]
+        #    to_addr = ', '.join(manager_emails)
 
-            get_property = user.metadata.get_property
-            branch = user.get_branch()
-            from_addr = get_property('ikaaro:email')
-            fullname = u"%s %s" % (get_property('ikaaro:firstname'),
-                                   get_property('ikaaro:lastname'))
-            subject = u'Marketing Interest Feedback from "%s"' % fullname
-            body = 'Record of %s' % fullname
-            body = body + '\n' + len(body)  * '=' + '\n'
-            user_infos = []
-            user_infos.append(fullname)
-            user_infos.append(from_addr)
-            user_infos.append(get_property('abakuc:business_function'))
-            user_infos.append(get_property('abakuc:company_name') or '')
-            if branch is None:
-                user_infos.append('  address not available')
-            else:
-                user_infos.append('  ' + branch.get_property('abakuc:address'))
-                user_infos.append('  ' + branch.get_property('abakuc:city'))
-                user_infos.append('  ' + branch.get_property('abakuc:postcode'))
-            user_infos.append('\n')
-            body = body + '\n'.join(user_infos)
-            body = body + '\nAnswer to Questions\n====================\n'
-            body_main = []
-            for question_id, answers in attempt.questions.items():
-                question = questions[question_id]
-                question_title = question.title
-                answer_title = ', '.join(
-                    [ question.options[answer] for answer in answers
-                      if answer < len(question.options) ])
+        #    get_property = user.metadata.get_property
+        #    branch = user.get_branch()
+        #    from_addr = get_property('ikaaro:email')
+        #    fullname = u"%s %s" % (get_property('ikaaro:firstname'),
+        #                           get_property('ikaaro:lastname'))
+        #    subject = u'Marketing Interest Feedback from "%s"' % fullname
+        #    body = 'Record of %s' % fullname
+        #    body = body + '\n' + len(body)  * '=' + '\n'
+        #    user_infos = []
+        #    user_infos.append(fullname)
+        #    user_infos.append(from_addr)
+        #    user_infos.append(get_property('abakuc:business_function'))
+        #    user_infos.append(get_property('abakuc:company_name') or '')
+        #    if branch is None:
+        #        user_infos.append('  address not available')
+        #    else:
+        #        user_infos.append('  ' + branch.get_property('abakuc:address'))
+        #        user_infos.append('  ' + branch.get_property('abakuc:city'))
+        #        user_infos.append('  ' + branch.get_property('abakuc:postcode'))
+        #    user_infos.append('\n')
+        #    body = body + '\n'.join(user_infos)
+        #    body = body + '\nAnswer to Questions\n====================\n'
+        #    body_main = []
+        #    for question_id, answers in attempt.questions.items():
+        #        question = questions[question_id]
+        #        question_title = question.title
+        #        answer_title = ', '.join(
+        #            [ question.options[answer] for answer in answers
+        #              if answer < len(question.options) ])
 
-                item_line = '%s : %s' % (question_title, answer_title)
-                body_main.append(item_line)
+        #        item_line = '%s : %s' % (question_title, answer_title)
+        #        body_main.append(item_line)
 
-            body = '\n' + body + '\n'.join(body_main)
-            try:
-                root.send_email(from_addr, to_addr, subject, body)
-            except smtplib.SMTPRecipientsRefused:
-                message = (u'Your email is not allowed to be used here '
-                           u'(take a look at your email format)')
-            except smtplib.SMTPSenderRefused:
-                message = u'Mail server error, please retry later'
-            else:
-                results = self.results
-                results.set_changed()
-                attempts = results.attempts.setdefault(user.name, [])
-                attempts.append(attempt)
-                message = u'The marketing form has been filled.'
+        #    body = '\n' + body + '\n'.join(body_main)
+        #    try:
+        #        root.send_email(from_addr, to_addr, subject, body)
+        #    except smtplib.SMTPRecipientsRefused:
+        #        message = (u'Your email is not allowed to be used here '
+        #                   u'(take a look at your email format)')
+        #    except smtplib.SMTPSenderRefused:
+        #        message = u'Mail server error, please retry later'
+        #    else:
+        #        results = self.results
+        #        results.set_changed()
+        #        attempts = results.attempts.setdefault(user.name, [])
+        #        attempts.append(attempt)
+        #        message = u'The marketing form has been filled.'
 
-        return user.back_to_profile(self, message)
+        message = u'The marketing form has been filled.'
+        return context.come_back(message, '../;end')
