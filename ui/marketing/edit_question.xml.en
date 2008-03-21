@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+
+<form method="post" action=";edit_question">
+  <input name="old_code" type="hidden" value="${question/code}"/>
+  <table align="center" border="0" width="90%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="100%">
+        <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="headbg">&nbsp; Edit Question Answer &nbsp;</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td class="headbg" width="100%">
+        <p align="right"><img width="9" height="9" border="0" src="images/2-tb-2-tr.gif"/></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%">
+        <table class="profile" width="100%">
+          <tr>
+            <td align="center" width="100%">
+              <table width="100%">
+                <tr class="rowodd">
+                  <td width="50%">Question Type :</td>
+
+                  <td>Code (a number followed by a letter):</td>
+                </tr>
+
+                <tr class="roweven">
+                  <td>
+                    <select name="type">
+                      <option value="${question/type}">${question/type}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input name="new_code" size="25" value="${question/code}"/>
+                  </td>
+                </tr>
+
+                <tr class="rowodd">
+                  <td width="50%">Question:</td>
+                  <td>Answer<br/>(<b>Enter one below the other</b>)</td>
+                </tr>
+
+                <tr class="roweven">
+                  <td>
+                    <textarea name="title" cols="40" rows="6">${question/title}</textarea>
+                  </td>
+                  <td>
+                    <textarea name="options" cols="40" rows="6">${question/options_as_text}</textarea>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td align="right" width="100%">
+        <table border="0" width="109" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="headbg" align="center" width="100%">
+            <input type="Submit" value="Change"/>
+            <img width="3" height="22" border="0" src="images/trans-space.gif"/></td>
+          </tr>
+
+          <tr>
+            <td class="headbg" width="100%">
+              <img src="images/2-tb-bot.gif" height="8" border="0" width="109"/></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

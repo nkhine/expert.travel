@@ -7,9 +7,15 @@ from itools.cms.registry import register_object_class
 from itools.cms.skins import register_skin
 
 # Import from abakuc
-import metadata
 from root import Root
 from skins import countries, trainings, websites
+import document
+import exam
+import marketing
+import metadata
+import news
+import training
+import users
 
 __version__ = get_version(globals())
 
@@ -31,3 +37,8 @@ training = get_abspath(globals(), 'skins/training')
 for name, cls in trainings.items():
     path = training + '/' + name
     register_skin(name, cls(path))
+
+for handler_class in [document.Document, exam.Exam, 
+                      marketing.Marketing, news.News,
+                      users.UserFolder, users.User]:
+    register_object_class(handler_class)

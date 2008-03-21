@@ -31,6 +31,7 @@ from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange
 from namespaces import Region, BusinessFunction, JobFunction, BusinessProfile
+from marketing import Marketing
 
 month_names = [
     u'January', u'February', u'March', u'April', u'May', u'June',
@@ -707,7 +708,7 @@ class Module(Folder):
                    ['edit_metadata_form']]
 
     def get_document_types(self):
-        return [Topic, Exam]
+        return [Topic, Exam, Marketing]
 
     new_resource_form__access__ = 'is_admin'
 
@@ -759,6 +760,21 @@ class Module(Folder):
             #    return exam
             return exam
 
+        return None
+    
+    def get_marketing_form(self, username=None):
+        """
+        Returns the marketing form, if the user has not filled it yet.
+        I he has, or if there is not any marketing form, then return None.
+        """
+        if username is None:
+            context = get_context()
+            username = context.user.name
+
+        for marketing_form in self.search_handlers(format=Marketing.class_id):
+            n_attempts = marketing_form.get_result(username)[1]
+            if n_attempts == 0:
+                return marketing_form
         return None
 
     #######################################################################
@@ -874,14 +890,27 @@ class Module(Folder):
         #            "width=800,height=700'); return false;") % game.name
         #    namespace['game'] = popup
         # The marketing form
-        #marketing_form = self.get_marketing_form(user.name)
-        #if marketing_form is None:
-        # The exam
-        exam = self.get_exam(user.name)
-        if exam is not None:
-            result = exam.get_result(user.name)
-            passed, n_attempts, time, mark, kk = result
-            if passed:
+        marketing_form = self.get_marketing_form(user.name)
+        if marketing_form is None:
+            # Take the exam
+            exam = self.get_exam(user.name)
+            if exam is not None:
+                result = exam.get_result(user.name)
+                passed, n_attempts, time, mark, kk = result
+                if passed:
+                    modules = self.parent.get_modules()
+                    module_index = modules.index(self)
+                    if module_index == len(modules) - 1:
+                        namespace['finished'] = True
+                        namespace['profile'] = user.get_profile_url(self)
+                    else:
+                        next = modules[module_index + 1]
+                        namespace['next'] = '../%s/;view' % next.name
+                else:
+                    exam_path = self.get_pathto(exam)
+                    namespace['exam'] = '%s/;take_exam_form' % exam_path
+
+            else:
                 modules = self.parent.get_modules()
                 module_index = modules.index(self)
                 if module_index == len(modules) - 1:
@@ -890,31 +919,18 @@ class Module(Folder):
                 else:
                     next = modules[module_index + 1]
                     namespace['next'] = '../%s/;view' % next.name
-            else:
-                exam_path = self.get_pathto(exam)
-                namespace['exam'] = '%s/;take_exam_form' % exam_path
 
-        else:
             modules = self.parent.get_modules()
             module_index = modules.index(self)
-            if module_index == len(modules) - 1:
-                namespace['finished'] = True
-                namespace['profile'] = user.get_profile_url(self)
+            is_first_module = module_index == 0
+            prev_module = None
+            if is_first_module:
+                namespace['previous'] = None
             else:
-                next = modules[module_index + 1]
-                namespace['next'] = '../%s/;view' % next.name
+                namespace['previous'] = ';view'
 
-        modules = self.parent.get_modules()
-        module_index = modules.index(self)
-        is_first_module = module_index == 0
-        prev_module = None
-        if is_first_module:
-            namespace['previous'] = None
         else:
-            namespace['previous'] = ';view'
-
-        #else:
-        #    namespace['marketing'] = '%s/;take_exam_form' % marketing_form.name
+            namespace['marketing'] = '%s/;fill_form' % marketing_form.name
 
         handler = self.get_handler('/ui/abakuc/training/module/end.xml')
         return stl(handler, namespace)
