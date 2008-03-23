@@ -33,8 +33,8 @@ class News(RoleAware, Folder):
         ['edit_metadata_form'],
         ['add_news_form']]
 
-    new_resource_form__access__ = 'is_reviewer_or_member'
-    new_resource__access__ = 'is_reviewer_or_member' 
+    new_resource_form__access__ = 'is_branch_manager_or_member'
+    new_resource__access__ = 'is_branch_manager_or_member' 
 
     ###################################################################
     ## Create a new news item 
@@ -113,7 +113,7 @@ class News(RoleAware, Folder):
         message = u'News item has been added.'
         return context.come_back(message, goto=goto) 
     
-    add_news_form__access__ = 'is_reviewer_or_member' 
+    add_news_form__access__ = 'is_branch_manager_or_member' 
     add_news_form__label__ = u'Add news'
     def add_news_form(self, context):
         url = '../;new_resource_form?type=news'
@@ -168,13 +168,13 @@ class News(RoleAware, Folder):
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
         # if reviewer or members , show users who apply
-        is_reviewer_or_member = False
+        is_branch_manager_or_member = False
         user = context.user
         if user :
-            reviewer = self.parent.has_user_role(user.name,'ikaaro:reviewers')
-            member = self.parent.has_user_role(user.name,'ikaaro:members')
-            is_reviewer_or_member = reviewer or member 
-        namespace['is_reviewer_or_member'] = is_reviewer_or_member
+            reviewer = self.parent.has_user_role(user.name,'abakuc:branch_manager')
+            member = self.parent.has_user_role(user.name,'abakuc:branch_member')
+            is_branch_manager_or_member = reviewer or member 
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
         
         # Navigation in news 
         #Search the catalogue, list all news items in company 
@@ -233,7 +233,7 @@ class News(RoleAware, Folder):
                         'abakuc:closing_date']
     
 
-    edit_metadata_form__access__ = 'is_reviewer_or_member'
+    edit_metadata_form__access__ = 'is_branch_manager_or_member'
     edit_metadata_form__label__ = 'Edit news'
     def edit_metadata_form(self, context):
         namespace = {}
@@ -247,7 +247,7 @@ class News(RoleAware, Folder):
         return stl(handler, namespace)
 
     
-    edit_metadata__access__ = 'is_reviewer_or_member'
+    edit_metadata__access__ = 'is_branch_manager_or_member'
     def edit_metadata(self, context):
         for key in self.edit_news_fields:
             self.set_property(key, context.get_form_value(key))
@@ -274,12 +274,12 @@ class News(RoleAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_reviewer_or_member(self, user, object):
+    def is_branch_manager_or_member(self, user, object):
         address = self.parent
-        return address.is_reviewer_or_member(user, object)
+        return address.is_branch_manager_or_member(user, object)
 
     def is_allowed_to_remove(self, user, object):
         address = self.parent
-        return address.is_reviewer_or_member(user, object)
+        return address.is_branch_manager_or_member(user, object)
 
 register_object_class(News)

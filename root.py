@@ -165,6 +165,19 @@ class Root(Handler, BaseRoot):
         cache['help.xhtml.metadata'] = help.build_metadata(
                                             **{'dc:title': {'en': u'Help me'}})
 
+    ########################################################################
+    # Login
+    login_form__access__ = True
+    login_form__label__ = u'Login'
+    def login_form(self, context):
+        namespace = {}
+        here = context.handler
+        site_root = here.get_site_root()
+        namespace['action'] = '%s/;login' % here.get_pathto(site_root)
+        namespace['username'] = context.get_form_value('username')
+
+        handler = self.get_handler('/ui/abakuc/login.xml')
+        return stl(handler, namespace)
 
     #######################################################################
     # Select the skin
@@ -343,7 +356,7 @@ class Root(Handler, BaseRoot):
                 address.set_property('abakuc:fax', str(row[9]))
                 ##address.set_property('abakuc:license', row[])
                 if user is not None:
-                    address.set_user_role(user.name, 'ikaaro:reviewers')
+                    address.set_user_role(user.name, 'abakuc:branch_manager')
 
         print '%s/%s' % (good, count)
         message = ('Remember to reindex the database now:'

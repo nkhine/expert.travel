@@ -157,7 +157,7 @@ class Job(Folder, RoleAware):
         message = u'New Job added.'
         return context.come_back(message, goto=goto) 
 
-    add_job_form__access__ = 'is_reviewer_or_member' 
+    add_job_form__access__ = 'is_branch_manager_or_member' 
     add_job_form__label__ = u'Add new job'
     def add_job_form(self, context):
         url = '../;new_resource_form?type=Job'
@@ -246,15 +246,15 @@ class Job(Folder, RoleAware):
         namespace['jobs'] = jobs
 
         # if reviewer or members , show users who apply
-        is_reviewer_or_member = False
+        is_branch_manager_or_member = False
         user = context.user
         if user :
-            reviewer = self.parent.has_user_role(user.name,'ikaaro:reviewers')
-            member = self.parent.has_user_role(user.name,'ikaaro:members')
-            is_reviewer_or_member = reviewer or member 
-        namespace['is_reviewer_or_member'] = is_reviewer_or_member
+            reviewer = self.parent.has_user_role(user.name,'abakuc:branch_manager')
+            member = self.parent.has_user_role(user.name,'abakuc:branch_member')
+            is_branch_manager_or_member = reviewer or member 
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
         namespace['table'] = None
-        if is_reviewer_or_member:
+        if is_branch_manager_or_member:
             users = root.get_handler('users')
             nb_candidatures = 0
             candidatures = self.search_handlers(handler_class=Candidature)
@@ -267,7 +267,7 @@ class Job(Folder, RoleAware):
         handler = self.get_handler('/ui/abakuc/jobs/view.xml')
         return stl(handler, namespace)
 
-    view_candidatures__access__ = 'is_reviewer_or_member'
+    view_candidatures__access__ = 'is_branch_manager_or_member'
     view_candidatures__label__ = u'Job candidatures'
     def view_candidatures(self, context):
         root = context.root
@@ -364,7 +364,7 @@ class Job(Folder, RoleAware):
                        'abakuc:salary', 'abakuc:function']
     
 
-    edit_metadata_form__access__ = 'is_reviewer_or_member'
+    edit_metadata_form__access__ = 'is_branch_manager_or_member'
     edit_metadata_form__label__ = u'Modify job details'
     def edit_metadata_form(self, context):
         namespace = {}
@@ -395,7 +395,7 @@ class Job(Folder, RoleAware):
         return stl(handler, namespace)
 
     
-    edit_metadata__access__ = 'is_reviewer_or_member'
+    edit_metadata__access__ = 'is_branch_manager_or_member'
     def edit_metadata(self, context):
         for key in self.edit_job_fields:
             self.set_property(key, context.get_form_value(key))
@@ -426,9 +426,9 @@ class Job(Folder, RoleAware):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_reviewer_or_member(self, user, object):
+    def is_branch_manager_or_member(self, user, object):
         address = self.parent
-        return address.is_reviewer_or_member(user, object)
+        return address.is_branch_manager_or_member(user, object)
 
 
 
@@ -736,7 +736,7 @@ class Candidature(RoleAware, Folder):
             address = job.parent    
             subject = subject_template % job.title
             body = body_template % (job.title, firstname, lastname)
-            to_addrs = address.get_property('ikaaro:reviewers')
+            to_addrs = address.get_property('abakuc:branch_manager')
             for to_addr in to_addrs:
                 root.send_email(email, to_addr, subject, body)   
 
@@ -744,7 +744,7 @@ class Candidature(RoleAware, Folder):
     #######################################################################
     # View
     #######################################################################
-    view__access__ = 'is_reviewer_or_member'
+    view__access__ = 'is_branch_manager_or_member'
     view__label__ = u'View Candidature'
     def view(self, context):
         """
@@ -777,19 +777,19 @@ class Candidature(RoleAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_reviewer_or_member(self, user, object):
+    def is_branch_manager_or_member(self, user, object):
         address = self.parent.parent
-        return address.is_reviewer_or_member(user, object)
+        return address.is_branch_manager_or_member(user, object)
 
 
     def is_allowed_to_remove(self, user, object):
         address = self.parent.parent
-        return address.is_reviewer(user, object)
+        return address.is_branch_manager(user, object)
 
 
     def is_allowed_to_view(self, user, object):
         # Protect CV 
-        return self.is_reviewer_or_member(user, object)        
+        return self.is_branch_manager_or_member(user, object)        
 
 register_object_class(Job)
 register_object_class(Candidature)

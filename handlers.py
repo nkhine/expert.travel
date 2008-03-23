@@ -62,8 +62,8 @@ class EnquiriesLog(CSV):
               'resolved': Boolean}
 
 
-    GET__access__ = 'is_reviewer_or_member'
-    __view__access__ = 'is_reviewer_or_member'
+    GET__access__ = 'is_branch_manager_or_member'
+    __view__access__ = 'is_branch_manager_or_member'
 
 
 

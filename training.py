@@ -137,8 +137,8 @@ class Training(SiteRoot, WorkflowAware):
          'unit': u"Branch Member"},
     ]
   
-    new_resource_form__access__ = 'is_reviewer' 
-    new_resource__access__ = 'is_reviewer'
+    new_resource_form__access__ = 'is_branch_manager' 
+    new_resource__access__ = 'is_branch_manager'
 
     site_format = 'module'
 
@@ -198,7 +198,7 @@ class Training(SiteRoot, WorkflowAware):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_reviewer_or_member(self, user, object):
+    def is_branch_manager_or_member(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -206,15 +206,15 @@ class Training(SiteRoot, WorkflowAware):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return (self.has_user_role(user.name, 'ikaaro:reviewers') or
-                self.has_user_role(user.name, 'ikaaro:members'))
+        return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+                self.has_user_role(user.name, 'abakuc:branch_member'))
     
 
     def is_admin(self, user, object):
-        return self.is_reviewer(user, object)
+        return self.is_branch_manager(user, object)
 
 
-    def is_reviewer(self, user, object):
+    def is_branch_manager(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -222,7 +222,7 @@ class Training(SiteRoot, WorkflowAware):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'ikaaro:reviewers') 
+        return self.has_user_role(user.name, 'abakuc:branch_manager') 
    
    
     def is_travel_agent(self, user, object):
@@ -230,7 +230,7 @@ class Training(SiteRoot, WorkflowAware):
             return False
 
         # TEST 015
-        return self.has_user_role(user.name, 'ikaaro:members')
+        return self.has_user_role(user.name, 'abakuc:branch_member')
 
     # Exam Access Control
     def is_allowed_to_take_exam(self, user, object):
@@ -454,7 +454,7 @@ class Training(SiteRoot, WorkflowAware):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
         root = get_context().root
         namespace = {}
@@ -473,7 +473,7 @@ class Training(SiteRoot, WorkflowAware):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -789,7 +789,7 @@ class Module(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = True 
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -837,7 +837,7 @@ class Module(Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -863,7 +863,7 @@ class Module(Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
         name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
@@ -978,7 +978,7 @@ class Topic(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = 'is_branch_manager_or_member'
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -1027,7 +1027,7 @@ class Topic(Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -1044,7 +1044,7 @@ class Topic(Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -1060,7 +1060,7 @@ class Topic(Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_reviewer_or_member(self, user, object):
+    def is_branch_manager_or_member(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -1068,15 +1068,15 @@ class Topic(Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return (self.has_user_role(user.name, 'ikaaro:reviewers') or
-                self.has_user_role(user.name, 'ikaaro:members'))
+        return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+                self.has_user_role(user.name, 'abakuc:branch_member'))
     
 
     def is_admin(self, user, object):
-        return self.is_reviewer(user, object)
+        return self.is_branch_manager(user, object)
 
 
-    def is_reviewer(self, user, object):
+    def is_branch_manager(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -1084,7 +1084,7 @@ class Topic(Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'ikaaro:reviewers') 
+        return self.has_user_role(user.name, 'abakuc:branch_manager') 
 
 
 register_object_class(Trainings)

@@ -45,7 +45,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
     </div> <!-- yui-u first -->
     <div class="yui-u">
           <div id="right-box">
-            <stl:block stl:if="is_reviewer_or_member">
+            <stl:block stl:if="is_branch_manager_or_member">
               <h2>Management</h2>
                <ul>
                  <li>

@@ -206,9 +206,9 @@ class Company(SiteRoot):
                 return True
         return False
 
-    def is_reviewer(self, user, object):
+    def is_branch_manager(self, user, object):
         for address in self.search_handlers(handler_class=Address):
-            if address.is_reviewer(user, address):
+            if address.is_branch_manager(user, address):
                 return True
         return False
 
@@ -745,7 +745,7 @@ class Company(SiteRoot):
         return stl(handler, namespace)
 
 
-    edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -765,7 +765,7 @@ class Company(SiteRoot):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -842,14 +842,27 @@ class Address(RoleAware, WorkflowAware, Folder):
         ['state_form'],
         ['permissions_form', 'new_user_form']]
 
+    __roles__ = [
+        {'name': 'abakuc:training_manager', 'title': u"Training Manager",
+         'unit': u"Training Manager"},
+        {'name': 'abakuc:branch_manager', 'title': u"Branch Manager",
+         'unit': u"Branch Manager"},
+        {'name': 'abakuc:branch_member', 'title': u"Branch Member",
+         'unit': u"Branch Member"},
+        {'name': 'abakuc:partner', 'title': u"Partner",
+         'unit': u"Partner"},
+        {'name': 'abakuc:guest', 'title': u"Guest",
+         'unit': u"Guest"},
+    ]
+
     __fixed_handlers__ = ['log_enquiry.csv']
 
-    permissions_form__access__ = 'is_reviewer'
-    permissions__access__ = 'is_reviewer'
-    edit_membership_form__access__ = 'is_reviewer'
-    edit_membership__access__ = 'is_reviewer'
-    new_user_form__access__ = 'is_reviewer'
-    new_user__access__ = 'is_reviewer'
+    permissions_form__access__ = 'is_branch_manager'
+    permissions__access__ = 'is_branch_manager'
+    edit_membership_form__access__ = 'is_branch_manager'
+    edit_membership__access__ = 'is_branch_manager'
+    new_user_form__access__ = 'is_branch_manager'
+    new_user__access__ = 'is_branch_manager'
     new_resource_form__access__ = 'is_allowed_to_view'
     new_resource__access__ = 'is_allowed_to_view'
     
@@ -873,7 +886,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return [News, Job]
 
 
-    get_epoz_data__access__ = 'is_reviewer_or_member'
+    get_epoz_data__access__ = 'is_branch_manager_or_member'
     def get_epoz_data(self):
         # XXX don't works
         context = get_context()
@@ -1299,7 +1312,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata_form__access__ = 'is_reviewer'
+    edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -1329,7 +1342,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_reviewer'
+    edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
         # Add Address
         address = context.get_form_value('abakuc:address')
@@ -1450,12 +1463,12 @@ class Address(RoleAware, WorkflowAware, Folder):
 
         # Send confirmation email
         hostname = context.uri.authority.host
-        from_addr = 'enquiries@uktravellist.info'
-        subject = u"[%s] Register confirmation required" % hostname
+        from_addr = 'enquiries@expert.travel'
+        subject = u"[%s] Confirmation required" % hostname
         subject = self.gettext(subject)
         body = self.gettext(
             u"This email has been generated in response to your"
-            u" enquiry on the UK Travel List.\n"
+            u" enquiry on Expert.Travel .\n"
             u"To submit your enquiry, click the link:\n"
             u"\n"
             u"  $confirm_url"
@@ -1463,9 +1476,9 @@ class Address(RoleAware, WorkflowAware, Folder):
             u"If the text is on two lines, please copy and "
             u"paste the full line into your browser URL bar."
             u"\n"
-            u"Thank you for visiting the UK Travel List website."
+            u"Thank you for visiting the Expert.Travel."
             u"\n"
-            u"UK Travel List Team")
+            u"UK.Expert.Travel Team")
         url = ';enquiry_confirm_form?user=%s&key=%s' % (user_id, confirm)
         url = context.uri.resolve(url)
         body = Template(body).substitute({'confirm_url': str(url)})
@@ -1596,7 +1609,7 @@ class Address(RoleAware, WorkflowAware, Folder):
     #######################################################################
     # User Interface / View Enquiries
     #######################################################################
-    view_enquiries__access__ = 'is_reviewer_or_member'
+    view_enquiries__access__ = 'is_branch_manager_or_member'
     def view_enquiries(self, context):
         root = context.root
         users = root.get_handler('users')
@@ -1626,7 +1639,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
     
-    view_enquiry__access__ = 'is_reviewer_or_member'
+    view_enquiry__access__ = 'is_branch_manager_or_member'
     def view_enquiry(self, context):
         index = context.get_form_value('index', type=Integer)
 
@@ -1654,7 +1667,7 @@ class Address(RoleAware, WorkflowAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_reviewer_or_member(self, user, object):
+    def is_branch_manager_or_member(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -1662,15 +1675,15 @@ class Address(RoleAware, WorkflowAware, Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return (self.has_user_role(user.name, 'ikaaro:reviewers') or
-                self.has_user_role(user.name, 'ikaaro:members'))
+        return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+                self.has_user_role(user.name, 'abakuc:branch_member'))
     
 
     def is_admin(self, user, object):
-        return self.is_reviewer(user, object)
+        return self.is_branch_manager(user, object)
 
 
-    def is_reviewer(self, user, object):
+    def is_branch_manager(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -1678,7 +1691,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'ikaaro:reviewers') 
+        return self.has_user_role(user.name, 'abakuc:branch_manager') 
 
 
 register_object_class(Companies)

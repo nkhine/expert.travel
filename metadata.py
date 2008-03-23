@@ -88,6 +88,7 @@ class Schema(BaseSchema):
         'branch_member': Tokens(default=()),
         'training_manager': Tokens(default=()),
         'partner': Tokens(default=()),
+        'guest': Tokens(default=()),
         'job_function': String,
         # Company
         'website': String,

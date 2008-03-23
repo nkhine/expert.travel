@@ -223,8 +223,8 @@ class User(iUser, WorkflowAware, Handler):
                results.append({'index': row.number})
         namespace['howmany'] = len(results)
         #namespace['branches'] = self.list_addresses(context)
-        is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
-        namespace['is_reviewer'] = is_reviewer
+        is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+        namespace['is_branch_manager'] = is_branch_manager
         # Company
         namespace['company'] = {'name': company.name,
                                 'title': company.get_property('dc:title'),
@@ -275,7 +275,7 @@ class User(iUser, WorkflowAware, Handler):
             <div id="fragment-5">
               {branches}
             </div>
-          <stl:block if="is_reviewer">
+          <stl:block if="is_branch_manager">
             <div id="fragment-6">
                       <h2>Administrative actions</h2>
                         <p>
@@ -440,20 +440,20 @@ class User(iUser, WorkflowAware, Handler):
         namespace['is_self_or_admin'] = is_self or is_admin
         namespace['is_admin'] = is_admin
         if address:
-            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
-            is_member = address.has_user_role(self.name, 'ikaaro:members')
-            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
-            is_reviewer_or_member = is_reviewer or is_member
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
         else:
-            is_reviewer = False
-            is_member = False
+            is_branch_manager = False
+            is_branch_member = False
             is_guest = False
-            is_reviewer_or_member = False
+            is_branch_manager_or_member = False
 
-        namespace['is_reviewer'] = is_reviewer
-        namespace['is_member'] = is_member
+        namespace['is_branch_manager'] = is_branch_manager
+        namespace['is_branch_member'] = is_branch_member
         namespace['is_guest'] = is_guest
-        namespace['is_reviewer_or_member'] = is_reviewer_or_member
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
 
         #User's state
         namespace['statename'] = self.get_statename()
@@ -554,8 +554,8 @@ class User(iUser, WorkflowAware, Handler):
         namespace['contact'] = None
         if user is None:
             return u'You need to be registered!'     
-        if address.has_user_role(user.name, 'ikaaro:guests'):
-            contacts = address.get_property('ikaaro:reviewers')
+        if address.has_user_role(user.name, 'abakuc:guest'):
+            contacts = address.get_property('abakuc:branch_manager')
             if contacts:
                 contact = users.get_handler(contacts[0])
                 namespace['contact'] = contact.get_property('ikaaro:email')
@@ -704,15 +704,15 @@ class User(iUser, WorkflowAware, Handler):
         address = self.get_address()
         company = address.parent
         if address:
-            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
-            is_member = address.has_user_role(self.name, 'ikaaro:members')
-            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
-            is_reviewer_or_member = is_reviewer or is_member
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
         else:
-            is_reviewer = False
-            is_member = False
+            is_branch_manager = False
+            is_branch_member = False
             is_guest = False
-            is_reviewer_or_member = False
+            is_branch_manager_or_member = False
         # Table with News
         columns = [('c1', u'Title'),
                    ('c2', u'To be archived on'),
@@ -731,7 +731,7 @@ class User(iUser, WorkflowAware, Handler):
                                         word_treshold=10,
                                         phrase_treshold=40)
             news_to_add ={'id': news.name, 
-                         'checkbox': is_reviewer,
+                         'checkbox': is_branch_manager,
                          'img': '/ui/abakuc/images/News16.png',
                          'c1': (get('dc:title'),url),
                          'c2': get('abakuc:closing_date'),
@@ -788,15 +788,15 @@ class User(iUser, WorkflowAware, Handler):
         address = self.get_address()
         company = address.parent
         if address:
-            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
-            is_member = address.has_user_role(self.name, 'ikaaro:members')
-            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
-            is_reviewer_or_member = is_reviewer or is_member
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
         else:
-            is_reviewer = False
-            is_member = False
+            is_branch_manager = False
+            is_branch_member = False
             is_guest = False
-            is_reviewer_or_member = False
+            is_branch_manager_or_member = False
             # Table with Jobs
         columns = [('c1', u'Title'),
                    ('c2', u'To be archived on'),
@@ -825,7 +825,7 @@ class User(iUser, WorkflowAware, Handler):
                 if user.has_property('ikaaro:user_must_confirm') is False:
                         nb_candidatures += 1 
             job_to_add ={'id': job.name, 
-                         'checkbox': is_reviewer,
+                         'checkbox': is_branch_manager,
                          'img': '/ui/abakuc/images/JobBoard16.png',
                          'c1': (get('dc:title'),url+';view'),
                          'c2': get('abakuc:closing_date'),
@@ -919,15 +919,15 @@ class User(iUser, WorkflowAware, Handler):
         address = self.get_address()
         company = address.parent
         if address:
-            is_reviewer = address.has_user_role(self.name, 'ikaaro:reviewers')
-            is_member = address.has_user_role(self.name, 'ikaaro:members')
-            is_guest = address.has_user_role(self.name, 'ikaaro:guests')
-            is_reviewer_or_member = is_reviewer or is_member
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
         else:
-            is_reviewer = False
-            is_member = False
+            is_branch_manager = False
+            is_branch_member = False
             is_guest = False
-            is_reviewer_or_member = False
+            is_branch_manager_or_member = False
             # Table
         columns = [('title', u'Title'),
                    ('function', u'Function'),
@@ -951,7 +951,7 @@ class User(iUser, WorkflowAware, Handler):
                                         word_treshold=10,
                                         phrase_treshold=40)
             training_to_add ={'id': item.name, 
-                             'checkbox': is_reviewer, # XXX fix this.
+                             'checkbox': is_branch_manager, # XXX fix this.
                              'url': url, 
                              'img': '/ui/abakuc/images/Training16.png',
                              'title': get('dc:title'),
@@ -1125,11 +1125,11 @@ class User(iUser, WorkflowAware, Handler):
         companies = self.get_handler('/companies')
         company = companies.get_handler(company_name)
         address = company.get_handler(address_name)
-        reviewers = address.get_property('ikaaro:reviewers')
+        reviewers = address.get_property('abakuc:branch_manager')
         if not reviewers:
-            address.set_user_role(self.name, 'ikaaro:reviewers')
+            address.set_user_role(self.name, 'abakuc:branch_manager')
         else:
-            address.set_user_role(self.name, 'ikaaro:guests')
+            address.set_user_role(self.name, 'abakuc:guest')
         root = context.root
         # Remove from old address
         old_address = self.get_address()
@@ -1172,7 +1172,7 @@ class User(iUser, WorkflowAware, Handler):
             address.set_property(name, value)
 
         # Link the User to the Address
-        address.set_user_role(self.name, 'ikaaro:reviewers')
+        address.set_user_role(self.name, 'abakuc:branch_manager')
 
         root = context.root
         # Remove from old address

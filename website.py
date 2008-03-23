@@ -16,6 +16,19 @@ from base import Handler
 
 
 class SiteRoot(Handler, BaseWebSite):
+    __roles__ = [
+        {'name': 'abakuc:training_manager', 'title': u"Training Manager",
+         'unit': u"Training Manager"},
+        {'name': 'abakuc:branch_manager', 'title': u"Branch Manager",
+         'unit': u"Branch Manager"},
+        {'name': 'abakuc:branch_member', 'title': u"Branch Member",
+         'unit': u"Branch Member"},
+        {'name': 'abakuc:partner', 'title': u"Partner",
+         'unit': u"Partner"},
+        {'name': 'abakuc:guest', 'title': u"Guest",
+         'unit': u"Guest"},
+    ]
+
     ########################################################################
     # Login
     login_form__access__ = True
@@ -92,10 +105,10 @@ class SiteRoot(Handler, BaseWebSite):
         # folders that have membership.
         #training = root.get_handler('training')
         #if training == training:
-        if not self.has_user_role(user.name, 'ikaaro:reviewers') and \
-           not self.has_user_role(user.name, 'ikaaro:members') and \
-           not self.has_user_role(user.name, 'ikaaro:members'):
-            self.set_user_role(user.name, 'ikaaro:members')
+        if not self.has_user_role(user.name, 'abakuc:branch_manager') and \
+           not self.has_user_role(user.name, 'abakuc:branch_member') and \
+           not self.has_user_role(user.name, 'abakuc:branch_member'):
+            self.set_user_role(user.name, 'abakuc:branch_member')
             schedule_to_reindex(user)
 
         return get_reference('users/%s' % user.name)

@@ -99,6 +99,11 @@ class Document(XHTMLFile):
 
         goto = './%s/;%s' % (name, handler.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+    #######################################################################
+    # ACL 
+    def is_allowed_to_view(self, user, object):
+        # Protect the document 
+        return self.is_branch_manager_or_member(user, object) 
 
     #######################################################################
     # View

@@ -40,11 +40,13 @@
                 <a href=";setup_training_form">Create a new training programme</a>.
               </li>
             </ul>
+        <div stl:if="not is_branch_manager_or_member">
             <p stl:if="contact">
               To manage these records, please contact ${contact} who is
               the Manager for this record or contact the site administrator.
             </p>
-        <div stl:if="is_reviewer_or_member">
+        </div>
+        <div stl:if="is_branch_manager_or_member">
             <!-- Tabs -->
                 ${tabs}
         </div>
@@ -75,10 +77,10 @@
                             <span stl:if="is_admin">Admin,</span>
                             </li>
                             <li>
-                            <span stl:if="is_reviewer">Reviewer</span>
+                            <span stl:if="is_branch_manager">Branch Manager</span>
                             </li>
                             <li>
-                            <span stl:if="is_member">Member</span>
+                            <span stl:if="is_branch_member">Branch Member</span>
                             </li>
                             <li>
                             <span stl:if="is_guest">Guest</span>
@@ -106,6 +108,7 @@
                         </div>
                         <div class="yui-u">
                         <div id="right-box">
+                        <!--
                         <h2>Latest news</h2>
                           <stl:block repeat="news_items news_items"> 
                             <ul>  
@@ -125,7 +128,7 @@
                             </ul>       
                           </stl:block>
                         <div class="info"><a href="/;jobs">
-                            (view&nbsp;all&nbsp;${nb_jobs}&nbsp;jobs&nbsp;items&nbsp;»)</a></div>
+                            (view&nbsp;all&nbsp;${nb_jobs}&nbsp;jobs&nbsp;items&nbsp;»)</a></div>-->
                           </div><!--left-->
                         </div><!--yui-u first -->
                     </div><!--yui-g -->
