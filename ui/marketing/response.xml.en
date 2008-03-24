@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+<table align="center" border="0" width="80%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="20">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="examtext" height="20">
+      <p>Exam: ${title}</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <table width="100%">
+	<tr>
+	  <td>
+	    <a href="${profile_url}">Back to profile</a>
+	  </td>
+	  <td>
+	    <a stl:if="not next_module_url" href="${try_again_url}">Try again</a>
+	    <a stl:if="next_module_url" href="${next_module_url}">Go now to the next 
+	      module ! congratulation. >>
+	    </a>
+	  </td>
+	</tr>
+      </table>
+    </td>
+  </tr>
+</table>
+REMOVE THIS PAGE AND TAKE USER TO ;end
+</stl:block>
+

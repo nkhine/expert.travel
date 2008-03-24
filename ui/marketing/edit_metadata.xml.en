@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
+           xmlns="http://www.w3.org/1999/xhtml">
+
+<form method="post" action=";edit_metadata">
+  <table class="form">
+    <tr>
+      <th class="title" colspan="2">Metadata list</th>
+    </tr>
+    <tr>
+      <th>
+        Title
+      </th>
+      <td>
+        <input name="dc:title" size="50" type="text" value="${dc:title}"/>
+      </td>
+    </tr>
+    <tr>
+      <th> Exam Time (HH:MM)</th>
+      <td>
+        <input name="abakuc:exam_time" size="50" type="text" 
+          value="${abakuc:exam_time}"/>
+      </td>
+    </tr>
+    <tr>
+      <th> Number of Questions for Exam </th>
+      <td>
+        <input name="abakuc:questions_nums" size="50" type="text" 
+          value="${abakuc:questions_nums}"/>
+      </td>
+    </tr>
+    <tr>
+      <th> Pass marks in percentage </th>
+      <td>
+        <input name="abakuc:pass_marks_percentage" size="50" type="text" 
+          value="${abakuc:pass_marks_percentage}"/>
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="OK"/></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

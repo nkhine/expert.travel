@@ -10,18 +10,19 @@ Please answer the following questions and submit
 <!-- Exam Questions here -->
 <table cellspacing="0" cellpadding="2" width="80%" class="profile" align="center" border="0">
   <tr>
-    <td class="examBody">
+    <td>
     <form method="post" action=";fill">
+    <input name="questions" type="hidden" stl:repeat="question questions"
+    value="${question/code}"/>
       <ol>
         <li stl:repeat="question questions">
           ${question/title}
           <p>
             <stl:block stl:repeat="option question/options">
-              <input name="${question/code}" type="${question/input_type}" value="${repeat/option/index}" checked="${repeat/option/end}"/>
+              <input name="${question/code}" type="${question/input_type}"
+              value="${repeat/option/index}" checked="${repeat/option/end}"/>
               ${option}<br/>
             </stl:block>
-            <input name="${question/code}" type="radio" value="42" checked="checked"/>
-            Don't know<br/>
           </p>
         </li>
       </ol>
