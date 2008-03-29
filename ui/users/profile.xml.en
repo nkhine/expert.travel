@@ -108,27 +108,26 @@
                         </div>
                         <div class="yui-u">
                         <div id="right-box">
-                        <!--
-                        <h2>Latest news</h2>
-                          <stl:block repeat="news_items news_items"> 
+                            <h2>Latest news</h2>
+                            <stl:block repeat="news_items news_items">
                             <ul>  
                               <li>
                                 <a href="${news_items/url}">${news_items/title}</a>
                               </li>
                             </ul>       
-                          </stl:block>
+                            </stl:block>
                         <div class="info"><a href="/;news">
                             (view&nbsp;all&nbsp;${nb_news}&nbsp;news&nbsp;items&nbsp;»)</a></div>
-                        <h2>Latest jobs</h2>
-                          <stl:block repeat="jobs jobs"> 
+                            <h2>Latest jobs</h2>
+                            <stl:block repeat="jobs jobs">
                             <ul>  
                               <li>
                                 <a href="${jobs/url}">${jobs/title}</a>
                               </li>
                             </ul>       
-                          </stl:block>
+                            </stl:block>
                         <div class="info"><a href="/;jobs">
-                            (view&nbsp;all&nbsp;${nb_jobs}&nbsp;jobs&nbsp;items&nbsp;»)</a></div>-->
+                            (view&nbsp;all&nbsp;${nb_jobs}&nbsp;jobs&nbsp;items&nbsp;»)</a></div>
                           </div><!--left-->
                         </div><!--yui-u first -->
                     </div><!--yui-g -->

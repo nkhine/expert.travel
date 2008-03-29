@@ -505,26 +505,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['enquiries'] = results 
         namespace['howmany'] = len(results)
 
-        #Search the catalogue, list last 4 jobs.  
-        catalog = context.server.catalog
-        query = []
-        query.append(EqQuery('format', 'Job'))
-        today = date.today().strftime('%Y-%m-%d')
-        query.append(RangeQuery('closing_date', today, None))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        documents = results.get_documents()
-        namespace['nb_jobs'] = len(documents)
-        documents = documents[0:4]
-        jobs = []
-        for job in documents:
-            job = root.get_handler(job.abspath)
-            address = job.parent
-            company = address.parent
-            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
-            jobs.append({'url': url,
-                         'title': job.title})
-        namespace['jobs'] = jobs
+        #XXX This does not work if there is no news/jobs 
         #Search the catalogue, list 3 news items. 
         catalog = context.server.catalog
         query = []
@@ -545,8 +526,27 @@ class User(iUser, WorkflowAware, Handler):
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
             news_items.append({'url': url,
                                'title': news.title})
-        
+    
         namespace['news_items'] = news_items
+        #Search the catalogue, list last 4 jobs.  
+        query = []
+        query.append(EqQuery('format', 'Job'))
+        today = date.today().strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        namespace['nb_jobs'] = len(documents)
+        documents = documents[0:4]
+        jobs = []
+        for job in documents:
+            job = root.get_handler(job.abspath)
+            address = job.parent
+            company = address.parent
+            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
+            jobs.append({'url': url,
+                         'title': job.title})
+        namespace['jobs'] = jobs
 
         # Tabs
         namespace['tabs'] = self.get_tabs_stl(context)
