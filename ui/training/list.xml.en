@@ -17,20 +17,32 @@
             ${item/description}
           </dd>
             <div class="info">
-            Posted on {news_items/date_posted} by {news_items/owner}
+              <span stl:if="item/is_training_manager">
+                  <a href="${item/login}">Login to manage</a>
+                  <a href="${item/login}">No. of Members</a>
+                  <a href="${item/login}">Statistics</a>
+              </span>
+              <span stl:if="item/is_branch_manager_or_member">
+                  <a href="${item/login}">Manage my training</a>
+              </span>
+              <span stl:if="item/is_guest">
+                  <a href="${item/login}">Login / Register</a> for FREE Access to
+                  ${item/title} programme.
+              </span>
+              <span stl:if="not item/is_member">
+                  <a href="${item/login}">Login / Register</a> for FREE Access to
+                  ${item/title} programme.
+              </span>
+            </div>
+            <div>
             </div>
         </dl>       
+            <stl:block repeat="module modules">
+            ${module/title}
+            </stl:block>
       </stl:block>
+              <span stl:if="is_admin">
+                <a href=";setup_training_form">Create a new training programme</a>.
+              </span>
     </div>
-
-
-
-Use this page to list all the training programmes available to the user.
-
-<p>
-[TP1] [DESCRIPTION] [JOIN/ACCESS] [if manager] [No. of Members -> Stattistics]
-</p>
-
-
-
 </stl:block>

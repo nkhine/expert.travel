@@ -33,7 +33,7 @@ from itools.catalog import EqQuery, AndQuery, RangeQuery
 
 # Import from our product
 from companies import Company, Address 
-from training import Training
+from training import Training, Module
 from news import News
 from jobs import Job, Candidature
 from utils import title_to_name
@@ -178,6 +178,44 @@ class User(iUser, WorkflowAware, Handler):
         url = str(where_from.get_pathto(self)) + home
         return url
 
+        
+    def is_training(self):
+        '''Return a bool'''
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False 
+        return training
+
+    def get_training(self):
+        root = self.get_root()
+        results = root.search(format='training', members=self.name)
+        for training in results.get_documents():
+            return root.get_handler(training.abspath)
+        return None
+
+    #def get_modules(self):
+    #    training = self.get_training()
+    #    modules = list(training.search_handlers(format=Module.class_id))
+    #    modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+    #                                 get_sort_name(y.name)))
+    #    return modules
+
+    def get_modules(self):
+        root = self.get_root()
+        results = root.search(format='module', members=self.name)
+        for module in results.get_documents():
+            return root.get_handler(module.abspath)
+        return None
+    #def get_modules(self):
+    #    # Modules for training programme
+    #    tp = self.get_training()
+    #    results = tp.search(format='modules', members=self.name)
+    #    for modules in results.get_documents():
+    #        return tp.get_handler(modules.abspath)
+    #    return None
+
     def get_address(self):
         root = self.get_root()
         results = root.search(format='address', members=self.name)
@@ -208,6 +246,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
         #namespace['sub_tabs'] = self.tabs_training_stl(context)
+        #namespace['training'] = self.tabs_training_stl(context)
         namespace['training'] = self.training_table(context)
         address = self.get_address()
         company = address.parent
@@ -327,25 +366,25 @@ class User(iUser, WorkflowAware, Handler):
                     });
                 });
             </script>
-        <div id="container-2">
+        <div id="container-2" class="ui-tabs-nav">
             <ul>
                 <li><a href="#fragment-12"><span>Training Programme</span></a></li>
                 <li><a href="#fragment-22"><span>Other Programmes</span></a></li>
                 <li><a href="#fragment-42"><span>Available TP's</span></a></li>
                 <li><a href="#fragment-52"><span>Expert.Travel Rank</span></a></li>
             </ul>
-            <div id="fragment-12">
+            <div id="fragment-12" class="sub-tabs">
               ${training}
             </div>
-            <div id="fragment-22">
+            <div id="fragment-22" class="sub-tabs">
              List of other Training Programmes, you are registered on.... 
             </div>
-            <div id="fragment-42">
+            <div id="fragment-42" class="sub-tabs">
              New programmes, you're not registered on... Registration is free,
              simply use your existing email and password to login and become an
              Expert.
             </div>
-            <div id="fragment-52">
+            <div id="fragment-52" class="sub-tabs">
               {branches}
             </div>
         </div>
@@ -434,6 +473,23 @@ class User(iUser, WorkflowAware, Handler):
         namespace['address'] = None
         address = self.get_address()
         
+        # Is the user on a Training Portal? 
+        office = self.is_training()
+        if office:
+            modules = self.get_modules()
+            modules = []
+            for module in modules:
+                get = module.get_property
+                url = '%s/;view' % (module.abspath())
+
+                modules_to_add = {'id': module.name,
+                                  'title': get('dc:title'),
+                                  'url': url}
+                modules.append(modules_to_add)
+            namespace['modules'] = modules
+
+        namespace['office'] = office
+
         # User Role
         is_self = user is not None and user.name == self.name
         is_admin = root.is_admin(user, self)
@@ -454,6 +510,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['is_branch_member'] = is_branch_member
         namespace['is_guest'] = is_guest
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
+
 
         #User's state
         namespace['statename'] = self.get_statename()
@@ -913,22 +970,21 @@ class User(iUser, WorkflowAware, Handler):
     # Training table used in the 'tabs' method
     def training_table(self, context):
         namespace = {}
+        #Programme
+        office = self.get_site_root()
+        to_url = str(self.get_pathto(office))
+        programme = {}
+        programme['title'] = office.title_or_name
+        programme['url'] = to_url
+        namespace['programme'] = programme
         user = context.user
         root = context.root
+        is_admin = root.is_admin(user, self)
+        namespace['is_admin'] = is_admin
         training = root.get_handler('training')
-        address = self.get_address()
-        company = address.parent
-        if address:
-            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
-            is_guest = address.has_user_role(self.name, 'abakuc:guest')
-            is_branch_manager_or_member = is_branch_manager or is_branch_member
-        else:
-            is_branch_manager = False
-            is_branch_member = False
-            is_guest = False
-            is_branch_manager_or_member = False
-            # Table
+        #namespace['tp'] = None
+        #tp = self.get_training()
+        # Table
         columns = [('title', u'Title'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
@@ -942,21 +998,57 @@ class User(iUser, WorkflowAware, Handler):
             # Information about the training
             url = 'http://%s' % (item.get_vhosts())
             # XXX fix so that we can extract the first uri
+            if item:
+                is_training_manager = item.has_user_role(self.name, 'abakuc:training_manager')
+                is_branch_manager = item.has_user_role(self.name, 'abakuc:branch_manager')
+                is_branch_member =item.has_user_role(self.name, 'abakuc:branch_member')
+                is_guest = item.has_user_role(self.name, 'abakuc:guest')
+                is_branch_manager_or_member = is_branch_manager or is_branch_member
+                is_member = is_branch_manager_or_member or is_guest or is_training_manager
+            else:
+                is_training_manager = False
+                is_branch_manager = False
+                is_branch_member = False
+                is_guest = False
+                is_branch_manager_or_member = False
+                is_member = False
             # from the tuple
             #url = training.get_vhosts()
             #if url.startswith('http://'):
             #    return url
             #return 'http://' + url
+            #MODULES
+            modules = list(item.search_handlers(format='modules'))
+            modules = []
+            for module in modules:
+                get = module.get_property
+                url = '%s/;view' % (module.abspath())
+
+                modules_to_add = {'id': module.name,
+                                  'title': get('dc:title'),
+                                  'url': url}
+                modules.append(modules_to_add)
+            namespace['modules'] = modules
             description = reduce_string(get('dc:description'),
-                                        word_treshold=10,
-                                        phrase_treshold=40)
+                                        word_treshold=50,
+                                        phrase_treshold=200)
             training_to_add ={'id': item.name, 
                              'checkbox': is_branch_manager, # XXX fix this.
                              'url': url, 
+                             'login': url+'/;login_form', 
+                             'is_training_manager': is_training_manager,
+                             'is_branch_manager_or_member': is_branch_manager_or_member,
+                             'is_guest': is_guest,
+                             'is_member': is_member,
                              'img': '/ui/abakuc/images/Training16.png',
                              'title': get('dc:title'),
                              'description': description}
             trainings.append(training_to_add)
+
+        # Modules for training programme
+        #for modules in results.get_documents():
+        #    return tp.get_handler(modules.abspath)
+        
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5

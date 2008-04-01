@@ -39,7 +39,15 @@
               <li stl:if="is_admin">
                 <a href=";setup_training_form">Create a new training programme</a>.
               </li>
+              <li stl:if="office">
+                <a href="/;view">This is a Training Programme</a>
+              </li>
             </ul>
+              <div stl:if="office">
+                    <stl:block repeat="module modules">
+                    ${module/title}
+                    </stl:block>
+                    </div>
         <div stl:if="not is_branch_manager_or_member">
             <p stl:if="contact">
               To manage these records, please contact ${contact} who is
