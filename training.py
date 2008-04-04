@@ -407,7 +407,7 @@ class Training(SiteRoot, WorkflowAware):
         here = context.handler
         namespace = {}
         title = here.get_title()
-        items = self.search_handlers(handler_class=Module)
+        items = self.get_modules()
         namespace['items'] = []
         for item in items:
             get = item.get_property
@@ -419,6 +419,9 @@ class Training(SiteRoot, WorkflowAware):
                       'description': description,
                       'title': item.title_or_name})
 
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(items)
         namespace['title'] = title 
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
@@ -506,7 +509,6 @@ class Training(SiteRoot, WorkflowAware):
             namespace['items'].append({'url': url,
                       'description': description,
                       'title': item.title_or_name})
-
         namespace['title'] = title 
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()

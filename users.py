@@ -34,9 +34,10 @@ from itools.catalog import EqQuery, AndQuery, RangeQuery
 # Import from our product
 from companies import Company, Address 
 from training import Training, Module
+from exam import Exam
 from news import News
 from jobs import Job, Candidature
-from utils import title_to_name
+from utils import title_to_name, get_sort_name
 from metadata import JobTitle, SalaryRange
 
 class UserFolder(iUserFolder):
@@ -202,12 +203,12 @@ class User(iUser, WorkflowAware, Handler):
     #                                 get_sort_name(y.name)))
     #    return modules
 
-    def get_modules(self):
-        root = self.get_root()
-        results = root.search(format='module', members=self.name)
-        for module in results.get_documents():
-            return root.get_handler(module.abspath)
-        return None
+    #def get_modules(self):
+    #    root = self.get_root()
+    #    results = root.search(format='module', members=self.name)
+    #    for module in results.get_documents():
+    #        return root.get_handler(module.abspath)
+    #    return None
     #def get_modules(self):
     #    # Modules for training programme
     #    tp = self.get_training()
@@ -297,7 +298,7 @@ class User(iUser, WorkflowAware, Handler):
                 <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
                 <li><a href="#fragment-4"><span>Training</span></a></li>
                 <li><a href="#fragment-5"><span>Branches</span></a></li>
-                <li><a href="#fragment-6"><span>Administrate</span></a></li>
+                <li stl:if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -475,20 +476,73 @@ class User(iUser, WorkflowAware, Handler):
         
         # Is the user on a Training Portal? 
         office = self.is_training()
+        namespace['office'] = office
+        # Get TP modules
         if office:
-            modules = self.get_modules()
-            modules = []
+            modules = self.parent.parent.get_modules()
+            namespace['modules'] = []
             for module in modules:
                 get = module.get_property
-                url = '%s/;view' % (module.abspath())
+                url = '/%s/;view' %  module.name
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                namespace['modules'].append({'url': url,
+                          'description': description,
+                          'title': module.title_or_name})
 
-                modules_to_add = {'id': module.name,
-                                  'title': get('dc:title'),
-                                  'url': url}
-                modules.append(modules_to_add)
-            namespace['modules'] = modules
+                last_exam_passed = True
+                modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                                get_sort_name(y.name)))
+                #for index, module in enumerate(modules):
+                module_ns = []
+                ns = {}
+                if last_exam_passed is True:
+                    # Check for marketing form.
+                    marketing_form = module.get_marketing_form(self.name)
+                    ns['marketing'] = None
+                    if marketing_form is not None:
+                        url = '/%s/%s/;fill_form' % (module.name,
+                                                    marketing_form.name)
+                        marketing = {'url': url}
+                        ns['marketing'] = marketing
 
-        namespace['office'] = office
+                        #exam = game = None
+                        exam = None
+                        last_exam_passed = False
+                    else:
+                        # Check for exam
+                        exam = None
+                        exams = list(module.search_handlers(format=Exam.class_id))
+                        if exams != []:
+                            exam = module.get_exam(self.name)
+                            last_exam_passed = False
+                            if exam is not None:
+                                title = exam.title_or_name
+                                result = exam.get_result(self.name)
+                                passed, n_attempts, kk, mark, kk = result
+                                url = '/%s/%s/;take_exam_form' % (module.name,
+                                                                exam.name)
+                                exam = {'title': title,
+                                        'passed': passed,
+                                        'attempts': n_attempts,
+                                        'mark': str(round(mark, 2)),
+                                        'url': url}
+                                last_exam_passed = passed
+                                ns['exam'] = exam
+                module_ns.append(ns)
+
+                programme = []
+                ns = {'title': module.title_or_name, 'module': module_ns}
+                programme.append(ns)
+                # Add namespace
+                namespace['programme'] = programme
+                # Check namespace
+                import pprint
+                pp = pprint.PrettyPrinter(indent=4)
+                pp.pprint(ns)
+    
+
 
         # User Role
         is_self = user is not None and user.name == self.name
@@ -1013,22 +1067,6 @@ class User(iUser, WorkflowAware, Handler):
                 is_branch_manager_or_member = False
                 is_member = False
             # from the tuple
-            #url = training.get_vhosts()
-            #if url.startswith('http://'):
-            #    return url
-            #return 'http://' + url
-            #MODULES
-            modules = list(item.search_handlers(format='modules'))
-            modules = []
-            for module in modules:
-                get = module.get_property
-                url = '%s/;view' % (module.abspath())
-
-                modules_to_add = {'id': module.name,
-                                  'title': get('dc:title'),
-                                  'url': url}
-                modules.append(modules_to_add)
-            namespace['modules'] = modules
             description = reduce_string(get('dc:description'),
                                         word_treshold=50,
                                         phrase_treshold=200)
@@ -1045,6 +1083,11 @@ class User(iUser, WorkflowAware, Handler):
                              'description': description}
             trainings.append(training_to_add)
 
+            #url = training.get_vhosts()
+            #if url.startswith('http://'):
+            #    return url
+            #return 'http://' + url
+            #MODULES
         # Modules for training programme
         #for modules in results.get_documents():
         #    return tp.get_handler(modules.abspath)

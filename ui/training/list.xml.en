@@ -37,12 +37,10 @@
             <div>
             </div>
         </dl>       
-            <stl:block repeat="module modules">
-            ${module/title}
-            </stl:block>
       </stl:block>
               <span stl:if="is_admin">
                 <a href=";setup_training_form">Create a new training programme</a>.
               </span>
+
     </div>
 </stl:block>

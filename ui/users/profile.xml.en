@@ -39,15 +39,26 @@
               <li stl:if="is_admin">
                 <a href=";setup_training_form">Create a new training programme</a>.
               </li>
-              <li stl:if="office">
-                <a href="/;view">This is a Training Programme</a>
-              </li>
             </ul>
-              <div stl:if="office">
-                    <stl:block repeat="module modules">
+         <div stl:if="office">
+            <p>How am I doing?</p>
+            <stl:block stl:repeat="module modules">
+                  <dl stl:if="module/url">  
+                    <dt>
+                      <a href="${module/url}">${module/title}</a>
+                    </dt>
+                    <dd>
+                        <ul stl:repeat="x programme">
+                           <li><a href="${module/url}">Marketing</a></li>
+                           <li> Exam </li>
+                        </ul>
+                    </dd>
+                  </dl>       
+                  <dl stl:if="not module/url">
                     ${module/title}
-                    </stl:block>
-                    </div>
+                  </dl> 
+            </stl:block>
+         </div>
         <div stl:if="not is_branch_manager_or_member">
             <p stl:if="contact">
               To manage these records, please contact ${contact} who is
