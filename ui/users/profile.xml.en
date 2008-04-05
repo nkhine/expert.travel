@@ -42,23 +42,43 @@
             </ul>
          <div stl:if="office">
             <p>How am I doing?</p>
-            <stl:block stl:repeat="module modules">
-                  <dl stl:if="module/url">  
-                    <dt>
-                      <a href="${module/url}">${module/title}</a>
-                    </dt>
-                    <dd>
-                        <ul stl:repeat="x programme">
-                           <li><a href="${module/url}">Marketing</a></li>
-                           <li> Exam </li>
-                        </ul>
-                    </dd>
-                  </dl>       
-                  <dl stl:if="not module/url">
-                    ${module/title}
-                  </dl> 
-            </stl:block>
+
          </div>
+  <ul stl:if="office">
+    <h2>${programme/title}</h2>
+    <li stl:repeat="module programme/modules">
+      <stl:block stl:if="module/url">
+        <a href="${module/url}">${module/title}</a>
+        <ul>
+          <!-- Marketing -->
+          <li stl:if="module/marketing">
+            Fill <a href="${module/marketing/url}">marketing
+            form</a>
+          </li>
+          <stl:block stl:if="module/exam">
+            <!-- Exam -->
+            <li stl:if="not module/exam/attempts">
+              <a href="${module/exam/url}">Take exam</a>
+            </li>
+            <!-- Game -->
+                    <li stl:if="not module/exam/passed">
+                        Exam attempts: <b>${module/exam/attempts}</b>.
+                        <a href="${module/exam/url}">Try again</a>
+                    </li>
+            <!-- Exam -->
+            <stl:block stl:if="module/exam/attempts">
+                <stl:block stl:if="module/exam/passed">
+                    <li>
+                        Exam passed! (mark: <b>${module/exam/mark}</b>%)
+                    </li>
+                </stl:block>
+            </stl:block>
+          </stl:block>
+        </ul>
+      </stl:block>
+      <stl:block stl:if="not module/url">${module/title}</stl:block>
+    </li>
+  </ul>
         <div stl:if="not is_branch_manager_or_member">
             <p stl:if="contact">
               To manage these records, please contact ${contact} who is

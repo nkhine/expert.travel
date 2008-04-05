@@ -475,9 +475,11 @@ class User(iUser, WorkflowAware, Handler):
         address = self.get_address()
         
         # Is the user on a Training Portal? 
+        office_name = self.get_site_root()
         office = self.is_training()
         namespace['office'] = office
         # Get TP modules
+        module_ns = []    
         if office:
             modules = self.parent.parent.get_modules()
             namespace['modules'] = []
@@ -495,9 +497,10 @@ class User(iUser, WorkflowAware, Handler):
                 modules.sort(lambda x, y: cmp(get_sort_name(x.name),
                                                 get_sort_name(y.name)))
                 #for index, module in enumerate(modules):
-                module_ns = []
-                ns = {}
+                ns = {'title': module.title_or_name, 'url': None}
                 if last_exam_passed is True:
+                    path_to_module = '../../%s' % module.name
+                    ns['url'] = '%s/;list_view' % path_to_module
                     # Check for marketing form.
                     marketing_form = module.get_marketing_form(self.name)
                     ns['marketing'] = None
@@ -507,9 +510,6 @@ class User(iUser, WorkflowAware, Handler):
                         marketing = {'url': url}
                         ns['marketing'] = marketing
 
-                        #exam = game = None
-                        exam = None
-                        last_exam_passed = False
                     else:
                         # Check for exam
                         exam = None
@@ -530,20 +530,33 @@ class User(iUser, WorkflowAware, Handler):
                                         'url': url}
                                 last_exam_passed = passed
                                 ns['exam'] = exam
+                    # Exams
+                    exams = list(module.search_handlers(format=Exam.class_id))
+                    if exams != []:
+                        exam = module.get_exam(self.name)
+                        last_exam_passed = False
+                        if exam is not None:
+                            title = exam.title_or_name
+                            result = exam.get_result(self.name)
+                            passed, n_attempts, kk, mark, kk = result
+                            url = '/%s/%s/;take_exam_form' % (module.name,
+                                                            exam.name)
+                            exam = {'title': title,
+                                    'passed': passed,
+                                    'attempts': n_attempts,
+                                    'mark': str(round(mark, 2)),
+                                    'url': url}
+                            last_exam_passed = passed
+                            ns['exam'] = exam
                 module_ns.append(ns)
-
-                programme = []
-                ns = {'title': module.title_or_name, 'module': module_ns}
-                programme.append(ns)
                 # Add namespace
-                namespace['programme'] = programme
+                namespace['programme'] = {'title': office_name.title_or_name,
+                          'modules': module_ns,
+                          'league': '../../;league_table'}
                 # Check namespace
                 import pprint
                 pp = pprint.PrettyPrinter(indent=4)
                 pp.pprint(ns)
-    
-
-
         # User Role
         is_self = user is not None and user.name == self.name
         is_admin = root.is_admin(user, self)
