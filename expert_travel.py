@@ -241,7 +241,7 @@ class ExpertTravel(SiteRoot):
         
         # Company
         namespace['company'] = {'name': company.name,
-                                'website': company.get_website(),
+                                #'website': company.get_website(),
                                 'path': self.get_pathto(company)}
         # Add news
         add_news = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,

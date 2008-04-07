@@ -196,27 +196,6 @@ class User(iUser, WorkflowAware, Handler):
             return root.get_handler(training.abspath)
         return None
 
-    #def get_modules(self):
-    #    training = self.get_training()
-    #    modules = list(training.search_handlers(format=Module.class_id))
-    #    modules.sort(lambda x, y: cmp(get_sort_name(x.name),
-    #                                 get_sort_name(y.name)))
-    #    return modules
-
-    #def get_modules(self):
-    #    root = self.get_root()
-    #    results = root.search(format='module', members=self.name)
-    #    for module in results.get_documents():
-    #        return root.get_handler(module.abspath)
-    #    return None
-    #def get_modules(self):
-    #    # Modules for training programme
-    #    tp = self.get_training()
-    #    results = tp.search(format='modules', members=self.name)
-    #    for modules in results.get_documents():
-    #        return tp.get_handler(modules.abspath)
-    #    return None
-
     def get_address(self):
         root = self.get_root()
         results = root.search(format='address', members=self.name)
@@ -241,13 +220,14 @@ class User(iUser, WorkflowAware, Handler):
         # Build stl
         root = context.root
         users = root.get_handler('users')
-
+        office = self.is_training()
         namespace = {}
+        namespace['office'] = office
         namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
         #namespace['sub_tabs'] = self.tabs_training_stl(context)
-        #namespace['training'] = self.tabs_training_stl(context)
+        namespace['current_training'] = self.training(context)
         namespace['training'] = self.training_table(context)
         address = self.get_address()
         company = address.parent
@@ -275,124 +255,126 @@ class User(iUser, WorkflowAware, Handler):
                 'address_path': self.get_pathto(address)}
 
         namespace['address'] = addr
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <script type="text/javascript">
-                var TABS_COOKIE = 'profile_cookie'; 
-                $(function() {
-                    $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal" 
+        if office is True:
+            office_name = self.get_site_root()
+            is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
+            namespace['is_training_manager'] = is_training_manager
+            template = """
+            <stl:block xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:stl="http://xml.itools.org/namespaces/stl">
+                <script type="text/javascript">
+                    var TABS_COOKIE = 'profile_cookie'; 
+                    $(function() {
+                        $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                            var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                           $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+                        },
+                        fxFade: true,
+                        fxSpeed: 'fast',
+                        fxSpeed: "normal" 
+                        });
                     });
-                });
-            </script>
-        <div id="container-user">
-            <ul>
-                <li><a href="#fragment-1"><span>News</span></a></li>
-                <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
-                <li><a href="#fragment-4"><span>Training</span></a></li>
-                <li><a href="#fragment-5"><span>Branches</span></a></li>
-                <li stl:if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
-            </ul>
-            <div id="fragment-1">
-              ${news} 
+                </script>
+            <div id="container-user">
+                <ul>
+                    <li stl:if="office"><a href="#fragment-1"><span>Current training</span></a></li>
+                    <li><a href="#fragment-2"><span>News</span></a></li>
+                    <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
+                    <li><a href="#fragment-4"><span>Other training</span></a></li>
+                    <li stl:if="is_training_manager"><a href="#fragment-5"><span>Administer</span></a></li>
+                </ul>
+                <div id="fragment-1">
+                  ${current_training} 
+                </div>
+                <div id="fragment-2">
+                  ${news}
+                </div>
+                <div id="fragment-3">
+                  {bookings}
+                </div>
+                <div id="fragment-4">
+                  ${training}
+                </div>
+              <stl:block if="is_training_manager">
+                <div id="fragment-5">
+                          <h2>Administrative actions</h2>
+                </div>
+              </stl:block>
             </div>
-            <div id="fragment-2">
-              ${jobs}
+            </stl:block>
+                      """
+        else:
+            template = """
+            <stl:block xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:stl="http://xml.itools.org/namespaces/stl">
+                <script type="text/javascript">
+                    var TABS_COOKIE = 'profile_cookie'; 
+                    $(function() {
+                        $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                            var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                           $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+                        },
+                        fxFade: true,
+                        fxSpeed: 'fast',
+                        fxSpeed: "normal" 
+                        });
+                    });
+                </script>
+            <div id="container-user">
+                <ul>
+                    <li><a href="#fragment-1"><span>News</span></a></li>
+                    <li><a href="#fragment-2"><span>Jobs</span></a></li>
+                    <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
+                    <li><a href="#fragment-4"><span>Training</span></a></li>
+                    <li><a href="#fragment-5"><span>Branches</span></a></li>
+                    <li stl:if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
+                </ul>
+                <div id="fragment-1">
+                  ${news} 
+                </div>
+                <div id="fragment-2">
+                  ${jobs}
+                </div>
+                <div stl:if="howmany" id="fragment-3">
+                  ${enquiries}
+                </div>
+                <div id="fragment-4">
+                  ${training}
+                </div>
+                <div id="fragment-5">
+                  {branches}
+                </div>
+              <stl:block if="is_branch_manager">
+                <div id="fragment-6">
+                          <h2>Administrative actions</h2>
+                            <p>
+                            <a href="${company/path}/;edit_metadata_form?referrer=1">
+                              Modify company details
+                            </a>
+                            </p>
+                            <p>
+                            <a href="${address/address_path}/;edit_metadata_form?referrer=1">
+                              Modify address details
+                            </a>
+                            </p>
+                            <p>
+                             <a href="${address/address_path}/;permissions_form">
+                               Users associate to the address
+                             </a>
+                            </p>
+                            <p>
+                              <a href="${address/address_path}/;new_user_form">
+                                Associate a new user to the address
+                              </a>
+                            </p>
+                </div>
+              </stl:block>
             </div>
-            <div stl:if="howmany" id="fragment-3">
-              ${enquiries}
-            </div>
-            <div id="fragment-4">
-              ${training}
-            </div>
-            <div id="fragment-5">
-              {branches}
-            </div>
-          <stl:block if="is_branch_manager">
-            <div id="fragment-6">
-                      <h2>Administrative actions</h2>
-                        <p>
-                        <a href="${company/path}/;edit_metadata_form?referrer=1">
-                          Modify company details
-                        </a>
-                        </p>
-                        <p>
-                        <a href="${address/address_path}/;edit_metadata_form?referrer=1">
-                          Modify address details
-                        </a>
-                        </p>
-                        <p>
-                         <a href="${address/address_path}/;permissions_form">
-                           Users associate to the address
-                         </a>
-                        </p>
-                        <p>
-                          <a href="${address/address_path}/;new_user_form">
-                            Associate a new user to the address
-                          </a>
-                        </p>
-            </div>
-          </stl:block>
-        </div>
-        </stl:block>
-                  """
+            </stl:block>
+                      """
         template = XHTMLDocument(string=template)
         return stl(template, namespace)
 
-
-    def tabs_training_stl(self, context):
-
-        namespace = {}
-        namespace['training'] = self.training_table(context)
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <script type="text/javascript">
-                var TABS_COOKIE2 = 'sub_tab_cookie'; 
-                $(function() {
-                    $('#container-2 ul').tabs((parseInt($.cookie(TABS_COOKIE2))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE2, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal" 
-                    });
-                });
-            </script>
-        <div id="container-2" class="ui-tabs-nav">
-            <ul>
-                <li><a href="#fragment-12"><span>Training Programme</span></a></li>
-                <li><a href="#fragment-22"><span>Other Programmes</span></a></li>
-                <li><a href="#fragment-42"><span>Available TP's</span></a></li>
-                <li><a href="#fragment-52"><span>Expert.Travel Rank</span></a></li>
-            </ul>
-            <div id="fragment-12" class="sub-tabs">
-              ${training}
-            </div>
-            <div id="fragment-22" class="sub-tabs">
-             List of other Training Programmes, you are registered on.... 
-            </div>
-            <div id="fragment-42" class="sub-tabs">
-             New programmes, you're not registered on... Registration is free,
-             simply use your existing email and password to login and become an
-             Expert.
-            </div>
-            <div id="fragment-52" class="sub-tabs">
-              {branches}
-            </div>
-        </div>
-        </stl:block>
-                  """
-        template = XHTMLDocument(string=template)
-        return stl(template, namespace)
 
     #######################################################################
     # Edit Account 
@@ -477,86 +459,25 @@ class User(iUser, WorkflowAware, Handler):
         # Is the user on a Training Portal? 
         office_name = self.get_site_root()
         office = self.is_training()
-        namespace['office'] = office
-        # Get TP modules
-        module_ns = []    
         if office:
-            modules = self.parent.parent.get_modules()
-            namespace['modules'] = []
-            for module in modules:
-                get = module.get_property
-                url = '/%s/;view' %  module.name
-                description = reduce_string(get('dc:description'),
-                                            word_treshold=90,
-                                            phrase_treshold=240)
-                namespace['modules'].append({'url': url,
-                          'description': description,
-                          'title': module.title_or_name})
+            is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
+            is_branch_manager = office_name.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = office_name.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = office_name.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
+            is_member = is_branch_manager_or_member or is_guest or is_training_manager
+        else:
+            is_training_manager = False
+            is_branch_manager = False
+            is_branch_member = False
+            is_guest = False
+            is_branch_manager_or_member = False
+            is_member = False
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(is_branch_manager)
+        namespace['office'] = office
 
-                last_exam_passed = True
-                modules.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                                get_sort_name(y.name)))
-                #for index, module in enumerate(modules):
-                ns = {'title': module.title_or_name, 'url': None}
-                if last_exam_passed is True:
-                    path_to_module = '../../%s' % module.name
-                    ns['url'] = '%s/;list_view' % path_to_module
-                    # Check for marketing form.
-                    marketing_form = module.get_marketing_form(self.name)
-                    ns['marketing'] = None
-                    if marketing_form is not None:
-                        url = '/%s/%s/;fill_form' % (module.name,
-                                                    marketing_form.name)
-                        marketing = {'url': url}
-                        ns['marketing'] = marketing
-
-                    else:
-                        # Check for exam
-                        exam = None
-                        exams = list(module.search_handlers(format=Exam.class_id))
-                        if exams != []:
-                            exam = module.get_exam(self.name)
-                            last_exam_passed = False
-                            if exam is not None:
-                                title = exam.title_or_name
-                                result = exam.get_result(self.name)
-                                passed, n_attempts, kk, mark, kk = result
-                                url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                exam.name)
-                                exam = {'title': title,
-                                        'passed': passed,
-                                        'attempts': n_attempts,
-                                        'mark': str(round(mark, 2)),
-                                        'url': url}
-                                last_exam_passed = passed
-                                ns['exam'] = exam
-                    # Exams
-                    exams = list(module.search_handlers(format=Exam.class_id))
-                    if exams != []:
-                        exam = module.get_exam(self.name)
-                        last_exam_passed = False
-                        if exam is not None:
-                            title = exam.title_or_name
-                            result = exam.get_result(self.name)
-                            passed, n_attempts, kk, mark, kk = result
-                            url = '/%s/%s/;take_exam_form' % (module.name,
-                                                            exam.name)
-                            exam = {'title': title,
-                                    'passed': passed,
-                                    'attempts': n_attempts,
-                                    'mark': str(round(mark, 2)),
-                                    'url': url}
-                            last_exam_passed = passed
-                            ns['exam'] = exam
-                module_ns.append(ns)
-                # Add namespace
-                namespace['programme'] = {'title': office_name.title_or_name,
-                          'modules': module_ns,
-                          'league': '../../;league_table'}
-                # Check namespace
-                import pprint
-                pp = pprint.PrettyPrinter(indent=4)
-                pp.pprint(ns)
         # User Role
         is_self = user is not None and user.name == self.name
         is_admin = root.is_admin(user, self)
@@ -573,6 +494,7 @@ class User(iUser, WorkflowAware, Handler):
             is_guest = False
             is_branch_manager_or_member = False
 
+        namespace['is_training_manager'] = is_training_manager
         namespace['is_branch_manager'] = is_branch_manager
         namespace['is_branch_member'] = is_branch_member
         namespace['is_guest'] = is_guest
@@ -1096,15 +1018,6 @@ class User(iUser, WorkflowAware, Handler):
                              'description': description}
             trainings.append(training_to_add)
 
-            #url = training.get_vhosts()
-            #if url.startswith('http://'):
-            #    return url
-            #return 'http://' + url
-            #MODULES
-        # Modules for training programme
-        #for modules in results.get_documents():
-        #    return tp.get_handler(modules.abspath)
-        
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
@@ -1394,5 +1307,139 @@ class User(iUser, WorkflowAware, Handler):
         message = u'trainings setup done.'
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
+
+    ########################################################################
+    # Current training 
+    training__access__ = 'is_allowed_to_view'
+    training__sublabel__ = u'Current training programme'
+    def training(self, context):
+        namespace = {}
+        user = context.user
+        root = context.root
+        users = root.get_handler('users')
+        
+        # Get Company and Address
+        namespace['address'] = None
+        address = self.get_address()
+        
+        # Is the user on a Training Portal? 
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace['office'] = office
+        # Get TP modules
+        module_ns = []    
+        if office:
+            modules = self.parent.parent.get_modules()
+            namespace['modules'] = []
+            for module in modules:
+                get = module.get_property
+                url = '/%s/;view' %  module.name
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                namespace['modules'].append({'url': url,
+                          'description': description,
+                          'title': module.title_or_name})
+
+                last_exam_passed = True
+                modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                                get_sort_name(y.name)))
+                #for index, module in enumerate(modules):
+                ns = {'title': module.title_or_name, 'url': None}
+                if last_exam_passed is True:
+                    path_to_module = '../../%s' % module.name
+                    ns['url'] = '%s' % path_to_module
+                    # Check for marketing form.
+                    marketing_form = module.get_marketing_form(self.name)
+                    ns['marketing'] = None
+                    if marketing_form is not None:
+                        url = '/%s/%s/;fill_form' % (module.name,
+                                                    marketing_form.name)
+                        marketing = {'url': url}
+                        ns['marketing'] = marketing
+
+                    else:
+                        # Check for exam
+                        exam = None
+                        exams = list(module.search_handlers(format=Exam.class_id))
+                        if exams != []:
+                            exam = module.get_exam(self.name)
+                            last_exam_passed = False
+                            if exam is not None:
+                                title = exam.title_or_name
+                                result = exam.get_result(self.name)
+                                passed, n_attempts, kk, mark, kk = result
+                                url = '/%s/%s/;take_exam_form' % (module.name,
+                                                                exam.name)
+                                exam = {'title': title,
+                                        'passed': passed,
+                                        'attempts': n_attempts,
+                                        'mark': str(round(mark, 2)),
+                                        'url': url}
+                                last_exam_passed = passed
+                                ns['exam'] = exam
+                    # Exams
+                    exams = list(module.search_handlers(format=Exam.class_id))
+                    if exams != []:
+                        exam = module.get_exam(self.name)
+                        last_exam_passed = False
+                        if exam is not None:
+                            title = exam.title_or_name
+                            result = exam.get_result(self.name)
+                            passed, n_attempts, kk, mark, kk = result
+                            url = '/%s/%s/;take_exam_form' % (module.name,
+                                                            exam.name)
+                            exam = {'title': title,
+                                    'passed': passed,
+                                    'attempts': n_attempts,
+                                    'mark': str(round(mark, 2)),
+                                    'url': url}
+                            last_exam_passed = passed
+                            ns['exam'] = exam
+                module_ns.append(ns)
+                # Add namespace
+                namespace['programme'] = {'title': office_name.title_or_name,
+                          'modules': module_ns,
+                          'league': '../../;league_table'}
+                # Check namespace
+                import pprint
+                pp = pprint.PrettyPrinter(indent=4)
+                pp.pprint(ns)
+
+        # User Role
+        # XXX Fix so that we have the permissions for TP
+        is_self = user is not None and user.name == self.name
+        is_admin = root.is_admin(user, self)
+        namespace['is_self_or_admin'] = is_self or is_admin
+        namespace['is_admin'] = is_admin
+        if address:
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
+        else:
+            is_branch_manager = False
+            is_branch_member = False
+            is_guest = False
+            is_branch_manager_or_member = False
+
+        namespace['is_branch_manager'] = is_branch_manager
+        namespace['is_branch_member'] = is_branch_member
+        namespace['is_guest'] = is_guest
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
+
+        namespace['contact'] = None
+        if user is None:
+            return u'You need to be registered!'     
+        if address.has_user_role(user.name, 'abakuc:guest'):
+            contacts = address.get_property('abakuc:branch_manager')
+            if contacts:
+                contact = users.get_handler(contacts[0])
+                namespace['contact'] = contact.get_property('ikaaro:email')
+            else:
+                contact = '<span style="color:red;">The administrator</span>'
+                namespace['contact'] = Parser(contact)
+        handler = self.get_handler('/ui/abakuc/training/profile.xml')
+        return stl(handler, namespace)
 
 register_object_class(User)

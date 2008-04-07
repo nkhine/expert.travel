@@ -21,7 +21,7 @@ from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.uri import Path, get_reference
 
 # Import from abakuc
-from companies import Company
+from companies import Company, Address
 from base import Handler, Folder
 from website import SiteRoot 
 from document import Document
@@ -257,6 +257,11 @@ class Training(SiteRoot, WorkflowAware):
         passed = exam.get_result()[0]
         return bool(passed)
 
+    def get_news(self, address):
+        results = address.search(format='news')
+        for news in results.get_documents():
+            return address.get_handler(news.abspath)
+        return None
     ########################################################################
     # Statistics
     statistics__access__ = True 
@@ -419,9 +424,6 @@ class Training(SiteRoot, WorkflowAware):
                       'description': description,
                       'title': item.title_or_name})
 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(items)
         namespace['title'] = title 
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
@@ -519,100 +521,6 @@ class Training(SiteRoot, WorkflowAware):
         #namespace['vhosts'] = self.get_vhosts() 
         handler = self.get_handler('/ui/abakuc/training/view.xml')
         return stl(handler, namespace)
-    #######################################################################
-    # Jobs - Search Interface
-    #######################################################################
-    jobs__access__ = True
-    jobs_label__ = u'Jobs'
-    def jobs(self, context):
-        from root import world
-        root = context.root
-        namespace = {}
-        # Total number of jobs
-        today = date.today().strftime('%Y-%m-%d')
-        query = [EqQuery('format', 'Job'),
-                 EqQuery('company', self.name),
-                 RangeQuery('closing_date', today, None)]
-        # Search fields
-        function = context.get_form_value('function') or None
-        salary = context.get_form_value('salary') or None
-        county = context.get_form_value('county') or None
-        job_title = context.get_form_value('job_title') or None
-        if job_title:
-            job_title = job_title.lower()
-        # Get Jobs (construct the query for the search)
-        if function:
-            query.append(EqQuery('function', function))
-        if salary:
-            query.append(EqQuery('salary', salary))
-        if county:
-            query.append(EqQuery('county', county))
-        results = root.search(AndQuery(*query))
-
-        # Construct the lines of the table
-        add_line = True
-        jobs = []
-        for job in results.get_documents():
-            job = root.get_handler(job.abspath)
-            get = job.get_property
-            address = job.parent
-            company = address.parent
-            county_id = get('abakuc:county')
-            if county_id is None:
-                # XXX Every job should have a county
-                region = ''
-                county = ''
-            else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
-            url = '/companies/%s/%s/%s' % (company.name, address.name,
-                                           job.name)
-            apply = '%s/;application_form' % (url)
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            if job_title is None or job_title in (job.title).lower():
-                jobs.append({
-                    'url': url,
-                    'title': job.title,
-                    'function': JobTitle.get_value(get('abakuc:function')),
-                    'salary': SalaryRange.get_value(get('abakuc:salary')),
-                    'county': county,
-                    'region': region,
-                    'apply': apply,
-                    'closing_date': get('abakuc:closing_date'),
-                    'description': description})
-        # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
-        batch_total = len(jobs)
-        batch_fin = batch_start + batch_size
-        if batch_fin > batch_total:
-            batch_fin = batch_total
-        jobs = jobs[batch_start:batch_fin]
-        # Namespace 
-        if jobs:
-            job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
-                              msgs=(u"There is 1 job announcement.",
-                                    u"There are ${n} job announcements."))
-            msg = None
-        else:
-            job_batch = None
-            msg = u"Appologies, currently we don't have any job announcements"
-        namespace['batch'] = job_batch
-        namespace['msg'] = msg 
-        namespace['jobs'] = jobs
-
-        # Search Namespace
-        namespace['function'] = JobTitle.get_namespace(function)
-        namespace['salary'] = SalaryRange.get_namespace(salary)
-        namespace['job_title'] = job_title
-        # Return the page
-        handler = self.get_handler('/ui/abakuc/jobs/search.xhtml')
-        return stl(handler, namespace)
-
 
     #######################################################################
     # News - Search Interface 
@@ -620,66 +528,64 @@ class Training(SiteRoot, WorkflowAware):
     news__access__ = True
     news__label__ = u'Current news'
     def news(self, context):
+        '''
+        Return all the news of the training manager's company
+        including the addresses.
+        '''
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         root = context.root
+        office = self.get_site_root() 
+        users = self.get_handler('/users')
         namespace = {}
-        # Total number of news items 
-        today = date.today().strftime('%Y-%m-%d')
-        query = [EqQuery('format', 'news'),
-                 EqQuery('company', self.name),
-                 RangeQuery('closing_date', today, None)]
-
-        # Search fields
-        #function = context.get_form_value('function') or None
-        #salary = context.get_form_value('salary') or None
-        #county = context.get_form_value('county') or None
-        news_title = context.get_form_value('news_title') or None
-        if news_title:
-            news_title = news_title.lower()
-        # Get Jobs (construct the query for the search)
-        #if function:
-        #    query.append(EqQuery('function', function))
-        #if salary:
-        #    query.append(EqQuery('salary', salary))
-        #if county:
-        #    query.append(EqQuery('county', county))
-        results = root.search(AndQuery(*query))
-        namespace['nb_news'] = results.get_n_documents()
-
-        # Construct the lines of the table
-        add_line = True
-        news_items = []
-        for news in results.get_documents():
-            users = self.get_handler('/users')
-            news = root.get_handler(news.abspath)
-            get = news.get_property
-            # Information about the news item 
-            username = news.get_property('owner')
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
-                         users.get_handler(username).get_title() or username)
-            address = news.parent
+        namespace['office'] = office
+        namespace['contacts'] = []
+        all_news = []
+        for name in office.get_property('ikaaro:contacts'):
+            user = users.get_handler(name)
+            address = user.get_address()
+            address_news = list(address.search_handlers(handler_class=News))
+            all_news = all_news + address_news
             company = address.parent
-            url = '/companies/%s/%s/%s' % (company.name, address.name,
-                                           news.name)
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            if news_title is None or news_title in (news.title).lower():
-                news_items.append({
+            news_ns = []
+            for news in all_news:
+                ns = {}
+                news = root.get_handler(news.abspath)
+                get = news.get_property
+                # Information about the news item 
+                username = news.get_property('owner')
+                user_exist = users.has_handler(username) 
+                usertitle = (user_exist and 
+                             users.get_handler(username).get_title() or username)
+                url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                               news.name)
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                news_item = {
                     'url': url,
                     'title': news.title,
                     'closing_date': get('abakuc:closing_date'),
                     'date_posted': get('dc:date'),
                     'owner': usertitle,
-                    'description': description})
-        # Set batch informations
+                    'description': description}
+                ns['news_item'] = news_item
+
+                news_ns.append(ns)
+        # Add namespace
+        #XXX
+        #namespace['news_items'] = {'news': news_ns}
+        news_items = {'news': news_ns}
+        #address_path = user.get_handler('/companies/%s/%s' % (company.name, address.name))
+        #pp.pprint(address)
+        ## Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5 
-        batch_total = len(news_items)
+        batch_total = len(news_ns)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        news_items = news_items[batch_start:batch_fin]
+        news_ns = news_ns[batch_start:batch_fin]
         # Namespace 
         if news_items:
             news_batch = batch(context.uri, batch_start, batch_size,
@@ -692,14 +598,42 @@ class Training(SiteRoot, WorkflowAware):
             msg = u"Appologies, currently we don't have any news announcements"
         namespace['batch'] = news_batch
         namespace['msg'] = msg 
-        namespace['news_items'] = news_items
+        namespace['news_items'] = news_ns
+        #pp.pprint(batch_total)
+        ##results = catalog.search(all_news)
+        #nb_news = len(all_news)
+        #pp.pprint(nb_news)
+        #namespace['nb_news'] = len(all_news)
+        ## Construct the lines of the table
+        #news_items = []
+        #for news in all_news:
+        #    news = root.get_handler(news.abspath)
+        #    get = news.get_property
+        #    # Information about the news item 
+        #    username = news.get_property('owner')
+        #    user_exist = users.has_handler(username) 
+        #    usertitle = (user_exist and 
+        #                 users.get_handler(username).get_title() or username)
+        #    url = '/companies/%s/%s/%s' % (company.name, address.name,
+        #                                   news.name)
+        #    description = reduce_string(get('dc:description'),
+        #                                word_treshold=90,
+        #                                phrase_treshold=240)
+        #    news_items.append({
+        #        'url': url,
+        #        'title': news.title,
+        #        'closing_date': get('abakuc:closing_date'),
+        #        'date_posted': get('dc:date'),
+        #        'owner': usertitle,
+        #        'description': description})
+        #pp.pprint(news_items)
+        ##pp.pprint(all_news)
 
-        # Search Namespace
-        #namespace['function'] = JobTitle.get_namespace(function)
-        #namespace['salary'] = SalaryRange.get_namespace(salary)
-        namespace['news_title'] = news_title
+        ##href = '/companies/%s/%s' % (company.name, address.name)
+        ##ns['href'] = href
+
         # Return the page
-        handler = self.get_handler('/ui/abakuc/news/search.xhtml')
+        handler = self.get_handler('/ui/abakuc/training/search.xhtml')
         return stl(handler, namespace)
 
 
