@@ -92,7 +92,17 @@ class Root(Handler, BaseRoot):
             KeywordField('address', is_stored=False),
             KeywordField('function', is_stored=False),
             KeywordField('salary', is_stored=False),
-            KeywordField('description', is_stored=False)]
+            KeywordField('description', is_stored=False),
+            # For users KeywordField(training programme statistics)
+            KeywordField('registration_date'),
+            KeywordField('registration_year'),
+            KeywordField('registration_month'),
+            KeywordField('business_profile', is_stored=True),
+            KeywordField('job_function', is_stored=True),
+            KeywordField('business_function', is_stored=True),
+            KeywordField('region', is_stored=True),
+            KeywordField('county', is_stored=True),
+            KeywordField('training_programmes')]
 
 
     #######################################################################

@@ -23,9 +23,9 @@
       <td>
         Module<br/>
         <select name="module" style="font-size: 9px">
-          <option value=""></option>
-          <option stl:repeat="module modules" stl:content="module/title"
-            stl:attributes="value module/name; selected module/selected" />
+          <option value="">[Modules]</option>
+          <option stl:repeat="module modules" value="${module/name}" 
+            selected="${module/selected}">${module/title}</option>
         </select>
       </td>
     </tr>
@@ -52,13 +52,12 @@
       <a stl:if="row/url" href="${row/url}">${row/title}</a>
       <stl:block stl:if="not row/url">${row/title}</stl:block>
     </th>
-    <td align="right" stl:repeat="column row/columns" style="font-size: 10px">
+     <td align="right" stl:repeat="column row/columns" style="font-size: 10px">
       <a stl:if="column/n" href="${column/url}">${column/n}</a>
       <stl:block stl:if="not column/n">0</stl:block>
-    </td>
+    </td> 
   </tr>
 </table>
-
 <br/>
 <p style="font-size: 12px">
   &raquo; Download all registred users as

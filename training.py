@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
-from datetime import datetime, date
+import datetime
 
 # Import from itools
 from itools.stl import stl
@@ -44,7 +44,7 @@ class Trainings(SiteRoot):
     class_icon16 = 'abakuc/images/Trainings16.png'
     class_icon48 = 'abakuc/images/Trainings48.png'
     class_views = [
-                ['view'],
+                #['view'],
                 ['browse_content?mode=list'],
                 ['new_resource_form'],
                 ['edit_metadata_form']]
@@ -54,6 +54,7 @@ class Trainings(SiteRoot):
 
     def get_document_types(self):
         return [Training]
+
 
     #######################################################################
     # User Interface
@@ -262,13 +263,39 @@ class Training(SiteRoot, WorkflowAware):
         for news in results.get_documents():
             return address.get_handler(news.abspath)
         return None
+
+    def get_modules_dates(self, modules, username):
+        last_exam_passed = True 
+        dates = []
+        for m in modules:
+            date = ''
+            if last_exam_passed:
+                exam = m.get_exam(username)
+                if exam is not None:
+                    last_exam_passed = False
+                    result = exam.get_result(username)
+                    if result is not None:
+                        last_exam_passed = result[0]
+                        if last_exam_passed: 
+                            date = result[-1]
+            dates.append(date)
+        return dates
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(dates)
+
     ########################################################################
     # Statistics
     statistics__access__ = True 
     #statistics__access__ = 'is_allowed_to_view_statistics'
     statistics__label__ = u'Statistics'
     statistics__sublabel__ = u'Statistics'
-    def statistics(self, context):
+    def statistics(self, context, topics=None, types=None, functions=None):
+        root = get_context().root
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+
+
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
@@ -277,21 +304,7 @@ class Training(SiteRoot, WorkflowAware):
 
         # Build the namespace
         namespace = {}
-        layout_options = [
-            ('region/business_profile', u'Region x Business profile'),
-            ('region/business_function', u'Region x Business function'),
-            ('region/job_function', u'Region x Job function'),
-            ('job_function/business_profile',
-             u'Job function x Business profile'),
-            ('job_function/business_function',
-             u'Job function x Business function'),
-            ('business_function/business_profile',
-             u'Business function x Business profile')]
-
-        namespace['layout'] = [
-            {'name': name, 'value': value, 'selected': name == layout}
-            for name, value in layout_options ]
-
+        # Registration dates 
         namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
                                  'selected': str(i+1) == month}
                                 for i, title in enumerate(month_names) ]
@@ -299,22 +312,55 @@ class Training(SiteRoot, WorkflowAware):
         namespace['years'] = [
             {'name': x, 'value': x, 'selected': str(x) == year}
             for x in years ]
+        # Get TP Modules
+        modules = self.get_modules()
         namespace['modules'] = [
-            {'name': x.name, 'title': '%d - %s' % (i+1, x.title),
+            {'name': x.name, 'title': '%d - %s' % (i+1, x.title_or_name),
              'selected': x.name == module}
-            for i, x in enumerate(self.get_modules()) ]
+            for i, x in enumerate(modules)]
+    
+        # Layout options
+        #layout_options = [
+        #    ('region/business_profile', u'Region x Business profile'),
+        #    ('region/business_functions', u'Region x Business function'),
+        #    ('region/job_function', u'Region x Job function'),
+        #    ('job_function/business_profile',
+        #     u'Job function x Business profile'),
+        #    ('job_function/business_functions',
+        #     u'Job function x Business function'),
+        #    ('business_functions/business_profile',
+        #     u'Business function x Business profile')]
+        layout_options = [
+            ('region/business_profile', u'Region x Business profile'),
+            ('region/business_functions', u'Region x Business function'),
+            ('region/job_functions', u'Region x Job functions'),
+            ('business_functions/business_profile',
+             u'Business function x Business profile'),
+            ('business_functions/job_functions',
+             u'Business function x Job functions'),
+            ('business_functions/business_profile',
+             u'Business function x Business profile')]
+
+        namespace['layout'] = [
+            {'name': name, 'value': value, 'selected': name == layout}
+            for name, value in layout_options ]
 
         # Statistics criterias
         vertical, horizontal = layout.split('/')
         regions = Region.get_namespace(None)
         criterias = {'region': regions,
-                     'business_function': BusinessFunction.get_options(),
-                     'job_function':  JobFunction.get_options(),
-                     'business_profile': BusinessProfile.get_options()}
+                     'business_functions': root.get_topics_namespace(topics),
+                     #'business_function': BusinessFunction.get_options(),
+                     #'job_function':  JobFunction.get_options(),
+                     #'business_profile': BusinessProfile.get_options()
+                     'job_functions':  root.get_functions_namespace(functions),
+                     'business_profile': root.get_types_namespace(types)
+                     }
+        pp.pprint(criterias)
         horizontal_criterias = criterias[horizontal]
         vertical_criterias = criterias[vertical]
 
-        # Filter the users
+        ## Filter the users
         root = context.root
         query = {'training_programmes': self.name}
         if month:
@@ -325,7 +371,12 @@ class Training(SiteRoot, WorkflowAware):
             query['region'] = region
             vertical_criterias = Region.get_counties(region)
             vertical = 'county'
-        # TEST 015
+        ## TEST 015
+        users = self.get_members()
+        total_members = len(users)
+        pp.pprint(total_members)
+
+
         results = root.search(**query)
         brains = results.get_documents()
         if module:
@@ -340,17 +391,17 @@ class Training(SiteRoot, WorkflowAware):
                     aux.append(brain)
             brains = aux
 
-        # Classify the users
+        ## Classify the users
         table = {}
         table[('', '')] = 0
         for x in horizontal_criterias:
-            table[(x['name'], '')] = 0
+            table[(x['id'], '')] = 0
         for y in vertical_criterias:
-            table[('', y['name'])] = 0
+            table[('', y['id'])] = 0
         for x in horizontal_criterias:
-            x = x['name']
+            x = x['id']
             for y in vertical_criterias:
-                table[(x, y['name'])] = 0
+                table[(x, y['id'])] = 0
 
         for brain in brains:
             x = getattr(brain, horizontal)
@@ -361,7 +412,7 @@ class Training(SiteRoot, WorkflowAware):
                 table[('', y)] += 1
                 table[('', '')] += 1
 
-        # Base URLs
+        ## Base URLs
         base_stats = context.uri
         base_show = get_reference(';show_users')
         if month:
@@ -371,37 +422,188 @@ class Training(SiteRoot, WorkflowAware):
         if module:
             base_show = base_show.replace(module=module)
 
-        # Column headers
-        namespace['columns'] = [ x['value'] for x in horizontal_criterias ]
+        ## Column headers
+        namespace['columns'] = [ x['title'] for x in horizontal_criterias ]
 
-        # The rows
+        ## The rows
         rows = []
-        total = [{'name': '', 'value': self.gettext(u'Total')}]
-
+        total = [{'id': '', 'title': self.gettext(u'Total')}]
         query = {}
         for y in vertical_criterias + total:
-            key, value = vertical, y['name']
+            key, value = vertical, y['id']
             if value:
                 query[key] = value
             elif key in query:
                 del query[key]
-            rows.append({'title': y['value'], 'url': None, 'columns': []})
+            rows.append({'title': y['title'], 'url': None, 'columns': []})
             if vertical == 'region' and region is None:
                 rows[-1]['url'] = base_stats.replace(**query)
 
-            for x in horizontal_criterias + [{'name': ''}]:
-                if x['name']:
-                    query[horizontal] = x['name']
+            for x in horizontal_criterias + [{'id': ''}]:
+                if x['id']:
+                    query[horizontal] = x['id']
                 elif horizontal in query:
                     del query[horizontal]
-                rows[-1]['columns'].append({'n': table[(x['name'], y['name'])],
+                rows[-1]['columns'].append({'n': table[(x['id'], y['id'])],
                                             'url': base_show.replace(**query)})
 
         namespace['rows'] = rows
 
+        #pp.pprint(namespace['rows'])
         handler = self.get_handler('/ui/abakuc/training/statistics.xml')
         return stl(handler, namespace)
 
+    show_users__access__ = True 
+    def show_users(self, context, functions=None, topics=None, types=None):
+        root = get_context().root
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        # Extract the parameters from the request form
+        year = context.get_form_value('year')
+        month = context.get_form_value('month')
+        module = context.get_form_value('module')
+        region = context.get_form_value('region', '')
+        business_functions = context.get_form_value('business_functions', '')
+        job_function = context.get_form_value('job_function', '')
+        business_profile = context.get_form_value('business_profile', '')
+        # Build the namespace
+        namespace = {}
+        # Registration month
+        months = []
+        i = 1
+        for month_name in month_names:
+            months.append({'name': i, 'value': self.gettext(month_name),
+                           'selected': str(i) == month})
+            i += 1
+        namespace['months'] = months
+        # Registration year
+        years = range(2001, datetime.date.today().year + 1)
+        namespace['years'] = [
+            {'name': x, 'value': x, 'selected': str(x) == year}
+            for x in years ]
+        # Modules
+        modules = self.get_modules()
+        namespace['modules'] = [
+            {'name': x.name, 'title': '%d - %s' % (i+1, x.title),
+             'short_title': '%d-%s' % (i+1, x.title[:8]),
+             'selected': x.name == module} 
+            for i, x in enumerate(modules) ]
+        #pp.pprint(namespace['modules'])
+        # Region, business function, job function and business profile
+        #business_functions = BusinessFunction.get_namespace(business_function)
+        #business_profiles = BusinessProfile.get_namespace(business_profile)
+        namespace['regions'] = Region.get_namespace(region)
+        #namespace['business_functions'] = business_functions
+        namespace['business_functions'] = root.get_topics_namespace(topics)
+        namespace['job_functions'] = root.get_functions_namespace(functions)
+        #namespace['job_functions'] = JobFunction.get_namespace(job_function)
+        namespace['business_profiles'] = root.get_types_namespace(types)
+        pp.pprint(namespace['business_functions'])
+        #namespace['business_profiles'] = business_profiles
+        # Search users
+        root = context.root
+        catalog = context.server.catalog
+        query = {}
+        #Returns the name of the training programme
+        query['training_programmes'] = self.name
+
+        for key in context.get_form_keys():
+            value = context.get_form_value(key)
+            if value:
+                if key in ('year', 'month'):
+                    query['registration_%s' % key] = value
+                elif key in catalog.field_numbers:
+                    query[key] = value
+        pp.pprint(query['training_programmes'])
+        users = []
+        if module:
+            module = self.get_handler(module)
+            pp.pprint(module)
+        # TEST 015
+        results = root.search(**query)
+        for brain in results.get_documents():
+            # Filter by module
+            if module:
+                exam = module.get_exam(brain.name)
+                if exam is None:
+                    continue
+                # Not passed
+                if not exam.get_result(brain.name)[0]:
+                    continue
+
+            if not root.has_handler(brain.abspath):
+                context.server.log_error(context)
+                continue
+
+            user = root.get_handler(brain.abspath)
+            # Company
+            company = user.get_company()
+            if company is None:
+                company_title = ''
+            else:
+                company_title = company.get_property('dc:title')
+            # Branch
+            branch = user.get_branch()
+            if branch is None:
+                phone = ''
+                fax = ''
+                address = ''
+                post_code = ''
+            else:
+                get_property = branch.metadata.get_property
+                phone = get_property('branch:phone')
+                fax = get_property('branch:fax')
+                address = get_property('branch:address')
+                post_code = get_property('branch:postcode')
+
+            # Get modules dates
+            last_exam_passed = True 
+            dates = []
+            for m in modules:
+                pp.pprint(m)
+                date = ''
+                if last_exam_passed:
+                    exam = m.get_exam(username)
+                    if exam is not None:
+                        last_exam_passed = False
+                        result = exam.get_result(username)
+                        if result is not None:
+                            last_exam_passed = result[0]
+                            if last_exam_passed: 
+                                date = result[-1]
+                dates.append(date)
+            return dates
+            #import pprint
+            #pp = pprint.PrettyPrinter(indent=4)
+            # All modules dates
+            ns_modules = [{'date': date.encode('utf-8')} for date in 
+                          self.get_modules_dates(modules, user.name)]
+            
+            #pp.pprint(ns_modules)
+            get_property = user.metadata.get_property
+            users.append(
+                {'title': get_property('user:user_title'),
+                 'firstname': get_property('ikaaro:firstname'),
+                 'lastname': get_property('ikaaro:lastname'),
+                 'company': company_title,
+                 'email': get_property('ikaaro:email'),
+                 'phone': phone,
+                 'fax': fax,
+                 'address': address,
+                 'post_code': post_code,
+                 #'last_module': self.get_last_module_title(user.name),
+                 'modules': ns_modules,
+                 })
+        users.sort(lambda x, y: cmp(x['firstname'].lower(),
+                                    y['firstname'].lower()))
+        namespace['users'] = users
+        # CSV
+        query = '&'.join([ '%s=%s' % (x, context.get_form_value(x))
+                           for x in context.get_form_keys() ])
+        namespace['csv'] = ';statistics_csv?%s' % query
+
+        handler = self.get_handler('/ui/abakuc/training/show_users.xml')
+        return stl(handler, namespace)
 
     ########################################################################
     # View 

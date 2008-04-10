@@ -24,6 +24,11 @@
                     Exam passed! (mark: <b>${module/exam/mark}</b>%)
                 </dd>
               </stl:block><!-- Exam -->
+              <stl:block stl:if="not module/exam">
+                <dt>
+                    This module does not have an exam.
+                </dt>
+              </stl:block>
             </dt>
           </stl:block>
           <stl:block stl:if="not module/url">${module/title}</stl:block>

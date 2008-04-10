@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
+           xmlns="http://www.w3.org/1999/xhtml">
+
+  <form method="get" action=";show_users">
+    <table>
+      <tr>
+        <td>
+            Registration date<br/>
+           <select name="month" style="font-size: 9px">
+              <option value="">[Month]</option>
+              <option stl:repeat="option months" value="${option/name}" 
+                selected="${option/selected}">${option/value}</option>
+            </select>
+            <select name="year" style="font-size: 9px">
+              <option value="">[Year]</option>
+              <option stl:repeat="option years" value="${option/name}"
+                selected="${option/selected}">${option/value}</option>
+            </select>
+        </td>
+        <td>
+          Module<br/>
+          <select name="module" style="font-size: 9px">
+            <option value=""></option>
+            <option stl:repeat="module modules" value="${module/name}" 
+              selected="${module/selected}">${module/title}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p>
+            Region<br/>
+            <select name="region" style="font-size: 9px">
+              <option value="">All</option>
+              <stl:block stl:repeat="region regions">
+                <option style="font-weight: bold" value="${region/id}" 
+                  selected="${region/is_selected}">${region/title}</option>
+                <option stl:repeat="county region/counties" 
+                  value="${county/id}"
+                  selected="${county/is_selected}">${county/title}</option>
+              </stl:block>   
+            </select>
+          </p>
+        </td>
+        <td>
+          <p>
+            Business function<br/>
+           <select name="business_functions" style="font-size: 9px">
+              <option value="">All</option>
+              <option stl:repeat="item business_functions" value="${item/id}"
+                selected="${item/is_selected}">${item/title}</option>
+            </select>
+            </p>
+        </td>
+        <td>
+          <p>
+            Job function<br/>
+             <select name="job_function" style="font-size: 9px">
+              <option value="">All</option>
+              <option stl:repeat="item job_functions" value="${item/id}" 
+                selected="${item/is_selected}">${item/title}</option>
+            </select>
+          </p>
+         </td>
+        <td>
+          <p>
+            Business profile<br/>
+            <select name="business_profile" style="font-size: 9px">
+              <option value="">All</option>
+              <option stl:repeat="item business_profiles" value="${item/id}" 
+                selected="${item/is_selected}">${item/title}</option>
+            </select>
+            </p>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="submit" value=">> Go"/>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <br/>
+  <stl:block stl:if="users">
+    <span xstyle="font-size: 12px">
+      &raquo; Download the results as an <a href="${csv}">CSV file</a>.
+    </span>
+    <br/><br/>
+    <table style="font-size: 12px; white-space: nowrap;">
+      <tr style="border-bottom: 1px solid black">
+        <th style="border-bottom: 1px solid black" valign="bottom">Title</th>
+        <th style="border-bottom: 1px solid black" valign="bottom">
+          First name</th>
+        <th style="border-bottom: 1px solid black" valign="bottom">
+          Last name</th>
+        <th style="border-bottom: 1px solid black" valign="bottom">Company</th>
+        <th style="border-bottom: 1px solid black" valign="bottom">email</th>
+        <th style="border-bottom: 1px solid black" valign="bottom">
+          Phone number</th>
+        <th style="border-bottom: 1px solid black" valign="bottom">
+          Post code</th>
+        <th style="border-bottom: 1px solid black;" valign="bottom" 
+          stl:repeat="module modules">${module/short_title}</th>
+      </tr>
+      <tr stl:repeat="user users">
+        <td style="font-size: 11px">${user/title}</td>
+        <td style="font-size: 11px">${user/firstname}</td>
+        <td style="font-size: 11px">${user/lastname}</td>
+        <td style="font-size: 11px">${user/company}</td>
+        <td style="font-size: 11px">${user/email}</td>
+        <td style="font-size: 11px">${user/phone}</td>
+        <td style="font-size: 11px">${user/post_code}</td>
+        <td style="font-size: 11px; text-align: center" 
+          stl:repeat="module user/modules">${module/date}</td>
+      </tr>
+    </table>
+  </stl:block>
+  <p stl:if="not users">
+    Select values for the different criteria (region, business function,
+    job function and business profile) to view the travel agents that
+    match those criteria values.
+  </p>
+</stl:block>

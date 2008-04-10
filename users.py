@@ -1330,6 +1330,12 @@ class User(iUser, WorkflowAware, Handler):
         module_ns = []    
         if office:
             modules = self.parent.parent.get_modules()
+            xx = [
+                {'name': x.name, 'title': '%d - %s' % (i+1, x.title)}
+                for i, x in enumerate(modules)]
+            import pprint
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(xx)
             namespace['modules'] = []
             for module in modules:
                 get = module.get_property
@@ -1359,6 +1365,7 @@ class User(iUser, WorkflowAware, Handler):
                         ns['marketing'] = marketing
 
                     else:
+                        ns['exam'] = None
                         # Check for exam
                         exam = None
                         exams = list(module.search_handlers(format=Exam.class_id))

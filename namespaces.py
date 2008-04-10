@@ -24,13 +24,13 @@ region_id = None
 for line in lines:
     line = line.strip()
     if line:
-        id, label = line.split('#')
+        id, title = line.split('#')
         if region_id is None:
             region_id = id
-            regions.append({'id': id, 'label': label, 'counties': []})
+            regions.append({'id': id, 'title': title, 'counties': []})
         else:
             id = '%s/%s' % (region_id, id)
-            regions[-1]['counties'].append({'id': id, 'label': label})
+            regions[-1]['counties'].append({'id': id, 'title': title})
     else:
         region_id = None
 
@@ -85,50 +85,50 @@ class BusinessProfile(Enumerate):
 
     @classmethod
     def get_options(cls):
-        return [{'id': 'Multiple', 'label': 'Multiple'},
-                {'id': 'Independent', 'label': 'Independent'},
-                {'id': 'Homeworker', 'label': 'Homeworker'},
-                {'id': 'Call Centre', 'label': 'Call Centre'},
-                {'id': 'Others', 'label': 'Others'}]
+        return [{'id': 'multiple', 'label': 'Multiple'},
+                {'id': 'independent', 'label': 'Independent'},
+                {'id': 'homeworker', 'label': 'Homeworker'},
+                {'id': 'call_centre', 'label': 'Call Centre'},
+                {'id': 'other', 'label': 'Other'}]
 
 
 class BusinessFunction(Enumerate):
 
     @classmethod
     def get_options(cls):
-        return [{'id': 'Travel Agent', 'label': 'Travel Agent'},
-                {'id': 'Tour Operator', 'label': 'Tour Operator'},
-                {'id': 'National Tourist Board',
+        return [{'id': 'travel_agent', 'label': 'Travel Agent'},
+                {'id': 'tour_Operator', 'label': 'Tour Operator'},
+                {'id': 'national_tourist_board',
                  'label': 'National Tourist Board'},
-                {'id': 'Airline', 'label': 'Airline'},
-                {'id': 'Representation Company',
+                {'id': 'airline', 'label': 'Airline'},
+                {'id': 'representation_company',
                  'label': 'Representation Company'},
-                {'id': 'Public Relations', 'label': 'Public Relations'},
-                {'id': 'Association', 'label': 'Association'},
-                {'id': 'Car Hire', 'label': 'Car Hire'},
-                {'id': 'Insurance', 'label': 'Insurance'},
-                {'id': 'Technology', 'label': 'Technology'},
-                {'id': 'Academia', 'label': 'Academia'},
-                {'id': 'Other', 'label': 'Other'}]
+                {'id': 'public_relations', 'label': 'Public Relations'},
+                {'id': 'association', 'label': 'Association'},
+                {'id': 'car_hire', 'label': 'Car Hire'},
+                {'id': 'insurance', 'label': 'Insurance'},
+                {'id': 'technology', 'label': 'Technology'},
+                {'id': 'academia', 'label': 'Academia'},
+                {'id': 'other', 'label': 'Other'}]
 
 
 class JobFunction(Enumerate):
 
     @classmethod
     def get_options(cls):
-        return [{'id': 'Owner/Director', 'label': 'Owner/Director'},
-                {'id': 'Manager', 'label': 'Manager'},
-                {'id': 'Assistant Manager', 'label': 'Assistant Manager'},
-                {'id': 'Travel Consultant', 'label': 'Travel Consultant'},
-                {'id': 'Student', 'label': 'Student'},
-                {'id': 'Managing Director', 'label': 'Managing Director'},
-                {'id': 'Sales Director', 'label': 'Sales Director'},
-                {'id': 'Marketing Director', 'label': 'Marketing Director'},
-                {'id': 'Marketing Manager', 'label': 'Marketing Manager'},
-                {'id': 'Marketing Assistant', 'label': 'Marketing Assistant'},
-                {'id': 'Product Manager', 'label': 'Product Manager'},
-                {'id': 'Reservation Staff', 'label': 'Reservation Staff'},
-                {'id': 'Other', 'label': 'Other'}]
+        return [{'id': 'owner_director', 'label': 'Owner/Director'},
+                {'id': 'manager', 'label': 'Manager'},
+                {'id': 'assistant_manager', 'label': 'Assistant Manager'},
+                {'id': 'travel_consultant', 'label': 'Travel Consultant'},
+                {'id': 'student', 'label': 'Student'},
+                {'id': 'managing_director', 'label': 'Managing Director'},
+                {'id': 'sales_director', 'label': 'Sales Director'},
+                {'id': 'marketing_director', 'label': 'Marketing Director'},
+                {'id': 'marketing_manager', 'label': 'Marketing Manager'},
+                {'id': 'marketing_assistant', 'label': 'Marketing Assistant'},
+                {'id': 'product_manager', 'label': 'Product Manager'},
+                {'id': 'reservation_staff', 'label': 'Reservation Staff'},
+                {'id': 'other', 'label': 'Other'}]
 
 
 class Region(Enumerate):
@@ -146,7 +146,7 @@ class Region(Enumerate):
                 if region['id'] == region_id:
                     for county in region['counties']:
                         if county['id'] == id:
-                            return region['label'], county['label']
+                            return region['title'], county['title']
         return None, None
 
 
