@@ -3,6 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
            xmlns="http://www.w3.org/1999/xhtml">
+<script type="text/javascript" src="/ui/abakuc/abakuc.js"></script>
 <br/>
 <form method="get" action=";statistics">
   <table>
@@ -29,6 +30,25 @@
         </select>
       </td>
     </tr>
+        <tr>
+      <td colspan="2">
+        Country:<br/>
+        <select id="countries" name="countries" onchange="
+          get_regions('/;get_regions_str?country='+ this.value,'div_regions');
+          get_regions('/;get_counties_str?', 'div_county')">
+          <option value=""></option>
+          <option stl:repeat="country countries" value="${country/name}"
+            selected="${country/selected}">${country/title}</option>
+        </select>
+        <br/>
+        Region:<br/>
+        ${regions}
+        County:<br/>
+        ${counties}
+        <br/>
+      </td>
+    </tr>
+
   </table>
   <br/>
   Table layout<br/>

@@ -12,6 +12,7 @@
         </stl:block>
         <stl:block if="address">
             <h2>${company/title}</h2>
+            <h2>${my_company}</h2>
               <dt><a href="${company/website}">${company/website}</a></dt>
               <dd>
                 <address>${address/address}<br />

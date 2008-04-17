@@ -179,7 +179,6 @@ class User(iUser, WorkflowAware, Handler):
         url = str(where_from.get_pathto(self)) + home
         return url
 
-        
     def is_training(self):
         '''Return a bool'''
         training = self.get_site_root()
@@ -194,6 +193,13 @@ class User(iUser, WorkflowAware, Handler):
         results = root.search(format='training', members=self.name)
         for training in results.get_documents():
             return root.get_handler(training.abspath)
+        return None
+
+    def get_company(self):
+        root = self.get_root()
+        results = root.search(format='company', members=self.name)
+        for company in results.get_documents():
+            return root.get_handler(company.abspath)
         return None
 
     def get_address(self):
@@ -514,7 +520,12 @@ class User(iUser, WorkflowAware, Handler):
             handler = self.get_handler('/ui/abakuc/users/profile.xml')
             return stl(handler, namespace)
         company = address.parent
-        
+
+        # XXX Test
+        # This returns None
+        my_company = self.get_company()
+        namespace['my_company'] = my_company
+        pp.pprint(my_company)
         
         # Company
         namespace['company'] = {'name': company.name,
@@ -1150,6 +1161,14 @@ class User(iUser, WorkflowAware, Handler):
             logo, logo_metadata = company.set_object(logo_name, logo)
             logo_metadata.set_property('state', 'public')
 
+        # Link the User to the Company 
+        company.set_user_role(self.name, 'abakuc:branch_manager')
+
+        root = context.root
+        # Remove from old company
+        old_company = self.get_company()
+        if old_company is not None:
+            old_company.set_user_role(self.name, None)
         # Set the Address..
         name = name.encode('utf_8').replace('&', '%26')
         return context.uri.resolve(';setup_address_form?company=%s' % name)

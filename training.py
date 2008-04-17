@@ -30,7 +30,7 @@ from exam import Exam
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange
-from namespaces import Region, BusinessFunction, JobFunction, BusinessProfile
+from namespaces import Region
 from marketing import Marketing
 
 month_names = [
@@ -169,6 +169,15 @@ class Training(SiteRoot, WorkflowAware):
                                      get_sort_name(y.name)))
         return modules
 
+    def is_training(self):
+        '''Return a bool'''
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False 
+        return training
+
     def login(self, context):
         response = SiteRoot.login(self, context)
         if str(response.path[-1]) == ';login_form':
@@ -290,7 +299,8 @@ class Training(SiteRoot, WorkflowAware):
     #statistics__access__ = 'is_allowed_to_view_statistics'
     statistics__label__ = u'Statistics'
     statistics__sublabel__ = u'Statistics'
-    def statistics(self, context, topics=None, types=None, functions=None):
+    def statistics(self, context, address_country=None, address_region=None,
+                    address_county=None, topics=None, types=None, functions=None):
         root = get_context().root
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
@@ -320,16 +330,6 @@ class Training(SiteRoot, WorkflowAware):
             for i, x in enumerate(modules)]
     
         # Layout options
-        #layout_options = [
-        #    ('region/business_profile', u'Region x Business profile'),
-        #    ('region/business_functions', u'Region x Business function'),
-        #    ('region/job_function', u'Region x Job function'),
-        #    ('job_function/business_profile',
-        #     u'Job function x Business profile'),
-        #    ('job_function/business_functions',
-        #     u'Job function x Business function'),
-        #    ('business_functions/business_profile',
-        #     u'Business function x Business profile')]
         layout_options = [
             ('region/business_profile', u'Region x Business profile'),
             ('region/business_functions', u'Region x Business function'),
@@ -345,24 +345,43 @@ class Training(SiteRoot, WorkflowAware):
             {'name': name, 'value': value, 'selected': name == layout}
             for name, value in layout_options ]
 
+        # List authorized countries
+        countries = [
+            {'name': x, 'title': x, 'selected': x == address_country}
+            for x, y in root.get_authorized_countries(context) ]
+        nb_countries = len(countries)
+        if nb_countries < 1:
+            raise ValueError, 'Number of countries is invalid'
+
+        # Show a list with all authorized countries
+        countries.sort(key=lambda x: x['title'])
+        regions = root.get_regions_stl(country=address_country,
+                                       selected_region=address_region)
+        county = root.get_counties_stl(region=address_region,
+                                       selected_county=address_county)
+        namespace['countries'] = countries
+        namespace['regions'] = regions
+        namespace['counties'] = county
+
+        pp.pprint(countries)
+
+
         # Statistics criterias
         vertical, horizontal = layout.split('/')
         regions = Region.get_namespace(None)
         criterias = {'region': regions,
                      'business_functions': root.get_topics_namespace(topics),
-                     #'business_function': BusinessFunction.get_options(),
-                     #'job_function':  JobFunction.get_options(),
-                     #'business_profile': BusinessProfile.get_options()
                      'job_functions':  root.get_functions_namespace(functions),
                      'business_profile': root.get_types_namespace(types)
                      }
-        pp.pprint(criterias)
+        #pp.pprint(criterias)
         horizontal_criterias = criterias[horizontal]
         vertical_criterias = criterias[vertical]
 
         ## Filter the users
         root = context.root
-        query = {'training_programmes': self.name}
+        query = {'format': self.name}
+        #query = {'format': self.site_format}
         if month:
             query['registration_month'] = month
         if year:
@@ -372,18 +391,20 @@ class Training(SiteRoot, WorkflowAware):
             vertical_criterias = Region.get_counties(region)
             vertical = 'county'
         ## TEST 015
-        users = self.get_members()
-        total_members = len(users)
-        pp.pprint(total_members)
-
+        #users = self.get_members()
+        #total_members = len(users)
+        #pp.pprint(total_members)
 
         results = root.search(**query)
+        #pp.pprint(results)
         brains = results.get_documents()
+        #pp.pprint(brains)
         if module:
             aux = []
             mod = self.get_handler(module)
             for brain in brains:
                 exam = mod.get_exam(brain.name)
+                #pp.pprint(exam)
                 if exam is None:
                     continue
                 has_passed = exam.get_result(brain.name)[0]
@@ -412,6 +433,7 @@ class Training(SiteRoot, WorkflowAware):
                 table[('', y)] += 1
                 table[('', '')] += 1
 
+        pp.pprint(table)
         ## Base URLs
         base_stats = context.uri
         base_show = get_reference(';show_users')
@@ -455,9 +477,10 @@ class Training(SiteRoot, WorkflowAware):
 
     show_users__access__ = True 
     def show_users(self, context, functions=None, topics=None, types=None):
-        root = get_context().root
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
+
+        root = get_context().root
         # Extract the parameters from the request form
         year = context.get_form_value('year')
         month = context.get_form_value('month')
@@ -490,16 +513,11 @@ class Training(SiteRoot, WorkflowAware):
             for i, x in enumerate(modules) ]
         #pp.pprint(namespace['modules'])
         # Region, business function, job function and business profile
-        #business_functions = BusinessFunction.get_namespace(business_function)
-        #business_profiles = BusinessProfile.get_namespace(business_profile)
         namespace['regions'] = Region.get_namespace(region)
-        #namespace['business_functions'] = business_functions
         namespace['business_functions'] = root.get_topics_namespace(topics)
         namespace['job_functions'] = root.get_functions_namespace(functions)
-        #namespace['job_functions'] = JobFunction.get_namespace(job_function)
         namespace['business_profiles'] = root.get_types_namespace(types)
-        pp.pprint(namespace['business_functions'])
-        #namespace['business_profiles'] = business_profiles
+        #pp.pprint(namespace['business_functions'])
         # Search users
         root = context.root
         catalog = context.server.catalog
@@ -514,11 +532,11 @@ class Training(SiteRoot, WorkflowAware):
                     query['registration_%s' % key] = value
                 elif key in catalog.field_numbers:
                     query[key] = value
-        pp.pprint(query['training_programmes'])
+        #pp.pprint(query['training_programmes'])
         users = []
         if module:
             module = self.get_handler(module)
-            pp.pprint(module)
+            #pp.pprint(module)
         # TEST 015
         results = root.search(**query)
         for brain in results.get_documents():
@@ -560,7 +578,6 @@ class Training(SiteRoot, WorkflowAware):
             last_exam_passed = True 
             dates = []
             for m in modules:
-                pp.pprint(m)
                 date = ''
                 if last_exam_passed:
                     exam = m.get_exam(username)

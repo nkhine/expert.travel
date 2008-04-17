@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
+# Import from the Standard Library
+import datetime
+
 # Import from itools
 from itools.datatypes import Integer, Unicode
 from itools.stl import stl
@@ -164,11 +167,17 @@ class SiteRoot(Handler, BaseWebSite):
             user.set_property('ikaaro:firstname', firstname, language='en')
             user.set_property('ikaaro:lastname', lastname, language='en')
             # Set the role
-            default_role = self.__roles__[0]['name']
-            self.set_user_role(user.name, default_role)
-
+            office = self.is_training()
+            if office is True:
+                default_role = self.__roles__[3]['name']
+                self.set_user_role(user.name, default_role)
+            else:
+                default_role = self.__roles__[0]['name']
+                self.set_user_role(user.name, default_role)
         # Set product specific data 
         user.set_property('abakuc:job_function', job_function)
+        # Set the registration date
+        user.set_property('abakuc:registration_date', datetime.date.today())
         # Send confirmation email
         key = generate_password(30)
         user.set_property('ikaaro:user_must_confirm', key)

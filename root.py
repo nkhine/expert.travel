@@ -100,6 +100,7 @@ class Root(Handler, BaseRoot):
             KeywordField('business_profile', is_stored=True),
             KeywordField('job_function', is_stored=True),
             KeywordField('business_function', is_stored=True),
+            KeywordField('country', is_stored=True),
             KeywordField('region', is_stored=True),
             KeywordField('county', is_stored=True),
             KeywordField('training_programmes')]

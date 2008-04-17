@@ -90,6 +90,7 @@ class Schema(BaseSchema):
         'partner': Tokens(default=()),
         'guest': Tokens(default=()),
         'job_function': String,
+        'registration_date': Date,
         # Company
         'website': String,
         'topic': Tokens,
