@@ -309,8 +309,8 @@ class Training(SiteRoot, WorkflowAware):
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
-        layout = context.get_form_value('layout', 'region/business_profile')
-        region = context.get_form_value('region')
+        layout = context.get_form_value('layout', 'country/business_profile')
+        country = context.get_form_value('country')
 
         # Build the namespace
         namespace = {}
@@ -331,9 +331,9 @@ class Training(SiteRoot, WorkflowAware):
     
         # Layout options
         layout_options = [
-            ('region/business_profile', u'Region x Business profile'),
-            ('region/business_functions', u'Region x Business function'),
-            ('region/job_functions', u'Region x Job functions'),
+            ('country/business_profile', u'Region x Business profile'),
+            ('country/business_functions', u'Region x Business function'),
+            ('country/job_functions', u'Region x Job functions'),
             ('business_functions/business_profile',
              u'Business function x Business profile'),
             ('business_functions/job_functions',
@@ -347,7 +347,7 @@ class Training(SiteRoot, WorkflowAware):
 
         # List authorized countries
         countries = [
-            {'name': x, 'title': x, 'selected': x == address_country}
+            {'id': x, 'title': x, 'is_selected': x == address_country}
             for x, y in root.get_authorized_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
@@ -359,7 +359,7 @@ class Training(SiteRoot, WorkflowAware):
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
-        namespace['countries'] = countries
+        namespace['country'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
 
@@ -369,7 +369,7 @@ class Training(SiteRoot, WorkflowAware):
         # Statistics criterias
         vertical, horizontal = layout.split('/')
         regions = Region.get_namespace(None)
-        criterias = {'region': regions,
+        criterias = {'country': countries,
                      'business_functions': root.get_topics_namespace(topics),
                      'job_functions':  root.get_functions_namespace(functions),
                      'business_profile': root.get_types_namespace(types)
@@ -380,15 +380,19 @@ class Training(SiteRoot, WorkflowAware):
 
         ## Filter the users
         root = context.root
-        query = {'format': self.name}
-        #query = {'format': self.site_format}
+        #query = {'format': self.name}
+        query = {'format': self.site_format}
         if month:
             query['registration_month'] = month
         if year:
             query['registration_year'] = year
-        if region:
-            query['region'] = region
-            vertical_criterias = Region.get_counties(region)
+        if countries:
+            query['country'] = countries
+            vertical_criterias = countries
+            vertical = 'country'
+        if regions:
+            query['region'] = regions
+            vertical_criterias = regions
             vertical = 'county'
         ## TEST 015
         #users = self.get_members()
@@ -458,7 +462,7 @@ class Training(SiteRoot, WorkflowAware):
             elif key in query:
                 del query[key]
             rows.append({'title': y['title'], 'url': None, 'columns': []})
-            if vertical == 'region' and region is None:
+            if vertical == 'country' and country is None:
                 rows[-1]['url'] = base_stats.replace(**query)
 
             for x in horizontal_criterias + [{'id': ''}]:
