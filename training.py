@@ -301,6 +301,7 @@ class Training(SiteRoot, WorkflowAware):
     statistics__sublabel__ = u'Statistics'
     def statistics(self, context, address_country=None, address_region=None,
                     address_county=None, topics=None, types=None, functions=None):
+        from root import world
         root = get_context().root
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
@@ -311,6 +312,7 @@ class Training(SiteRoot, WorkflowAware):
         module = context.get_form_value('module')
         layout = context.get_form_value('layout', 'country/business_profile')
         country = context.get_form_value('country')
+        region = context.get_form_value('region')
 
         # Build the namespace
         namespace = {}
@@ -347,28 +349,30 @@ class Training(SiteRoot, WorkflowAware):
 
         # List authorized countries
         countries = [
-            {'id': x, 'title': x, 'is_selected': x == address_country}
-            for x, y in root.get_authorized_countries(context) ]
+            {'id': y, 'title': x, 'is_selected': x == address_country}
+            for x, y in root.get_active_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
             raise ValueError, 'Number of countries is invalid'
 
         # Show a list with all authorized countries
         countries.sort(key=lambda x: x['title'])
-        regions = root.get_regions_stl(country=address_country,
-                                       selected_region=address_region)
+        #regions = root.get_regions_stl(country=address_country,
+        #                               selected_region=address_region)
+        regions = world.search(iana_root_zone='uk')
+        pp.pprint(regions)
         county = root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
         namespace['country'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
 
-        pp.pprint(countries)
+        #pp.pprint(countries)
 
 
         # Statistics criterias
         vertical, horizontal = layout.split('/')
-        regions = Region.get_namespace(None)
+        #regions = Region.get_namespace(None)
         criterias = {'country': countries,
                      'business_functions': root.get_topics_namespace(topics),
                      'job_functions':  root.get_functions_namespace(functions),
@@ -389,11 +393,12 @@ class Training(SiteRoot, WorkflowAware):
         if countries:
             query['country'] = countries
             vertical_criterias = countries
+            pp.pprint(vertical_criterias)
             vertical = 'country'
-        if regions:
-            query['region'] = regions
-            vertical_criterias = regions
-            vertical = 'county'
+        #if region:
+        #    query['region'] = region
+        #    vertical_criterias = Region.get_counties(region)
+        #    vertical = 'county'
         ## TEST 015
         #users = self.get_members()
         #total_members = len(users)

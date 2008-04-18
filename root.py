@@ -395,6 +395,16 @@ class Root(Handler, BaseRoot):
         # Return the list of iana_root_zone
         return list_countries
 
+    def get_regions(self, country_code):
+        """
+        Return a list of regions:
+        [('United Kingdom', 'uk'), ('France', 'fr')]
+        """
+        results = world.search(iana_root_zone=country_code)
+        if results:
+            row = world.get_row(results[0])
+            return row.get_value('region')
+        return None
 
     def list_country_codes(self):
         return world.get_unique_values('iana_root_zone')
