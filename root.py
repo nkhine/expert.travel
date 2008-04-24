@@ -90,6 +90,10 @@ class Root(Handler, BaseRoot):
             KeywordField('closing_date', is_stored=False),
             KeywordField('company', is_stored=False),
             KeywordField('address', is_stored=False),
+            KeywordField('country', is_stored=True),
+            KeywordField('region', is_stored=True),
+            KeywordField('county', is_stored=True),
+            # XXX Fix this as is repeated in TP
             KeywordField('function', is_stored=False),
             KeywordField('salary', is_stored=False),
             KeywordField('description', is_stored=False),
@@ -97,12 +101,9 @@ class Root(Handler, BaseRoot):
             KeywordField('registration_date'),
             KeywordField('registration_year'),
             KeywordField('registration_month'),
-            KeywordField('business_profile', is_stored=True),
-            KeywordField('job_function', is_stored=True),
-            KeywordField('business_function', is_stored=True),
-            KeywordField('country', is_stored=True),
-            KeywordField('region', is_stored=True),
-            KeywordField('county', is_stored=True),
+            KeywordField('types', is_stored=True),
+            KeywordField('topics', is_stored=True),
+            KeywordField('functions', is_stored=True),
             KeywordField('training_programmes')]
 
 
@@ -395,16 +396,27 @@ class Root(Handler, BaseRoot):
         # Return the list of iana_root_zone
         return list_countries
 
-    def get_regions(self, country_code):
+    def get_regions(self, country=None, selected_region=None):
         """
         Return a list of regions:
         [('United Kingdom', 'uk'), ('France', 'fr')]
         """
-        results = world.search(iana_root_zone=country_code)
-        if results:
-            row = world.get_row(results[0])
-            return row.get_value('region')
-        return None
+        from root import world
+        regions = []
+        rows = world.get_rows()
+        #row = world.get_row(results[2])
+        for row in rows:
+            region = row[7]
+            if region not in regions:
+                regions.append(region)
+        regions = [{'id': x,
+                    'title': x,
+                    'selected': x==selected_region} for x in regions]
+        regions.sort(key=lambda x: x['title'])
+        return regions
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(regions)
 
     def list_country_codes(self):
         return world.get_unique_values('iana_root_zone')
@@ -469,13 +481,13 @@ class Root(Handler, BaseRoot):
         data = self.get_regions_stl(country, selected_region)
         return data
 
-
     def get_regions_stl(self, country=None, selected_region=None): 
         # Get data
         rows = world.get_rows()
+        training = self.get_site_root()
         regions = []
         for row in rows:
-            if country == row[6]:
+            if country == row[5]:
                 region = row[7]
                 if region not in regions:
                     regions.append(region)
@@ -486,15 +498,15 @@ class Root(Handler, BaseRoot):
         regions.sort(key=lambda x: x['title'])
         # Build stl
         namespace = {}
-        namespace['regions'] = regions
+        namespace['region'] = regions
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
         <div id="div_regions">
-          <select id="regions" name="regions"
+          <select id="region" name="region"
               onchange="javascript: get_regions('/;get_counties_str?region='+ this.value, 'div_county')">
               <option value=""></option>
-              <option stl:repeat="region regions" value="${region/name}"
+              <option stl:repeat="region region" value="${region/name}"
                       selected="${region/selected}">
               ${region/title}
               </option>
@@ -505,6 +517,22 @@ class Root(Handler, BaseRoot):
         template = XHTMLDocument(string=template)
         return stl(template, namespace) 
 
+    #def get_regions(self, country=None, selected_region=None): 
+    #    # Get data
+    #    rows = world.get_rows()
+    #    regions = []
+    #    for row in rows:
+    #        if country == row[6]:
+    #            region = row[7]
+    #            if region not in regions:
+    #                regions.append(region)
+
+    #    regions = [{'name': x,
+    #                'title': x,
+    #                'selected': x==selected_region} for x in regions]
+    #    regions.sort(key=lambda x: x['title'])
+
+    #    return regions
 
     get_counties_str__access__ = True
     def get_counties_str(self, context):
@@ -529,21 +557,38 @@ class Root(Handler, BaseRoot):
         # Build stl
         namespace = {}
         namespace['counties'] = counties
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-        <div id="div_county">
-          <select id="abakuc:county" name="abakuc:county">
-              <option stl:repeat="county counties" value="${county/name}"
-                      selected="${county/selected}">
-              ${county/title}
-              </option>
-          </select>
-        </div>
-        </stl:block>
-                  """
-        template = XHTMLDocument(string=template)
-        return stl(template, namespace) 
-
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            template = """
+            <stl:block xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <div id="div_county">
+              <select id="county" name="county">
+                  <option stl:repeat="county counties" value="${county/name}"
+                          selected="${county/selected}">
+                  ${county/title}
+                  </option>
+              </select>
+            </div>
+            </stl:block>
+                      """
+            template = XHTMLDocument(string=template)
+            return stl(template, namespace) 
+        else:
+            template = """
+            <stl:block xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <div id="div_county">
+              <select id="county" name="abakuc:county">
+                  <option stl:repeat="county counties" value="${county/name}"
+                          selected="${county/selected}">
+                  ${county/title}
+                  </option>
+              </select>
+            </div>
+            </stl:block>
+                      """
+            template = XHTMLDocument(string=template)
+            return stl(template, namespace) 
 
 register_object_class(Root)

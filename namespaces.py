@@ -131,6 +131,21 @@ class JobFunction(Enumerate):
                 {'id': 'other', 'label': 'Other'}]
 
 
+class Norman(Enumerate):
+        
+    @staticmethod
+    def get_counties(id):
+        """
+        From a region id (e.g 'south_east') returns the list of the region's
+        counties.
+        """
+        for region in regions:
+            if region['id'] == id:
+                return region['counties'][:]
+        return None
+
+
+
 class Region(Enumerate):
 
     @staticmethod

@@ -30,7 +30,7 @@ function getHTTPObject() {
 function get_regions(url, to){
   var xhr = getHTTPObject()
   if (!xhr) {
-    alert("Votre navigateur ne prend pas en charge Ajax.");
+    alert("Your browser cannot load up an AJAX object, please update!");
     return false;
   }
 
