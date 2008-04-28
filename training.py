@@ -568,7 +568,8 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(namespace['modules'])
         # List authorized countries
         countries = [
-            {'name': y, 'title': x, 'selected': x == address_country}
+            {'name': y, 'title': x, 'selected': y == address_country}
+            #{'name': x, 'title': x, 'selected': x == address_country}
             for x, y in root.get_active_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:

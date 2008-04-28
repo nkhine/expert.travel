@@ -1288,11 +1288,14 @@ class Address(RoleAware, WorkflowAware, Folder):
         # List authorized countries
         countries = [
             {'name': x, 'title': x, 'selected': x == address_country}
+            #{'name': x, 'title': x, 'selected': x == address_country}
             for x, y in root.get_authorized_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
             raise ValueError, 'Number of countries is invalid'
-
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(address_country)
         # Show a list with all authorized countries
         countries.sort(key=lambda x: x['title'])
         regions = root.get_regions_stl(country=address_country,
@@ -1307,6 +1310,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['fax'] = fax
         namespace['countries'] = countries
         namespace['regions'] = regions
+        pp.pprint(namespace['regions'])
         namespace['counties'] = county
         handler = root.get_handler('ui/abakuc/companies/company/address/form.xml')
         return stl(handler, namespace)
@@ -1324,7 +1328,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         town = self.get_property('abakuc:town')
         phone = self.get_property('abakuc:phone')
         fax = self.get_property('abakuc:fax')
-        # Get the country,  the region and  the county
+        # Get the country, the region and the county
         from root import world
         address_county = self.get_property('abakuc:county')
         if address_county is None:

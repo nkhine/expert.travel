@@ -403,8 +403,8 @@ class Root(Handler, BaseRoot):
         """
         from root import world
         regions = []
-        rows = world.get_rows()
-        #row = world.get_row(results[2])
+        #rows = world.get_rows()
+        row = world.get_row(results[2])
         for row in rows:
             region = row[7]
             if region not in regions:
@@ -414,9 +414,9 @@ class Root(Handler, BaseRoot):
                     'selected': x==selected_region} for x in regions]
         regions.sort(key=lambda x: x['title'])
         return regions
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(regions)
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(regions)
 
     def list_country_codes(self):
         return world.get_unique_values('iana_root_zone')
@@ -474,6 +474,8 @@ class Root(Handler, BaseRoot):
     ##########################################################################
     get_regions_str__access__ = True
     def get_regions_str(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         response = context.response
         response.set_header('Content-Type', 'text/plain')
         country = context.get_form_value('country', type=Unicode)
@@ -483,15 +485,16 @@ class Root(Handler, BaseRoot):
 
     def get_regions_stl(self, country=None, selected_region=None): 
         # Get data
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         rows = world.get_rows()
         training = self.get_site_root()
         regions = []
         for row in rows:
-            if country == row[5]:
+            if country == row[6]:
                 region = row[7]
                 if region not in regions:
                     regions.append(region)
-
         regions = [{'name': x,
                     'title': x,
                     'selected': x==selected_region} for x in regions]
