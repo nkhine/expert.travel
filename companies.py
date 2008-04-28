@@ -1287,18 +1287,15 @@ class Address(RoleAware, WorkflowAware, Folder):
         root = context.root
         # List authorized countries
         countries = [
-            {'name': x, 'title': x, 'selected': x == address_country}
+            {'name': y, 'title': x, 'selected': x == address_country}
             #{'name': x, 'title': x, 'selected': x == address_country}
             for x, y in root.get_authorized_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
             raise ValueError, 'Number of countries is invalid'
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(address_country)
         # Show a list with all authorized countries
-        countries.sort(key=lambda x: x['title'])
-        regions = root.get_regions_stl(country=address_country,
+        countries.sort(key=lambda y: y['name'])
+        regions = root.get_regions_stl(country_code=address_country,
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
@@ -1310,7 +1307,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['fax'] = fax
         namespace['countries'] = countries
         namespace['regions'] = regions
-        pp.pprint(namespace['regions'])
         namespace['counties'] = county
         handler = root.get_handler('ui/abakuc/companies/company/address/form.xml')
         return stl(handler, namespace)
@@ -1318,6 +1314,8 @@ class Address(RoleAware, WorkflowAware, Folder):
 
     edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         namespace = {}
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
@@ -1342,6 +1340,8 @@ class Address(RoleAware, WorkflowAware, Folder):
                                           address_country, address_region,
                                           address_county)
 
+        pp.pprint(address_country)
+        pp.pprint(address_region)
         handler = self.get_handler('/ui/abakuc/companies/company/address/edit_metadata.xml')
         return stl(handler, namespace)
 

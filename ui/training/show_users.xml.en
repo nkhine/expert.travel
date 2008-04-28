@@ -24,11 +24,11 @@
       <td colspan="2" rowspan="2">
         Country:<br />
         <select id="country" name="country" onchange="
-          get_regions('/;get_regions_str?country='+ this.value,'div_regions');
+          get_regions('/;get_regions_str?country_code='+ this.value,'div_regions');
           get_regions('/;get_counties_str?', 'div_county')"  style="font-size: 9px">
           <option value="">All</option>
-          <option stl:repeat="country country" value="${country/name}"
-            selected="${country/selected}">${country/title}</option>
+          <option stl:repeat="item country" value="${item/name}"
+            selected="${item/selected}">${item/title}</option>
         </select><br />
         Region:<br /> ${region}
         County:<br /> ${county}

@@ -568,7 +568,7 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(namespace['modules'])
         # List authorized countries
         countries = [
-            {'name': y, 'title': x, 'selected': y == address_country}
+            {'name': y, 'title': x, 'selected': x == address_country}
             #{'name': x, 'title': x, 'selected': x == address_country}
             for x, y in root.get_active_countries(context) ]
         nb_countries = len(countries)
@@ -576,10 +576,8 @@ class Training(SiteRoot, WorkflowAware):
             raise ValueError, 'Number of countries is invalid'
         # Show a list with all authorized countries
         countries.sort(key=lambda y: y['name'])
-        pp.pprint(countries)
-        region = root.get_regions_stl(country=address_country,
+        region = root.get_regions_stl(country_code=address_country,
                                        selected_region=address_region)
-        pp.pprint(region)
         county = root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
         # Region, business function, job function and business profile

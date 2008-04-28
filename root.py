@@ -379,6 +379,15 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # API for Website identification
     #######################################################################
+    def is_training(self):
+        '''Return a bool'''
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False 
+        return training
+
     def get_active_countries(self, context):
         """
         Return a list with actives countries and it's code as:
@@ -478,12 +487,12 @@ class Root(Handler, BaseRoot):
         pp = pprint.PrettyPrinter(indent=4)
         response = context.response
         response.set_header('Content-Type', 'text/plain')
-        country = context.get_form_value('country', type=Unicode)
+        country_code = context.get_form_value('country_code', type=String)
         selected_region = context.get_form_value('selected_region', type=Unicode)
-        data = self.get_regions_stl(country, selected_region)
+        data = self.get_regions_stl(country_code, selected_region)
         return data
 
-    def get_regions_stl(self, country=None, selected_region=None): 
+    def get_regions_stl(self, country_code=None, selected_region=None): 
         # Get data
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
@@ -491,7 +500,7 @@ class Root(Handler, BaseRoot):
         training = self.get_site_root()
         regions = []
         for row in rows:
-            if country == row[6]:
+            if country_code == row[5]:
                 region = row[7]
                 if region not in regions:
                     regions.append(region)
@@ -560,38 +569,21 @@ class Root(Handler, BaseRoot):
         # Build stl
         namespace = {}
         namespace['counties'] = counties
-        training = self.get_site_root()
-        if isinstance(training, Training):
-            template = """
-            <stl:block xmlns="http://www.w3.org/1999/xhtml"
-              xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <div id="div_county">
-              <select id="county" name="county">
-                  <option stl:repeat="county counties" value="${county/name}"
-                          selected="${county/selected}">
-                  ${county/title}
-                  </option>
-              </select>
-            </div>
-            </stl:block>
-                      """
-            template = XHTMLDocument(string=template)
-            return stl(template, namespace) 
-        else:
-            template = """
-            <stl:block xmlns="http://www.w3.org/1999/xhtml"
-              xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <div id="div_county">
-              <select id="county" name="abakuc:county">
-                  <option stl:repeat="county counties" value="${county/name}"
-                          selected="${county/selected}">
-                  ${county/title}
-                  </option>
-              </select>
-            </div>
-            </stl:block>
-                      """
-            template = XHTMLDocument(string=template)
-            return stl(template, namespace) 
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+        <div id="div_county">
+          <select id="county" name="abakuc:county">
+              <option stl:repeat="county counties" value="${county/name}"
+                      selected="${county/selected}">
+              ${county/title}
+              </option>
+          </select>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace) 
+
 
 register_object_class(Root)
