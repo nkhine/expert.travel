@@ -16,9 +16,6 @@ from itools.cms import widgets
 from itools.cms.registry import register_object_class
 from itools.cms.folder import Folder
 
-#from users import User
-
-
 class Date(DataType):
 
     @staticmethod
@@ -751,15 +748,17 @@ class Bookings(AccessControl, Folder):
         for header in bookings.columns:
             value = booking.get_value(header)
             if header == 'user':
-                if namespace['is_admin'] is False:
-                    username = user.get_property('ikaaro:username')
-                else:
-                    root = context.root
-                    username = root.search(name=value, format=User.class_id)
-                    username = username.get_documents()
-                    if username:
-                        username = username[0].username
-                namespace['username'] = username or value
+                username = user.get_property('ikaaro:username')
+                #if namespace['is_admin'] is False:
+                #    username = user.get_property('ikaaro:username')
+                #else:
+                #    root = context.root
+                #    username = root.search(name=value, format=User.class_id)
+                #    username = username.get_documents()
+                #    if username:
+                #        username = username[0].username
+                #namespace['username'] = username or value
+                namespace['username'] = username
             datatype = bookings.schema[header]
             namespace[header] = datatype.encode(value)
 
@@ -1281,11 +1280,11 @@ class Bookings(AccessControl, Folder):
 
         for value, label in y_axis:
             line = {'value': label, 'total': 0}
-            if column == 'user':
-                username = root.search(name=label, format=User.class_id)
-                username = username.get_documents()
-                if username:
-                    line['value'] = username[0].username
+            #if column == 'user':
+            #    username = root.search(name=label, format=User.class_id)
+            #    username = username.get_documents()
+            #    if username:
+            #        line['value'] = username[0].username
 
             # Forget changes on query (destination & duration filters)
             c_query = base_query
