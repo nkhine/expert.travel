@@ -20,6 +20,7 @@ from itools.utils import get_version
 from itools.xhtml import Document as XHTMLDocument
 # Import from abakuc
 from metadata import JobTitle, SalaryRange
+from training import Training
 from website import SiteRoot
 from utils import t1, t2, t3, t4
 
@@ -113,6 +114,7 @@ class ExpertTravel(SiteRoot):
         namespace = {}
         namespace['news'] = self.list_news(context)
         namespace['jobs'] = self.list_jobs(context)
+        namespace['training'] = self.training_table(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -133,8 +135,8 @@ class ExpertTravel(SiteRoot):
             <ul>
                 <li><a href="#fragment-1"><span>News</span></a></li>
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Marketplace</span></a></li>
-                <li><a href="#fragment-4"><span>Training</span></a></li>
+                <li><a href="#fragment-3"><span>Training</span></a></li>
+                <li><a href="#fragment-4"><span>Marketplace</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -143,9 +145,7 @@ class ExpertTravel(SiteRoot):
               ${jobs}
             </div>
             <div id="fragment-3">
-              {Training Programmes}
-              Available training programmes for Travel Agents &amp; Tour
-              Operator staff
+              ${training}
             </div>
             <div id="fragment-4">
               {marketplace}
@@ -584,6 +584,112 @@ class ExpertTravel(SiteRoot):
         namespace['job_title'] = job_title
         # Return the page
         handler = self.get_handler('/ui/abakuc/jobs/search.xhtml')
+        return stl(handler, namespace)
+
+    ########################################################################
+    # Training table used in the 'tabs' method
+    def training_table(self, context):
+        namespace = {}
+        #Programme
+        office = self.get_site_root()
+        to_url = str(self.get_pathto(office))
+        programme = {}
+        programme['title'] = office.title_or_name
+        programme['url'] = to_url
+        namespace['programme'] = programme
+        user = context.user
+        root = context.root
+        is_admin = root.is_admin(user, self)
+        namespace['is_admin'] = is_admin
+        training = root.get_handler('training')
+        #namespace['tp'] = None
+        #tp = self.get_training()
+        # Table
+        columns = [('title', u'Title'),
+                   ('function', u'Function'),
+                   ('description', u'Short description')]
+        # Get all Training programmes 
+        items = training.search_handlers(handler_class=Training)
+        # Construct the lines of the table
+        trainings = []
+        for item in list(items):
+            #job = root.get_handler(job.abspath)
+            get = item.get_property
+            # Information about the training
+            url = 'http://%s' % (item.get_vhosts())
+            # XXX fix so that we can extract the first uri
+            if item:
+                is_training_manager = item.has_user_role(self.name, 'abakuc:training_manager')
+                is_branch_manager = item.has_user_role(self.name, 'abakuc:branch_manager')
+                is_branch_member =item.has_user_role(self.name, 'abakuc:branch_member')
+                is_guest = item.has_user_role(self.name, 'abakuc:guest')
+                is_branch_manager_or_member = is_branch_manager or is_branch_member
+                is_member = is_branch_manager_or_member or is_guest or is_training_manager
+            else:
+                is_training_manager = False
+                is_branch_manager = False
+                is_branch_member = False
+                is_guest = False
+                is_branch_manager_or_member = False
+                is_member = False
+            # from the tuple
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=50,
+                                        phrase_treshold=200)
+            training_to_add ={'id': item.name, 
+                             'checkbox': is_branch_manager, # XXX fix this.
+                             'url': url, 
+                             'login': url+'/;login_form', 
+                             'is_training_manager': is_training_manager,
+                             'is_branch_manager_or_member': is_branch_manager_or_member,
+                             'is_guest': is_guest,
+                             'is_member': is_member,
+                             'img': '/ui/abakuc/images/Training16.png',
+                             'title': get('dc:title'),
+                             'description': description}
+            trainings.append(training_to_add)
+
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(trainings)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        items = trainings[batch_start:batch_fin]
+        # Order 
+        sortby = context.get_form_value('sortby', 'id')
+        sortorder = context.get_form_value('sortorder', 'up')
+        reverse = (sortorder == 'down')
+        items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        if reverse:
+            trainings.reverse()
+        # Set batch informations
+        # Namespace 
+        if trainings:
+            actions = [('select', u'Select All', 'button_select_all',
+                        "return select_checkboxes('browse_list', true);"),
+                       ('select', u'Select None', 'button_select_none',
+                        "return select_checkboxes('browse_list', false);"),
+                       ('create_training', u'Add new training', 'button_ok',
+                        None),
+                       ('remove_training', 'Delete training/s', 'button_delete', None)]
+            training_table = table(columns, items, [sortby], sortorder, actions)
+            msgs = (u'There is one training.', u'There are ${n} training programmes.')
+            training_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            training_table = None
+            training_batch = None
+            msg = u'No training programmes'
+
+        namespace['training_table'] = training_table
+        namespace['batch'] = training_batch
+        namespace['items'] = trainings
+        namespace['msg'] = msg 
+        #handler = self.get_handler('/ui/abakuc/training/table.xml')
+        handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
 
 

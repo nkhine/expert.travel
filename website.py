@@ -17,7 +17,6 @@ from itools.uri import Path, get_reference
 # Import from abakuc
 from base import Handler
 
-
 class SiteRoot(Handler, BaseWebSite):
     __roles__ = [
         {'name': 'abakuc:training_manager', 'title': u"Training Manager",
@@ -167,13 +166,16 @@ class SiteRoot(Handler, BaseWebSite):
             user.set_property('ikaaro:firstname', firstname, language='en')
             user.set_property('ikaaro:lastname', lastname, language='en')
             # Set the role
-            office = self.is_training()
-            if office is True:
+            from training import Training
+            office = self.get_site_root()
+            if isinstance(office, Training):
                 default_role = self.__roles__[3]['name']
                 self.set_user_role(user.name, default_role)
             else:
                 default_role = self.__roles__[0]['name']
                 self.set_user_role(user.name, default_role)
+            #default_role = self.__roles__[0]['name']
+            #self.set_user_role(user.name, default_role)
         # Set product specific data 
         user.set_property('abakuc:job_function', job_function)
         # Set the registration date

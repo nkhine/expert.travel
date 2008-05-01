@@ -229,7 +229,10 @@ class User(iUser, WorkflowAware, Handler):
         office = self.is_training()
         namespace = {}
         namespace['office'] = office
-        namespace['news'] = self.news_table(context)
+        if office is True:
+            namespace['news'] = self.news(context)
+        else:
+            namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
         #namespace['sub_tabs'] = self.tabs_training_stl(context)
@@ -702,6 +705,12 @@ class User(iUser, WorkflowAware, Handler):
     # View user's public profile page 
     view__access__ = True 
     def view(self, context):
+        return 'Hello' 
+
+    ########################################################################
+    # View user's public profile page 
+    news__access__ = True 
+    def news(self, context):
         return 'Hello' 
 
     ########################################################################
