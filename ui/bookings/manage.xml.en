@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <div style="text-align: center; margin: 1em">
+    <a href="./;booking_create_form">Register a new booking</a>
+    | Manage bookings
+  </div>
+
+  <h1>Manage Bookings</h1>
+  <h4 stl:if="filters">
+    Bookings are filtered by
+    <stl:block if="filter_duration">
+      duration equal to <strong>${filter_duration_label}</strong>
+    </stl:block>
+    <stl:block if="filter_criteria">
+      <stl:block if="filter_duration">and</stl:block>
+      ${filter_criteria_label} equal to <strong>${filter_value_label}</strong>
+    </stl:block>
+  </h4>
+
+  ${batch}
+
+  <em>Click on value to modify it. <strong>Never</strong> press 'Enter'
+  click on Button instead</em>
+  <br/>
+  <form action=";booking_state_form" method="get" id="browse_list">
+    <input stl:if="filter_criteria" type="hidden" name="filter_criteria"
+	    value="${filter_criteria}" />
+    <input stl:if="filter_duration" type="hidden" name="filter_duration"
+	    value="${filter_duration}" />
+    <input stl:if="filter_value" type="hidden" name="filter_value"
+	    value="${filter_value}" />
+    ${table}
+  </form>
+  <a stl:if="not is_travel_agent" href="${csv_url}" >[CSV Download]</a>
+</stl:block>

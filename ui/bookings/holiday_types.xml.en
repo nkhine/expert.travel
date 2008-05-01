@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h1>Manage Holiday Types</h1>
+
+  <br/>
+  <h3>Add a new Holiday Type</h3>
+  <form action=";create_holiday_type" method="post">
+    <input type="text" style="width: 18em" name="new_holiday_type_value" />
+    <input type="submit" value="Create" />
+  </form>
+
+  <h3>Add a new Holiday SubType</h3>
+  <form action=";create_holiday_subtype" method="post">
+    <select style="width: 18em" name="new_subtype_holiday_type">
+      <option stl:repeat="holiday_type types">${holiday_type}</option>
+    </select>
+    <br/>
+    <input type="text" style="width: 18em" name="new_holiday_subtype_value"
+      size="20" />
+    <input type="submit" value="Create" />
+  </form>
+
+  <br/>
+  <em>Click on value to modify it.</em><br/>
+  <form action=";delete_holiday_types" method="post">
+    <table class="form" width="100%">
+      <tr class="header">
+        <th></th>
+        <th>Holiday Type</th>
+        <th>Holiday SubType</th>
+        <th></th>
+      </tr>
+      <stl:block repeat="holiday_type objects">
+      <tr style="height:1em">
+        <td>
+          <input type="checkbox" name="selected_holiday_types" 
+            value="${holiday_type/title}" />
+        </td>
+        <td>
+          <a stl:if="not holiday_type/selected" href="${holiday_type/href}"
+            >${holiday_type/value}</a>
+          <input type="hidden" stl:if="holiday_type/selected"
+            name="holiday_type_old_value" value="${holiday_type/value}" />
+          <input style="width: 100%" stl:if="holiday_type/selected" type="text"
+            value="${holiday_type/value}" name="holiday_type_new_value" />
+        </td>
+        <td></td>
+        <td align="center">
+          <input style="width:100%" value="Modify Holiday Type"
+            stl:if="holiday_type/selected" type="submit"
+            name=";edit_holiday_type"/>
+        </td>
+      </tr>
+      <stl:block repeat="subtype holiday_type/subtypes">
+      <tr>
+        <td>
+          <input type="checkbox" name="selected_holiday_subtypes"
+            value="${subtype/title}" />
+        </td>
+        <td>
+          <input stl:if="subtype/selected" value="${holiday_type/value}"
+            type="hidden" name="holiday_type_old_value" />
+          <input stl:if="subtype/selected" value="${subtype/value}"
+            type="hidden" name="holiday_subtype_old_value" />
+          <select stl:if="subtype/selected" style="width:100%" 
+            name="holiday_type_new_value">
+            <option>${holiday_type/value}</option> 
+            <option stl:repeat="thetype subtype/types">${thetype}</option>
+          </select>
+        </td>
+        <td>
+          <a stl:if="not subtype/selected" href="${subtype/href}"
+            >${subtype/value}</a>
+          <input type="text" name="holiday_subtype_new_value" 
+            value="${subtype/value}" style="width:100%"
+            stl:if="subtype/selected" />
+        </td>
+        <td align="center">
+          <input style="width:100%" value="Modify Holiday SubType"
+            stl:if="subtype/selected" type="submit"
+            name=";edit_holiday_subtype" />
+        </td>
+      </tr>
+      </stl:block>
+      </stl:block>
+    </table>
+    <input stl:if="total" type="submit" value="Delete Holiday Type(s)" />
+  </form>
+</stl:block>

@@ -22,6 +22,7 @@ from itools.uri import Path, get_reference
 from itools.xhtml import Document as XHTMLDocument
 
 # Import from abakuc
+from bookings import Bookings
 from companies import Company, Address
 from base import Handler, Folder
 from website import SiteRoot 
@@ -145,7 +146,7 @@ class Training(SiteRoot, WorkflowAware):
     site_format = 'module'
 
     def get_document_types(self):
-        return [Module]
+        return [Module, Bookings]
 
     def get_level1_title(self, level1):
         return level1 
@@ -224,6 +225,17 @@ class Training(SiteRoot, WorkflowAware):
     def is_admin(self, user, object):
         return self.is_branch_manager(user, object)
 
+
+    def is_training_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        return True
+        ## Is reviewer or member
+        #return self.has_user_role(user.name, 'abakuc:training_manager') 
 
     def is_branch_manager(self, user, object):
         if not user:

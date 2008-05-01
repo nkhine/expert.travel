@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <br/><br/>
+
+  <form method="post" action="${action_add}">
+    <input type="text" name="title" size="50" />
+    <input type="submit" value="Add" />
+  </form>
+
+  <br/>
+
+  <em>Click on value to modify it.</em>
+  <form method="post" action="${action_edit}">
+    <table class="form" width="100%">
+      <tr class="header">
+        <th>Title</th>
+        <th>State</th> 
+        <th></th>
+      </tr>
+      <tr stl:repeat="row rows">
+        <stl:block if="not row/selected">
+          <td nowrap="physical">
+            <a href="${row/href}">${row/title}</a>
+          </td>
+          <td align="center">
+            ${row/state}
+          </td>
+	      </stl:block>
+
+        <stl:block if="row/selected">
+          <td  nowrap="physical">
+            <input type="hidden" name="id" value="${row/id}" />
+            <input type="text" value="${row/title}" name="title" size="50" />
+          </td>
+          <td>
+            <select name="state">
+              <option value="1" selected="${row/enable}">enable</option>
+              <option value="0" selected="${row/disable}">disable</option>
+            </select>
+          </td>
+          <td align="center">
+            <input stl:if="row/selected" type="submit" value="Modify" />
+          </td>
+        </stl:block>
+      </tr>
+    </table>
+  </form>
+</stl:block>

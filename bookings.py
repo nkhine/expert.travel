@@ -16,7 +16,7 @@ from itools.cms import widgets
 from itools.cms.registry import register_object_class
 from itools.cms.folder import Folder
 
-from Users import User
+#from users import User
 
 
 class Date(DataType):
@@ -114,7 +114,7 @@ class SimpleTable(CSV):
         namespace['rows'] = rows
 
         root = context.root
-        handler = root.get_handler('ui/traveluni/SimpleTable_manage_table.xml')
+        handler = root.get_handler('ui/abakuc/bookings/manage_table.xml')
         return stl(handler, namespace)
 
 
@@ -312,21 +312,21 @@ class Bookings(AccessControl, Folder):
     #######################################################################
     # Security
     #######################################################################
-    def is_admin_or_to_manager(self, user, object):
-        return self.parent.is_admin_or_to_manager(user, object)
+    def is_training_manager(self, user, object):
+        return self.parent.is_training_manager(user, object)
 
         
     def is_allowed_to_manage(self, user, object):
         if user is None:
             return False
-        if self.is_admin_or_to_manager(user, object):
+        if self.is_training_manager(user, object):
             return True
 
         return user is not None and user.is_travel_agent(user, self)
 
 
     def is_allowed_to_edit(self, user, object):
-        if self.is_admin_or_to_manager(user, object):
+        if self.is_training_manager(user, object):
             return True
 
         if user is None:
@@ -349,7 +349,7 @@ class Bookings(AccessControl, Folder):
             return True
 
         office = self.parent
-        if office.is_admin_or_to_manager(user, self):
+        if office.is_training_manager(user, self):
             return True
 
         return get_context().get_form_value('user') == user.name
@@ -397,7 +397,7 @@ class Bookings(AccessControl, Folder):
         bookings = self.get_handler('.bookings')
         holiday_types = self.get_handler('.holiday_types')
         edit_url = './;booking_edit_form?'
-        skin_name = context.root.get_skin_name()
+        #skin_name = context.root.get_skin_name()
 
         user = context.user
         namespace = {}
@@ -410,7 +410,7 @@ class Bookings(AccessControl, Folder):
         namespace['filter_duration'] = filter_duration
 
         to = self.parent
-        if to.is_admin_or_to_manager(user, self):
+        if to.is_training_manager(user, self):
             csv_url = './;csv?'
             is_travel_agent = False
             states = ['Reject', 'Approve']
@@ -543,7 +543,7 @@ class Bookings(AccessControl, Folder):
         namespace['total'] = total
         namespace['batch'] = widgets.batch(context.uri, start, size, total)
 
-        handler = root.get_handler('ui/traveluni/Bookings_manage_bookings.xml')
+        handler = root.get_handler('ui/abakuc/bookings/manage.xml')
         return stl(handler, namespace)
 
 
@@ -609,10 +609,7 @@ class Bookings(AccessControl, Folder):
     def edit_booking(self, context):
         destinations = context.get_form_values('destination')
         if not destinations or len(destinations) > 5:
-            if context.root.get_skin_name() == 'canada':
-                message = (u'Please select 1 to 5 destinations.')
-            else:
-                message = (u'Please select a destination.')
+            message = (u'Please select a destination.')
             return context.come_back(message)
 
         from_date = context.get_form_value('from_date')
@@ -686,7 +683,7 @@ class Bookings(AccessControl, Folder):
             namespace[key] = context.get_form_value(key)
 
         office = self.parent
-        namespace['is_admin'] = office.is_admin_or_to_manager(user, self)
+        namespace['is_admin'] = office.is_training_manager(user, self)
 
         bookings = self.get_handler('.bookings')
 
@@ -725,9 +722,10 @@ class Bookings(AccessControl, Folder):
             namespace['holiday_types'].remove(namespace['holiday_type'])
 
         # Show information to selecte up to 5 destinations only to canada
-        namespace['info_dest'] = (context.root.get_skin_name() == 'canada')
+        #namespace['info_dest'] = (context.root.get_skin_name() == 'canada')
+        namespace['info_dest'] = 'canada'
 
-        handler = self.get_handler('/ui/traveluni/Bookings_booking_form.xml')
+        handler = self.get_handler('/ui/abakuc/bookings/form.xml')
         return stl(handler, namespace)
 
 
@@ -744,7 +742,7 @@ class Bookings(AccessControl, Folder):
             namespace[key] = context.get_form_value(key)
 
         office = self.parent
-        namespace['is_admin'] = office.is_admin_or_to_manager(user, self)
+        namespace['is_admin'] = office.is_training_manager(user, self)
 
         bookings = self.get_handler('.bookings')
         booking_id = int(booking_id)
@@ -807,9 +805,9 @@ class Bookings(AccessControl, Folder):
             for key, value in duration_values.items()]
 
         # Show information to selecte up to 5 destinations only to canada
-        namespace['info_dest'] = (context.root.get_skin_name() == 'canada')
+        namespace['info_dest'] = 'canada'
 
-        handler = self.get_handler('/ui/traveluni/Bookings_booking_form.xml')
+        handler = self.get_handler('/ui/abakuc/bookings/form.xml')
         return stl(handler, namespace)
 
 
@@ -817,10 +815,7 @@ class Bookings(AccessControl, Folder):
     def create_booking(self, context):
         destinations = context.get_form_values('destination')
         if not destinations or len(destinations) > 5:
-            if context.root.get_skin_name() == 'canada':
-                message = (u'Please select 1 to 5 destinations.')
-            else:
-                message = (u'Please select a destination.')
+            message = (u'Please select a destination.')
             return context.come_back(message)
 
         filter_criteria = context.get_form_value('filter_criteria')
@@ -908,7 +903,7 @@ class Bookings(AccessControl, Folder):
         namespace['filter_value'] = filter_value
         namespace['filter_criteria'] = filter_criteria
         
-        handler = self.get_handler('/ui/traveluni/Bookings_booking_state_form.xml')
+        handler = self.get_handler('/ui/abakuc/bookings/state_form.xml')
         return stl(handler, namespace)
  
 
@@ -949,13 +944,13 @@ class Bookings(AccessControl, Folder):
     #########################################################################
     # Tour Operators
     manage_tour_operators__label__ = u'Tour Operators'
-    manage_tour_operators__access__ = 'is_admin_or_to_manager'
+    manage_tour_operators__access__ = 'is_training_manager'
     def manage_tour_operators(self, context):
         handler = self.get_handler('.tour_operators')
         return handler.manage_table(context, 'tour_operator')
 
 
-    create_tour_operator__access__ = 'is_admin_or_to_manager'
+    create_tour_operator__access__ = 'is_training_manager'
     def create_tour_operator(self, context):
         title = context.get_form_value('title', type=Unicode)
 
@@ -963,7 +958,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(u'Tour Operator added')
 
 
-    edit_tour_operator__access__ = 'is_admin_or_to_manager'
+    edit_tour_operator__access__ = 'is_training_manager'
     def edit_tour_operator(self, context):
         self.get_handler('.tour_operators').edit(context)
         return context.come_back(u"Value changed")
@@ -972,22 +967,23 @@ class Bookings(AccessControl, Folder):
     #########################################################################
     # Destinations
     manage_destinations__label__ = u'Destinations'
-    manage_destinations__access__ = 'is_admin_or_to_manager'
+    manage_destinations__access__ = 'is_training_manager'
     def manage_destinations(self, context):
         handler = self.get_handler('.destinations')
         return handler.manage_table(context, 'destination')
 
 
-    create_destination__access__ = 'is_admin_or_to_manager'
+    create_destination__access__ = 'is_training_manager'
     def create_destination(self, context):
         title = context.get_form_value('title', type=Unicode)
-        title = unicode(title, 'UTF-8')
+        title.encode('utf-8')
+        #title = unicode(title, 'UTF-8')
 
         self.get_handler('.destinations').add_row([title, True])
         return context.come_back(u'Destination added')
 
 
-    edit_destination__access__ = 'is_admin_or_to_manager'
+    edit_destination__access__ = 'is_training_manager'
     def edit_destination(self, context):
         self.get_handler('.destinations').edit(context)
         return context.come_back(u"Value changed")                
@@ -996,13 +992,13 @@ class Bookings(AccessControl, Folder):
     #########################################################################
     # Hotels
     manage_hotels__label__ = u'Hotels'
-    manage_hotels__access__ = 'is_admin_or_to_manager'
+    manage_hotels__access__ = 'is_training_manager'
     def manage_hotels(self, context):
         handler = self.get_handler('.hotels')
         return handler.manage_table(context, 'hotel')
 
 
-    create_hotel__access__ = 'is_admin_or_to_manager'
+    create_hotel__access__ = 'is_training_manager'
     def create_hotel(self, context):
         title = context.get_form_value('title', type=Unicode)
 
@@ -1010,7 +1006,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(u'Hotel added')
 
 
-    edit_hotel__access__ = 'is_admin_or_to_manager'
+    edit_hotel__access__ = 'is_training_manager'
     def edit_hotel(self, context):
         self.get_handler('.hotels').edit(context)
         return context.come_back(u"Value changed")                
@@ -1019,7 +1015,7 @@ class Bookings(AccessControl, Folder):
     #########################################################################
     # Holiday types
     manage_holiday_types__label__ = u'Holiday types'
-    manage_holiday_types__access__ = 'is_admin_or_to_manager'
+    manage_holiday_types__access__ = 'is_training_manager'
     def manage_holiday_types(self, context):
         root = context.root
         holiday_types = self.get_handler('.holiday_types')
@@ -1076,11 +1072,11 @@ class Bookings(AccessControl, Folder):
         namespace['objects'] = objects
         namespace['total'] = len(objects)
  
-        handler = root.get_handler('ui/traveluni/Bookings_manage_holiday_types.xml')
+        handler = root.get_handler('ui/abakuc/bookings/holiday_types.xml')
         return stl(handler, namespace)
 
 
-    create_holiday_type__access__ = 'is_admin_or_to_manager'
+    create_holiday_type__access__ = 'is_training_manager'
     def create_holiday_type(self, context):
         new_holiday_type_value = context.get_form_value('new_holiday_type_value')
         new_holiday_type_value = new_holiday_type_value.strip()
@@ -1100,7 +1096,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(message)
 
 
-    create_holiday_subtype__access__ = 'is_admin_or_to_manager'
+    create_holiday_subtype__access__ = 'is_training_manager'
     def create_holiday_subtype(self, context):
         new_subtype_holiday_type = context.get_form_value('new_subtype_holiday_type')
         new_holiday_subtype_value = context.get_form_value('new_holiday_subtype_value')
@@ -1130,7 +1126,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(message)
 
 
-    edit_holiday_type__access__ = 'is_admin_or_to_manager'
+    edit_holiday_type__access__ = 'is_training_manager'
     def edit_holiday_type(self, context):
         holiday_type_new_value = context.get_form_value('holiday_type_new_value')
         holiday_type_old_value = context.get_form_value('holiday_type_old_value')
@@ -1153,7 +1149,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(message)
 
 
-    edit_holiday_subtype__access__ = 'is_admin_or_to_manager'
+    edit_holiday_subtype__access__ = 'is_training_manager'
     def edit_holiday_subtype(self, context):
         type_new_value = context.get_form_value('holiday_type_new_value').strip()
         type_old_value = context.get_form_value('holiday_type_old_value')
@@ -1180,7 +1176,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(u'Holiday SubType changed')
 
 
-    delete_holiday_types__access__ = 'is_admin_or_to_manager'
+    delete_holiday_types__access__ = 'is_training_manager'
     def delete_holiday_types(self, context):
         selected_holiday_types = context.get_form_values('selected_holiday_types')
         selected_holiday_subtypes = context.get_form_values('selected_holiday_subtypes')
@@ -1215,13 +1211,13 @@ class Bookings(AccessControl, Folder):
 
     #########################################################################
     # Statistics
-    statistics__access__ = 'is_admin_or_to_manager'
+    statistics__access__ = 'is_training_manager'
     statistics__label__ = u'Statistics'
     def statistics(self, context):
         root = context.root
         column = context.get_form_value('column')
         holiday_type = context.get_form_value('holiday_type')
-        skin_name = context.root.get_skin_name()
+        #skin_name = context.root.get_skin_name()
         namespace = {}
 
         bookings = self.get_handler('.bookings')
@@ -1339,7 +1335,7 @@ class Bookings(AccessControl, Folder):
         namespace['results'] = results
         namespace['total'] = total
 
-        handler = self.get_handler('/ui/traveluni/Bookings_statistics.xml')
+        handler = self.get_handler('/ui/abakuc/bookings/statistics.xml')
         return stl(handler, namespace)
 
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+  <h1>${state_label} bookings</h1>
+  <form method="POST" action=";booking_change_state">
+    <input stl:if="filter_criteria" name="filter_criteria" type="hidden" value="${filter_criteria}"/>
+    <input stl:if="filter_duration" name="filter_duration" type="hidden" value="${filter_duration}"/>
+    <input stl:if="filter_value" name="filter_value" type="hidden" value="${filter_value}"/>
+
+    <input name="state" type="hidden" value="${state}"/>
+    <table class="form">
+      <tr>
+	<td>Ids</td>
+	<td>
+	  ${booking_ids_label}
+	  <stl:block stl:repeat="booking_id booking_ids">
+	  <input name="booking_ids" type="hidden" value="${booking_id}"/>
+	  </stl:block>
+	</td>
+      </tr>
+
+      <tr>
+	<td>Comments</td>
+	<td>
+	  <textarea name="comments" cols="30" rows="10"></textarea>
+	</td>
+      </tr>
+      <tr>
+	<td colspan="2">
+	  <input type="submit" value="Change state"/>
+	</td>
+      </tr>
+    </table>
+  </form>
+</stl:block>

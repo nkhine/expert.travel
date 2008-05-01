@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+
+  <div style="text-align:center;margin:1em">
+    ${title} |
+    <a href="./;manage_bookings">Manage bookings</a>
+  </div>
+
+  <h1>${title}</h1>
+  <form method="POST" action="${button_name}">
+    <input stl:if="id" name="booking_id" type="hidden" value="${id}"/>
+    <input stl:if="filter_criteria" name="filter_criteria" type="hidden" value="${filter_criteria}"/>
+    <input stl:if="filter_duration" name="filter_duration" type="hidden" value="${filter_duration}"/>
+    <input stl:if="filter_value" name="filter_value" type="hidden" value="${filter_value}"/>
+
+    <table class="form" width="100%">
+      <tr>
+	<th>Booking Reference Number</th>
+	<td><input name="reference_number" size="20" type="text" value="${reference_number}"/>
+	</td>
+      </tr>
+      <tr>
+	<th>From date (DD/MM/YYYY)</th>
+	<td>
+	  <input value="${from_date}" name="from_date" size="10" id="from_date" type="text"/>
+          <input id="trigger_from_date" type="button" value="..."/>
+	</td>
+      </tr>
+      <tr>
+	<th>To date (DD/MM/YYYY)</th>
+	<td>
+	  <input value="${to_date}" name="to_date" size="10" id="to_date" type="text"/>
+          <input id="trigger_to_date" type="button" value="..."/>
+	</td>
+      </tr>
+      <tr>
+	<th>User name</th>
+	<td>
+	  ${username}&nbsp;&nbsp;
+	  <input stl:if="is_admin" name="user" type="text" size="6" value="${user}" />
+	  <input stl:if="not is_admin" name="user" type="hidden" value="${user}"/>
+	</td>
+      </tr>
+      <tr>
+	<th>Party Name</th>
+	<td>
+	  <input name="party_name" type="text" value="${party_name}"/> 
+	</td>
+      </tr>
+      <tr>
+	<th>Tour operator</th>
+	<td>
+	  <select name="tour_operator">
+	    <option stl:repeat="to tour_operators" value="${to/name}" 
+        selected="${to/selected}">${to/value}</option>
+	  </select>
+	</td>
+      </tr>
+      <tr>
+	<th>Holiday type</th>
+	<td>
+	  <select name="holiday_types">
+	    <stl:block stl:if="holiday_type">
+	      <option value="${holiday_type}">${holiday_type}</option>
+	    </stl:block>
+	    <stl:block stl:repeat="holiday_type holiday_types">
+	      <option value="${holiday_type}">${holiday_type}</option>
+	    </stl:block>
+	  </select>
+	</td>
+      </tr>
+      <tr>
+	<th>Number of people</th>
+	<td>
+	  <input name="number" size="5" type="text" value="${number}"/>
+	</td>
+      </tr>
+      <tr>
+	<th>Duration</th>
+	<td>
+	  <select name="duration">
+	    <stl:block stl:repeat="duration duration_values">
+	      <option value="${duration/key}" selected="${duration/selected}">${duration/value}</option>
+	      
+	    </stl:block>
+	  </select>
+	</td>
+      </tr>
+      <tr>
+	<th stl:if="info_dest">Destinations (Up to 5)
+    <span style="font-weight: normal; display: block; font-style: italic;">
+      To enter more than one destination, <br/>
+      select by using CTRL or SHIFT.</span>
+  </th>
+	<th stl:if="not info_dest">Destination</th>
+	<td>
+	  <select name="destination" size="4" multiple="multiple">
+	    <option stl:repeat="to destinations" value="${to/name}" 
+        selected="${to/selected}">${to/value}</option>
+	  </select>
+	</td>
+      </tr>
+      <tr>
+	<th>Hotel</th>
+	<td>
+	  <select name="hotel">
+            <option stl:if="not is_create_form" value="">-- CHOOSE ONE --</option>
+	    <option stl:repeat="to hotels" value="${to/name}" 
+        selected="${to/selected}">${to/value}</option>
+	  </select>
+	</td>
+      </tr>
+      <tr>
+	<th valign="top">Comments</th>
+	<td>
+	  <textarea name="comments" cols="30" stl:if="is_create_form" rows="5">${comments}</textarea>
+          <pre stl:if="not is_create_form">${comments}</pre>
+	</td>
+      </tr>
+      <tr>
+	<td colspan="2">
+          <input type="submit" value="${button_label}"/>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <script language="javascript">
+    focus("from_date");
+    Calendar.setup({inputField: "from_date",
+                    ifFormat: "%d/%m/%Y",
+                    button: "trigger_from_date"});
+    focus("to_date");
+    Calendar.setup({inputField: "to_date",
+                    ifFormat: "%d/%m/%Y",
+                    button: "trigger_to_date"});
+  </script>
+
+</stl:block>
