@@ -881,7 +881,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(message, goto=goto)
 
 
-    booking_state_form__access__ = 'is_allowed_to_delete'
+    booking_state_form__access__ = 'is_training_manager'
     def booking_state_form(self, context):
         states = {'Approve': 0, 'Reject': 2, 'Cancel': 1, 'Request': 3}
         state_label = context.get_form_value(';booking_state_form')
@@ -906,7 +906,7 @@ class Bookings(AccessControl, Folder):
         return stl(handler, namespace)
  
 
-    booking_change_state__access__ = 'is_allowed_to_delete'
+    booking_change_state__access__ = 'is_training_manager'
     def booking_change_state(self, context):
         states = {0: 'Approve', 2: 'Reject', 1: 'Cancel', 3: 'Request'}
         booking_ids = context.get_form_values('booking_ids')
