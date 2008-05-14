@@ -137,6 +137,7 @@ class ExpertTravel(SiteRoot):
                 <li><a href="#fragment-2"><span>Jobs</span></a></li>
                 <li><a href="#fragment-3"><span>Training</span></a></li>
                 <li><a href="#fragment-4"><span>Marketplace</span></a></li>
+                <li><a href="#fragment-5"><span>Forum</span></a></li>
             </ul>
             <div id="fragment-1">
               ${news} 
@@ -149,6 +150,9 @@ class ExpertTravel(SiteRoot):
             </div>
             <div id="fragment-4">
               {marketplace}
+            </div>
+            <div id="fragment-5">
+              {Your travel industry forum. Have your say!}
             </div>
         </div>
         </stl:block>

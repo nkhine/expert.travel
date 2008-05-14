@@ -388,6 +388,38 @@ class Root(Handler, BaseRoot):
             training = False 
         return training
 
+    def get_authorized_countries(self, context):
+        """
+        An expert.travel has 3 configuration :
+        1/ Company view in a Country website
+            http://fr.expert.travel/companies/abakuc
+        2/ Company website
+            http://abakuc.expert.travel/
+        3/ Country website
+            http://fr.expert.travel/
+        """
+        root = context.handler.get_site_root()
+        country_code = get_host_prefix(context)
+        if country_code is not None:
+            # Rule for address as: http://fr.expert.travel/
+            country_name = self.get_country_name(country_code)
+            return [(country_name, country_code)]
+        return self.get_active_countries(context)
+
+    def get_authorized_country(self, context):
+        """
+        Used in skins.py to search for companies
+        only for the specific country.
+        """
+        root = context.handler.get_site_root()
+        country_code = get_host_prefix(context)
+        if country_code is not None:
+            if not isinstance(root, Company):
+                # Rule for address as: http://fr.expert.travel/
+                country_name = self.get_country_name(country_code)
+                return [(country_name, country_code)]
+            return self.get_active_countries(context)
+
     def get_active_countries(self, context):
         """
         Return a list with actives countries and it's code as:
@@ -447,28 +479,6 @@ class Root(Handler, BaseRoot):
                 return host_prefix
         return None
 
-
-    def get_authorized_countries(self, context):
-        """
-        An expert.travel has 3 configuration :
-        1/ Company view in a Country website
-            http://fr.expert.travel/companies/abakuc
-        2/ Company website
-            http://abakuc.expert.travel/
-        3/ Country website
-            http://fr.expert.travel/
-        """
-        root = context.handler.get_site_root()
-        if not isinstance(root, Company):
-            country_code = get_host_prefix(context)
-            if country_code is not None:
-                # Rule for address as: http://fr.expert.travel/
-                country_name = self.get_country_name(country_code)
-                return [(country_name, country_code)]
-
-        return self.get_active_countries(context)
-
-
     def get_site_types(self, context):
         """
         Each portal has its own list of Business Types 
@@ -487,17 +497,15 @@ class Root(Handler, BaseRoot):
         pp = pprint.PrettyPrinter(indent=4)
         response = context.response
         response.set_header('Content-Type', 'text/plain')
-        country_code = context.get_form_value('country_code', type=String)
+        #country_code = get_host_prefix(context)
+        country_code = context.get_form_value('country_code', type=Unicode)
         selected_region = context.get_form_value('selected_region', type=Unicode)
         data = self.get_regions_stl(country_code, selected_region)
         return data
 
     def get_regions_stl(self, country_code=None, selected_region=None): 
         # Get data
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         rows = world.get_rows()
-        training = self.get_site_root()
         regions = []
         for row in rows:
             if country_code == row[5]:

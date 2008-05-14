@@ -74,7 +74,7 @@ class FrontOffice(Skin):
         namespace = Skin.build_namespace(self, context)
 
         # Level0 correspond to the country (uk, fr) ...
-        level0 = [ x[1] for x in root.get_authorized_countries(context) ]
+        level0 = [ x[1] for x in root.get_authorized_country(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
         results = root.search(level0=level0, format=site_root.site_format)

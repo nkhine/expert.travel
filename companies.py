@@ -222,8 +222,8 @@ class Company(SiteRoot):
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
         description = reduce_string(self.get_property('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
+                                        word_treshold=180,
+                                        phrase_treshold=480)
         namespace['description'] = description
         namespace['website'] = self.get_website()
         namespace['logo'] = self.has_handler('logo')
@@ -1247,7 +1247,6 @@ class Address(RoleAware, WorkflowAware, Folder):
 
                 namespace['members'] = members 
             namespace['users'] = self.get_members_namespace(address)
-            #namespace['users'] = self.get_members_namespace(address)
 
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -1272,7 +1271,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['addresses'] = items 
         namespace['msg'] = msg 
         namespace['batch'] = address_batch
-        handler = self.get_handler('/ui/abakuc/companies/company/addresses.xml')
+        handler = self.get_handler('/ui/abakuc/companies/company/list_addresses.xml')
 
         return stl(handler, namespace)
 
@@ -1287,8 +1286,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         root = context.root
         # List authorized countries
         countries = [
-            {'name': y, 'title': x, 'selected': x == address_country}
-            #{'name': x, 'title': x, 'selected': x == address_country}
+            {'name': y, 'title': x, 'selected': y == address_country}
             for x, y in root.get_authorized_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
@@ -1314,8 +1312,6 @@ class Address(RoleAware, WorkflowAware, Folder):
 
     edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         namespace = {}
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
@@ -1334,14 +1330,12 @@ class Address(RoleAware, WorkflowAware, Folder):
             address_region = None
         else:
             rows = world.get_row(address_county)
-            address_country = rows.get_value('country')
+            address_country = rows.get_value('iana_root_zone')
             address_region = rows.get_value('region')
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
                                           address_country, address_region,
                                           address_county)
 
-        pp.pprint(address_country)
-        pp.pprint(address_region)
         handler = self.get_handler('/ui/abakuc/companies/company/address/edit_metadata.xml')
         return stl(handler, namespace)
 

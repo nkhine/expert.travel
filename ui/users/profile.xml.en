@@ -46,6 +46,9 @@
               To manage these records, please contact ${contact} who is
               the Manager for this record or contact the site administrator.
             </p>
+            <p stl:if="not contact">
+              This record has no manager, please contact the site administrator.
+            </p>
         </div>
         <div stl:if="is_branch_manager_or_member">
             <!-- Tabs -->

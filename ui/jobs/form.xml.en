@@ -9,7 +9,7 @@
       <td colspan="2">
         Country:<br/>
         <select id="countries" name="countries" onchange="
-          get_regions('/;get_regions_str?country='+ this.value,'div_regions');
+          get_regions('/;get_regions_str?country_code='+ this.value,'div_regions');
           get_regions('/;get_counties_str?', 'div_county')">
           <option value=""></option>
           <option stl:repeat="country countries" value="${country/name}"

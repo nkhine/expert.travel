@@ -36,8 +36,6 @@
               <h3>Sign in to Expert Travel</h3>
             </div>
             <div class="content">
-              <div class="info">
-                <div class="text">
                     <form id="loginform" name="loginform" method="post" action="${action}">
                         <dl>
                           <dt><label for="username">Email address</label></dt>
@@ -58,8 +56,6 @@
                         <stl:inline if="not username">focus("username");</stl:inline>
                         <stl:inline if="username">focus("password");</stl:inline>
                       </script>
-                </div>
-              </div>
                <ul>
                   <li><a href=";forgotten_password_form">I cannot access my account</a></li>
                </ul>
@@ -67,9 +63,11 @@
           </div>
       </stl:block>
       <stl:block if="user/info">
-          <div class="user">
+          <div class="general-box">
+            <div class="title">
             <h3>${user/info/title} Resources</h3>
-            <div class="user-info">
+            </div>
+            <div class="content">
                <ul>
                     <li>
                       <a href="${user/info/home}">

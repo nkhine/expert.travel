@@ -84,7 +84,7 @@ class Job(Folder, RoleAware):
         # XXX look to merge the two
         # List authorized countries
         countries = [
-            {'name': x, 'title': x, 'selected': x == address_country}
+            {'name': y, 'title': x, 'selected': y == address_country}
             for x, y in context.root.get_authorized_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
@@ -92,7 +92,7 @@ class Job(Folder, RoleAware):
 
         # Show a list with all authorized countries
         countries.sort(key=lambda x: x['title'])
-        regions = context.root.get_regions_stl(country=address_country,
+        regions = context.root.get_regions_stl(country_code=address_country,
                                        selected_region=address_region)
         county = context.root.get_counties_stl(region=address_region,
                                        selected_county=address_county)
@@ -336,7 +336,7 @@ class Job(Folder, RoleAware):
         root = context.root
         # List authorized countries
         countries = [
-            {'name': x, 'title': x, 'selected': x == address_country}
+            {'name': y, 'title': x, 'selected': y == address_country}
             for x, y in root.get_authorized_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
@@ -344,7 +344,7 @@ class Job(Folder, RoleAware):
 
         # Show a list with all authorized countries
         countries.sort(key=lambda x: x['title'])
-        regions = root.get_regions_stl(country=address_country,
+        regions = root.get_regions_stl(country_code=address_country,
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,
                                        selected_county=address_county)

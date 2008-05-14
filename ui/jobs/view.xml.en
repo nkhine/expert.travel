@@ -83,6 +83,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
                 </li>
               </ul>
         </div><!-- right-box -->
+        <div align="right">
             <script type="text/javascript"><!--
             google_ad_client = "pub-2050823514740471";
             /* 160x600, created 3/10/08 */
@@ -94,6 +95,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
             <script type="text/javascript"
             src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
             </script>
+        </div>    
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->
 
