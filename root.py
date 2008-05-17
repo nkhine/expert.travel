@@ -22,7 +22,7 @@ from itools.cms.html import XHTMLFile
 from itools.xhtml import Document as XHTMLDocument
 from itools.catalog import  KeywordField, IntegerField
 
-# Import from abakuc our modules 
+# Import from abakuc our modules
 from base import Handler
 from handlers import EnquiriesLog
 from users import UserFolder
@@ -77,7 +77,7 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # Administrator Email
     contact_email = 'norman@khine.net'
-    
+
     #######################################################################
     # Index & Search
     _catalog_fields = BaseRoot._catalog_fields + [
@@ -112,7 +112,7 @@ class Root(Handler, BaseRoot):
     def new(self, username=None, password=None):
         BaseRoot.new(self, username=username, password=password)
         cache = self.cache
-        
+
         # Companies
         title = u'Companies Directory'
         kw = {'dc:title': {'en': title}}
@@ -134,7 +134,7 @@ class Root(Handler, BaseRoot):
         cache['topics.csv'] = topics
         cache['topics.csv.metadata'] = topics.build_metadata()
 
-        # Business Types 
+        # Business Types
         types = CSV()
         path = get_abspath(globals(), 'data/types.csv')
         types.load_state_from(path)
@@ -156,7 +156,7 @@ class Root(Handler, BaseRoot):
         cache['expert'] = expert_travel
         cache['expert.metadata'] = expert_travel.build_metadata(**kw)
 
-        # Destinations Guide 
+        # Destinations Guide
         title = u'Destinations Guide'
         destinations = Destinations()
         kw = {'dc:title': {'en': title},
@@ -164,7 +164,7 @@ class Root(Handler, BaseRoot):
         cache['destinations'] = destinations
         cache['destinations.metadata'] = destinations.build_metadata(**kw)
 
-        # Training 
+        # Training
         title = u'Training Programmes'
         kw = {'dc:title': {'en': title}}
         training = Trainings()
@@ -327,7 +327,7 @@ class Root(Handler, BaseRoot):
                 county = None
                 msg = 'Several counties found for "%s", "%s" '
                 print count, msg % (row[2], row[3])
- 
+
             # Add Company
             topic_id = str(row[0])
             company_title = row[5].strip()
@@ -385,7 +385,7 @@ class Root(Handler, BaseRoot):
         if isinstance(training, Training):
             training = True
         else:
-            training = False 
+            training = False
         return training
 
     def get_authorized_countries(self, context):
@@ -481,9 +481,9 @@ class Root(Handler, BaseRoot):
 
     def get_site_types(self, context):
         """
-        Each portal has its own list of Business Types 
-        1/ Expert.Travel deals with Travel Agencies 
-        2/ Destinations Guide are Hotels etc... 
+        Each portal has its own list of Business Types
+        1/ Expert.Travel deals with Travel Agencies
+        2/ Destinations Guide are Hotels etc...
         """
         root = context.handler.get_site_root()
 
@@ -503,7 +503,7 @@ class Root(Handler, BaseRoot):
         data = self.get_regions_stl(country_code, selected_region)
         return data
 
-    def get_regions_stl(self, country_code=None, selected_region=None): 
+    def get_regions_stl(self, country_code=None, selected_region=None):
         # Get data
         rows = world.get_rows()
         regions = []
@@ -535,9 +535,9 @@ class Root(Handler, BaseRoot):
         </stl:block>
                   """
         template = XHTMLDocument(string=template)
-        return stl(template, namespace) 
+        return stl(template, namespace)
 
-    #def get_regions(self, country=None, selected_region=None): 
+    #def get_regions(self, country=None, selected_region=None):
     #    # Get data
     #    rows = world.get_rows()
     #    regions = []
@@ -561,9 +561,9 @@ class Root(Handler, BaseRoot):
         region = context.get_form_value('region', type=Unicode)
         selected_county = context.get_form_value('selected_county', type=Unicode)
         return self.get_counties_stl(region, selected_county)
-        
 
-    def get_counties_stl(self, region=None, selected_county=None): 
+
+    def get_counties_stl(self, region=None, selected_county=None):
         # Get data
         rows = world.get_rows()
         counties = []
@@ -591,7 +591,7 @@ class Root(Handler, BaseRoot):
         </stl:block>
                   """
         template = XHTMLDocument(string=template)
-        return stl(template, namespace) 
+        return stl(template, namespace)
 
 
 register_object_class(Root)

@@ -54,7 +54,7 @@ class TraveluniWorkflowAware(ikaaroWorkflowAware):
 
     workflow = workflow
 
-    
+
 
 class iHTML(Handler, TraveluniWorkflowAware, ikaaroHTML):
     pass

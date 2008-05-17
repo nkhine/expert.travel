@@ -4,7 +4,7 @@
 # Import from itools
 from itools.datatypes import Integer, String, Unicode, Email, Tokens, Date
 from itools.schemas import Schema as BaseSchema, register_schema
-from itools.datatypes import Enumerate 
+from itools.datatypes import Enumerate
 
 class Continent(Enumerate):
 
@@ -29,7 +29,7 @@ class SubContinent(Enumerate):
 
 
 class JobTitle(Enumerate):
-    
+
     options = [
         {'name': '', 'value': u'All sectors'},
         {'name': 'airlines', 'value': u'Airlines'},
@@ -71,7 +71,7 @@ class SalaryRange(Enumerate):
 
 
 class Schema(BaseSchema):
- 
+
     class_prefix = 'abakuc'
     class_uri = 'http://xml.abakuc.com/namespaces/abakuc'
 
@@ -116,13 +116,13 @@ class Schema(BaseSchema):
         'exam_time': Integer(default=20),
         'questions_nums': Integer(default=20),
         'pass_marks_percentage': Integer(default=70),
-        # News 
+        # News
         'news_text': Unicode,
         # Job
         'function': JobTitle,
         'salary': SalaryRange,
         'posted_on': Date,
-        'closing_date': Date, 
+        'closing_date': Date,
         'job_text': Unicode,
         'applicant_note': Unicode,
         'credits': Unicode,

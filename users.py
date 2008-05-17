@@ -32,7 +32,7 @@ from itools.cms.utils import reduce_string
 from itools.catalog import EqQuery, AndQuery, RangeQuery
 
 # Import from our product
-from companies import Company, Address 
+from companies import Company, Address
 from training import Training, Module
 from exam import Exam
 from news import News
@@ -124,7 +124,7 @@ class User(iUser, WorkflowAware, Handler):
                     'browse_content?mode=image'],
                    ['new_resource_form'],
                    ['state_form'],
-                   ['edit_form', 'edit_account_form', 
+                   ['edit_form', 'edit_account_form',
                     'edit_portrait_form', 'edit_password_form'],
                    ['tasks_list']]
 
@@ -185,7 +185,7 @@ class User(iUser, WorkflowAware, Handler):
         if isinstance(training, Training):
             training = True
         else:
-            training = False 
+            training = False
         return training
 
     def get_training(self):
@@ -272,7 +272,7 @@ class User(iUser, WorkflowAware, Handler):
             <stl:block xmlns="http://www.w3.org/1999/xhtml"
               xmlns:stl="http://xml.itools.org/namespaces/stl">
                 <script type="text/javascript">
-                    var TABS_COOKIE = 'profile_cookie'; 
+                    var TABS_COOKIE = 'profile_cookie';
                     $(function() {
                         $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                             var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
@@ -280,7 +280,7 @@ class User(iUser, WorkflowAware, Handler):
                         },
                         fxFade: true,
                         fxSpeed: 'fast',
-                        fxSpeed: "normal" 
+                        fxSpeed: "normal"
                         });
                     });
                 </script>
@@ -293,7 +293,7 @@ class User(iUser, WorkflowAware, Handler):
                     <li stl:if="is_training_manager"><a href="#fragment-5"><span>Administer</span></a></li>
                 </ul>
                 <div id="fragment-1">
-                  ${current_training} 
+                  ${current_training}
                 </div>
                 <div id="fragment-2">
                   ${news}
@@ -317,7 +317,7 @@ class User(iUser, WorkflowAware, Handler):
             <stl:block xmlns="http://www.w3.org/1999/xhtml"
               xmlns:stl="http://xml.itools.org/namespaces/stl">
                 <script type="text/javascript">
-                    var TABS_COOKIE = 'profile_cookie'; 
+                    var TABS_COOKIE = 'profile_cookie';
                     $(function() {
                         $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                             var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
@@ -325,7 +325,7 @@ class User(iUser, WorkflowAware, Handler):
                         },
                         fxFade: true,
                         fxSpeed: 'fast',
-                        fxSpeed: "normal" 
+                        fxSpeed: "normal"
                         });
                     });
                 </script>
@@ -339,7 +339,7 @@ class User(iUser, WorkflowAware, Handler):
                     <li stl:if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
                 </ul>
                 <div id="fragment-1">
-                  ${news} 
+                  ${news}
                 </div>
                 <div id="fragment-2">
                   ${jobs}
@@ -386,9 +386,9 @@ class User(iUser, WorkflowAware, Handler):
 
 
     #######################################################################
-    # Edit Account 
+    # Edit Account
     account_fields = iUser.account_fields + ['abakuc:phone']
-    
+
     edit_account_form__access__ = 'is_allowed_to_edit'
     edit_account_form__label__ = u'Edit'
     edit_account_form__sublabel__ = u'Account'
@@ -440,7 +440,7 @@ class User(iUser, WorkflowAware, Handler):
             value = context.get_form_value(key)
             self.set_property(key, value)
         self.set_property('abakuc:job_function', job_functions)
-        
+
 
         url = ';profile'
         goto = context.uri.resolve(url)
@@ -460,12 +460,12 @@ class User(iUser, WorkflowAware, Handler):
         root = context.root
         users = root.get_handler('users')
         portrait = self.has_handler('portrait')
-        
+
         # Get Company and Address
         namespace['address'] = None
         address = self.get_address()
-        
-        # Is the user on a Training Portal? 
+
+        # Is the user on a Training Portal?
         office_name = self.get_site_root()
         office = self.is_training()
         if office:
@@ -529,7 +529,7 @@ class User(iUser, WorkflowAware, Handler):
         my_company = self.get_company()
         namespace['my_company'] = my_company
         pp.pprint(my_company)
-        
+
         # Company
         namespace['company'] = {'name': company.name,
                                 'title': company.get_property('dc:title'),
@@ -547,7 +547,7 @@ class User(iUser, WorkflowAware, Handler):
                 'address_path': self.get_pathto(address)}
 
         namespace['address'] = addr
-        
+
         # Enquiries
         csv = address.get_handler('log_enquiry.csv')
         results = []
@@ -562,11 +562,11 @@ class User(iUser, WorkflowAware, Handler):
                    'email': user.get_property('ikaaro:email'),
                    'enquiry_subject': enquiry_subject})
             results.reverse()
-        namespace['enquiries'] = results 
+        namespace['enquiries'] = results
         namespace['howmany'] = len(results)
 
-        #XXX This does not work if there is no news/jobs 
-        #Search the catalogue, list 3 news items. 
+        #XXX This does not work if there is no news/jobs
+        #Search the catalogue, list 3 news items.
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'news'))
@@ -586,9 +586,9 @@ class User(iUser, WorkflowAware, Handler):
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
             news_items.append({'url': url,
                                'title': news.title})
-    
+
         namespace['news_items'] = news_items
-        #Search the catalogue, list last 4 jobs.  
+        #Search the catalogue, list last 4 jobs.
         query = []
         query.append(EqQuery('format', 'Job'))
         today = date.today().strftime('%Y-%m-%d')
@@ -613,7 +613,7 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace['contact'] = None
         if user is None:
-            return u'You need to be registered!'     
+            return u'You need to be registered!'
         if address.has_user_role(user.name, 'abakuc:guest'):
             contacts = address.get_property('abakuc:branch_manager')
             if contacts:
@@ -626,7 +626,7 @@ class User(iUser, WorkflowAware, Handler):
         return stl(handler, namespace)
 
     #######################################################################
-    # User upload portrait 
+    # User upload portrait
     #######################################################################
     @staticmethod
     def get_form(portrait=None):
@@ -640,7 +640,7 @@ class User(iUser, WorkflowAware, Handler):
 
 
     ########################################################################
-    # View user's public profile page 
+    # View user's public profile page
     portrait_form__access__ = 'is_self_or_admin'
     portrait_form__sublabel__ = u'Upload or modify your portrait'
     def portrait_form(self, context, portrait=None):
@@ -682,7 +682,7 @@ class User(iUser, WorkflowAware, Handler):
                 if width > 150 or height > 150:
                     msg = u'Your portrait is too big (max 150x150 px)'
                     return context.come_back(msg)
-            
+
             # Add or edit the portrait
             if self.has_handler('portrait'):
                 # Edit the portrait
@@ -702,19 +702,19 @@ class User(iUser, WorkflowAware, Handler):
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
     ########################################################################
-    # View user's public profile page 
-    view__access__ = True 
+    # View user's public profile page
+    view__access__ = True
     def view(self, context):
-        return 'Hello' 
+        return 'Hello'
 
     ########################################################################
-    # View user's public profile page 
-    news__access__ = True 
+    # View user's public profile page
+    news__access__ = True
     def news(self, context):
-        return 'Hello' 
+        return 'Hello'
 
     ########################################################################
-    # Create a new news item 
+    # Create a new news item
     create_news__access__ = 'is_self_or_admin'
     def create_news(self, context):
         address = self.get_address()
@@ -724,8 +724,8 @@ class User(iUser, WorkflowAware, Handler):
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new news item'
         return context.come_back(message, goto=goto)
-        
-    
+
+
     ########################################################################
     # Remove news item/s
     remove_news__access__ = 'is_self_or_admin'
@@ -734,12 +734,12 @@ class User(iUser, WorkflowAware, Handler):
         root = context.root
         if not ids:
             return context.come_back(u'Please select a news item to remove')
-        address = self.get_address() 
+        address = self.get_address()
         for news_id in ids:
             address.del_object(news_id)
         return context.come_back(u'News(s) delete')
     ########################################################################
-    # Create a new job 
+    # Create a new job
     create_job__access__ = 'is_self_or_admin'
     def create_job(self, context):
         address = self.get_address()
@@ -749,8 +749,8 @@ class User(iUser, WorkflowAware, Handler):
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new job'
         return context.come_back(message, goto=goto)
-        
-    
+
+
     ########################################################################
     # Remove job
     remove_job__access__ = 'is_self_or_admin'
@@ -759,7 +759,7 @@ class User(iUser, WorkflowAware, Handler):
         root = context.root
         if not ids:
             return context.come_back(u'Please select a Job')
-        address = self.get_address() 
+        address = self.get_address()
         for job_id in ids:
             address.del_object(job_id)
         return context.come_back(u'Job(s) delete')
@@ -783,20 +783,20 @@ class User(iUser, WorkflowAware, Handler):
         columns = [('c1', u'Title'),
                    ('c2', u'To be archived on'),
                    ('c3', u'Short description')]
-        # Get all News 
+        # Get all News
         address_news = address.search_handlers(handler_class=News)
         # Construct the lines of the table
         news_items = []
         for news in list(address_news):
             #job = root.get_handler(job.abspath)
             get = news.get_property
-            # Information about the news 
+            # Information about the news
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  news.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=40)
-            news_to_add ={'id': news.name, 
+            news_to_add ={'id': news.name,
                          'checkbox': is_branch_manager,
                          'img': '/ui/abakuc/images/News16.png',
                          'c1': (get('dc:title'),url),
@@ -811,14 +811,14 @@ class User(iUser, WorkflowAware, Handler):
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
-        # Order 
+        # Order
         sortby = context.get_form_value('sortby', 'c2')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
         news_items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
         if reverse:
             news_items.reverse()
-        # Namespace 
+        # Namespace
         if news_items:
             actions = [('select', u'Select All', 'button_select_all',
                         "return select_checkboxes('browse_list', true);"),
@@ -837,15 +837,15 @@ class User(iUser, WorkflowAware, Handler):
                         None)]
             news_table = table(columns, news_items, [sortby], sortorder, actions)
             news_batch = None
-            msg = None 
+            msg = None
 
         namespace['news_table'] = news_table
         namespace['news_batch'] = news_batch
-        namespace['news_msg'] = msg 
+        namespace['news_msg'] = msg
         handler = self.get_handler('/ui/abakuc/news/news_table.xml')
         return stl(handler, namespace)
-   
-    
+
+
     ########################################################################
     # Job table used in the 'tabs' method
     def jobs_table(self, context):
@@ -889,14 +889,14 @@ class User(iUser, WorkflowAware, Handler):
                 user_id = x.get_property('user_id')
                 user = users.get_handler(user_id)
                 if user.has_property('ikaaro:user_must_confirm') is False:
-                        nb_candidatures += 1 
-            job_to_add ={'id': job.name, 
+                        nb_candidatures += 1
+            job_to_add ={'id': job.name,
                          'checkbox': is_branch_manager,
                          'img': '/ui/abakuc/images/JobBoard16.png',
                          'c1': (get('dc:title'),url+';view'),
                          'c2': get('abakuc:closing_date'),
                          'c4': description}
-            if nb_candidatures > 0: 
+            if nb_candidatures > 0:
                 job_to_add['c3'] = nb_candidatures,url+';view_candidatures'
             else:
                 job_to_add['c3'] = None
@@ -909,7 +909,7 @@ class User(iUser, WorkflowAware, Handler):
         if batch_fin > batch_total:
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
-        # Order 
+        # Order
         sortby = context.get_form_value('sortby', 'c2')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
@@ -917,7 +917,7 @@ class User(iUser, WorkflowAware, Handler):
         if reverse:
             jobs.reverse()
         # Set batch informations
-        # Namespace 
+        # Namespace
         if jobs:
             actions = [('select', u'Select All', 'button_select_all',
                         "return select_checkboxes('browse_list', true);"),
@@ -936,11 +936,11 @@ class User(iUser, WorkflowAware, Handler):
                         None)]
             job_table = table(columns, jobs, [sortby], sortorder, jobs_actions)
             job_batch = None
-            msg = None 
+            msg = None
 
         namespace['job_table'] = job_table
         namespace['job_batch'] = job_batch
-        namespace['job_msg'] = msg 
+        namespace['job_msg'] = msg
         handler = self.get_handler('/ui/abakuc/jobs/jobs_table.xml')
         return stl(handler, namespace)
 
@@ -956,7 +956,7 @@ class User(iUser, WorkflowAware, Handler):
         company = address.parent
 
         csv = address.get_handler('log_enquiry.csv')
-        url = '/companies/%s/%s/;view_enquiry' % (company.name, address.name) 
+        url = '/companies/%s/%s/;view_enquiry' % (company.name, address.name)
         results = []
         for row in csv.get_rows():
             date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
@@ -969,10 +969,10 @@ class User(iUser, WorkflowAware, Handler):
                    'email': user.get_property('ikaaro:email'),
                    'enquiry_subject': enquiry_subject})
             results.reverse()
-        namespace['enquiries'] = results 
+        namespace['enquiries'] = results
         namespace['howmany'] = len(results)
         namespace['url'] = url
-        
+
         handler = self.get_handler('/ui/abakuc/enquiries/enquiries_list.xml')
         return stl(handler, namespace)
     ########################################################################
@@ -997,7 +997,7 @@ class User(iUser, WorkflowAware, Handler):
         columns = [('title', u'Title'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
-        # Get all Training programmes 
+        # Get all Training programmes
         items = training.search_handlers(handler_class=Training)
         # Construct the lines of the table
         trainings = []
@@ -1025,10 +1025,10 @@ class User(iUser, WorkflowAware, Handler):
             description = reduce_string(get('dc:description'),
                                         word_treshold=50,
                                         phrase_treshold=200)
-            training_to_add ={'id': item.name, 
+            training_to_add ={'id': item.name,
                              'checkbox': is_branch_manager, # XXX fix this.
-                             'url': url, 
-                             'login': url+'/;login_form', 
+                             'url': url,
+                             'login': url+'/;login_form',
                              'is_training_manager': is_training_manager,
                              'is_branch_manager_or_member': is_branch_manager_or_member,
                              'is_guest': is_guest,
@@ -1046,7 +1046,7 @@ class User(iUser, WorkflowAware, Handler):
         if batch_fin > batch_total:
             batch_fin = batch_total
         items = trainings[batch_start:batch_fin]
-        # Order 
+        # Order
         sortby = context.get_form_value('sortby', 'id')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
@@ -1054,7 +1054,7 @@ class User(iUser, WorkflowAware, Handler):
         if reverse:
             trainings.reverse()
         # Set batch informations
-        # Namespace 
+        # Namespace
         if trainings:
             actions = [('select', u'Select All', 'button_select_all',
                         "return select_checkboxes('browse_list', true);"),
@@ -1076,7 +1076,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['training_table'] = training_table
         namespace['batch'] = training_batch
         namespace['items'] = trainings
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         #handler = self.get_handler('/ui/abakuc/training/table.xml')
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
@@ -1111,17 +1111,17 @@ class User(iUser, WorkflowAware, Handler):
 
         handler = self.get_handler('/ui/abakuc/users/setup_company.xml')
         return stl(handler, namespace)
- 
+
 
     setup_company__access__ = 'is_self_or_admin'
     def setup_company(self, context):
         # Add Company
         title = context.get_form_value('dc:title')
-        
+
         if not title:
             message = u'Please give a Name to your Company'
             return context.come_back(message)
-        
+
         # Check the Logo
         logo_form = context.get_form_value('logo')
         if logo_form:
@@ -1144,7 +1144,7 @@ class User(iUser, WorkflowAware, Handler):
                     msg = u'Your logo is too big (max 200x200 px)'
                     return context.come_back(msg)
 
-        # Add the company  
+        # Add the company
         root = context.root
         companies = root.get_handler('/companies')
         name = title_to_name(title)
@@ -1153,7 +1153,7 @@ class User(iUser, WorkflowAware, Handler):
             return context.come_back(message)
 
         company, metadata = self.set_object('/companies/%s' % name, Company())
-        
+
         # Set Properties
         website = context.get_form_value('abakuc:website')
         topics = context.get_form_values('topic')
@@ -1163,14 +1163,14 @@ class User(iUser, WorkflowAware, Handler):
         metadata.set_property('abakuc:website', website)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('abakuc:type', types)
-        metadata.set_property('ikaaro:website_is_open', True) 
+        metadata.set_property('ikaaro:website_is_open', True)
 
         # Add the logo
         if logo_form:
             logo, logo_metadata = company.set_object(logo_name, logo)
             logo_metadata.set_property('state', 'public')
 
-        # Link the User to the Company 
+        # Link the User to the Company
         company.set_user_role(self.name, 'abakuc:branch_manager')
 
         root = context.root
@@ -1274,7 +1274,7 @@ class User(iUser, WorkflowAware, Handler):
         return context.come_back(message, goto=goto)
 
     ########################################################################
-    # Setup training 
+    # Setup training
     setup_training_form__access__ = 'is_admin'
     setup_training_form__sublabel__ = u'Setup a training programme'
     def setup_training_form(self, context):
@@ -1303,18 +1303,18 @@ class User(iUser, WorkflowAware, Handler):
 
         handler = self.get_handler('/ui/abakuc/training/user_setup_training.xml')
         return stl(handler, namespace)
- 
+
 
     setup_training__access__ = 'is_self_or_admin'
     def setup_training(self, context):
         # Add Company
         title = context.get_form_value('dc:title')
-        
+
         if not title:
             message = u'Please give a Name to your training'
             return context.come_back(message)
-        
-        # Add the company  
+
+        # Add the company
         root = context.root
         trainings = root.get_handler('/training')
         name = title_to_name(title)
@@ -1323,21 +1323,21 @@ class User(iUser, WorkflowAware, Handler):
             return context.come_back(message)
 
         training, metadata = self.set_object('/training/%s' % name, Training())
-        
+
         # Set Properties
         topics = context.get_form_values('topic')
         vhosts = context.get_form_values('ikaaro:vhosts')
         metadata.set_property('dc:title', title, language='en')
         metadata.set_property('ikaaro:vhosts', vhosts)
         metadata.set_property('abakuc:topic', tuple(topics))
-        metadata.set_property('ikaaro:website_is_open', True) 
+        metadata.set_property('ikaaro:website_is_open', True)
 
         message = u'trainings setup done.'
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
 
     ########################################################################
-    # Current training 
+    # Current training
     training__access__ = 'is_allowed_to_view'
     training__sublabel__ = u'Current training programme'
     def training(self, context):
@@ -1345,17 +1345,17 @@ class User(iUser, WorkflowAware, Handler):
         user = context.user
         root = context.root
         users = root.get_handler('users')
-        
+
         # Get Company and Address
         namespace['address'] = None
         address = self.get_address()
-        
-        # Is the user on a Training Portal? 
+
+        # Is the user on a Training Portal?
         office_name = self.get_site_root()
         office = self.is_training()
         namespace['office'] = office
         # Get TP modules
-        module_ns = []    
+        module_ns = []
         if office:
             modules = self.parent.parent.get_modules()
             xx = [
@@ -1465,7 +1465,7 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace['contact'] = None
         if user is None:
-            return u'You need to be registered!'     
+            return u'You need to be registered!'
         if address.has_user_role(user.name, 'abakuc:guest'):
             contacts = address.get_property('abakuc:branch_manager')
             if contacts:

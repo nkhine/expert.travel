@@ -40,11 +40,11 @@ class City(ikaaroFolder, ikaaroWorkflowAware, Handler):
         ['browse_content?mode=thumbnails',
          'browse_content?mode=list',
          'browse_content?mode=image'],
-        ['permissions_form', 'new_user_form'], 
+        ['permissions_form', 'new_user_form'],
         ['edit_metadata_form']]
 
 ############################################################################
-# Country 
+# Country
 ############################################################################
 class Country(SiteRoot):
 
@@ -54,12 +54,12 @@ class Country(SiteRoot):
     class_icon48 = 'abakuc/images/Destination48.png'
     class_icon16 = 'abakuc/images/Destination16.png'
     class_views = [
-        ['view'], 
+        ['view'],
         ['browse_content?mode=thumbnails',
          'browse_content?mode=list',
          'browse_content?mode=image'],
         ['new_resource_form'],
-        ['permissions_form', 'new_user_form'], 
+        ['permissions_form', 'new_user_form'],
         ['edit_metadata_form']]
 
     def _get_virtual_handler(self, segment):
@@ -91,7 +91,7 @@ class Country(SiteRoot):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u'Country'
     def view(self, context):
-        # XXX 
+        # XXX
         txt = 'List town :'
         cities = list(self.search_handlers(handler_class=City))
         for city in cities:
@@ -118,11 +118,11 @@ class Country(SiteRoot):
         continent = get_property('abakuc:continent')
         continent = Continent.get_namespace(continent)
         namespace['continent'] = continent
-        # Sub Continent 
+        # Sub Continent
         sub_continent = get_property('abakuc:sub_continent')
         #sub_continent = SubContinent.get_namespace(sub_continent)
         namespace['sub_continent'] = sub_continent
-            
+
         handler = self.get_handler('/ui/abakuc/country_edit_metadata.xml')
         return stl(handler, namespace)
 
@@ -139,7 +139,7 @@ class Country(SiteRoot):
         # Continent
         continent = context.get_form_value('abakuc:continent')
         metadata.set_property('abakuc:continent', continent)
-        # Business function 
+        # Business function
         sub_continent = context.get_form_value('abakuc:sub_continent')
         metadata.set_property('abakuc:sub_continent', sub_continent)
         # Come back
@@ -147,7 +147,7 @@ class Country(SiteRoot):
 
 
 ############################################################################
-# Countries 
+# Countries
 ############################################################################
 
 class Countries(Handler, ikaaroFolder):

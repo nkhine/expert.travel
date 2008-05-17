@@ -44,7 +44,7 @@ def get_new_id(self, prefix=''):
     if ids:
         ids.sort()
         return prefix + str(ids[-1] + 1)
-    
+
     return prefix + '0'
 
 class VersioningAware(object):
@@ -95,8 +95,8 @@ class VersioningAware(object):
         return stl(handler, namespace)
 
 def get_sort_name(name):
-    """ 
-    Return a tuple for ex. ('page', 4) for 'page4', and 
+    """
+    Return a tuple for ex. ('page', 4) for 'page4', and
     and (1, 'a') for '1a' used for sort by id
     """
     name = name.strip()

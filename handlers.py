@@ -50,8 +50,8 @@ class EnquiryType(Enumerate):
 class EnquiriesLog(CSV):
 
     class_id = 'EnquiriesLog'
-  
-    columns = ['datetime', 'user_id', 'phone', 'enquiry_type', 
+
+    columns = ['datetime', 'user_id', 'phone', 'enquiry_type',
                'enquiry_subject', 'enquiry', 'resolved']
     schema = {'datetime': DateTime,
               'user_id': String(index='keyword'),
@@ -70,7 +70,7 @@ class EnquiriesLog(CSV):
 class ApplicationsLog(CSV):
 
     class_id = 'ApplicationsLog'
- 
+
     columns = ['datetime', 'firstname', 'lastname', 'email', 'phone']
     schema = {'datetime': DateTime,
               'firstname': Unicode,

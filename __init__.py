@@ -38,7 +38,7 @@ for name, cls in trainings.items():
     path = training + '/' + name
     register_skin(name, cls(path))
 
-for handler_class in [document.Document, exam.Exam, 
+for handler_class in [document.Document, exam.Exam,
                       marketing.Marketing, news.News,
                       users.UserFolder, users.User]:
     register_object_class(handler_class)

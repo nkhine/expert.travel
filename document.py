@@ -8,7 +8,7 @@ from datetime import datetime
 from itools.uri import get_reference, Path
 from itools import i18n
 from itools.web import get_context
-from itools.xml import xml 
+from itools.xml import xml
 from itools.stl import stl
 from itools.cms.widgets import Breadcrumb
 from itools.cms.html import XHTMLFile
@@ -20,7 +20,7 @@ from itools.rest import checkid
 from itools.datatypes import FileName
 from itools.datatypes import DateTime
 from itools.html import Parser as HTMLParser
-# Import from abakuc 
+# Import from abakuc
 #from workflow import iHTML, TraveluniWorkflowAware
 #from namespaces import BusinessFunction
 from utils import get_sort_name
@@ -100,10 +100,10 @@ class Document(XHTMLFile):
         goto = './%s/;%s' % (name, handler.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
     #######################################################################
-    # ACL 
+    # ACL
     def is_allowed_to_view(self, user, object):
-        # Protect the document 
-        return self.is_branch_manager_or_member(user, object) 
+        # Protect the document
+        return self.is_branch_manager_or_member(user, object)
 
     #######################################################################
     # View
@@ -175,7 +175,7 @@ class Document(XHTMLFile):
                 {'url': '../%s/;view' % document_name,
                  'index': i, 'is_current': document_name == self.name})
             i += 1
-        
+
         namespace['topic'] = {'title': topic.title_or_name}
         namespace['title'] = self.get_property('dc:title')
         namespace['description'] = self.get_property('dc:description')
@@ -281,7 +281,7 @@ class Document(XHTMLFile):
 
 
     #######################################################################
-    # use epoz method to upload and link image 
+    # use epoz method to upload and link image
     addimage_form__access__ = 'is_allowed_to_edit'
     def addimage_form(self, context):
         from itools.cms.file import File

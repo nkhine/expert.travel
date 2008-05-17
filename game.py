@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
-# Import from itools 
+# Import from itools
 from itools.datatypes import Decimal, Integer, String
 from itools.web import get_context
 from itools.csv import CSV
@@ -84,7 +84,7 @@ class Game(Folder):
         self.cache['flash.swf'] = flash
         self.cache['flash.swf.metadata'] = flash.build_metadata()
         instructions = XHTMLFile()
-        self.cache['instructions'] = instructions 
+        self.cache['instructions'] = instructions
         self.cache['instructions.metadata'] = instructions.build_metadata()
 
 
@@ -105,7 +105,7 @@ class Game(Folder):
         lost = attempts_allowed < n_attempts
         passed = (not lost) and game_time >= time_taken
         play_again = (not lost) and (not passed)
-        
+
         return (passed, lost, play_again, n_attempts, attempts_allowed,
                 time_taken, score)
 

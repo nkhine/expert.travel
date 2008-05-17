@@ -25,12 +25,12 @@ from website import SiteRoot
 from utils import t1, t2, t3, t4
 
 class ExpertTravel(SiteRoot):
- 
+
     class_id = 'expert_travel'
     class_title = u'Expert Travel Website'
     class_icon48 = 'abakuc/images/Import48.png'
     class_icon16 = 'abakuc/images/Import16.png'
-    class_views = [['view'], 
+    class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
@@ -43,11 +43,11 @@ class ExpertTravel(SiteRoot):
         cache = self.cache
         # Add extra handlers here
         terms = XHTMLFile()
-        cache['terms.xhtml'] = terms 
+        cache['terms.xhtml'] = terms
         cache['terms.xhtml.metadata'] = terms.build_metadata(
             **{'dc:title': {'en': u'Terms & Conditions'}})
         privacy = XHTMLFile()
-        cache['privacy.xhtml'] = privacy 
+        cache['privacy.xhtml'] = privacy
         cache['privacy.xhtml.metadata'] = privacy.build_metadata(
             **{'dc:title': {'en': u'Privacy'}})
         faq = XHTMLFile()
@@ -67,7 +67,7 @@ class ExpertTravel(SiteRoot):
             return self.get_handler('/training')
         return SiteRoot._get_virtual_handler(self, segment)
 
-      
+
     #######################################################################
     # User Interface / Navigation
     #######################################################################
@@ -119,7 +119,7 @@ class ExpertTravel(SiteRoot):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-                var TABS_COOKIE = 'company_cookie'; 
+                var TABS_COOKIE = 'company_cookie';
                 $(function() {
                     $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                         var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
@@ -127,7 +127,7 @@ class ExpertTravel(SiteRoot):
                     },
                     fxFade: true,
                     fxSpeed: 'fast',
-                    fxSpeed: "normal" 
+                    fxSpeed: "normal"
                     });
                 });
             </script>
@@ -140,7 +140,7 @@ class ExpertTravel(SiteRoot):
                 <li><a href="#fragment-5"><span>Forum</span></a></li>
             </ul>
             <div id="fragment-1">
-              ${news} 
+              ${news}
             </div>
             <div id="fragment-2">
               ${jobs}
@@ -171,7 +171,7 @@ class ExpertTravel(SiteRoot):
     #######################################################################
     # List last 5 jobs and 5 news items for Home page
     #######################################################################
-    view__access__ = True 
+    view__access__ = True
     view__label__ = u'View'
     def view(self, context):
         from root import world
@@ -232,7 +232,7 @@ class ExpertTravel(SiteRoot):
         namespace['news'] = news_items
         namespace['news_url'] = ';news'
 
-        # Login Form 
+        # Login Form
         namespace['action'] = '%s/;login' % here.get_pathto(site_root)
         namespace['username'] = context.get_form_value('username')
 
@@ -241,8 +241,8 @@ class ExpertTravel(SiteRoot):
             handler = root.get_skin().get_handler('home.xhtml')
             return stl(handler, namespace)
         company = address.parent
-        
-        
+
+
         # Company
         namespace['company'] = {'name': company.name,
                                 #'website': company.get_website(),
@@ -274,7 +274,7 @@ class ExpertTravel(SiteRoot):
     def list_news(self, context):
         namespace = {}
         namespace['batch'] = ''
-        #Search the catalogue, list all news items in company 
+        #Search the catalogue, list all news items in company
         root = context.root
         catalog = context.server.catalog
         query = []
@@ -289,10 +289,10 @@ class ExpertTravel(SiteRoot):
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the news item 
+            # Information about the news item
             username = news.get_property('owner')
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
@@ -315,32 +315,32 @@ class ExpertTravel(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if news_items:
             msgs = (u'There is one news item.',
                     u'There are ${n} news items.')
-            news_batch = t1(context.uri, batch_start, batch_size, 
+            news_batch = t1(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
             news_batch = None
             msg = u'Currently there is no news.'
-        
+
         namespace['news_batch'] = news_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['news_items'] = news_items
         handler = self.get_handler('/ui/abakuc/companies/company/news.xml')
         return stl(handler, namespace)
 
     #######################################################################
-    # News - Search Interface 
+    # News - Search Interface
     #######################################################################
     news__access__ = True
     news__label__ = u'Current news'
     def news(self, context):
         root = context.root
         namespace = {}
-        # Total number of news items 
+        # Total number of news items
         today = date.today().strftime('%Y-%m-%d')
         query = [EqQuery('format', 'news'),
                  RangeQuery('closing_date', today, None)]
@@ -371,10 +371,10 @@ class ExpertTravel(SiteRoot):
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the news item 
+            # Information about the news item
             username = news.get_property('owner')
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
@@ -393,16 +393,16 @@ class ExpertTravel(SiteRoot):
                     'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
+        batch_size = 5
         batch_total = len(news_items)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if news_items:
             news_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
+                              batch_total,
                               msgs=(u"There is 1 news item.",
                                     u"There are ${n} news items."))
             msg = None
@@ -410,7 +410,7 @@ class ExpertTravel(SiteRoot):
             news_batch = None
             msg = u"Appologies, currently we don't have any news announcements"
         namespace['batch'] = news_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['news_items'] = news_items
 
         # Search Namespace
@@ -422,7 +422,7 @@ class ExpertTravel(SiteRoot):
         return stl(handler, namespace)
 
     ####################################################################
-    # List jobs 
+    # List jobs
     list_jobs__label__ = u'List jobs'
     list_jobs__access__ = True
     def list_jobs(self, context):
@@ -465,10 +465,10 @@ class ExpertTravel(SiteRoot):
                          'region': region,
                          'title': get('dc:title'),
                          'closing_date': get('abakuc:closing_date'),
-                         'address': address.get_title_or_name(), 
+                         'address': address.get_title_or_name(),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
-                         'salary': SalaryRange.get_value(get('abakuc:salary')),               
+                         'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
             jobs.append(job_to_add)
         # Set batch informations
@@ -479,11 +479,11 @@ class ExpertTravel(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if jobs:
             msgs = (u'There is one job.',
                     u'There are ${n} jobs.')
-            job_batch = t2(context.uri, batch_start, batch_size, 
+            job_batch = t2(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -491,9 +491,9 @@ class ExpertTravel(SiteRoot):
             job_batch = None
             msg = u'Sorry but there are no jobs'
 
-        namespace['jobs'] = jobs        
+        namespace['jobs'] = jobs
         namespace['batch'] = job_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/companies/company/jobs.xml')
         return stl(handler, namespace)
 
@@ -562,16 +562,16 @@ class ExpertTravel(SiteRoot):
                     'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
+        batch_size = 5
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if jobs:
             job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
+                              batch_total,
                               msgs=(u"There is 1 job announcement.",
                                     u"There are ${n} job announcements."))
             msg = None
@@ -579,7 +579,7 @@ class ExpertTravel(SiteRoot):
             job_batch = None
             msg = u"Appologies, currently we don't have any job announcements"
         namespace['batch'] = job_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['jobs'] = jobs
 
         # Search Namespace
@@ -612,7 +612,7 @@ class ExpertTravel(SiteRoot):
         columns = [('title', u'Title'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
-        # Get all Training programmes 
+        # Get all Training programmes
         items = training.search_handlers(handler_class=Training)
         # Construct the lines of the table
         trainings = []
@@ -640,10 +640,10 @@ class ExpertTravel(SiteRoot):
             description = reduce_string(get('dc:description'),
                                         word_treshold=50,
                                         phrase_treshold=200)
-            training_to_add ={'id': item.name, 
+            training_to_add ={'id': item.name,
                              'checkbox': is_branch_manager, # XXX fix this.
-                             'url': url, 
-                             'login': url+'/;login_form', 
+                             'url': url,
+                             'login': url+'/;login_form',
                              'is_training_manager': is_training_manager,
                              'is_branch_manager_or_member': is_branch_manager_or_member,
                              'is_guest': is_guest,
@@ -661,7 +661,7 @@ class ExpertTravel(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         items = trainings[batch_start:batch_fin]
-        # Order 
+        # Order
         sortby = context.get_form_value('sortby', 'id')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
@@ -669,7 +669,7 @@ class ExpertTravel(SiteRoot):
         if reverse:
             trainings.reverse()
         # Set batch informations
-        # Namespace 
+        # Namespace
         if trainings:
             actions = [('select', u'Select All', 'button_select_all',
                         "return select_checkboxes('browse_list', true);"),
@@ -691,7 +691,7 @@ class ExpertTravel(SiteRoot):
         namespace['training_table'] = training_table
         namespace['batch'] = training_batch
         namespace['items'] = trainings
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         #handler = self.get_handler('/ui/abakuc/training/table.xml')
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)

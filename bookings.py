@@ -125,7 +125,7 @@ class HolidayTypes(Text):
 
 
     def new(self):
-        self.items = {}        
+        self.items = {}
 
 
     def _load_state_from_file(self, file):
@@ -255,13 +255,13 @@ def check_dates(from_date, to_date):
 
     if begin >= end:
         return [u"'To date' must be before 'From date'"]
-            
+
     return []
 
 
 
 class Bookings(AccessControl, Folder):
- 
+
     class_layout = {
         '.holiday_types': HolidayTypes,
         '.bookings': BookingData,
@@ -312,7 +312,7 @@ class Bookings(AccessControl, Folder):
     def is_training_manager(self, user, object):
         return self.parent.is_training_manager(user, object)
 
-        
+
     def is_allowed_to_manage(self, user, object):
         if user is None:
             return False
@@ -339,7 +339,7 @@ class Bookings(AccessControl, Folder):
         search = bookings.search(id=booking_id, user=user.name)
 
         return len(search) > 0
-        
+
 
     def is_allowed_to_create(self, user, object):
         if self.is_allowed_to_manage(user, object):
@@ -534,7 +534,7 @@ class Bookings(AccessControl, Folder):
         total = len(rows)
         size = 20
         rows = rows[start:start+size]
-        namespace['table'] = widgets.table(columns, rows, [sortby], 
+        namespace['table'] = widgets.table(columns, rows, [sortby],
                                            sortorder, actions, self.gettext)
         namespace['states'] = states
         namespace['total'] = total
@@ -557,7 +557,7 @@ class Bookings(AccessControl, Folder):
         hotels = self.get_handler('.hotels')
 
         data = []
-        keys = ["date_booking", "reference_number", "from_date", "to_date", 
+        keys = ["date_booking", "reference_number", "from_date", "to_date",
                 "party_name",
                 "user", "tour_operator", "holiday_type", "holiday_subtype",
                 "number", "duration", "destination1", "destination2",
@@ -617,7 +617,7 @@ class Bookings(AccessControl, Folder):
             message = ', '.join(date_error) \
                       + (u": Data was not stored in database, please change "
                          u"the values below")
- 
+
             params = {}
             for key in context.get_form_keys():
                 params[key] = context.get_form_value(key)
@@ -799,7 +799,7 @@ class Bookings(AccessControl, Folder):
 
         # Durations
         namespace['duration_values'] = [
-            {'key': key, 'value': value, 
+            {'key': key, 'value': value,
              'selected': (namespace['duration'] == str(key))}
             for key, value in duration_values.items()]
 
@@ -901,10 +901,10 @@ class Bookings(AccessControl, Folder):
         namespace['filter_duration'] = filter_duration
         namespace['filter_value'] = filter_value
         namespace['filter_criteria'] = filter_criteria
-        
+
         handler = self.get_handler('/ui/abakuc/bookings/state_form.xml')
         return stl(handler, namespace)
- 
+
 
     booking_change_state__access__ = 'is_training_manager'
     def booking_change_state(self, context):
@@ -985,7 +985,7 @@ class Bookings(AccessControl, Folder):
     edit_destination__access__ = 'is_training_manager'
     def edit_destination(self, context):
         self.get_handler('.destinations').edit(context)
-        return context.come_back(u"Value changed")                
+        return context.come_back(u"Value changed")
 
 
     #########################################################################
@@ -1008,7 +1008,7 @@ class Bookings(AccessControl, Folder):
     edit_hotel__access__ = 'is_training_manager'
     def edit_hotel(self, context):
         self.get_handler('.hotels').edit(context)
-        return context.come_back(u"Value changed")                
+        return context.come_back(u"Value changed")
 
 
     #########################################################################
@@ -1070,7 +1070,7 @@ class Bookings(AccessControl, Folder):
         namespace['types'] = items.keys()
         namespace['objects'] = objects
         namespace['total'] = len(objects)
- 
+
         handler = root.get_handler('ui/abakuc/bookings/holiday_types.xml')
         return stl(handler, namespace)
 
@@ -1113,7 +1113,7 @@ class Bookings(AccessControl, Folder):
                     else:
                         message = u"Holiday Type added"
                         holiday_subtype.append(new_holiday_subtype_value)
-                        holiday_types.set(new_subtype_holiday_type, 
+                        holiday_types.set(new_subtype_holiday_type,
                                           holiday_subtype)
                 else:
                     message = u'This Holiday SubType exists'
@@ -1295,7 +1295,7 @@ class Bookings(AccessControl, Folder):
                                                   urlencode(params)
             if column == 'destination':
                 # Destinations 1 to 5
-                query = OrQuery(*[EqQuery('destination%i' % i, str(value)) 
+                query = OrQuery(*[EqQuery('destination%i' % i, str(value))
                                   for i in range(1,6)])
             else:
                 query = EqQuery(column, str(value))

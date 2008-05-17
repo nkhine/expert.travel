@@ -14,10 +14,10 @@ from itools.stl import stl
 from itools.web import get_context
 from itools.cms.folder import Folder
 from itools.cms import widgets
-from itools.cms.messages import * 
+from itools.cms.messages import *
 from itools.cms.registry import register_object_class
 
-# Import from Abakuc 
+# Import from Abakuc
 from utils import get_sort_name
 
 #############################################################################
@@ -371,7 +371,7 @@ class Marketing(Folder):
             return False, 0, 0, 0.0, ''
 
         last_attempt = self.results.get_last_attempt(username)
-        time_spent = 20 
+        time_spent = 20
 
         mark = last_attempt.get_score()
         date = Date.encode(last_attempt.date)
@@ -418,7 +418,7 @@ class Marketing(Folder):
     #########################################################################
 
     #########################################################################
-    # Edit 
+    # Edit
     edit__access__ = 'is_allowed_to_edit'
     edit__label__ = u'Edit'
     def edit(self, context):
@@ -465,7 +465,7 @@ class Marketing(Folder):
         namespace['batch'] = widgets.batch(context.uri, start, 20, total)
 
         handler = self.get_handler('/ui/abakuc/marketing/edit.xml')
-        return stl(handler, namespace) 
+        return stl(handler, namespace)
 
 
     remove__access__ = 'is_allowed_to_edit'
@@ -585,7 +585,7 @@ class Marketing(Folder):
         return context.come_back(u'Question added.', goto=';edit')
 
     #########################################################################
-    # Fill marketing form 
+    # Fill marketing form
     fill_form__access__ = 'is_allowed_to_take_exam'
     fill_form__label__ = u'Fill form'
     def fill_form(self, context):
@@ -621,7 +621,7 @@ class Marketing(Folder):
             attempts = self.results.attempts.setdefault(username, [])
             attempt.set_score(self)
             attempts.append(attempt)
-            # Redirect the user to the end of Module 
+            # Redirect the user to the end of Module
             message = 'Thank you'
             return context.come_back(message, '../;end')
         else:

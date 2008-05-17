@@ -16,7 +16,7 @@ from itools.cms.folder import Folder
 from itools.cms import widgets
 from itools.cms.registry import register_object_class
 
-# Import from Abakuc 
+# Import from Abakuc
 from namespaces import BusinessFunction
 from utils import get_sort_name
 
@@ -459,7 +459,7 @@ class Exam(Folder):
     #########################################################################
 
     #########################################################################
-    # Edit 
+    # Edit
     edit__access__ = 'is_allowed_to_edit'
     edit__label__ = u'Edit'
     def edit(self, context):
@@ -504,7 +504,7 @@ class Exam(Folder):
         namespace['batch'] = widgets.batch(context.uri, start, 20, total)
 
         handler = self.get_handler('/ui/abakuc/exam/edit.xml')
-        return stl(handler, namespace) 
+        return stl(handler, namespace)
 
 
     remove__access__ = 'is_allowed_to_edit'
@@ -752,7 +752,7 @@ class Exam(Folder):
         namespace['next_module_url'] = None
         if passed:
             program = self.get_program()
-            modules = program.get_modules() 
+            modules = program.get_modules()
             my_module = self.get_module()
             my_module_index = modules.index(my_module)
             next_module_index = my_module_index + 1
@@ -762,7 +762,7 @@ class Exam(Folder):
                 next_module_url += '/;view'
                 namespace['next_module_url'] = next_module_url
             else:
-                namespace['next_module_url'] = user.get_profile_url(self) 
+                namespace['next_module_url'] = user.get_profile_url(self)
 
         handler = self.get_handler('/ui/abakuc/exam/take_exam.xml')
         return stl(handler, namespace)

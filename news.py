@@ -12,7 +12,7 @@ from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
 from itools.stl import stl
-from itools.vfs import vfs 
+from itools.vfs import vfs
 from itools.web import get_context
 from itools import rest
 from itools.rest import to_html_events
@@ -34,10 +34,10 @@ class News(RoleAware, Folder):
         ['add_news_form']]
 
     new_resource_form__access__ = 'is_branch_manager_or_member'
-    new_resource__access__ = 'is_branch_manager_or_member' 
+    new_resource__access__ = 'is_branch_manager_or_member'
 
     ###################################################################
-    ## Create a new news item 
+    ## Create a new news item
     ####
 
     news_fields = [
@@ -54,7 +54,7 @@ class News(RoleAware, Folder):
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
-    @classmethod 
+    @classmethod
     def new_instance(cls, container, context):
         from datetime import datetime
         username = ''
@@ -62,7 +62,7 @@ class News(RoleAware, Folder):
             user = context.user
             if user is not None:
                 username = user.name
-        
+
         # Check data
         keep = [ x for x, y in cls.news_fields ]
         error = context.check_form_input(cls.news_fields)
@@ -71,20 +71,20 @@ class News(RoleAware, Folder):
         # Generate the name(id)
         x = container.search_handlers(handler_class=cls)
         y =  str(len(list(x))+1)
-        name = 'news%s' % y 
+        name = 'news%s' % y
         while container.has_handler(name):
               try:
                   names = name.split('-')
                   if len(names) > 1:
                       name = '-'.join(names[:-1])
-                      number = str(int(names[-1]) + 1) 
+                      number = str(int(names[-1]) + 1)
                       name = [name, number]
                       name = '-'.join(name)
                   else:
                       name = '-'.join(names) + '-1'
               except:
                   name = '-'.join(names) + '-1'
-        
+
         # Job title
         title = context.get_form_value('dc:title')
         # Set properties
@@ -103,17 +103,17 @@ class News(RoleAware, Folder):
                 message = u'Error of DataTypes.'
                 return context.come_back(message)
 
-        # Set the date the news was posted 
-        date = datetime.now() 
+        # Set the date the news was posted
+        date = datetime.now()
         metadata.set_property('dc:date', date)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
-        
+
         goto = './%s/;%s' % (name, handler.get_firstview())
         message = u'News item has been added.'
-        return context.come_back(message, goto=goto) 
-    
-    add_news_form__access__ = 'is_branch_manager_or_member' 
+        return context.come_back(message, goto=goto)
+
+    add_news_form__access__ = 'is_branch_manager_or_member'
     add_news_form__label__ = u'Add news'
     def add_news_form(self, context):
         url = '../;new_resource_form?type=news'
@@ -130,10 +130,10 @@ class News(RoleAware, Folder):
     def view(self, context):
         username = self.get_property('owner')
         users = self.get_handler('/users')
-        user_exist = users.has_handler(username) 
-        usertitle = (user_exist and 
+        user_exist = users.has_handler(username)
+        usertitle = (user_exist and
                      users.get_handler(username).get_title() or username)
-        user = (user_exist and 
+        user = (user_exist and
                      users.get_handler(username).name)
         userurl = '/users/%s/;view' % user
         company = self.parent.parent
@@ -163,7 +163,7 @@ class News(RoleAware, Folder):
                             'minutes': minutes})
 
         namespace['date'] = date
-        namespace['posted'] = difference 
+        namespace['posted'] = difference
         # Person who added the job
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
@@ -173,11 +173,11 @@ class News(RoleAware, Folder):
         if user :
             reviewer = self.parent.has_user_role(user.name,'abakuc:branch_manager')
             member = self.parent.has_user_role(user.name,'abakuc:branch_member')
-            is_branch_manager_or_member = reviewer or member 
+            is_branch_manager_or_member = reviewer or member
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
-        
-        # Navigation in news 
-        #Search the catalogue, list all news items in company 
+
+        # Navigation in news
+        #Search the catalogue, list all news items in company
         #root = context.root
         #catalog = context.server.catalog
         #query = []
@@ -186,7 +186,7 @@ class News(RoleAware, Folder):
         #query.append(RangeQuery('closing_date', today, None))
         #query = AndQuery(*query)
         #results = catalog.search(query)
-        #document_names = results.get_documents() 
+        #document_names = results.get_documents()
         #doc_index = document_names.index(self.name)
         #is_first_document = doc_index == 0
         #is_last_document = doc_index == len(document_names) - 1
@@ -215,7 +215,7 @@ class News(RoleAware, Folder):
         return rest.to_html_events(news_text)
 
 
-    view_xml__access__ = True 
+    view_xml__access__ = True
     view_xml__sublabel__ = u"As reStructuredText"
     def view_xml(self, context):
         namespace = {}
@@ -228,10 +228,10 @@ class News(RoleAware, Folder):
     ###########################################################
     # Edit details
     ###########################################################
-    
+
     edit_news_fields = ['dc:title' , 'dc:description',
                         'abakuc:closing_date']
-    
+
 
     edit_metadata_form__access__ = 'is_branch_manager_or_member'
     edit_metadata_form__label__ = 'Edit news'
@@ -246,7 +246,7 @@ class News(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/news/news_edit_metadata.xml')
         return stl(handler, namespace)
 
-    
+
     edit_metadata__access__ = 'is_branch_manager_or_member'
     def edit_metadata(self, context):
         for key in self.edit_news_fields:
@@ -256,11 +256,11 @@ class News(RoleAware, Folder):
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
 
-    
+
     #######################################################################
     ## Indexes
     #######################################################################
-    
+
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['closing_date'] = self.get_property('abakuc:closing_date')
@@ -270,7 +270,7 @@ class News(RoleAware, Folder):
         indexes['address'] = address.name
         return indexes
 
-    
+
     #######################################################################
     # Security / Access Control
     #######################################################################

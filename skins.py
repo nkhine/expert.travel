@@ -7,11 +7,11 @@ from itools.stl import stl
 from itools.web import get_context
 from itools.cms.widgets import tree, build_menu
 from itools.cms.utils import reduce_string
-from itools.uri.generic import decode_query 
+from itools.uri.generic import decode_query
 from itools.handlers import Folder
 # Import from abakuc
 from companies import Company, Address
-from training import Training, Module, Topic 
+from training import Training, Module, Topic
 from document import Document
 from countries import Country
 from utils import get_sort_name
@@ -144,7 +144,7 @@ class FrontOffice(Skin):
             if '?' in view:
                 name, args = view.split('?')
                 args = decode_query(args)
-            else:    
+            else:
                 name, args = view, {}
             title = getattr(here, '%s__label__' % name)
             if callable(title):
@@ -158,7 +158,7 @@ class FrontOffice(Skin):
                 'content': build_menu(menu)}
 
     ########################################################################
-    # Training Programme left menu 
+    # Training Programme left menu
     def get_context_menu_html(self, context):
         root = context.root
         # Not Found
@@ -221,7 +221,7 @@ class FrontOffice(Skin):
 
 
 class DestinationsSkin(FrontOffice):
-    
+
     def build_namespace(self, context):
         root = context.root
         namespace = Skin.build_namespace(self, context)

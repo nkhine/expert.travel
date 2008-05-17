@@ -10,7 +10,7 @@ from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.registry import register_object_class
 from itools.cms.widgets import batch
-from itools.cms.skins import Skin 
+from itools.cms.skins import Skin
 from itools.cms.file import File
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
@@ -25,7 +25,7 @@ from itools.xhtml import Document as XHTMLDocument
 from bookings import Bookings
 from companies import Company, Address
 from base import Handler, Folder
-from website import SiteRoot 
+from website import SiteRoot
 from document import Document
 from utils import get_sort_name
 from exam import Exam
@@ -51,7 +51,7 @@ class Trainings(SiteRoot):
                 ['new_resource_form'],
                 ['edit_metadata_form']]
 
-    
+
     site_format = 'training'
 
     def get_document_types(self):
@@ -61,7 +61,7 @@ class Trainings(SiteRoot):
     #######################################################################
     # User Interface
     #######################################################################
-    view__access__ = True 
+    view__access__ = True
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -91,21 +91,21 @@ class Trainings(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         items = items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if items:
             msgs = (u'There is one training programme.',
                     u'There are ${n} training programmes.')
-            batch = batch(context.uri, batch_start, batch_size, 
+            batch = batch(context.uri, batch_start, batch_size,
                           batch_total, msgs=msgs)
             msg = None
         else:
             batch = None
             msg = u'Currently there no published training programmes.'
-        
+
         namespace['batch'] = batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['items'] = items
-        namespace['title'] = title 
+        namespace['title'] = title
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
 
@@ -115,7 +115,7 @@ class Training(SiteRoot, WorkflowAware):
     class_title = u'Training programme'
     class_icon16 = 'abakuc/images/Training16.png'
     class_icon48 = 'abakuc/images/Training48.png'
-    class_views = [['view'], 
+    class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
@@ -139,8 +139,8 @@ class Training(SiteRoot, WorkflowAware):
         {'name': 'abakuc:branch_member', 'title': u"Branch Member",
          'unit': u"Branch Member"},
     ]
-  
-    new_resource_form__access__ = 'is_branch_manager' 
+
+    new_resource_form__access__ = 'is_branch_manager'
     new_resource__access__ = 'is_branch_manager'
 
     site_format = 'module'
@@ -149,7 +149,7 @@ class Training(SiteRoot, WorkflowAware):
         return [Module, Bookings]
 
     def get_level1_title(self, level1):
-        return level1 
+        return level1
 
     def _get_virtual_handler(self, segment):
         name = segment.name
@@ -159,7 +159,7 @@ class Training(SiteRoot, WorkflowAware):
             return self.get_handler('/training')
         return SiteRoot._get_virtual_handler(self, segment)
     #######################################################################
-    # API 
+    # API
     #######################################################################
     def get_vhosts(self):
         vhosts = self.get_property('ikaaro:vhosts')
@@ -177,7 +177,7 @@ class Training(SiteRoot, WorkflowAware):
         if isinstance(training, Training):
             training = True
         else:
-            training = False 
+            training = False
         return training
 
     def login(self, context):
@@ -201,7 +201,7 @@ class Training(SiteRoot, WorkflowAware):
         root = get_context().root
         namespace = {}
         namespace['title'] = name
-        namespace['description'] = description 
+        namespace['description'] = description
         namespace['vhosts'] = vhosts
         namespace['topics'] = root.get_topics_namespace(topics)
 
@@ -220,7 +220,7 @@ class Training(SiteRoot, WorkflowAware):
         # Is reviewer or member
         return (self.has_user_role(user.name, 'abakuc:branch_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
-    
+
 
     def is_admin(self, user, object):
         return self.is_branch_manager(user, object)
@@ -235,7 +235,7 @@ class Training(SiteRoot, WorkflowAware):
             return True
         return True
         ## Is reviewer or member
-        #return self.has_user_role(user.name, 'abakuc:training_manager') 
+        #return self.has_user_role(user.name, 'abakuc:training_manager')
 
     def is_branch_manager(self, user, object):
         if not user:
@@ -245,9 +245,9 @@ class Training(SiteRoot, WorkflowAware):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:branch_manager') 
-   
-   
+        return self.has_user_role(user.name, 'abakuc:branch_manager')
+
+
     def is_travel_agent(self, user, object):
         if user is None:
             return False
@@ -287,7 +287,7 @@ class Training(SiteRoot, WorkflowAware):
         return None
 
     def get_modules_dates(self, modules, username):
-        last_exam_passed = True 
+        last_exam_passed = True
         dates = []
         for m in modules:
             date = ''
@@ -298,16 +298,16 @@ class Training(SiteRoot, WorkflowAware):
                     result = exam.get_result(username)
                     if result is not None:
                         last_exam_passed = result[0]
-                        if last_exam_passed: 
+                        if last_exam_passed:
                             date = result[-1]
             dates.append(date)
         return dates
-    
+
     def get_regions(self, context, country=None, selected_region=None):
         """
         Returns the namespace for all the countries, regions and counties,
         ready to use in STL.
-        
+
         The namespace structure is:
 
           [{'id': <country id>,
@@ -358,7 +358,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # Statistics
-    statistics__access__ = True 
+    statistics__access__ = True
     #statistics__access__ = 'is_allowed_to_view_statistics'
     statistics__label__ = u'Statistics'
     statistics__sublabel__ = u'Statistics'
@@ -379,7 +379,7 @@ class Training(SiteRoot, WorkflowAware):
 
         # Build the namespace
         namespace = {}
-        # Registration dates 
+        # Registration dates
         namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
                                  'selected': str(i+1) == month}
                                 for i, title in enumerate(month_names) ]
@@ -393,7 +393,7 @@ class Training(SiteRoot, WorkflowAware):
             {'name': x.name, 'title': '%d - %s' % (i+1, x.title_or_name),
              'selected': x.name == module}
             for i, x in enumerate(modules)]
-    
+
         # Layout options
         layout_options = [
             ('country/types', u'Region x Business profile'),
@@ -534,7 +534,7 @@ class Training(SiteRoot, WorkflowAware):
         handler = self.get_handler('/ui/abakuc/training/statistics.xml')
         return stl(handler, namespace)
 
-    show_users__access__ = True 
+    show_users__access__ = True
     show_users__label__ = u'Show users'
     show_users__sublabel__ = u'Show users'
     def show_users(self, context, functions=None, topics=None,
@@ -575,7 +575,7 @@ class Training(SiteRoot, WorkflowAware):
         namespace['modules'] = [
             {'name': x.name, 'title': '%d - %s' % (i+1, x.title),
              'short_title': '%d-%s' % (i+1, x.title[:8]),
-             'selected': x.name == module} 
+             'selected': x.name == module}
             for i, x in enumerate(modules) ]
         #pp.pprint(namespace['modules'])
         # List authorized countries
@@ -656,7 +656,7 @@ class Training(SiteRoot, WorkflowAware):
                 post_code = get_property('branch:postcode')
 
             # Get modules dates
-            last_exam_passed = True 
+            last_exam_passed = True
             dates = []
             for m in modules:
                 date = ''
@@ -667,16 +667,16 @@ class Training(SiteRoot, WorkflowAware):
                         result = exam.get_result(username)
                         if result is not None:
                             last_exam_passed = result[0]
-                            if last_exam_passed: 
+                            if last_exam_passed:
                                 date = result[-1]
                 dates.append(date)
             return dates
             #import pprint
             #pp = pprint.PrettyPrinter(indent=4)
             # All modules dates
-            ns_modules = [{'date': date.encode('utf-8')} for date in 
+            ns_modules = [{'date': date.encode('utf-8')} for date in
                           self.get_modules_dates(modules, user.name)]
-            
+
             #pp.pprint(ns_modules)
             get_property = user.metadata.get_property
             users.append(
@@ -704,8 +704,8 @@ class Training(SiteRoot, WorkflowAware):
         return stl(handler, namespace)
 
     ########################################################################
-    # View 
-    view__access__ = True 
+    # View
+    view__access__ = True
     #view__access__ = 'is_allowed_to_edit'
     view__label__ = u'View'
     def view(self, context):
@@ -724,14 +724,14 @@ class Training(SiteRoot, WorkflowAware):
                       'description': description,
                       'title': item.title_or_name})
 
-        namespace['title'] = title 
+        namespace['title'] = title
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
         for vhost in vhosts:
             url = '%s' % vhost
             namespace['vhosts'].append({'url': url})
 
-        #namespace['vhosts'] = self.get_vhosts() 
+        #namespace['vhosts'] = self.get_vhosts()
         handler = self.get_handler('/ui/abakuc/training/view.xml')
         return stl(handler, namespace)
         # Set batch informations
@@ -742,11 +742,11 @@ class Training(SiteRoot, WorkflowAware):
         #if batch_fin > batch_total:
         #    batch_fin = batch_total
         #modules = modules[batch_start:batch_fin]
-        ## Namespace 
+        ## Namespace
         #if modules:
         #    msgs = (u'There is one module.',
         #            u'There are ${n} modules.')
-        #    batch = batch(context.uri, batch_start, batch_size, 
+        #    batch = batch(context.uri, batch_start, batch_size,
         #                  batch_total, msgs=msgs)
         #    msg = None
         #else:
@@ -754,7 +754,7 @@ class Training(SiteRoot, WorkflowAware):
         #    msg = u'Currently there no published training modules.'
         #
         #namespace['batch'] = batch
-        #namespace['msg'] = msg 
+        #namespace['msg'] = msg
 
     #######################################################################
     # User Interface / Edit
@@ -766,7 +766,7 @@ class Training(SiteRoot, WorkflowAware):
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
             namespace['referrer'] = str(context.request.referrer)
-        # Title 
+        # Title
         title = self.get_property('dc:title')
         namespace['title'] = title
         # Description
@@ -792,8 +792,8 @@ class Training(SiteRoot, WorkflowAware):
         return context.come_back(message, goto=goto)
 
     ########################################################################
-    # List modules 
-    modules__access__ = True 
+    # List modules
+    modules__access__ = True
     #view__access__ = 'is_allowed_to_edit'
     modules__label__ = u'Modules'
     def modules(self, context):
@@ -811,19 +811,19 @@ class Training(SiteRoot, WorkflowAware):
             namespace['items'].append({'url': url,
                       'description': description,
                       'title': item.title_or_name})
-        namespace['title'] = title 
+        namespace['title'] = title
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
         for vhost in vhosts:
             url = '%s' % vhost
             namespace['vhosts'].append({'url': url})
 
-        #namespace['vhosts'] = self.get_vhosts() 
+        #namespace['vhosts'] = self.get_vhosts()
         handler = self.get_handler('/ui/abakuc/training/view.xml')
         return stl(handler, namespace)
 
     #######################################################################
-    # News - Search Interface 
+    # News - Search Interface
     #######################################################################
     news__access__ = True
     news__label__ = u'Current news'
@@ -835,7 +835,7 @@ class Training(SiteRoot, WorkflowAware):
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         root = context.root
-        office = self.get_site_root() 
+        office = self.get_site_root()
         users = self.get_handler('/users')
         namespace = {}
         namespace['office'] = office
@@ -852,10 +852,10 @@ class Training(SiteRoot, WorkflowAware):
                 ns = {}
                 news = root.get_handler(news.abspath)
                 get = news.get_property
-                # Information about the news item 
+                # Information about the news item
                 username = news.get_property('owner')
-                user_exist = users.has_handler(username) 
-                usertitle = (user_exist and 
+                user_exist = users.has_handler(username)
+                usertitle = (user_exist and
                              users.get_handler(username).get_title() or username)
                 url = '/companies/%s/%s/%s' % (company.name, address.name,
                                                news.name)
@@ -880,16 +880,16 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(address)
         ## Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
+        batch_size = 5
         batch_total = len(news_ns)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_ns = news_ns[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if news_items:
             news_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
+                              batch_total,
                               msgs=(u"There is 1 news item.",
                                     u"There are ${n} news items."))
             msg = None
@@ -897,7 +897,7 @@ class Training(SiteRoot, WorkflowAware):
             news_batch = None
             msg = u"Appologies, currently we don't have any news announcements"
         namespace['batch'] = news_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['news_items'] = news_ns
         #pp.pprint(batch_total)
         ##results = catalog.search(all_news)
@@ -909,10 +909,10 @@ class Training(SiteRoot, WorkflowAware):
         #for news in all_news:
         #    news = root.get_handler(news.abspath)
         #    get = news.get_property
-        #    # Information about the news item 
+        #    # Information about the news item
         #    username = news.get_property('owner')
-        #    user_exist = users.has_handler(username) 
-        #    usertitle = (user_exist and 
+        #    user_exist = users.has_handler(username)
+        #    usertitle = (user_exist and
         #                 users.get_handler(username).get_title() or username)
         #    url = '/companies/%s/%s/%s' % (company.name, address.name,
         #                                   news.name)
@@ -938,7 +938,7 @@ class Training(SiteRoot, WorkflowAware):
 
 
 #######################################################################
-# Training module 
+# Training module
 #######################################################################
 class Module(Folder):
 
@@ -946,7 +946,7 @@ class Module(Folder):
     class_title = u'Trainig module'
     class_icon16 = 'abakuc/images/Resources16.png'
     class_icon48 = 'abakuc/images/Resources48.png'
-    class_views = [['view'], 
+    class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
@@ -958,7 +958,7 @@ class Module(Folder):
     new_resource_form__access__ = 'is_admin'
 
     #######################################################################
-    # API 
+    # API
     #######################################################################
     def get_prev_module(self):
         programme = self.parent
@@ -1006,7 +1006,7 @@ class Module(Folder):
             return exam
 
         return None
-    
+
     def get_marketing_form(self, username=None):
         """
         Returns the marketing form, if the user has not filled it yet.
@@ -1025,7 +1025,7 @@ class Module(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = True 
+    view__access__ = True
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -1044,8 +1044,8 @@ class Module(Folder):
                       'description': description,
                       'title': item.title_or_name})
 
-        namespace['title'] = title 
-        namespace['to_name'] = programme.get_vhosts() 
+        namespace['title'] = title
+        namespace['to_name'] = programme.get_vhosts()
         handler = self.get_handler('/ui/abakuc/training/module/view.xml')
         return stl(handler, namespace)
         # Set batch informations
@@ -1056,11 +1056,11 @@ class Module(Folder):
         #if batch_fin > batch_total:
         #    batch_fin = batch_total
         #items = items[batch_start:batch_fin]
-        ## Namespace 
+        ## Namespace
         #if items:
         #    msgs = (u'There is one topic.',
         #            u'This module has ${n} topics.')
-        #    batch = batch(context.uri, batch_start, batch_size, 
+        #    batch = batch(context.uri, batch_start, batch_size,
         #                  batch_total, msgs=msgs)
         #    msg = None
         #else:
@@ -1068,7 +1068,7 @@ class Module(Folder):
         #    msg = u'This module has no published topics.'
         #
         #namespace['batch'] = news_batch
-        #namespace['msg'] = msg 
+        #namespace['msg'] = msg
 
     #######################################################################
     # User Interface / Edit
@@ -1079,7 +1079,7 @@ class Module(Folder):
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
             namespace['referrer'] = str(context.request.referrer)
-        # Title 
+        # Title
         title = self.get_property('dc:title')
         namespace['title'] = title
         # Generate the module name
@@ -1090,7 +1090,7 @@ class Module(Folder):
         #    name = 'module%d' % i
         #else:
         #    name = 'module1'
-        #namespace['name'] = name 
+        #namespace['name'] = name
         # Description
         description = self.get_property('dc:description')
         namespace['description'] = description
@@ -1123,7 +1123,7 @@ class Module(Folder):
         # Build the namespace
         namespace = {}
         title = here.get_title()
-        namespace['title'] = title 
+        namespace['title'] = title
         namespace['marketing'] = None
         namespace['exam'] = None
         #namespace['game'] = None
@@ -1175,7 +1175,7 @@ class Module(Folder):
         return stl(handler, namespace)
 
 #######################################################################
-# Training topic 
+# Training topic
 #######################################################################
 class Topic(Folder):
 
@@ -1183,7 +1183,7 @@ class Topic(Folder):
     class_title = u'Module topic'
     class_icon16 = 'abakuc/images/Topic16.png'
     class_icon48 = 'abakuc/images/Topic48.png'
-    class_views = [['view'], 
+    class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
@@ -1193,7 +1193,7 @@ class Topic(Folder):
         return [Document, File]
 
     #######################################################################
-    # API 
+    # API
     #######################################################################
     def get_document_names(self):
         ac = self.get_access_control()
@@ -1235,7 +1235,7 @@ class Topic(Folder):
                       'description': description,
                       'title': item.title_or_name})
 
-        namespace['title'] = title 
+        namespace['title'] = title
         handler = self.get_handler('/ui/abakuc/training/topic/view.xml')
         return stl(handler, namespace)
       # Set batch informations
@@ -1246,11 +1246,11 @@ class Topic(Folder):
         #if batch_fin > batch_total:
         #    batch_fin = batch_total
         #items = items[batch_start:batch_fin]
-        ## Namespace 
+        ## Namespace
         #if items:
         #    msgs = (u'There is one topic.',
         #            u'This module has ${n} topics.')
-        #    batch = batch(context.uri, batch_start, batch_size, 
+        #    batch = batch(context.uri, batch_start, batch_size,
         #                  batch_total, msgs=msgs)
         #    msg = None
         #else:
@@ -1258,7 +1258,7 @@ class Topic(Folder):
         #    msg = u'This module has no published topics.'
         #
         #namespace['batch'] = news_batch
-        #namespace['msg'] = msg 
+        #namespace['msg'] = msg
 
     #######################################################################
     # User Interface / Edit
@@ -1269,7 +1269,7 @@ class Topic(Folder):
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
             namespace['referrer'] = str(context.request.referrer)
-        # Title 
+        # Title
         title = self.get_property('dc:title')
         namespace['title'] = title
         # Description
@@ -1306,7 +1306,7 @@ class Topic(Folder):
         # Is reviewer or member
         return (self.has_user_role(user.name, 'abakuc:branch_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
-    
+
 
     def is_admin(self, user, object):
         return self.is_branch_manager(user, object)
@@ -1320,7 +1320,7 @@ class Topic(Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:branch_manager') 
+        return self.has_user_role(user.name, 'abakuc:branch_manager')
 
 
 register_object_class(Trainings)

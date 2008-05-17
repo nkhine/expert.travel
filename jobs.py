@@ -23,7 +23,7 @@ from base import Handler, Folder
 from handlers import ApplicationsLog
 from metadata import JobTitle, SalaryRange
 
-# Definition of the fields of the forms to add new job application 
+# Definition of the fields of the forms to add new job application
 application_fields = [
     ('abakuc:applicant_note', True),
     ('ikaaro:firstname', True),
@@ -50,14 +50,14 @@ class Job(Folder, RoleAware):
         ['add_job_form'],
         ['history_form']]
 
-    
+
     def get_document_types(self):
         return []
 
     ###################################################################
-    ## Permissions for anonymous users to apply for job and add CV file 
+    ## Permissions for anonymous users to apply for job and add CV file
 
-    # XXX [SECURITY BUG] See http://bugs.abakuc.com/show_bug.cgi?id=117 
+    # XXX [SECURITY BUG] See http://bugs.abakuc.com/show_bug.cgi?id=117
     new_resource_form__access__ = True
     # This tells us who can upload
     new_resource__access__ = True
@@ -108,7 +108,7 @@ class Job(Folder, RoleAware):
         return stl(handler, namespace)
 
 
-    @classmethod 
+    @classmethod
     def new_instance(cls, container, context):
         from datetime import datetime
         username = ''
@@ -116,7 +116,7 @@ class Job(Folder, RoleAware):
             user = context.user
             if user is not None:
                 username = user.name
-        
+
         # Check data
         keep = [ x for x, y in cls.job_fields ]
         error = context.check_form_input(cls.job_fields)
@@ -125,14 +125,14 @@ class Job(Folder, RoleAware):
         # Generate the name(id)
         x = container.search_handlers(handler_class=cls)
         y =  str(len(list(x))+1)
-        name = 'job%s' % y 
+        name = 'job%s' % y
         # Job title
         title = context.get_form_value('dc:title')
         # Set properties
         handler = cls()
         metadata = handler.build_metadata()
         for key in ['dc:title' , 'dc:description', 'abakuc:job_text',
-                    'abakuc:closing_date', 'abakuc:salary', 
+                    'abakuc:closing_date', 'abakuc:salary',
                     'abakuc:function', 'abakuc:county']:
             try:
                 value = context.get_form_value(key)
@@ -148,16 +148,16 @@ class Job(Folder, RoleAware):
         property = {
             (None, 'user'): username,
             ('dc', 'date'): datetime.now(),
-        } 
+        }
         metadata.set_property('ikaaro:history', property)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
-        
+
         goto = './%s/;%s' % (name, handler.get_firstview())
         message = u'New Job added.'
-        return context.come_back(message, goto=goto) 
+        return context.come_back(message, goto=goto)
 
-    add_job_form__access__ = 'is_branch_manager_or_member' 
+    add_job_form__access__ = 'is_branch_manager_or_member'
     add_job_form__label__ = u'Add new job'
     def add_job_form(self, context):
         url = '../;new_resource_form?type=Job'
@@ -175,10 +175,10 @@ class Job(Folder, RoleAware):
     def view(self, context):
         username = self.get_property('owner')
         users = self.get_handler('/users')
-        user_exist = users.has_handler(username) 
-        usertitle = (user_exist and 
+        user_exist = users.has_handler(username)
+        usertitle = (user_exist and
                      users.get_handler(username).get_title() or username)
-        user = (user_exist and 
+        user = (user_exist and
                      users.get_handler(username).name)
         userurl = '/users/%s/;view' % user
         root = context.root
@@ -189,7 +189,7 @@ class Job(Folder, RoleAware):
         county_id = self.get_property('abakuc:county')
         if county_id is None:
             # XXX Every job should have a county
-            country = region = county = None 
+            country = region = county = None
         else:
             row = world.get_row(county_id)
             country = row[6]
@@ -204,7 +204,7 @@ class Job(Folder, RoleAware):
         namespace['abakuc:function'] =  JobTitle.get_value(function)
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
-        
+
         job_text = to_html_events(self.get_property('abakuc:job_text'))
         namespace['abakuc:job_text'] = job_text
 
@@ -234,7 +234,7 @@ class Job(Folder, RoleAware):
             url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
                                                  job.name)
             jobs.append({'title': job.title,
-                         'url': url, 
+                         'url': url,
                          'salary': SalaryRange.get_value(
                                     get('abakuc:salary'))
                          })
@@ -251,7 +251,7 @@ class Job(Folder, RoleAware):
         if user :
             reviewer = self.parent.has_user_role(user.name,'abakuc:branch_manager')
             member = self.parent.has_user_role(user.name,'abakuc:branch_member')
-            is_branch_manager_or_member = reviewer or member 
+            is_branch_manager_or_member = reviewer or member
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
         namespace['table'] = None
         if is_branch_manager_or_member:
@@ -262,7 +262,7 @@ class Job(Folder, RoleAware):
                 user_id = candidature.get_property('user_id')
                 user = users.get_handler(user_id)
                 if user.has_property('ikaaro:user_must_confirm') is False:
-                    nb_candidatures += 1 
+                    nb_candidatures += 1
             namespace['nb_candidatures'] = nb_candidatures
         handler = self.get_handler('/ui/abakuc/jobs/view.xml')
         return stl(handler, namespace)
@@ -280,7 +280,7 @@ class Job(Folder, RoleAware):
         for c in candidatures:
             user_id = c.get_property('user_id')
             user = users.get_handler(user_id)
-            if not user.has_property('ikaaro:user_must_confirm'): 
+            if not user.has_property('ikaaro:user_must_confirm'):
                 rows.append({'id': c.name,
                              'checkbox': True,
                              'img': '/ui/images/Text16.png',
@@ -292,18 +292,18 @@ class Job(Folder, RoleAware):
                    ('select', u'Select None', 'button_select_none',
                     "return select_checkboxes('browse_list', false);"),
                    ('remove', 'Supprimer', 'button_delete', None)]
-        if rows: 
-            namespace['table'] = table(columns, rows, [], [], actions=actions) 
+        if rows:
+            namespace['table'] = table(columns, rows, [], [], actions=actions)
             namespace['msg'] = None
         else:
             namespace['table'] = None
             namespace['msg'] = u'No candidature'
-        
+
         handler = self.get_handler('/ui/abakuc/jobs/applications.xml')
         return stl(handler, namespace)
 
 
-    application_form__access__ = True 
+    application_form__access__ = True
     application_form__label__ = u'Apply now!'
     def application_form(self, context):
         class_id = 'Candidature'
@@ -324,7 +324,7 @@ class Job(Folder, RoleAware):
         # Add
         path = '/ui/abakuc/jobs/applications/application_form.xml'
         handler = context.root.get_handler(path)
-        return stl(handler, namespace)    
+        return stl(handler, namespace)
 
     #######################################################################
     # XXX User Interface / Edit
@@ -359,10 +359,10 @@ class Job(Folder, RoleAware):
     ###########################################################
     # Edit details
     ###########################################################
-    
+
     edit_job_fields = ['dc:title' , 'dc:description', 'abakuc:closing_date',
                        'abakuc:salary', 'abakuc:function']
-    
+
 
     edit_metadata_form__access__ = 'is_branch_manager_or_member'
     edit_metadata_form__label__ = u'Modify job details'
@@ -394,7 +394,7 @@ class Job(Folder, RoleAware):
         handler = self.get_handler('/ui/abakuc/jobs/edit_metadata.xml')
         return stl(handler, namespace)
 
-    
+
     edit_metadata__access__ = 'is_branch_manager_or_member'
     def edit_metadata(self, context):
         for key in self.edit_job_fields:
@@ -410,7 +410,7 @@ class Job(Folder, RoleAware):
     #######################################################################
     ## Indexes
     #######################################################################
-    
+
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['function'] = self.get_property('abakuc:function')
@@ -422,7 +422,7 @@ class Job(Folder, RoleAware):
         indexes['address'] = address.name
         return indexes
 
-    
+
     #######################################################################
     # Security / Access Control
     #######################################################################
@@ -490,7 +490,7 @@ class Candidature(RoleAware, Folder):
         error = context.check_form_input(apply_fields)
         if error is not None:
             return context.come_back(error, keep=keep)
-        
+
         # Check the cv
         file = context.get_form_value('file')
         if file is None:
@@ -507,20 +507,20 @@ class Candidature(RoleAware, Folder):
         # Name already used?
         x = container.search_handlers(handler_class=cls)
         y =  str(len(list(x))+1)
-        name = 'candidature%s' % y 
+        name = 'candidature%s' % y
         while container.has_handler(name):
               try:
                   names = name.split('_')
                   if len(names) > 1:
                       name = '_'.join(names[:-1])
-                      number = str(int(names[-1]) + 1) 
+                      number = str(int(names[-1]) + 1)
                       name = [name, number]
                       name = '_'.join(name)
                   else:
                       name = '_'.join(names) + '_1'
               except:
                   name = '_'.join(names) + '_1'
-        
+
         # Create the User
         confirm = None
         if user is None:
@@ -544,8 +544,8 @@ class Candidature(RoleAware, Folder):
                 if user.has_property('ikaaro:user_must_confirm'):
                     confirm = user.get_property('ikaaro:user_must_confirm')
         user_id = str(user.name)
-        
-        # Check to see if the user has previously applied for this post 
+
+        # Check to see if the user has previously applied for this post
         for x in container.search_handlers(handler_class=Candidature):
             if user_id == x.get_property('user_id'):
                 msg = u"""
@@ -559,7 +559,7 @@ class Candidature(RoleAware, Folder):
         for key in ['abakuc:applicant_note']:
             metadata.set_property(key, context.get_form_value(key))
         metadata.set_property('user_id', user_id)
-        
+
         # Add the CV
         cv_cls = get_object_class(mimetype)
         cv = cv_cls(string=body)
@@ -570,7 +570,7 @@ class Candidature(RoleAware, Folder):
             message = (u"Your job application has been succesfully sent. "
                        u"Good luck with your application!")
             return message.encode('utf-8')
-        
+
         # Send confirmation email
         hostname = context.uri.authority.host
         from_addr = 'jobs@expert.travel'
@@ -615,16 +615,16 @@ class Candidature(RoleAware, Folder):
             % (company, email))
         return message.encode('utf-8')
 
-    
+
     #######################################################################
     ## Indexes
     #######################################################################
-    
+
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['user_id'] = self.get_property('user_id')
         return indexes
-    
+
     #######################################################################
     ##  Confirm candidature & send Mail
     #######################################################################
@@ -695,13 +695,13 @@ class Candidature(RoleAware, Folder):
         to_company = company.get_property('dc:title')
 
         message = (u"Thank you, your CV and application "
-                   u"has been submitted to <b>%s.</b><br/>" 
-                   u"If you like to login, please go to " 
+                   u"has been submitted to <b>%s.</b><br/>"
+                   u"If you like to login, please go to "
                    u"""<a href="/;view">Home</a>"""
             % (to_company))
         return message.encode('utf-8')
 
-    
+
     def send_email_to_members(self, context, all=False):
         root = context.root
         # User information
@@ -726,19 +726,19 @@ class Candidature(RoleAware, Folder):
                 candidatures.append(candidature)
         else:
             candidatures.append(self)
-           
+
         # Sent an email for each candidature
-        subject_template = u'[UK Travel] New Candidature (%s)' 
+        subject_template = u'[UK Travel] New Candidature (%s)'
         body_template = ('You have a new job application for your announcement : %s\n'
                          'From : %s %s\n')
         for candidature in candidatures:
             job = candidature.parent
-            address = job.parent    
+            address = job.parent
             subject = subject_template % job.title
             body = body_template % (job.title, firstname, lastname)
             to_addrs = address.get_property('abakuc:branch_manager')
             for to_addr in to_addrs:
-                root.send_email(email, to_addr, subject, body)   
+                root.send_email(email, to_addr, subject, body)
 
 
     #######################################################################
@@ -769,11 +769,11 @@ class Candidature(RoleAware, Folder):
         cv_icon = cv.get_path_to_icon(48, from_handler=self)
         namespace['cv'] = {'icon': cv_icon,
                            'path': cv_path}
-        
+
         handler = self.get_handler('/ui/abakuc/jobs/applications/view.xml')
         return stl(handler, namespace)
 
-  
+
     #######################################################################
     # Security / Access Control
     #######################################################################
@@ -788,8 +788,8 @@ class Candidature(RoleAware, Folder):
 
 
     def is_allowed_to_view(self, user, object):
-        # Protect CV 
-        return self.is_branch_manager_or_member(user, object)        
+        # Protect CV
+        return self.is_branch_manager_or_member(user, object)
 
 register_object_class(Job)
 register_object_class(Candidature)

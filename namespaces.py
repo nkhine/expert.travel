@@ -6,7 +6,7 @@ from copy import deepcopy
 from itools import get_abspath
 from itools import vfs
 from itools.datatypes import Boolean, Date, Integer, String, Unicode, URI
-from itools.xml import xml 
+from itools.xml import xml
 from itools.schemas import Schema, register_schema
 
 
@@ -56,7 +56,7 @@ class EMail(String):
                 return False
 
         return True
- 
+
 
 class Enumerate(String):
 
@@ -132,7 +132,7 @@ class JobFunction(Enumerate):
 
 
 class Norman(Enumerate):
-        
+
     @staticmethod
     def get_counties(id):
         """

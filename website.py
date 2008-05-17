@@ -102,7 +102,7 @@ class SiteRoot(Handler, BaseWebSite):
         if goto is not None:
             return get_reference(goto)
 
-        # Add user to current Training Programme 
+        # Add user to current Training Programme
         # XXX need to fix this as now it adds the user to all
         # folders that have membership.
         #training = root.get_handler('training')
@@ -176,7 +176,7 @@ class SiteRoot(Handler, BaseWebSite):
                 self.set_user_role(user.name, default_role)
             #default_role = self.__roles__[0]['name']
             #self.set_user_role(user.name, default_role)
-        # Set product specific data 
+        # Set product specific data
         user.set_property('abakuc:job_function', job_function)
         # Set the registration date
         user.set_property('abakuc:registration_date', datetime.date.today())
@@ -303,9 +303,9 @@ class SiteRoot(Handler, BaseWebSite):
                         level = []
             level.sort(key=lambda x: x['title'])
             namespace['level'] = level
-        
+
         elif text is not None:
-            # Search 
+            # Search
             namespace['level'] = None
             results = root.search(**query)
             documents = results.get_documents()
@@ -356,10 +356,10 @@ class SiteRoot(Handler, BaseWebSite):
     ## Javascript
     ##########################################################################
     get_regions_str__access__ = True
-    def get_regions_str(self, context):  
+    def get_regions_str(self, context):
         return context.root.get_regions_str(context)
 
     get_counties_str__access__ = True
-    def get_counties_str(self, context): 
+    def get_counties_str(self, context):
         return context.root.get_counties_str(context)
 

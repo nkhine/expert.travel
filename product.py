@@ -27,7 +27,7 @@ from itools.cms.utils import generate_name
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms import widgets
 # Import from abakuc
-from jobs import Candidature 
+from jobs import Candidature
 
 # Definition of the fields of the forms to add and edit an issue
 issue_fields = [('title', True), ('assigned_to', False),
@@ -76,7 +76,7 @@ class Products(Folder):
         if ids:
             ids.sort()
             return prefix + str(ids[-1] + 1)
-        
+
         return prefix + '0'
 
 
@@ -100,7 +100,7 @@ class Products(Folder):
 
         return members
 
-    view__access__ = True 
+    view__access__ = True
     view__label__ = u'View'
     def view(self, context):
         return '0'
@@ -467,8 +467,8 @@ class Product(Folder, VersioningAware):
         for row in self.get_rows():
             (datetime, username, title, assigned_to, comment, file) = row
             # solid in case the user has been removed
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
             i += 1
             row_ns = {'number': i,

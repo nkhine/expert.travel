@@ -31,7 +31,7 @@ from handlers import EnquiriesLog, EnquiryType
 from website import SiteRoot
 from news import News
 from jobs import Job
-from metadata import JobTitle, SalaryRange 
+from metadata import JobTitle, SalaryRange
 from product import Products
 from utils import get_sort_name
 
@@ -43,14 +43,14 @@ class Companies(Folder):
     class_icon16 = 'abakuc/images/AddressBook16.png'
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
-    class_views = [['view'], 
+    class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
                    ['permissions_form', 'new_user_form'],
                    ['edit_metadata_form']]
 
-    
+
     def get_document_types(self):
         return [Company]
 
@@ -85,20 +85,20 @@ class Companies(Folder):
         if batch_fin > batch_total:
             batch_fin = batch_total
         items = items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if items:
             msgs = (u'There is one company.',
                     u'There are ${n} companies.')
-            items_batch = batch(context.uri, batch_start, batch_size, 
+            items_batch = batch(context.uri, batch_start, batch_size,
                           batch_total, msgs=msgs)
             msg = None
         else:
             items_batch = None
             msg = u'Currently there no published companies.'
-        
+
         namespace['batch'] = items_batch
-        namespace['msg'] = msg 
-        namespace['title'] = title 
+        namespace['msg'] = msg
+        namespace['title'] = title
         namespace['items'] = items
 
         handler = self.get_handler('/ui/abakuc/companies/list.xml')
@@ -112,8 +112,8 @@ class Company(SiteRoot):
     class_icon48 = 'abakuc/images/AddressBook48.png'
 
     site_format = 'address'
-    
-    class_views = [['view'], 
+
+    class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
@@ -163,7 +163,7 @@ class Company(SiteRoot):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-                var TABS_COOKIE = 'company_cookie'; 
+                var TABS_COOKIE = 'company_cookie';
                 $(function() {
                     $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                         var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
@@ -171,7 +171,7 @@ class Company(SiteRoot):
                     },
                     fxFade: true,
                     fxSpeed: 'fast',
-                    fxSpeed: "normal" 
+                    fxSpeed: "normal"
                     });
                 });
             </script>
@@ -182,7 +182,7 @@ class Company(SiteRoot):
                 <li><a href="#fragment-3"><span>Branches</span></a></li>
             </ul>
             <div id="fragment-1">
-              ${news} 
+              ${news}
             </div>
             <div id="fragment-2">
               ${jobs}
@@ -239,7 +239,7 @@ class Company(SiteRoot):
     get_members_namespace__label__ = u'Users'
     def get_members_namespace(self, context):
         """
-        Returns a namespace (list of dictionaries) to be used 
+        Returns a namespace (list of dictionaries) to be used
         in the branch view list.
         """
         # This works, but returns only the user's id
@@ -251,18 +251,18 @@ class Company(SiteRoot):
             branch_members = address.get_members()
             for username in branch_members:
                 users = self.get_handler('/users')
-                user_exist = users.has_handler(username) 
-                usertitle = (user_exist and 
+                user_exist = users.has_handler(username)
+                usertitle = (user_exist and
                              users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username 
+                url = '/users/%s/;profile' % username
                 members.append({'id': username,
-                                'title': usertitle, 
+                                'title': usertitle,
                                 'url': url})
-        # List users 
+        # List users
 
         return members
     ####################################################################
-    # List addresses 
+    # List addresses
     addresses__label__ = u'Branches'
     addresses__access__ = True
     def addresses(self, context):
@@ -282,21 +282,21 @@ class Company(SiteRoot):
                                'fax': address.get_property('abakuc:fax'),
                                'title': address.title_or_name}
 
-            items.append(address_to_add) 
+            items.append(address_to_add)
 
             members = []
             branch_members = address.get_members()
             for username in branch_members:
                 users = self.get_handler('/users')
-                user_exist = users.has_handler(username) 
-                usertitle = (user_exist and 
+                user_exist = users.has_handler(username)
+                usertitle = (user_exist and
                              users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username 
+                url = '/users/%s/;profile' % username
                 members.append({'id': username,
-                                'title': usertitle, 
+                                'title': usertitle,
                                 'url': url})
 
-                namespace['members'] = members 
+                namespace['members'] = members
             namespace['users'] = self.get_members_namespace(address)
             #namespace['users'] = self.get_members_namespace(address)
 
@@ -308,11 +308,11 @@ class Company(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         addresses = items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if addresses:
             msgs = (u'There is one addresse.',
                     u'There are ${n} addresses.')
-            address_batch = batch(context.uri, batch_start, batch_size, 
+            address_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -320,15 +320,15 @@ class Company(SiteRoot):
             address_batch = None
             msg = u'Sorry but there is no address associated with this company.'
 
-        namespace['addresses'] = items 
-        namespace['msg'] = msg 
+        namespace['addresses'] = items
+        namespace['msg'] = msg
         namespace['batch'] = address_batch
         handler = self.get_handler('/ui/abakuc/companies/company/addresses.xml')
 
         return stl(handler, namespace)
 
     ####################################################################
-    # List addresses 
+    # List addresses
     list_addresses__label__ = u'Branches'
     list_addresses__access__ = True
     def list_addresses(self, context):
@@ -348,21 +348,21 @@ class Company(SiteRoot):
                                'fax': address.get_property('abakuc:fax'),
                                'title': address.title_or_name}
 
-            items.append(address_to_add) 
+            items.append(address_to_add)
 
             members = []
             branch_members = address.get_members()
             for username in branch_members:
                 users = self.get_handler('/users')
-                user_exist = users.has_handler(username) 
-                usertitle = (user_exist and 
+                user_exist = users.has_handler(username)
+                usertitle = (user_exist and
                              users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username 
+                url = '/users/%s/;profile' % username
                 members.append({'id': username,
-                                'title': usertitle, 
+                                'title': usertitle,
                                 'url': url})
 
-                namespace['members'] = members 
+                namespace['members'] = members
             namespace['users'] = self.get_members_namespace(address)
             #namespace['users'] = self.get_members_namespace(address)
 
@@ -374,11 +374,11 @@ class Company(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         addresses = items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if addresses:
             msgs = (u'There is one addresse.',
                     u'There are ${n} addresses.')
-            address_batch = batch(context.uri, batch_start, batch_size, 
+            address_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -386,8 +386,8 @@ class Company(SiteRoot):
             address_batch = None
             msg = u'Sorry but there is no address associated with this company.'
 
-        namespace['addresses'] = items 
-        namespace['msg'] = msg 
+        namespace['addresses'] = items
+        namespace['msg'] = msg
         namespace['batch'] = address_batch
         handler = self.get_handler('/ui/abakuc/companies/company/list_addresses.xml')
 
@@ -395,7 +395,7 @@ class Company(SiteRoot):
 
 
     ####################################################################
-    # List jobs 
+    # List jobs
     list_jobs__label__ = u'List jobs'
     list_jobs__access__ = True
     def list_jobs(self, context):
@@ -440,10 +440,10 @@ class Company(SiteRoot):
                          'county': county,
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
-                         'address': address.get_title_or_name(), 
+                         'address': address.get_title_or_name(),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
-                         'salary': SalaryRange.get_value(get('abakuc:salary')),               
+                         'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
             jobs.append(job_to_add)
         # Set batch informations
@@ -454,11 +454,11 @@ class Company(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if jobs:
             msgs = (u'There is one job.',
                     u'There are ${n} jobs.')
-            job_batch = batch(context.uri, batch_start, batch_size, 
+            job_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -466,9 +466,9 @@ class Company(SiteRoot):
             job_batch = None
             msg = u'Sorry but there are no jobs'
 
-        namespace['jobs'] = jobs        
+        namespace['jobs'] = jobs
         namespace['batch'] = job_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/companies/company/jobs.xml')
         return stl(handler, namespace)
 
@@ -538,16 +538,16 @@ class Company(SiteRoot):
                     'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
+        batch_size = 5
         batch_total = len(jobs)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if jobs:
             job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
+                              batch_total,
                               msgs=(u"There is 1 job announcement.",
                                     u"There are ${n} job announcements."))
             msg = None
@@ -555,7 +555,7 @@ class Company(SiteRoot):
             job_batch = None
             msg = u"Appologies, currently we don't have any job announcements"
         namespace['batch'] = job_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['jobs'] = jobs
 
         # Search Namespace
@@ -568,13 +568,13 @@ class Company(SiteRoot):
 
 
     ####################################################################
-    # View news 
+    # View news
     list_news__label__ = u'List news'
     list_news__access__ = True
     def list_news(self, context):
         namespace = {}
         namespace['batch'] = ''
-        #Search the catalogue, list all news items in company 
+        #Search the catalogue, list all news items in company
         root = context.root
         catalog = context.server.catalog
         query = []
@@ -590,10 +590,10 @@ class Company(SiteRoot):
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the news item 
+            # Information about the news item
             username = news.get_property('owner')
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
@@ -615,32 +615,32 @@ class Company(SiteRoot):
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if news_items:
             msgs = (u'There is one news item.',
                     u'There are ${n} news items.')
-            news_batch = batch(context.uri, batch_start, batch_size, 
+            news_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
             news_batch = None
             msg = u'Currently there is no news.'
-        
+
         namespace['news_batch'] = news_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['news_items'] = news_items
         handler = self.get_handler('/ui/abakuc/companies/company/news.xml')
         return stl(handler, namespace)
 
     #######################################################################
-    # News - Search Interface 
+    # News - Search Interface
     #######################################################################
     news__access__ = True
     news__label__ = u'Current news'
     def news(self, context):
         root = context.root
         namespace = {}
-        # Total number of news items 
+        # Total number of news items
         today = date.today().strftime('%Y-%m-%d')
         query = [EqQuery('format', 'news'),
                  EqQuery('company', self.name),
@@ -670,10 +670,10 @@ class Company(SiteRoot):
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the news item 
+            # Information about the news item
             username = news.get_property('owner')
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
@@ -692,16 +692,16 @@ class Company(SiteRoot):
                     'description': description})
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5 
+        batch_size = 5
         batch_total = len(news_items)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if news_items:
             news_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, 
+                              batch_total,
                               msgs=(u"There is 1 news item.",
                                     u"There are ${n} news items."))
             msg = None
@@ -709,7 +709,7 @@ class Company(SiteRoot):
             news_batch = None
             msg = u"Appologies, currently we don't have any news announcements"
         namespace['batch'] = news_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['news_items'] = news_items
 
         # Search Namespace
@@ -729,7 +729,7 @@ class Company(SiteRoot):
 
         namespace = {}
         namespace['title'] = name
-        namespace['description'] = description 
+        namespace['description'] = description
         namespace['website'] = website
         namespace['topics'] = root.get_topics_namespace(topics)
         #XXX Make this list only types specific for the sub-site
@@ -803,7 +803,7 @@ class Company(SiteRoot):
                 if width > 150 or height > 150:
                     msg = u'Your logo is too big (max 150x150 px)'
                     return context.come_back(msg)
-            
+
             # Add or edit the logo
             if self.has_handler('logo'):
                 # Edit the logo
@@ -865,8 +865,8 @@ class Address(RoleAware, WorkflowAware, Folder):
     new_user__access__ = 'is_branch_manager'
     new_resource_form__access__ = 'is_allowed_to_view'
     new_resource__access__ = 'is_allowed_to_view'
-    
-    
+
+
     def new(self, **kw):
         # Enquiry
         Folder.new(self, **kw)
@@ -875,7 +875,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
 
-        # Jobs folder 
+        # Jobs folder
         title = u'Products folder'
         kw = {'dc:title': {'en': title}}
         products = Products()
@@ -890,7 +890,7 @@ class Address(RoleAware, WorkflowAware, Folder):
     def get_epoz_data(self):
         # XXX don't works
         context = get_context()
-        job_text = context.get_form_value('abakuc:job_text') 
+        job_text = context.get_form_value('abakuc:job_text')
         return job_text
 
 
@@ -907,7 +907,7 @@ class Address(RoleAware, WorkflowAware, Folder):
             row = world.get_row(county_id)
             indexes['level0'] = row.get_value('iana_root_zone')
             indexes['level2'] = row[7]
-            indexes['level3'] = row[8] 
+            indexes['level3'] = row[8]
         indexes['level4'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
         return indexes
@@ -941,7 +941,7 @@ class Address(RoleAware, WorkflowAware, Folder):
 
     def get_members_namespace(self, context):
         """
-        Returns a namespace (list of dictionaries) to be used 
+        Returns a namespace (list of dictionaries) to be used
         in the branch view list.
         """
         # This works if the user is added to the Company
@@ -950,7 +950,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         members = []
         for username in self.get_members():
            user = users.get_handler(username)
-           url = '/users/%s/;profile' % username 
+           url = '/users/%s/;profile' % username
            job_function = user.get_property('abakuc:job_function')
            state = user.get_property('state')
            if state == 'public':
@@ -959,7 +959,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                                  'job_function': job_function,
                                  'phone': user.get_property('abakuc:phone'),
                                  'title': user.get_title()})
-        # List users 
+        # List users
 
         return members
 
@@ -980,7 +980,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-                var TABS_COOKIE = 'address_cookie'; 
+                var TABS_COOKIE = 'address_cookie';
                 $(function() {
                     $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                         var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
@@ -988,7 +988,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                     },
                     fxFade: true,
                     fxSpeed: 'fast',
-                    fxSpeed: "normal" 
+                    fxSpeed: "normal"
                     });
                 });
             </script>
@@ -999,7 +999,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                 <li><a href="#fragment-3"><span>Branches</span></a></li>
             </ul>
             <div id="fragment-1">
-              ${news} 
+              ${news}
             </div>
             <div id="fragment-2">
               ${jobs}
@@ -1043,7 +1043,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['country'] = country
         namespace['region'] = region
         namespace['county'] = county
-        
+
         addresses = []
         for address in self.parent.search_handlers(handler_class=Address):
             company = address.parent
@@ -1059,7 +1059,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['addresses'] = addresses
 
         namespace['tabs'] = self.get_tabs_stl(context)
-        ################ 
+        ################
         # Branch Members
         namespace['users'] = self.get_members_namespace(address)
 
@@ -1067,13 +1067,13 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
     ####################################################################
-    # View news 
+    # View news
     news__label__ = u'News'
     news__access__ = True
     def news(self, context):
         namespace = {}
         namespace['batch'] = ''
-        #Search the catalogue, list all news items in address 
+        #Search the catalogue, list all news items in address
         root = context.root
         catalog = context.server.catalog
         query = []
@@ -1089,10 +1089,10 @@ class Address(RoleAware, WorkflowAware, Folder):
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
-            # Information about the news item 
+            # Information about the news item
             username = news.get_property('owner')
-            user_exist = users.has_handler(username) 
-            usertitle = (user_exist and 
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
@@ -1114,25 +1114,25 @@ class Address(RoleAware, WorkflowAware, Folder):
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_items = news_items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if news_items:
             msgs = (u'There is one news item.',
                     u'There are ${n} news items.')
-            news_batch = batch(context.uri, batch_start, batch_size, 
+            news_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
             news_batch = None
             msg = u'Currently there is no news.'
-        
+
         namespace['news_batch'] = news_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         namespace['news_items'] = news_items
         handler = self.get_handler('/ui/abakuc/companies/company/news.xml')
         return stl(handler, namespace)
 
     ####################################################################
-    # View jobs 
+    # View jobs
     jobs__label__ = u'Our jobs'
     jobs__access__ = True
     def jobs(self, context):
@@ -1178,10 +1178,10 @@ class Address(RoleAware, WorkflowAware, Folder):
                          'county': county,
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
-                         'address': address.get_title_or_name(), 
+                         'address': address.get_title_or_name(),
                          'function': JobTitle.get_value(
                                         get('abakuc:function')),
-                         'salary': SalaryRange.get_value(get('abakuc:salary')),               
+                         'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
             jobs.append(job_to_add)
         # Set batch informations
@@ -1192,11 +1192,11 @@ class Address(RoleAware, WorkflowAware, Folder):
         if batch_fin > batch_total:
             batch_fin = batch_total
         jobs = jobs[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if jobs:
             msgs = (u'There is one job.',
                     u'There are ${n} jobs.')
-            job_batch = batch(context.uri, batch_start, batch_size, 
+            job_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -1204,14 +1204,14 @@ class Address(RoleAware, WorkflowAware, Folder):
             job_batch = None
             msg = u'Sorry but there are no jobs'
 
-        namespace['jobs'] = jobs        
+        namespace['jobs'] = jobs
         namespace['batch'] = job_batch
-        namespace['msg'] = msg 
+        namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/companies/company/jobs.xml')
         return stl(handler, namespace)
 
     ####################################################################
-    # View branches 
+    # View branches
     addresses__label__ = u'Our branches'
     addresses__access__ = True
     def addresses(self, context):
@@ -1231,21 +1231,21 @@ class Address(RoleAware, WorkflowAware, Folder):
                                'fax': address.get_property('abakuc:fax'),
                                'title': address.title_or_name}
 
-            items.append(address_to_add) 
+            items.append(address_to_add)
 
             members = []
             branch_members = address.get_members()
             for username in branch_members:
                 users = self.get_handler('/users')
-                user_exist = users.has_handler(username) 
-                usertitle = (user_exist and 
+                user_exist = users.has_handler(username)
+                usertitle = (user_exist and
                              users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username 
+                url = '/users/%s/;profile' % username
                 members.append({'id': username,
-                                'title': usertitle, 
+                                'title': usertitle,
                                 'url': url})
 
-                namespace['members'] = members 
+                namespace['members'] = members
             namespace['users'] = self.get_members_namespace(address)
 
         # Set batch informations
@@ -1256,11 +1256,11 @@ class Address(RoleAware, WorkflowAware, Folder):
         if batch_fin > batch_total:
             batch_fin = batch_total
         addresses = items[batch_start:batch_fin]
-        # Namespace 
+        # Namespace
         if addresses:
             msgs = (u'There is one addresse.',
                     u'There are ${n} addresses.')
-            address_batch = batch(context.uri, batch_start, batch_size, 
+            address_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
@@ -1268,8 +1268,8 @@ class Address(RoleAware, WorkflowAware, Folder):
             address_batch = None
             msg = u'Sorry but there is no address associated with this company.'
 
-        namespace['addresses'] = items 
-        namespace['msg'] = msg 
+        namespace['addresses'] = items
+        namespace['msg'] = msg
         namespace['batch'] = address_batch
         handler = self.get_handler('/ui/abakuc/companies/company/list_addresses.xml')
 
@@ -1300,7 +1300,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace = {}
         namespace['address'] = address
         namespace['postcode'] = postcode
-        namespace['town'] = town 
+        namespace['town'] = town
         namespace['phone'] = phone
         namespace['fax'] = fax
         namespace['countries'] = countries
@@ -1442,7 +1442,7 @@ class Address(RoleAware, WorkflowAware, Folder):
 
         # Save the enquiry
         if context.user is None:
-            phone = context.get_form_value('abakuc:phone') 
+            phone = context.get_form_value('abakuc:phone')
         else:
             phone = context.user.get_property('abakuc:phone') or ''
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
@@ -1557,11 +1557,11 @@ class Address(RoleAware, WorkflowAware, Folder):
         # Back
         #goto = "./;%s" % self.get_firstview()
         #return context.come_back(message, goto=goto)
-        message = (u"Thank you, your enquiry to has been submitted.<br/>" 
+        message = (u"Thank you, your enquiry to has been submitted.<br/>"
                    u"If you like to login, please choose your password")
         return message.encode('utf-8')
 
-    
+
     def enquiry_send_email(self, user, rows=None):
         # TODO, The actual system allow to send enquiries
         # to other companies before confirm registration
@@ -1636,7 +1636,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         handler = self.get_handler('/ui/abakuc/enquiries/address_view_enquiries.xml')
         return stl(handler, namespace)
 
-    
+
     view_enquiry__access__ = 'is_branch_manager_or_member'
     def view_enquiry(self, context):
         index = context.get_form_value('index', type=Integer)
@@ -1649,8 +1649,8 @@ class Address(RoleAware, WorkflowAware, Folder):
 
         namespace = {}
         namespace['date'] = format_datetime(date)
-        namespace['enquiry_subject'] = enquiry_subject 
-        namespace['enquiry'] = enquiry 
+        namespace['enquiry_subject'] = enquiry_subject
+        namespace['enquiry'] = enquiry
         namespace['type'] = type
         namespace['firstname'] = user.get_property('ikaaro:firstname')
         namespace['lastname'] = user.get_property('ikaaro:lastname')
@@ -1660,8 +1660,8 @@ class Address(RoleAware, WorkflowAware, Folder):
         handler = root.get_handler('ui/abakuc/enquiries/address_view_enquiry.xml')
         return stl(handler, namespace)
 
-    
-    
+
+
     #######################################################################
     # Security / Access Control
     #######################################################################
@@ -1675,7 +1675,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         # Is reviewer or member
         return (self.has_user_role(user.name, 'abakuc:branch_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
-    
+
 
     def is_admin(self, user, object):
         return self.is_branch_manager(user, object)
@@ -1689,7 +1689,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:branch_manager') 
+        return self.has_user_role(user.name, 'abakuc:branch_manager')
 
 
 register_object_class(Companies)

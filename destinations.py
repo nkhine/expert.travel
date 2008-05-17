@@ -12,7 +12,7 @@ from website import SiteRoot
 
 
 class Destinations(SiteRoot):
- 
+
     class_id = 'destinations'
     class_title = u'Destinations Guide'
     class_icon16 = 'abakuc/images/Resources16.png'
@@ -126,9 +126,9 @@ class Destinations(SiteRoot):
                         level = []
             level.sort(key=lambda x: x['title'])
             namespace['level'] = level
-        
+
         elif text is not None:
-            # Search 
+            # Search
             namespace['level'] = None
             results = root.search(**query)
             documents = results.get_documents()
