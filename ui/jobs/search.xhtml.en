@@ -12,12 +12,14 @@
                     <dd>
                     <input type="text" size="20" name="job_title" value="${job_title}"/>
                       <select name="function">
+                        <option value="">All sectors</option>
                         <option stl:repeat="f function" value="${f/name}"
                          selected="${f/selected}">
                          ${f/value}
                         </option>
                       </select>
                       <select name="salary">
+                        <option value="">Unspecified</option>
                         <option stl:repeat="j salary" value="${j/name}"
                          selected="${j/selected}">
                          ${j/value}

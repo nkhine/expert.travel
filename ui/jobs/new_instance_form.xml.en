@@ -33,6 +33,7 @@
     </td>
     <td>
       <select name="abakuc:function">
+      <option value="">Please select --></option>
         <option stl:repeat="function abakuc:function/value"
                 value="${function/name}" selected="${function/selected}">
             ${function/value}&nbsp;&nbsp;&nbsp;
@@ -44,6 +45,7 @@
     </td>
     <td>
         <select name="abakuc:salary">
+          <option value="">Please choose --></option>
           <option stl:repeat="s abakuc:salary/value" value="${s/name}"
                   selected="${s/selected}">
               ${s/value}&nbsp;&nbsp;&nbsp;

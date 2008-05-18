@@ -31,7 +31,6 @@ class SubContinent(Enumerate):
 class JobTitle(Enumerate):
 
     options = [
-        {'name': '', 'value': u'All sectors'},
         {'name': 'airlines', 'value': u'Airlines'},
         {'name': 'business_travel', 'value': u'Business Travel'},
         {'name': 'call_centre_telesales', 'value': u'Call Centre/Telesales'},
@@ -56,7 +55,6 @@ class JobTitle(Enumerate):
 class SalaryRange(Enumerate):
 
     options = [
-        {'name': '', 'value': u'Unspecified'},
         {'name': '1', 'value': u'Under £15K'},
         {'name': '2', 'value': u'£15K-£20K'},
         {'name': '3', 'value': u'£20K-£25K'},

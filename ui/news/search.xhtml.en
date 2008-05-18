@@ -10,8 +10,7 @@
         <form method="get" action=";news" id="form">
                <dl>
                     <dd>
-                    <input name="news_title" type="text" size="25" />
-                    <input name="news_title" type="text" size="25" />
+                    <input name="news_title" type="text" size="55" />
                     <input name="search" type="submit" value="Search..." />
                     </dd>
                     <dt><label for="news_title">Keywords: (e.g. Whats

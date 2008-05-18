@@ -14,8 +14,7 @@ from itools.cms.file import File
 from itools.stl import stl
 from itools.vfs import vfs
 from itools.web import get_context
-from itools import rest
-from itools.rest import to_html_events
+from itools.rest import rest, to_html_events
 #from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 
 # Import from abakuc
@@ -145,7 +144,9 @@ class News(RoleAware, Folder):
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
 
-        news_text = to_html_events(self.get_property('abakuc:news_text'))
+        news_text = rest.to_html_events(self.get_property('abakuc:news_text'))
+        #news_text = self.get_property('abakuc:news_text')
+
         namespace['abakuc:news_text'] = news_text
 
         from datetime import datetime
@@ -208,23 +209,6 @@ class News(RoleAware, Folder):
         handler = self.get_handler('/ui/abakuc/news/news_view.xml')
         return stl(handler, namespace)
 
-    view_rest__access__ = True
-    view_rest__sublabel__ = u"As reStructuredText"
-    def view_rest(self, context):
-        news_text = self.news_text.encode('utf-8')
-        return rest.to_html_events(news_text)
-
-
-    view_xml__access__ = True
-    view_xml__sublabel__ = u"As reStructuredText"
-    def view_xml(self, context):
-        namespace = {}
-        news_text = self.news_text.encode('utf-8')
-        namespace['abakuc:news_text'] = rest.to_str(news_text, format='xml')
-
-
-        handler = self.get_handler('/ui/abakuc/news/news_view.xml')
-        return stl(handler, namespace)
     ###########################################################
     # Edit details
     ###########################################################
