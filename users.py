@@ -229,8 +229,15 @@ class User(iUser, WorkflowAware, Handler):
         office = self.is_training()
         namespace = {}
         namespace['office'] = office
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         if office is True:
-            namespace['news'] = self.news(context)
+            office_name = self.get_site_root()
+            is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
+            if is_training_manager is True:
+                namespace['news'] = self.news_table(context)
+            else:
+                namespace['news'] = self.news(context)
         else:
             namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
@@ -289,8 +296,13 @@ class User(iUser, WorkflowAware, Handler):
                     <li stl:if="office"><a href="#fragment-1"><span>Current training</span></a></li>
                     <li><a href="#fragment-2"><span>News</span></a></li>
                     <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
-                    <li><a href="#fragment-4"><span>Other training</span></a></li>
-                    <li stl:if="is_training_manager"><a href="#fragment-5"><span>Administer</span></a></li>
+                    <stl:block if="not is_training_manager">
+                        <li><a href="#fragment-4"><span>Other training</span></a></li>
+                    </stl:block>
+                    <stl:block if="is_training_manager">
+                        <li><a href="#fragment-5"><span>Statistics</span></a></li>
+                        <li><a href="#fragment-6"><span>Administer</span></a></li>
+                    </stl:block>
                 </ul>
                 <div id="fragment-1">
                   ${current_training}
@@ -301,14 +313,19 @@ class User(iUser, WorkflowAware, Handler):
                 <div id="fragment-3">
                   {bookings}
                 </div>
+                <stl:block if="not is_training_manager">
                 <div id="fragment-4">
-                  ${training}
+                  ${training} 
                 </div>
-              <stl:block if="is_training_manager">
-                <div id="fragment-5">
-                          <h2>Administrative actions</h2>
-                </div>
-              </stl:block>
+                </stl:block>
+                <stl:block if="is_training_manager">
+                  <div id="fragment-5">
+                    <h2>Training programme statistics</h2>
+                  </div>
+                  <div id="fragment-6">
+                    <h2>Administrative actions</h2>
+                  </div>
+                </stl:block>
             </div>
             </stl:block>
                       """
@@ -707,12 +724,92 @@ class User(iUser, WorkflowAware, Handler):
     def view(self, context):
         return 'Hello'
 
-    ########################################################################
-    # View user's public profile page
+    #######################################################################
+    # News - Search Interface
+    #######################################################################
     news__access__ = True
+    news__label__ = u'Current news'
     def news(self, context):
-        return 'Hello'
+        '''
+        Return all the news of the training manager's company
+        including the addresses.
+        Ensure that it only works if the user is within a 
+        Training prgramme
+        '''
+        is_office = self.is_training()
+        if is_office is True:
+            import pprint
+            pp = pprint.PrettyPrinter(indent=4)
+            root = context.root
+            office = self.get_site_root()
+            users = self.get_handler('/users')
+            namespace = {}
+            namespace['office'] = office
+            namespace['contacts'] = []
+            all_news = []
+            for name in office.get_property('ikaaro:contacts'):
+                #XXX Bug, we always have to have one contact.
+                to_user = users.get_handler(name)
+                address = to_user.get_address()
+                address_news = list(address.search_handlers(handler_class=News))
+                all_news = all_news + address_news
+                news_ns = []
+                for news in all_news:
+                    ns = {}
+                    news = root.get_handler(news.abspath)
+                    get = news.get_property
+                    # Information about the news item
+                    address = news.parent
+                    company = address.parent
+                    username = news.get_property('owner')
+                    user_exist = users.has_handler(username)
+                    usertitle = (user_exist and
+                                 users.get_handler(username).get_title() or username)
+                    url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                                   news.name)
+                    description = reduce_string(get('dc:description'),
+                                                word_treshold=90,
+                                                phrase_treshold=240)
+                    news_item = {
+                        'url': url,
+                        'title': news.title,
+                        'closing_date': get('abakuc:closing_date'),
+                        'date_posted': get('dc:date'),
+                        'owner': usertitle,
+                        'description': description}
+                    ns['news_item'] = news_item
 
+                    news_ns.append(ns)
+
+            #namespace['all_news'] = {'news': news_ns}
+            #pp.pprint(namespace['all_news'])
+            batch_start = int(context.get_form_value('batchstart', default=0))
+            batch_size = 5
+            batch_total = len(news_ns)
+            pp.pprint(len(news_ns))
+            batch_fin = batch_start + batch_size
+            if batch_fin > batch_total:
+                batch_fin = batch_total
+            news_ns = news_ns[batch_start:batch_fin]
+            # Namespace
+            if news_ns:
+                news_batch = batch(context.uri, batch_start, batch_size,
+                                  batch_total,
+                                  msgs=(u"There is 1 news item.",
+                                        u"There are ${n} news items."))
+                msg = None
+            else:
+                news_batch = None
+                msg = u"Appologies, currently we don't have any news announcements"
+            namespace['batch'] = news_batch
+            namespace['msg'] = msg
+            namespace['news_items'] = news_ns
+
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/training/list_news.xml')
+            return stl(handler, namespace)
+        else:
+            return 'Not allowed'
     ########################################################################
     # Create a new news item
     create_news__access__ = 'is_self_or_admin'

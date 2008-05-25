@@ -842,17 +842,19 @@ class Training(SiteRoot, WorkflowAware):
         namespace['contacts'] = []
         all_news = []
         for name in office.get_property('ikaaro:contacts'):
-            user = users.get_handler(name)
-            address = user.get_address()
+            #XXX Bug, we always have to have one contact.
+            to_user = users.get_handler(name)
+            address = to_user.get_address()
             address_news = list(address.search_handlers(handler_class=News))
             all_news = all_news + address_news
-            company = address.parent
             news_ns = []
             for news in all_news:
                 ns = {}
                 news = root.get_handler(news.abspath)
                 get = news.get_property
                 # Information about the news item
+                address = news.parent
+                company = address.parent
                 username = news.get_property('owner')
                 user_exist = users.has_handler(username)
                 usertitle = (user_exist and
@@ -872,22 +874,19 @@ class Training(SiteRoot, WorkflowAware):
                 ns['news_item'] = news_item
 
                 news_ns.append(ns)
-        # Add namespace
-        #XXX
-        #namespace['news_items'] = {'news': news_ns}
-        news_items = {'news': news_ns}
-        #address_path = user.get_handler('/companies/%s/%s' % (company.name, address.name))
-        #pp.pprint(address)
-        ## Set batch informations
+
+        #namespace['all_news'] = {'news': news_ns}
+        #pp.pprint(namespace['all_news'])
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
         batch_total = len(news_ns)
+        pp.pprint(len(news_ns))
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         news_ns = news_ns[batch_start:batch_fin]
         # Namespace
-        if news_items:
+        if news_ns:
             news_batch = batch(context.uri, batch_start, batch_size,
                               batch_total,
                               msgs=(u"There is 1 news item.",
@@ -899,38 +898,6 @@ class Training(SiteRoot, WorkflowAware):
         namespace['batch'] = news_batch
         namespace['msg'] = msg
         namespace['news_items'] = news_ns
-        #pp.pprint(batch_total)
-        ##results = catalog.search(all_news)
-        #nb_news = len(all_news)
-        #pp.pprint(nb_news)
-        #namespace['nb_news'] = len(all_news)
-        ## Construct the lines of the table
-        #news_items = []
-        #for news in all_news:
-        #    news = root.get_handler(news.abspath)
-        #    get = news.get_property
-        #    # Information about the news item
-        #    username = news.get_property('owner')
-        #    user_exist = users.has_handler(username)
-        #    usertitle = (user_exist and
-        #                 users.get_handler(username).get_title() or username)
-        #    url = '/companies/%s/%s/%s' % (company.name, address.name,
-        #                                   news.name)
-        #    description = reduce_string(get('dc:description'),
-        #                                word_treshold=90,
-        #                                phrase_treshold=240)
-        #    news_items.append({
-        #        'url': url,
-        #        'title': news.title,
-        #        'closing_date': get('abakuc:closing_date'),
-        #        'date_posted': get('dc:date'),
-        #        'owner': usertitle,
-        #        'description': description})
-        #pp.pprint(news_items)
-        ##pp.pprint(all_news)
-
-        ##href = '/companies/%s/%s' % (company.name, address.name)
-        ##ns['href'] = href
 
         # Return the page
         handler = self.get_handler('/ui/abakuc/training/search.xhtml')

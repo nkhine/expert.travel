@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+ <h1>News</h1>
+      <div class="batch">
+        ${batch}
+        <span stl:if="msg">${msg}</span>
+      </div>
+      <div id="List">
+          <stl:block repeat="news news_items"> 
+            <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+              onmouseout="this.className='ListItem';">  
+              <dt>
+                <a href="${news/news_item/url}">${news/news_item/title}</a>
+              </dt>
+              <dd>
+                <dd>${news/news_item/description}</dd>
+                <div class="info">Posted by ${news/news_item/owner} on ${news/news_item/date_posted}</div>
+              </dd>
+            </dl>       
+          </stl:block>
+      </div>
+</stl:block>
