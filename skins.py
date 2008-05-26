@@ -21,54 +21,74 @@ from document import Document
 from countries import Country
 from utils import get_sort_name
 
-#class Node(object):
-#
-#    def __init__(self, handler):
-#        self.children = []
-#        self.handler = handler
-#
-#    def click(self, path):
-#        handler =  self.handler
-#        # fill children
-#        #if isinstance(handler, Module):
-#        allowed_instances = Module, Topic, Document
-#        handlers = [
-#            handler.get_handler(x) for x in handler.get_handler_names()
-#            if not x.startswith('.') ]
-#        handlers = [
-#            h for h in handlers if isinstance(h, allowed_instances) ]
-#        handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
-#                                       get_sort_name(y.name)))
-#        self.children = [ Node(h) for h in handlers ]
-#        # parse the path
-#        if path:
-#            child_name, path = path[0], path[1:]
-#            child_name = str(child_name)
-#            for child in self.children:
-#                if child.handler.name == child_name:
-#                    child.click(path)
-#                    break
-#
-#    def get_tree(self, here):
-#        ns = {}
-#        handler = self.handler
-#        name = handler.title or handler.name
-#        ns['name'] = name
-#        ns['short_name'] = name # XXX
-#        submenus = [ child.get_tree(here) for child in self.children ]
-#        ns['submenus'] = submenus
-#        ns['open'] = bool(len(submenus))
-#        ns['class'] = ''
-#        ns['class2'] = ''
-#        ns['active'] = handler.name in str(get_context().uri.path)
-#        if isinstance(handler, Module):
-#            ns['url'] = '%s/;view' % here.get_pathto(handler)
-#        elif isinstance(handler, Topic):
-#            ns['url'] = '%s/;page' % here.get_pathto(handler)
-#        else:
-#            ns['url'] = '%s/;view' % here.get_pathto(handler)
-#
-#        return ns
+class Node(object):
+
+    def __init__(self, handler):
+        self.children = []
+        self.handler = handler
+
+    def click(self, path):
+        handler =  self.handler
+        # fill children
+        if isinstance(handler, Folder):
+            #allowed_instances = Module, Topic, Document
+            #
+            #XXX For some reason, I get to dictionary items
+            #one with .en extentsion and the other without:
+            #...
+            #'short_name': u'topic1',
+            # 'submenus': [   {   'active': False,
+            #                     'class': '',
+            #                     'class2': '',
+            #                     'name': u'First page',
+            #                     'open': False,
+            #                     'short_name': u'First page',
+            #                     'submenus': [   ],
+            #                     'url': 'page1.xhtml/;view'},
+            #                 {   'active': False,
+            #                     'class': '',
+            #                     'class2': '',
+            #                     'name': u'First page',
+            #                     'open': False,
+            #                     'short_name': u'First page',
+            #                     'submenus': [   ],
+            #                     'url': 'page1.xhtml.en/;view'},
+            allowed_instances = Module, Topic 
+            handlers = [
+                handler.get_handler(x) for x in handler.get_handler_names()
+                ]
+            handlers = [
+                h for h in handlers if isinstance(h, allowed_instances) ]
+            handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                           get_sort_name(y.name)))
+            self.children = [ Node(h) for h in handlers ]
+        # parse the path
+        if path:
+            child_name, path = path[0], path[1:]
+            child_name = str(child_name)
+            for child in self.children:
+                if child.handler.name == child_name:
+                    child.click(path)
+                    break
+
+    def get_tree(self, here):
+        ns = {}
+        handler = self.handler
+        name = handler.title or handler.name
+        ns['name'] = name
+        ns['short_name'] = name # XXX
+        submenus = [ child.get_tree(here) for child in self.children ]
+        ns['submenus'] = submenus
+        ns['open'] = bool(len(submenus))
+        ns['class'] = ''
+        ns['class2'] = ''
+        ns['active'] = handler.name in str(get_context().uri.path)
+        if isinstance(handler, Document):
+            ns['url'] = '%s/;view' % here.get_pathto(handler)
+        else:
+            ns['url'] = '%s/;view' % here.get_pathto(handler)
+
+        return ns
 
 class FrontOffice(Skin):
     '''
@@ -114,8 +134,8 @@ class FrontOffice(Skin):
         level1.sort(key=lambda x: x['title'])
         namespace['level1'] = level1
         # Returns the Module, for Training object
-        #context_menu_html = self.get_context_menu_html(context)
-        #namespace['context_menu_html'] = context_menu_html
+        context_menu_html = self.get_context_menu_html(context)
+        namespace['context_menu_html'] = context_menu_html
 
         return namespace
 
@@ -145,8 +165,8 @@ class FrontOffice(Skin):
                 'content': build_menu(menu)}
 
     def get_main_menu_options(self, context):
-        handler = context.handler
-        root = handler.get_site_root()
+        #handler = context.handler
+        root = context.handler.get_site_root()
         path = root.abspath
 
         options = []
@@ -162,7 +182,7 @@ class FrontOffice(Skin):
                 'icon': '/ui/images/UserFolder16.png'})
         append({'path': path, 'method': 'modules',
                 'title': u'Training Modules',
-                'icon': '/ui/images/UserFolder16.png'})
+                'icon': '/ui/abakuc/images/Resources16.png'})
         return options
 
     def get_context_menu(self, context):
@@ -204,93 +224,89 @@ class FrontOffice(Skin):
                 'content': build_menu(menu)}
 
 
-    def get_content_menu(self, context):
-        here = context.handler
-        user = context.user
-
-        options = []
-        # Parent
-        parent = here.parent
-        if parent is not None:
-            firstview = parent.get_firstview()
-            options.append({'href': '../;%s' % (firstview),
-                            'src': None,
-                            'title': '<<',
-                            'class': '',
-                            'items': []})
-
-        # Content
-        size = 0
-        allowed_instances = Folder
-        if isinstance(here, allowed_instances):
-            for handler in here.search_handlers():
-                ac = handler.get_access_control()
-                if not ac.is_allowed_to_view(user, handler):
-                    continue
-                firstview = handler.get_firstview()
-                src = handler.get_path_to_icon(size=16, from_handler=here)
-                options.append({'href': '%s/;%s' % (handler.name, firstview),
-                                'src': src,
-                                'title': handler.get_title(),
-                                'class': '',
-                                'items': []})
-                size += 1
-
-        menu = build_menu(options)
-        title = Template(u'Content ($size)').substitute(size=size)
-
-        return {'title': title, 'content': menu}
-
-    ########################################################################
-    # Training Programme left menu
-    #def get_context_menu_html(self, context):
-    #    root = context.root
-    #    # Not Found
+    #def get_content_menu(self, context):
     #    here = context.handler
-    #    if here is None:
-    #        here = root
-    #    # Namespace
-    #    site_root = here.get_site_root()
-    #    tree = Node(site_root)
-    #    tree.click(context.path[0])
-    #    menus = tree.get_tree(here)
-    #    template_path = \
-    #      'ui/abakuc/training/context_menu_html.xml'
+    #    user = context.user
 
-    #    namespace = {}
-    #    namespace['menus'] = menus
-    #    #namespace['horiz_nav'] = self.get_global_menu_ns(context)
-    #    template = root.get_handler(template_path)
-    #    return {'title': self.gettext(u'Modules'), 'content': menus}
-    #    #return stl(template, namespace)
+    #    options = []
+    #    # Parent
+    #    parent = here.parent
+    #    if parent is not None:
+    #        firstview = parent.get_firstview()
+    #        options.append({'href': '../;%s' % (firstview),
+    #                        'src': None,
+    #                        'title': '<<',
+    #                        'class': '',
+    #                        'items': []})
+
+    #    # Content
+    #    size = 0
+    #    allowed_instances = Folder
+    #    if isinstance(here, allowed_instances):
+    #        for handler in here.search_handlers():
+    #            ac = handler.get_access_control()
+    #            if not ac.is_allowed_to_view(user, handler):
+    #                continue
+    #            firstview = handler.get_firstview()
+    #            src = handler.get_path_to_icon(size=16, from_handler=here)
+    #            options.append({'href': '%s/;%s' % (handler.name, firstview),
+    #                            'src': src,
+    #                            'title': handler.get_title(),
+    #                            'class': '',
+    #                            'items': []})
+    #            size += 1
+
+    #    menu = build_menu(options)
+    #    title = Template(u'Content ($size)').substitute(size=size)
+
+    #    return {'title': title, 'content': menu}
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         handler = context.handler
         root = handler.get_site_root()
         menu = tree(root, active_node=context.handler,
                     allow=Company, user=context.user)
-        pp.pprint(menu)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
+
+    ########################################################################
+    # Training Programme left menu
+    def get_context_menu_html(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        root = context.root
+        # Not Found
+        here = context.handler
+        if here is None:
+            here = root
+        # Namespace
+        site_root = here.get_site_root()
+        tree = Node(site_root)
+        tree.click(context.path[2:])
+        menus = tree.get_tree(here)
+        template_path = \
+          'ui/abakuc/training/context_menu_html.xml'
+
+        namespace = {}
+        namespace['menus'] = menus
+        pp.pprint(namespace['menus'])
+        #namespace['horiz_nav'] = self.get_global_menu_ns(context)
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
 
     def get_modules_menu(self, context):
         """Build the namespace for the navigation menu."""
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        handler = context.handler
-        root = handler.get_site_root()
+        root = context.handler.get_site_root()
         menu = tree(root, active_node=context.handler,
-                    allow=Module, user=context.user)
-        pp.pprint(menu)
+                    allow=Training, user=context.user)
         return {'title': self.gettext(u'Modules'), 'content': menu}
 
     def get_left_menus(self, context):
         menus = []
         root =  context.handler.get_site_root()
         # Main Menu
-        #menu = self.get_main_menu(context)
+            #menu = self.get_main_menu(context)
         #if menu is not None:
         #    menus.append(menu)
         ## Parent's Menu
@@ -317,9 +333,9 @@ class FrontOffice(Skin):
             menu = self.get_navigation_menu(context)
             menus.append(menu)
             # Modules Menu
-            menu = self.get_content_menu(context)
-            if menu is not None:
-                menus.append(menu)
+            #menu = self.get_modules_menu(context)
+            #if menu is not None:
+            #    menus.append(menu)
             # Main Menu
             menu = self.get_main_menu(context)
             if menu is not None:
@@ -429,4 +445,5 @@ countries = {
 trainings = {
     #'training.expert.travel': TrainingSkin,
     'tp1.training.expert.travel': FrontOffice,
+    'uk.tp1.expert.travel': FrontOffice,
 }

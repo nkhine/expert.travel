@@ -410,15 +410,24 @@ class Root(Handler, BaseRoot):
         """
         Used in skins.py to search for companies
         only for the specific country.
+        We need to extend this so that it does not rely on the URI
+        to get the origin of the user.
+        Perhaps we should look at where they have logged in from.
+        For now all TP's must have the country code in their URI
+        i.e. http://uk.tp1.expert.travel etc...
         """
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
         root = context.handler.get_site_root()
         country_code = get_host_prefix(context)
         if country_code is not None:
             if not isinstance(root, Company):
                 # Rule for address as: http://fr.expert.travel/
                 country_name = self.get_country_name(country_code)
+                #pp.pprint(country_code)
                 return [(country_name, country_code)]
             return self.get_active_countries(context)
+        return [(country_name, country_code)]
 
     def get_active_countries(self, context):
         """

@@ -301,8 +301,9 @@ class User(iUser, WorkflowAware, Handler):
                     </stl:block>
                     <stl:block if="is_training_manager">
                         <li><a href="#fragment-5"><span>Statistics</span></a></li>
-                        <li><a href="#fragment-6"><span>Administer</span></a></li>
+                        <li><a href="#fragment-6"><span>Manage training</span></a></li>
                     </stl:block>
+                    <li if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
                 </ul>
                 <div id="fragment-1">
                   ${current_training}
@@ -324,6 +325,31 @@ class User(iUser, WorkflowAware, Handler):
                   </div>
                   <div id="fragment-6">
                     <h2>Administrative actions</h2>
+                  </div>
+                </stl:block>
+                <stl:block if="is_branch_manager">
+                  <div id="fragment-6">
+                     <h2>Administrative actions</h2>
+                       <p>
+                       <a href="${company/path}/;edit_metadata_form?referrer=1">
+                         Modify company details
+                       </a>
+                       </p>
+                       <p>
+                       <a href="${address/address_path}/;edit_metadata_form?referrer=1">
+                         Modify address details
+                       </a>
+                       </p>
+                       <p>
+                        <a href="${address/address_path}/;permissions_form">
+                          Users associate to the address
+                        </a>
+                       </p>
+                       <p>
+                         <a href="${address/address_path}/;new_user_form">
+                           Associate a new user to the address
+                         </a>
+                       </p>
                   </div>
                 </stl:block>
             </div>

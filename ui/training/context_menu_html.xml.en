@@ -12,7 +12,6 @@
         <a title="${menu1/name}" href="${menu1/url}">${menu1/name}</a> 
       </div>
     </div>
-<!-- 
     <div class="menu2_block" stl:repeat="menu2 menu1/submenus">
       <div class="menu2">
         <div class="${menu1/class2}">  
@@ -28,7 +27,6 @@
         </div>
       </div>
     </div>
--->
   </div>
 </div>
 
