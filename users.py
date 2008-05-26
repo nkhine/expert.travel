@@ -293,7 +293,11 @@ class User(iUser, WorkflowAware, Handler):
                 </script>
             <div id="container-user">
                 <ul>
-                    <li stl:if="office"><a href="#fragment-1"><span>Current training</span></a></li>
+                    <stl:block if="office">
+                    <li stl:if="is_training_manager"><a
+                    href="#fragment-1"><span>Manage training</span></a></li>
+                    <li stl:if="not is_training_manager"><a href="#fragment-1"><span>Current training</span></a></li>
+                    </stl:block>
                     <li><a href="#fragment-2"><span>News</span></a></li>
                     <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
                     <stl:block if="not is_training_manager">
@@ -301,12 +305,16 @@ class User(iUser, WorkflowAware, Handler):
                     </stl:block>
                     <stl:block if="is_training_manager">
                         <li><a href="#fragment-5"><span>Statistics</span></a></li>
-                        <li><a href="#fragment-6"><span>Manage training</span></a></li>
                     </stl:block>
                     <li if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
                 </ul>
                 <div id="fragment-1">
+                <stl:block if="is_training_manager">
                   ${current_training}
+                </stl:block>
+                <stl:block if="not is_training_manager">
+                  ${current_training}
+                </stl:block>
                 </div>
                 <div id="fragment-2">
                   ${news}
@@ -322,9 +330,6 @@ class User(iUser, WorkflowAware, Handler):
                 <stl:block if="is_training_manager">
                   <div id="fragment-5">
                     <h2>Training programme statistics</h2>
-                  </div>
-                  <div id="fragment-6">
-                    <h2>Administrative actions</h2>
                   </div>
                 </stl:block>
                 <stl:block if="is_branch_manager">
