@@ -271,6 +271,16 @@ class Root(Handler, BaseRoot):
                 'is_selected': (ids is not None) and (row[0] in ids)})
 
         return namespace
+
+    def is_training(self):
+        '''Return a bool'''
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False
+        return training
+
     #######################################################################
     # User Interface / Import
     #######################################################################

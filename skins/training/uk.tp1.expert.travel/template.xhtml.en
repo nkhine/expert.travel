@@ -67,7 +67,7 @@
                             <label>${menu/title}</label>
                                    ${menu/content}
                         </div>
-                        <div>${context_menu_html}</div>
+                        <div stl:if="context_menu_html">${context_menu_html}</div>
                     </div><!-- yui-b -->
                     <div id="yui-main">
                         <div class="yui-b">
