@@ -247,18 +247,22 @@ class User(iUser, WorkflowAware, Handler):
         if office is True:
             office_name = self.get_site_root()
             is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
-            if is_training_manager is True:
+            if is_training_manager:
                 namespace['news'] = self.news_table(context)
             else:
                 namespace['news'] = self.news(context)
+            # Booking module tab
+            # Check to see if we have a booking module first
+            bookings_module = list(office_name.search_handlers(handler_class=Bookings))
+            if bookings_module:
+                namespace['booking'] = self.booking(context)
+            else:
+                namespace['booking'] = None 
         else:
             namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
-        #namespace['sub_tabs'] = self.tabs_training_stl(context)
         namespace['current_training'] = self.training(context)
-        bookings = Bookings()
-        namespace['booking'] = bookings.manage_bookings(context)
         namespace['training'] = self.training_table(context)
         address = self.get_address()
         company = address.parent
@@ -290,6 +294,12 @@ class User(iUser, WorkflowAware, Handler):
             office_name = self.get_site_root()
             is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
             namespace['is_training_manager'] = is_training_manager
+            bookings_module = list(office_name.search_handlers(handler_class=Bookings))
+            is_booking = len(bookings_module)
+            if bookings_module:
+                namespace['is_bookings_module'] = True 
+            else:
+                namespace['is_bookings_module'] = False 
             template = """
             <stl:block xmlns="http://www.w3.org/1999/xhtml"
               xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -314,7 +324,9 @@ class User(iUser, WorkflowAware, Handler):
                     <li stl:if="not is_training_manager"><a href="#fragment-1"><span>Current training</span></a></li>
                     </stl:block>
                     <li><a href="#fragment-2"><span>News</span></a></li>
-                    <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
+                    <stl:block if="is_bookings_module">
+                        <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
+                    </stl:block>
                     <stl:block if="not is_training_manager">
                         <li><a href="#fragment-4"><span>Other training</span></a></li>
                     </stl:block>
@@ -334,9 +346,11 @@ class User(iUser, WorkflowAware, Handler):
                 <div id="fragment-2">
                   ${news}
                 </div>
+                <stl:block if="is_bookings_module">
                 <div id="fragment-3">
                   ${booking}
                 </div>
+                </stl:block>
                 <stl:block if="not is_training_manager">
                 <div id="fragment-4">
                   ${training} 
@@ -609,35 +623,37 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace['address'] = addr
         # Bookings
-        namespace['items'] = None
         if office:
             items = office_name.search_handlers(handler_class=Bookings)
-            bookings = []
-            import pprint
-            pp = pprint.PrettyPrinter(indent=4)
-            for item in list(items):
-                csv = item.get_handler('.bookings')
-                results = []
-                for row in csv.get_rows():
-                    keys = ["date_booking", "reference_number", "from_date", "to_date",
-                            "party_name",
-                            "user", "tour_operator", "holiday_type", "holiday_subtype",
-                            "number", "duration", "destination1", "destination2",
-                            "destination3", "destination4", "destination5", "comments",
-                            "hotel"]                    
-                    keys = row
-                    results.append({
-                           'index': row.number,
-                           'user': user})
-                namespace['howmany_bookings'] = len(results)
-                pp.pprint(namespace['howmany_bookings'])
-                namespace['results'] = results
-                get = item.get_property
-                url = '/%s' % item.name
-                booking_to_add = { 'url': url,
-                                    'title': get('dc:title')}
-            bookings.append(booking_to_add)    
-            namespace['items'] = bookings
+            if items is not None:
+                bookings = []
+                for item in list(items):
+                    csv = item.get_handler('.bookings')
+                    if csv:
+                        namespace['csv'] = csv 
+                        results = []
+                        for row in csv.get_rows():
+                            keys = ["date_booking", "reference_number", "from_date", "to_date",
+                                    "party_name",
+                                    "user", "tour_operator", "holiday_type", "holiday_subtype",
+                                    "number", "duration", "destination1", "destination2",
+                                    "destination3", "destination4", "destination5", "comments",
+                                    "hotel"]                    
+                            keys = row
+                            results.append({
+                                   'index': row.number,
+                                   'user': user})
+                        namespace['howmany_bookings'] = len(results)
+                        namespace['results'] = results
+                        get = item.get_property
+                        url = '/%s' % item.name
+                        booking_to_add = { 'url': url,
+                                            'title': get('dc:title')}
+                        bookings.append(booking_to_add)    
+                namespace['items'] = bookings
+            else: 
+                namespace['items'] = None 
+                
         # Enquiries
         csv = address.get_handler('log_enquiry.csv')
         results = []
@@ -799,25 +815,48 @@ class User(iUser, WorkflowAware, Handler):
 
     ########################################################################
     # Bookings UI
-    booking__access__ = True
+    booking__access__ = 'is_allowed_to_view'
     booking__label__ = u'Booking Module'
     def booking(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         office_name = self.get_site_root()
         office = self.is_training()
         namespace = {}
+        namespace['office'] = office
+        # Bookings
         if office:
             items = office_name.search_handlers(handler_class=Bookings)
-            bookings = []
-            for item in list(items):
-                get = item.get_property
-                url = '/%s' % item.name
-                booking_to_add = { 'url': url,
-                                    'title': get('dc:title')}
-            bookings.append(booking_to_add)    
-            namespace['items'] = bookings
-        return 'Booking Module'
+            if items is not None:
+                bookings = []
+                for item in list(items):
+                    csv = item.get_handler('.bookings')
+                    results = []
+                    for row in csv.get_rows():
+                        keys = ["date_booking", "reference_number", "from_date", "to_date",
+                                "party_name",
+                                "user", "tour_operator", "holiday_type", "holiday_subtype",
+                                "number", "duration", "destination1", "destination2",
+                                "destination3", "destination4", "destination5", "comments",
+                                "hotel"]                    
+                        keys = row
+                        results.append({
+                               'index': row.number,
+                               'user': user})
+                    namespace['howmany_bookings'] = len(results)
+                    namespace['results'] = results
+                    get = item.get_property
+                    url = '/%s' % item.name
+                    booking_to_add = { 'url': url,
+                                        'title': get('dc:title')}
+                    bookings.append(booking_to_add)    
+                namespace['items'] = bookings
+            else: 
+                namespace['items'] = None 
 
-
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/bookings/list.xml')
+            return stl(handler, namespace)
     #######################################################################
     # News - Search Interface
     #######################################################################
@@ -880,7 +919,6 @@ class User(iUser, WorkflowAware, Handler):
             batch_start = int(context.get_form_value('batchstart', default=0))
             batch_size = 5
             batch_total = len(news_ns)
-            pp.pprint(len(news_ns))
             batch_fin = batch_start + batch_size
             if batch_fin > batch_total:
                 batch_fin = batch_total
@@ -1268,7 +1306,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['batch'] = training_batch
         namespace['items'] = trainings
         namespace['msg'] = msg
-        #handler = self.get_handler('/ui/abakuc/training/table.xml')
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
 
@@ -1554,7 +1591,6 @@ class User(iUser, WorkflowAware, Handler):
                 for i, x in enumerate(modules)]
             import pprint
             pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(xx)
             namespace['modules'] = []
             for module in modules:
                 get = module.get_property
@@ -1628,9 +1664,6 @@ class User(iUser, WorkflowAware, Handler):
                           'modules': module_ns,
                           'league': '../../;league_table'}
                 # Check namespace
-                import pprint
-                pp = pprint.PrettyPrinter(indent=4)
-                pp.pprint(ns)
 
         # User Role
         # XXX Fix so that we have the permissions for TP
