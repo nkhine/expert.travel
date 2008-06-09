@@ -67,14 +67,12 @@
                             <label>${menu/title}</label>
                                    ${menu/content}
                         </div>
-                        <div stl:if="level1">
-                        <ul stl:repeat="option level1">
+                        <ul if="level1" stl:repeat="option level1">
                             <li>
                                 <a href="/;search?level1=${option/name}">
                                 ${option/title}</a>
                             </li>
                         </ul>
-                        </div>
                     </div><!-- yui-b -->
                     <div id="yui-main">
                         <div class="yui-b">

@@ -15,25 +15,25 @@ from itools.schemas import Schema, register_schema
 # Data to load on start-up
 #############################################################################
 
-path = get_abspath(globals(), 'regions.txt')
-file = vfs.open(path)
-lines = file.read().split('\n')
-file.close()
-regions = []
-region_id = None
-for line in lines:
-    line = line.strip()
-    if line:
-        id, title = line.split('#')
-        if region_id is None:
-            region_id = id
-            regions.append({'id': id, 'title': title, 'counties': []})
-        else:
-            id = '%s/%s' % (region_id, id)
-            regions[-1]['counties'].append({'id': id, 'title': title})
-    else:
-        region_id = None
-
+#path = get_abspath(globals(), 'regions.txt')
+#file = vfs.open(path)
+#lines = file.read().split('\n')
+#file.close()
+#regions = []
+#region_id = None
+#for line in lines:
+#    line = line.strip()
+#    if line:
+#        id, title = line.split('#')
+#        if region_id is None:
+#            region_id = id
+#            regions.append({'id': id, 'title': title, 'counties': []})
+#        else:
+#            id = '%s/%s' % (region_id, id)
+#            regions[-1]['counties'].append({'id': id, 'title': title})
+#    else:
+#        region_id = None
+#
 
 #############################################################################
 # Data Types

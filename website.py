@@ -213,7 +213,8 @@ class SiteRoot(Handler, BaseWebSite):
     search__access__ = True
     def search(self, context):
         from root import world
-
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         root = context.root
 
         level1 = context.get_form_value('level1')
@@ -257,7 +258,9 @@ class SiteRoot(Handler, BaseWebSite):
         # Breadcrumbs path
         namespace['bread_path'] = []
         nb_level = len(context.uri.query)
+        pp.pprint(nb_level)
         keys = ['level2', 'level3', 'level4']
+        pp.pprint(keys)
         for i, key in enumerate(keys):
             # If attribute exist in uri
             if eval(key):
@@ -275,6 +278,7 @@ class SiteRoot(Handler, BaseWebSite):
                                                 'url': url,
                                                 'last_level': (i+2)==4})
 
+        pp.pprint(namespace['bread_path'])
         # Topic
         if level1 is not None:
             base = context.uri

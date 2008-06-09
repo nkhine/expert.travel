@@ -32,6 +32,7 @@ from itools.cms.utils import reduce_string
 from itools.catalog import EqQuery, AndQuery, RangeQuery
 
 # Import from our product
+from bookings import Bookings
 from companies import Company, Address
 from training import Training, Module
 from exam import Exam
@@ -216,6 +217,18 @@ class User(iUser, WorkflowAware, Handler):
             return root.get_handler(job.abspath)
         return None
 
+    #######################################################################
+    # Manage bookings
+    #######################################################################
+    def search_bookings(self, query=None, **kw):
+
+        bookings = self.get_handler('.bookings')
+        if query or kw:
+            ids = bookings.search(query, **kw)
+            return bookings.get_rows(ids)
+        return bookings.get_rows()
+
+
     def get_tabs_stl(self, context):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
@@ -244,6 +257,8 @@ class User(iUser, WorkflowAware, Handler):
         namespace['enquiries'] = self.enquiries_list(context)
         #namespace['sub_tabs'] = self.tabs_training_stl(context)
         namespace['current_training'] = self.training(context)
+        bookings = Bookings()
+        namespace['booking'] = bookings.manage_bookings(context)
         namespace['training'] = self.training_table(context)
         address = self.get_address()
         company = address.parent
@@ -320,7 +335,7 @@ class User(iUser, WorkflowAware, Handler):
                   ${news}
                 </div>
                 <div id="fragment-3">
-                  {bookings}
+                  ${booking}
                 </div>
                 <stl:block if="not is_training_manager">
                 <div id="fragment-4">
@@ -530,9 +545,8 @@ class User(iUser, WorkflowAware, Handler):
             is_guest = False
             is_branch_manager_or_member = False
             is_member = False
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(is_branch_manager)
+        # Whether the user is in TP or not
+        # Bool 0/1
         namespace['office'] = office
 
         # User Role
@@ -576,7 +590,6 @@ class User(iUser, WorkflowAware, Handler):
         # This returns None
         my_company = self.get_company()
         namespace['my_company'] = my_company
-        pp.pprint(my_company)
 
         # Company
         namespace['company'] = {'name': company.name,
@@ -595,7 +608,36 @@ class User(iUser, WorkflowAware, Handler):
                 'address_path': self.get_pathto(address)}
 
         namespace['address'] = addr
-
+        # Bookings
+        namespace['items'] = None
+        if office:
+            items = office_name.search_handlers(handler_class=Bookings)
+            bookings = []
+            import pprint
+            pp = pprint.PrettyPrinter(indent=4)
+            for item in list(items):
+                csv = item.get_handler('.bookings')
+                results = []
+                for row in csv.get_rows():
+                    keys = ["date_booking", "reference_number", "from_date", "to_date",
+                            "party_name",
+                            "user", "tour_operator", "holiday_type", "holiday_subtype",
+                            "number", "duration", "destination1", "destination2",
+                            "destination3", "destination4", "destination5", "comments",
+                            "hotel"]                    
+                    keys = row
+                    results.append({
+                           'index': row.number,
+                           'user': user})
+                namespace['howmany_bookings'] = len(results)
+                pp.pprint(namespace['howmany_bookings'])
+                namespace['results'] = results
+                get = item.get_property
+                url = '/%s' % item.name
+                booking_to_add = { 'url': url,
+                                    'title': get('dc:title')}
+            bookings.append(booking_to_add)    
+            namespace['items'] = bookings
         # Enquiries
         csv = address.get_handler('log_enquiry.csv')
         results = []
@@ -754,6 +796,27 @@ class User(iUser, WorkflowAware, Handler):
     view__access__ = True
     def view(self, context):
         return 'Hello'
+
+    ########################################################################
+    # Bookings UI
+    booking__access__ = True
+    booking__label__ = u'Booking Module'
+    def booking(self, context):
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        if office:
+            items = office_name.search_handlers(handler_class=Bookings)
+            bookings = []
+            for item in list(items):
+                get = item.get_property
+                url = '/%s' % item.name
+                booking_to_add = { 'url': url,
+                                    'title': get('dc:title')}
+            bookings.append(booking_to_add)    
+            namespace['items'] = bookings
+        return 'Booking Module'
+
 
     #######################################################################
     # News - Search Interface

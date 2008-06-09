@@ -41,6 +41,22 @@
                 <a href=";setup_training_form">Create a new training programme</a>.
               </li>
             </ul>
+        <div stl:if="office">
+            <stl:block repeat="item items">
+                <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+          onmouseout="this.className='ListItem';">  
+                  <dt>
+                    <a href="${item/url}">${item/title}</a>
+                  </dt>
+                  <dd>
+                    ${item/title}
+                  </dd>
+                  <dd>
+                    ${howmany_bookings}
+                  </dd>
+                </dl>
+            </stl:block>
+        </div>
         <div stl:if="not is_branch_manager_or_member">
             <p stl:if="contact">
               To manage these records, please contact ${contact} who is

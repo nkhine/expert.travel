@@ -348,12 +348,12 @@ class Training(SiteRoot, WorkflowAware):
                     'title': x,
                     'is_selected': x==selected_region} for x in regions]
         regions.sort(key=lambda x: x['title'])
-        return regions
-        #return countries
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(regions)
-        pp.pprint(countries)
+        #pp.pprint(countries)
+        return regions
+        #return countries
 
 
     ########################################################################
@@ -364,6 +364,27 @@ class Training(SiteRoot, WorkflowAware):
     statistics__sublabel__ = u'Statistics'
     def statistics(self, context, address_country=None, address_region=None,
                     address_county=None, topics=None, types=None, functions=None):
+        '''
+        This is the statistics module, which gives us an overview of users who
+        are registered for each training programme.
+
+        ACL for this method 
+        -------------------
+        Users are added in the Members list for the Training programme, as
+        Training manager, Branch manager, Partner and Branch member.
+
+        Only Admin and Training manager users can view this interface.
+        Partner users may also view this, but it will be implemented later.
+
+        We first build the HTTP request forms, which will query the database.
+         1) By default, the first table view is Country / Type
+         2) We have six (6) reports - see layout_options list and
+         namespace['layout'] which returns a dictionary with the values:
+            [   {   'name': 'country/types',
+                    'selected': True,
+                    'value': u'Region x Business profile'},
+
+        '''
         from root import world
         root = get_context().root
         import pprint
@@ -407,6 +428,7 @@ class Training(SiteRoot, WorkflowAware):
             {'name': name, 'value': value, 'selected': name == layout}
             for name, value in layout_options ]
 
+        #pp.pprint(namespace['layout'])
         # List authorized countries
         countries = [
             {'id': y, 'title': x, 'is_selected': x == address_country}
@@ -438,8 +460,8 @@ class Training(SiteRoot, WorkflowAware):
 
         ## Filter the users
         root = context.root
-        query = {'format': self.name}
-        #query = {'format': self.site_format}
+        #query = {'format': self.name}
+        query = {'format': self.site_format}
         if month:
             query['registration_month'] = month
         if year:
@@ -449,7 +471,7 @@ class Training(SiteRoot, WorkflowAware):
             query['country'] = countries
             #vertical_criterias = countries
             vertical_criterias = self.get_regions(countries)
-            pp.pprint(vertical_criterias)
+            #pp.pprint(vertical_criterias)
             vertical = 'region'
         ## TEST 015
         #users = self.get_members()
@@ -551,7 +573,10 @@ class Training(SiteRoot, WorkflowAware):
         module = context.get_form_value('module')
         country = context.get_form_value('country', '')
         region = context.get_form_value('region', '')
-        county = context.get_form_value('county', '')
+        # the county field is the only field we care about
+        # as this is stored within the address metadata
+        # this is why the form value is abakuc:county
+        county = context.get_form_value('abakuc:county', '')
         functions = context.get_form_value('functions', '')
         topics = context.get_form_value('topics', '')
         types = context.get_form_value('types', '')
@@ -577,11 +602,9 @@ class Training(SiteRoot, WorkflowAware):
              'short_title': '%d-%s' % (i+1, x.title[:8]),
              'selected': x.name == module}
             for i, x in enumerate(modules) ]
-        #pp.pprint(namespace['modules'])
         # List authorized countries
         countries = [
             {'name': y, 'title': x, 'selected': x == address_country}
-            #{'name': x, 'title': x, 'selected': x == address_country}
             for x, y in root.get_active_countries(context) ]
         nb_countries = len(countries)
         if nb_countries < 1:
@@ -650,10 +673,10 @@ class Training(SiteRoot, WorkflowAware):
                 post_code = ''
             else:
                 get_property = branch.metadata.get_property
-                phone = get_property('branch:phone')
-                fax = get_property('branch:fax')
-                address = get_property('branch:address')
-                post_code = get_property('branch:postcode')
+                phone = get_property('abakuc:phone')
+                fax = get_property('abakuc:fax')
+                address = get_property('abakuc:address')
+                post_code = get_property('abakuc:postcode')
 
             # Get modules dates
             last_exam_passed = True

@@ -307,7 +307,7 @@ class Bookings(AccessControl, Folder):
 
 
     #######################################################################
-    # Security
+    # ACL
     #######################################################################
     def is_training_manager(self, user, object):
         return self.parent.is_training_manager(user, object)
@@ -406,59 +406,66 @@ class Bookings(AccessControl, Folder):
         namespace['filter_value'] = filter_value
         namespace['filter_duration'] = filter_duration
 
-        to = self.parent
-        if to.is_training_manager(user, self):
-            csv_url = './;csv?'
-            is_travel_agent = False
-            states = ['Reject', 'Approve']
+        #to = self.parent
+        #office_name = self.get_site_root() 
+        #if office_name.is_training_manager(user, self):
+        #    manager = True
+        #else:
+        #    manager = False
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(manager) 
+        csv_url = './;csv?'
+        is_travel_agent = False
+        states = ['Reject', 'Approve']
 
-            # Search
-            if not filters:
-                objects = bookings.get_rows()
-            else:
-                # Search
-                query = self.build_query(filter_duration, filter_criteria,
-                                         filter_value)
-                objects = self.search_bookings(query)
-
-                # Update namespace
-                if filter_duration is not None:
-                    # Duration
-                    label = duration_values[int(filter_duration)]
-                    namespace['filter_duration_label'] = label
-                    # Update CSV URL
-                    csv_url += 'filter_duration=%s' % filter_duration
-
-                if filter_criteria is not None:
-                    # file_criteria_label
-                    label = {'tour_operator': 'Tour Operator',
-                             'destination': 'Destination',
-                             'hotel': 'Hotel',
-                             'holiday_type': 'Holiday Type',
-                             'holiday_subtype': 'Holiday Sub-Type',
-                             'user': 'User'}[filter_criteria]
-                    namespace['filter_criteria_label'] = label
-                    # file_value_label
-                    if filter_criteria == 'tour_operator':
-                        index = int(filter_value)
-                        label = self.get_tour_operator(index)
-                    elif filter_criteria == 'destination':
-                        index = int(filter_value)
-                        label = self.get_destination(index)
-                    else:
-                        label = filter_value
-                    namespace['filter_value_label'] = label
-                    # Update CSV URL
-                    csv_url += '&filter_criteria=%s' % filter_criteria
-                    csv_url += '&filter_value=%s' % filter_value
-            # CSV URL
-            namespace['csv_url'] = csv_url
+        # Search
+        if not filters:
+            objects = bookings.get_rows()
         else:
-            is_travel_agent = True
-            states = ['Cancel','Request']
-            namespace['user'] = user.name
-            namespace['manage_action'] = u"Cancel selected bookings"
-            objects = self.search_bookings(**{'user': user.name})
+            # Search
+            query = self.build_query(filter_duration, filter_criteria,
+                                     filter_value)
+            objects = self.search_bookings(query)
+
+            # Update namespace
+            if filter_duration is not None:
+                # Duration
+                label = duration_values[int(filter_duration)]
+                namespace['filter_duration_label'] = label
+                # Update CSV URL
+                csv_url += 'filter_duration=%s' % filter_duration
+
+            if filter_criteria is not None:
+                # file_criteria_label
+                label = {'tour_operator': 'Tour Operator',
+                         'destination': 'Destination',
+                         'hotel': 'Hotel',
+                         'holiday_type': 'Holiday Type',
+                         'holiday_subtype': 'Holiday Sub-Type',
+                         'user': 'User'}[filter_criteria]
+                namespace['filter_criteria_label'] = label
+                # file_value_label
+                if filter_criteria == 'tour_operator':
+                    index = int(filter_value)
+                    label = self.get_tour_operator(index)
+                elif filter_criteria == 'destination':
+                    index = int(filter_value)
+                    label = self.get_destination(index)
+                else:
+                    label = filter_value
+                namespace['filter_value_label'] = label
+                # Update CSV URL
+                csv_url += '&filter_criteria=%s' % filter_criteria
+                csv_url += '&filter_value=%s' % filter_value
+        # CSV URL
+        namespace['csv_url'] = csv_url
+        #else:
+        is_travel_agent = False 
+        states = ['Cancel','Request']
+        namespace['user'] = user.name
+        namespace['manage_action'] = u"Cancel selected bookings"
+        objects = self.search_bookings(**{'user': user.name})
         namespace['is_travel_agent'] = is_travel_agent
 
         # FIXME 015

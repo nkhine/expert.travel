@@ -313,6 +313,9 @@ class FrontOffice(Skin):
  
         menus = []
         if isinstance(root, Company):
+            # Navigation
+            menu = self.get_navigation_menu(context)
+            menus.append(menu)
             # Main Menu
             menu = self.get_main_menu(context)
             if menu is not None:
@@ -321,9 +324,6 @@ class FrontOffice(Skin):
             menu = self.get_context_menu(context)
             if menu is not None:
                 menus.append(menu)
-            # Navigation
-            menu = self.get_navigation_menu(context)
-            menus.append(menu)
         elif isinstance(root, Training):
             # Navigation
             menu = self.get_navigation_menu(context)
