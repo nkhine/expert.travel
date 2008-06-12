@@ -573,9 +573,6 @@ class Training(SiteRoot, WorkflowAware):
         module = context.get_form_value('module')
         country = context.get_form_value('country', '')
         region = context.get_form_value('region', '')
-        # the county field is the only field we care about
-        # as this is stored within the address metadata
-        # this is why the form value is abakuc:county
         county = context.get_form_value('abakuc:county', '')
         functions = context.get_form_value('functions', '')
         topics = context.get_form_value('topics', '')
@@ -628,7 +625,7 @@ class Training(SiteRoot, WorkflowAware):
         query = {}
         #Returns the name of the training programme
         query['training_programmes'] = self.name
-
+        
         for key in context.get_form_keys():
             value = context.get_form_value(key)
             if value:
@@ -636,7 +633,6 @@ class Training(SiteRoot, WorkflowAware):
                     query['registration_%s' % key] = value
                 elif key in catalog.field_numbers:
                     query[key] = value
-        #pp.pprint(query['training_programmes'])
         users = []
         if module:
             module = self.get_handler(module)
@@ -658,44 +654,25 @@ class Training(SiteRoot, WorkflowAware):
                 continue
 
             user = root.get_handler(brain.abspath)
-            # Company
-            company = user.get_company()
-            if company is None:
-                company_title = ''
-            else:
-                company_title = company.get_property('dc:title')
-            # Branch
-            branch = user.get_branch()
-            if branch is None:
+            # Address
+            address_handler = user.get_address()
+            if address_handler is None:
                 phone = ''
                 fax = ''
                 address = ''
                 post_code = ''
             else:
-                get_property = branch.metadata.get_property
+                get_property = address_handler.metadata.get_property
                 phone = get_property('abakuc:phone')
                 fax = get_property('abakuc:fax')
                 address = get_property('abakuc:address')
                 post_code = get_property('abakuc:postcode')
-
-            # Get modules dates
-            last_exam_passed = True
-            dates = []
-            for m in modules:
-                date = ''
-                if last_exam_passed:
-                    exam = m.get_exam(username)
-                    if exam is not None:
-                        last_exam_passed = False
-                        result = exam.get_result(username)
-                        if result is not None:
-                            last_exam_passed = result[0]
-                            if last_exam_passed:
-                                date = result[-1]
-                dates.append(date)
-            return dates
-            #import pprint
-            #pp = pprint.PrettyPrinter(indent=4)
+            # Company
+            company = address_handler.parent
+            if company is None:
+                company_title = ''
+            else:
+                company_title = company.get_property('dc:title')
             # All modules dates
             ns_modules = [{'date': date.encode('utf-8')} for date in
                           self.get_modules_dates(modules, user.name)]
@@ -703,7 +680,7 @@ class Training(SiteRoot, WorkflowAware):
             #pp.pprint(ns_modules)
             get_property = user.metadata.get_property
             users.append(
-                {'title': get_property('user:user_title'),
+                {#'title': get_property('abakuc:user_title'),
                  'firstname': get_property('ikaaro:firstname'),
                  'lastname': get_property('ikaaro:lastname'),
                  'company': company_title,
@@ -718,6 +695,7 @@ class Training(SiteRoot, WorkflowAware):
         users.sort(lambda x, y: cmp(x['firstname'].lower(),
                                     y['firstname'].lower()))
         namespace['users'] = users
+        pp.pprint(namespace['users'])
         # CSV
         query = '&'.join([ '%s=%s' % (x, context.get_form_value(x))
                            for x in context.get_form_keys() ])

@@ -181,7 +181,10 @@ class User(iUser, WorkflowAware, Handler):
         return url
 
     def is_training(self):
-        '''Return a bool'''
+        """
+        Check to see if the user is on a training site.
+        Return a bool
+        """
         training = self.get_site_root()
         if isinstance(training, Training):
             training = True
@@ -216,6 +219,60 @@ class User(iUser, WorkflowAware, Handler):
         for job in results.get_documents():
             return root.get_handler(job.abspath)
         return None
+    ########################################################################
+    # Indexing
+    ########################################################################
+    def get_catalog_indexes(self):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        
+        doc = iUser.get_catalog_indexes(self)
+
+        get_property = self.get_metadata().get_property
+        # The registration date
+        registration_date = get_property('abakuc:registration_date')
+        if registration_date is not None:
+            doc['registration_date'] = registration_date
+            doc['registration_year'] = registration_date.year
+            doc['registration_month'] = registration_date.month
+        # Other user fields
+        doc['job_function'] = get_property('abakuc:job_function')
+        # User's address fields
+        address = self.get_address()
+        if address:
+            doc['address'] = address.get_property('abakuc:address')
+            county_id = address.get_property('abakuc:county')
+            if county_id:
+                from root import world
+                row = world.get_row(county_id)
+                country = row[6]
+                region = row[7]
+                county = row[8]
+                doc['country'] = country
+                doc['region'] = region
+                doc['county'] = county
+            # User's company fields
+            company = address.parent 
+            doc['company_name'] = company.get_property('dc:title')
+        # Index the user's training programmes
+        training_programmes = []
+        root = get_context().root
+        training_handler = root.get_handler('training')
+        if training_handler:
+            trainings = \
+            list(training_handler.search_handlers(handler_class=Training))
+            for training in trainings:
+                members = []
+                to = training.get_property('dc:title')
+                username = self.name
+                users = training.get_members()
+                if username in users:
+                    training_programmes.append(to)
+        doc['training_programmes'] = training_programmes
+    
+        pp.pprint(doc)
+        return doc
+        
 
     #######################################################################
     # Manage bookings
@@ -228,8 +285,44 @@ class User(iUser, WorkflowAware, Handler):
             return bookings.get_rows(ids)
         return bookings.get_rows()
 
+    #######################################################################
+    # jQuery TABS 
+    #######################################################################
 
     def get_tabs_stl(self, context):
+        """
+        These are dependant on the site type and user.
+        
+        If site is Training, then the TABS change, so that:
+        
+        If user has role Training Manager, the TABS are:
+        - Manage training
+        - News (add)
+        - Manage bookings / Add booking module
+        - Statistics
+        - Other *
+
+        If user has role Branch Manager, Branch Member, the TABS are
+        - Current training (list Modules, Exams, Marketing)
+        - News - (list News items posted by Users who are in the Contact)
+        If the TP has a Booking Module, then
+        - Bookings - user can add, view and manage their own bookings)
+        
+        If site is NOT Training, but any other type, then the TABS are:
+
+        If User is Branch Manager:
+        - News (add)
+        - Jobs (add)
+        - Enquiries - manage enquiries
+        - Training (list all training programmes)
+        - Administrate
+
+        If User is Branch Member:
+        - News (list)
+        - Jobs (list)
+        - Training (list all training programmes)
+        - Administrate
+        """
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
@@ -239,34 +332,53 @@ class User(iUser, WorkflowAware, Handler):
         # Build stl
         root = context.root
         users = root.get_handler('users')
-        office = self.is_training()
+        address = self.get_address()
+        company = address.parent
+
+        is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+
         namespace = {}
+
+        office = self.is_training()
         namespace['office'] = office
+        
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
+
         if office is True:
-            office_name = self.get_site_root()
-            is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
+            root = self.get_site_root()
+            bookings_module = list(root.search_handlers(handler_class=Bookings))
+            is_training_manager = root.has_user_role(self.name, 'abakuc:training_manager')
+            namespace['is_training_manager'] = is_training_manager
+            pp.pprint(is_branch_manager)
             if is_training_manager:
-                namespace['news'] = self.news_table(context)
+                namespace['current_training'] = self.training(context)
+                if is_branch_manager:
+                    namespace['news'] = self.news_table(context)
+                    if bookings_module:
+                        namespace['bookings'] = self.bookings(context)
+                    else:
+                        namespace['bookings'] = None 
+                else:
+                    namespace['news'] = self.news(context)
+                    if bookings_module:
+                        namespace['bookings'] = self.bookings(context)
+                    else:
+                        namespace['bookings'] = None 
+                #namespace['bookings'] = self.bookings(context)
+                namespace['statistics'] = self.statistics(context)
             else:
                 namespace['news'] = self.news(context)
-            # Booking module tab
-            # Check to see if we have a booking module first
-            bookings_module = list(office_name.search_handlers(handler_class=Bookings))
-            if bookings_module:
-                namespace['booking'] = self.booking(context)
-            else:
-                namespace['booking'] = None 
+                if bookings_module:
+                    namespace['bookings'] = self.bookings(context)
+                else:
+                    namespace['bookings'] = None 
         else:
             namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
         namespace['enquiries'] = self.enquiries_list(context)
         namespace['current_training'] = self.training(context)
         namespace['training'] = self.training_table(context)
-        address = self.get_address()
-        company = address.parent
-
         csv = address.get_handler('log_enquiry.csv')
         results = []
         for row in csv.get_rows():
@@ -278,7 +390,6 @@ class User(iUser, WorkflowAware, Handler):
                results.append({'index': row.number})
         namespace['howmany'] = len(results)
         #namespace['branches'] = self.list_addresses(context)
-        is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
         namespace['is_branch_manager'] = is_branch_manager
         # Company
         namespace['company'] = {'name': company.name,
@@ -290,174 +401,157 @@ class User(iUser, WorkflowAware, Handler):
                 'address_path': self.get_pathto(address)}
 
         namespace['address'] = addr
-        if office is True:
-            office_name = self.get_site_root()
-            is_training_manager = office_name.has_user_role(self.name, 'abakuc:training_manager')
-            namespace['is_training_manager'] = is_training_manager
-            bookings_module = list(office_name.search_handlers(handler_class=Bookings))
-            is_booking = len(bookings_module)
-            if bookings_module:
-                namespace['is_bookings_module'] = True 
-            else:
-                namespace['is_bookings_module'] = False 
-            template = """
-            <stl:block xmlns="http://www.w3.org/1999/xhtml"
-              xmlns:stl="http://xml.itools.org/namespaces/stl">
-                <script type="text/javascript">
-                    var TABS_COOKIE = 'profile_cookie';
-                    $(function() {
-                        $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                            var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                           $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                        },
-                        fxFade: true,
-                        fxSpeed: 'fast',
-                        fxSpeed: "normal"
-                        });
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <script type="text/javascript">
+                var TABS_COOKIE = 'profile_cookie';
+                $(function() {
+                    $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+                    },
+                    fxFade: true,
+                    fxSpeed: 'fast',
+                    fxSpeed: "normal"
                     });
-                </script>
+                });
+            </script>
             <div id="container-user">
                 <ul>
-                    <stl:block if="office">
-                    <li stl:if="is_training_manager"><a
-                    href="#fragment-1"><span>Manage training</span></a></li>
-                    <li stl:if="not is_training_manager"><a href="#fragment-1"><span>Current training</span></a></li>
-                    </stl:block>
-                    <li><a href="#fragment-2"><span>News</span></a></li>
-                    <stl:block if="is_bookings_module">
-                        <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
+                <stl:block if="office">
+                    <stl:block if="is_training_manager">
+                        <li><a href="#fragment-1"><span>Manage training</span></a></li>
+                        <li><a href="#fragment-2"><span>News</span></a></li>
+                        <stl:block if="bookings">
+                            <li><a href="#fragment-3"><span>Bookings (Manage)</span></a></li>
+                        </stl:block>
+                        <li><a href="#fragment-5"><span>Statistics</span></a></li>
+                        <stl:block if="is_branch_manager">
+                            <li><a href="#fragment-6"><span>Administrate</span></a></li>
+                        </stl:block>
                     </stl:block>
                     <stl:block if="not is_training_manager">
+                        <li><a href="#fragment-1"><span>Current training</span></a></li>
+                        <li><a href="#fragment-2"><span>News</span></a></li>
+                        <stl:block if="bookings">
+                            <li><a href="#fragment-3"><span>Bookings ({howmany})</span></a></li>
+                        </stl:block>
                         <li><a href="#fragment-4"><span>Other training</span></a></li>
+                        <stl:block if="is_branch_manager">
+                            <li><a href="#fragment-6"><span>Administrate</span></a></li>
+                        </stl:block>
                     </stl:block>
-                    <stl:block if="is_training_manager">
-                        <li><a href="#fragment-5"><span>Statistics</span></a></li>
-                    </stl:block>
-                    <li if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
-                </ul>
-                <div id="fragment-1">
-                <stl:block if="is_training_manager">
-                  ${current_training}
                 </stl:block>
-                <stl:block if="not is_training_manager">
-                  ${current_training}
-                </stl:block>
-                </div>
-                <div id="fragment-2">
-                  ${news}
-                </div>
-                <stl:block if="is_bookings_module">
-                <div id="fragment-3">
-                  ${booking}
-                </div>
-                </stl:block>
-                <stl:block if="not is_training_manager">
-                <div id="fragment-4">
-                  ${training} 
-                </div>
-                </stl:block>
-                <stl:block if="is_training_manager">
-                  <div id="fragment-5">
-                    <h2>Training programme statistics</h2>
-                  </div>
-                </stl:block>
-                <stl:block if="is_branch_manager">
-                  <div id="fragment-6">
-                     <h2>Administrative actions</h2>
-                       <p>
-                       <a href="${company/path}/;edit_metadata_form?referrer=1">
-                         Modify company details
-                       </a>
-                       </p>
-                       <p>
-                       <a href="${address/address_path}/;edit_metadata_form?referrer=1">
-                         Modify address details
-                       </a>
-                       </p>
-                       <p>
-                        <a href="${address/address_path}/;permissions_form">
-                          Users associate to the address
-                        </a>
-                       </p>
-                       <p>
-                         <a href="${address/address_path}/;new_user_form">
-                           Associate a new user to the address
-                         </a>
-                       </p>
-                  </div>
-                </stl:block>
-            </div>
-            </stl:block>
-                      """
-        else:
-            template = """
-            <stl:block xmlns="http://www.w3.org/1999/xhtml"
-              xmlns:stl="http://xml.itools.org/namespaces/stl">
-                <script type="text/javascript">
-                    var TABS_COOKIE = 'profile_cookie';
-                    $(function() {
-                        $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                            var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                           $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                        },
-                        fxFade: true,
-                        fxSpeed: 'fast',
-                        fxSpeed: "normal"
-                        });
-                    });
-                </script>
-            <div id="container-user">
-                <ul>
+                <stl:block if="not office">
                     <li><a href="#fragment-1"><span>News</span></a></li>
                     <li><a href="#fragment-2"><span>Jobs</span></a></li>
                     <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
                     <li><a href="#fragment-4"><span>Training</span></a></li>
                     <li><a href="#fragment-5"><span>Branches</span></a></li>
                     <li stl:if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
+                </stl:block>
                 </ul>
-                <div id="fragment-1">
-                  ${news}
-                </div>
-                <div id="fragment-2">
-                  ${jobs}
-                </div>
-                <div stl:if="howmany" id="fragment-3">
-                  ${enquiries}
-                </div>
-                <div id="fragment-4">
-                  ${training}
-                </div>
-                <div id="fragment-5">
-                  {branches}
-                </div>
-              <stl:block if="is_branch_manager">
-                <div id="fragment-6">
-                          <h2>Administrative actions</h2>
-                            <p>
-                            <a href="${company/path}/;edit_metadata_form?referrer=1">
-                              Modify company details
+                <stl:block if="office">
+                    <stl:block if="is_training_manager">
+                        <div id="fragment-1">
+                            ${current_training}
+                        </div>
+                        <div id="fragment-2">
+                            ${news}
+                        </div>
+                        <stl:block if="bookings">
+                            <div id="fragment-3">${bookings}</div>
+                        </stl:block>
+                        <div id="fragment-5">
+                          ${statistics}
+                        </div>
+                    </stl:block>
+                    <stl:block if="not is_training_manager">
+                        <div id="fragment-1">
+                            ${current_training}
+                        </div>
+                        <div id="fragment-2">
+                            ${news}
+                        </div>
+                        <stl:block if="bookings">
+                            <div id="fragment-3">${bookings}</div>
+                        </stl:block>
+                        <div id="fragment-4">
+                          ${training} 
+                        </div>
+                    </stl:block>
+                    <stl:block if="is_branch_manager">
+                      <div id="fragment-6">
+                         <h2>Administrative actions</h2>
+                           <p>
+                           <a href="${company/path}/;edit_metadata_form?referrer=1">
+                             Modify company details
+                           </a>
+                           </p>
+                           <p>
+                           <a href="${address/address_path}/;edit_metadata_form?referrer=1">
+                             Modify address details
+                           </a>
+                           </p>
+                           <p>
+                            <a href="${address/address_path}/;permissions_form">
+                              Users associate to the address
                             </a>
-                            </p>
-                            <p>
-                            <a href="${address/address_path}/;edit_metadata_form?referrer=1">
-                              Modify address details
-                            </a>
-                            </p>
-                            <p>
-                             <a href="${address/address_path}/;permissions_form">
-                               Users associate to the address
+                           </p>
+                           <p>
+                             <a href="${address/address_path}/;new_user_form">
+                               Associate a new user to the address
                              </a>
-                            </p>
-                            <p>
-                              <a href="${address/address_path}/;new_user_form">
-                                Associate a new user to the address
-                              </a>
-                            </p>
-                </div>
-              </stl:block>
+                           </p>
+                      </div>
+                    </stl:block>
+                </stl:block>
+                <stl:block if="not office">
+                    <div id="fragment-1">
+                      ${news}
+                    </div>
+                    <div id="fragment-2">
+                      ${jobs}
+                    </div>
+                    <div stl:if="howmany" id="fragment-3">
+                      ${enquiries}
+                    </div>
+                    <div id="fragment-4">
+                      ${training}
+                    </div>
+                    <div id="fragment-5">
+                      {branches}
+                    </div>
+                    <stl:block if="is_branch_manager">
+                      <div id="fragment-6">
+                        <h2>Administrative actions</h2>
+                          <p>
+                          <a href="${company/path}/;edit_metadata_form?referrer=1">
+                            Modify company details
+                          </a>
+                          </p>
+                          <p>
+                          <a href="${address/address_path}/;edit_metadata_form?referrer=1">
+                            Modify address details
+                          </a>
+                          </p>
+                          <p>
+                           <a href="${address/address_path}/;permissions_form">
+                             Users associate to the address
+                           </a>
+                          </p>
+                          <p>
+                            <a href="${address/address_path}/;new_user_form">
+                              Associate a new user to the address
+                            </a>
+                          </p>
+                      </div>
+                    </stl:block>
+                </stl:block> <!-- Not office TAB content -->
             </div>
-            </stl:block>
-                      """
+        </stl:block>
+                  """
         template = XHTMLDocument(string=template)
         return stl(template, namespace)
 
@@ -809,15 +903,21 @@ class User(iUser, WorkflowAware, Handler):
         return context.come_back(message, goto=goto)
     ########################################################################
     # View user's public profile page
-    view__access__ = True
+    view__access__ = 'is_allowed_to_view'
     def view(self, context):
         return 'Hello'
 
     ########################################################################
+    # Statistics UI 
+    statistics__access__ = 'is_allowed_to_view'
+    statistics__label__ = u'Statistics Module'
+    def statistics(self, context):
+        return 'Statistics module'
+    ########################################################################
     # Bookings UI
-    booking__access__ = 'is_allowed_to_view'
-    booking__label__ = u'Booking Module'
-    def booking(self, context):
+    bookings__access__ = 'is_allowed_to_view'
+    bookings__label__ = u'Booking Module'
+    def bookings(self, context):
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         office_name = self.get_site_root()

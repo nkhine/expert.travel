@@ -121,7 +121,7 @@
           stl:repeat="module modules">${module/short_title}</th>
       </tr>
       <tr stl:repeat="user users">
-        <td style="font-size: 11px">${user/title}</td>
+        <td style="font-size: 11px">{user/title}</td>
         <td style="font-size: 11px">${user/firstname}</td>
         <td style="font-size: 11px">${user/lastname}</td>
         <td style="font-size: 11px">${user/company}</td>

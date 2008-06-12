@@ -843,8 +843,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         ['permissions_form', 'new_user_form']]
 
     __roles__ = [
-        {'name': 'abakuc:training_manager', 'title': u"Training Manager",
-         'unit': u"Training Manager"},
         {'name': 'abakuc:branch_manager', 'title': u"Branch Manager",
          'unit': u"Branch Manager"},
         {'name': 'abakuc:branch_member', 'title': u"Branch Member",
