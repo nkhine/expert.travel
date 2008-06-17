@@ -385,183 +385,185 @@ class Training(SiteRoot, WorkflowAware):
                     'value': u'Region x Business profile'},
 
         '''
-        from root import world
-        root = get_context().root
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
+        #from root import world
+        #root = get_context().root
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
 
 
-        year = context.get_form_value('year')
-        month = context.get_form_value('month')
-        module = context.get_form_value('module')
-        layout = context.get_form_value('layout', 'country/types')
-        country = context.get_form_value('country')
-        #region = context.get_form_value('region')
+        #year = context.get_form_value('year')
+        #month = context.get_form_value('month')
+        #module = context.get_form_value('module')
+        #layout = context.get_form_value('layout', 'country/types')
+        #country = context.get_form_value('country')
+        ##region = context.get_form_value('region')
 
-        # Build the namespace
-        namespace = {}
-        # Registration dates
-        namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
-                                 'selected': str(i+1) == month}
-                                for i, title in enumerate(month_names) ]
-        years = range(2001, datetime.date.today().year + 1)
-        namespace['years'] = [
-            {'name': x, 'value': x, 'selected': str(x) == year}
-            for x in years ]
-        # Get TP Modules
-        modules = self.get_modules()
-        namespace['modules'] = [
-            {'name': x.name, 'title': '%d - %s' % (i+1, x.title_or_name),
-             'selected': x.name == module}
-            for i, x in enumerate(modules)]
+        ## Build the namespace
+        #namespace = {}
+        ## Registration dates
+        #namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
+        #                         'selected': str(i+1) == month}
+        #                        for i, title in enumerate(month_names) ]
+        #years = range(2001, datetime.date.today().year + 1)
+        #namespace['years'] = [
+        #    {'name': x, 'value': x, 'selected': str(x) == year}
+        #    for x in years ]
+        ## Get TP Modules
+        #modules = self.get_modules()
+        #namespace['modules'] = [
+        #    {'name': x.name, 'title': '%d - %s' % (i+1, x.title_or_name),
+        #     'selected': x.name == module}
+        #    for i, x in enumerate(modules)]
 
-        # Layout options
-        layout_options = [
-            ('country/types', u'Region x Business profile'),
-            ('country/topics', u'Region x Business function'),
-            ('country/functions', u'Region x Job functions'),
-            ('topics/types', u'Business function x Business profile'),
-            ('topics/functions', u'Business function x Job functions'),
-            ('topics/types', u'Business function x Business profile')]
+        ## Layout options
+        #layout_options = [
+        #    ('country/types', u'Region x Business profile'),
+        #    ('country/topics', u'Region x Business function'),
+        #    ('country/functions', u'Region x Job functions'),
+        #    ('topics/types', u'Business function x Business profile'),
+        #    ('topics/functions', u'Business function x Job functions'),
+        #    ('topics/types', u'Business function x Business profile')]
 
-        namespace['layout'] = [
-            {'name': name, 'value': value, 'selected': name == layout}
-            for name, value in layout_options ]
+        #namespace['layout'] = [
+        #    {'name': name, 'value': value, 'selected': name == layout}
+        #    for name, value in layout_options ]
 
-        #pp.pprint(namespace['layout'])
-        # List authorized countries
-        countries = [
-            {'id': y, 'title': x, 'is_selected': x == address_country}
-            for x, y in root.get_active_countries(context) ]
-        nb_countries = len(countries)
-        if nb_countries < 1:
-            raise ValueError, 'Number of countries is invalid'
-        # Show a list with all authorized countries
-        countries.sort(key=lambda x: x['title'])
-        #regions = self.get_regions_stl(country=address_country,
-        #                               selected_region=address_region)
-        #regions = world.search(iana_root_zone='uk')
-        #county = self.get_counties_stl(region=address_region,
-        #                               selected_county=address_county)
-        #namespace['country'] = countries
-        #namespace['region'] = regions
-        #namespace['counties'] = county
+        ##pp.pprint(namespace['layout'])
+        ## List authorized countries
+        #countries = [
+        #    {'id': y, 'title': x, 'is_selected': x == address_country}
+        #    for x, y in root.get_active_countries(context) ]
+        #nb_countries = len(countries)
+        #if nb_countries < 1:
+        #    raise ValueError, 'Number of countries is invalid'
+        ## Show a list with all authorized countries
+        #countries.sort(key=lambda x: x['title'])
+        ##regions = self.get_regions_stl(country=address_country,
+        ##                               selected_region=address_region)
+        ##regions = world.search(iana_root_zone='uk')
+        ##county = self.get_counties_stl(region=address_region,
+        ##                               selected_county=address_county)
+        ##namespace['country'] = countries
+        ##namespace['region'] = regions
+        ##namespace['counties'] = county
 
-        # Statistics criterias
-        vertical, horizontal = layout.split('/')
-        criterias = {'country': countries,
-                     'topics': root.get_topics_namespace(topics),
-                     'functions':  root.get_functions_namespace(functions),
-                     'types': root.get_types_namespace(types)
-                     }
-        #pp.pprint(criterias)
-        horizontal_criterias = criterias[horizontal]
-        vertical_criterias = criterias[vertical]
+        ## Statistics criterias
+        #vertical, horizontal = layout.split('/')
+        #criterias = {'country': countries,
+        #             'topics': root.get_topics_namespace(topics),
+        #             'functions':  root.get_functions_namespace(functions),
+        #             'types': root.get_types_namespace(types)
+        #             }
+        ##pp.pprint(criterias)
+        #horizontal_criterias = criterias[horizontal]
+        #vertical_criterias = criterias[vertical]
 
-        ## Filter the users
-        root = context.root
-        #query = {'format': self.name}
-        query = {'format': self.site_format}
-        if month:
-            query['registration_month'] = month
-        if year:
-            query['registration_year'] = year
-        # XXX Fix this so that countries are listed, then regions etc...
-        if countries:
-            query['country'] = countries
-            #vertical_criterias = countries
-            vertical_criterias = self.get_regions(countries)
-            #pp.pprint(vertical_criterias)
-            vertical = 'region'
-        ## TEST 015
-        #users = self.get_members()
-        #total_members = len(users)
-        #pp.pprint(total_members)
+        ### Filter the users
+        #root = context.root
+        ##query = {'format': self.name}
+        #query = {'format': self.site_format}
+        #if month:
+        #    query['registration_month'] = month
+        #if year:
+        #    query['registration_year'] = year
+        ## XXX Fix this so that countries are listed, then regions etc...
+        #if countries:
+        #    query['country'] = countries
+        #    vertical_criterias = self.get_regions(countries)
+        #    vertical = 'region'
+        #    if region:
+        #        vertical_criterias = self.get_regions(countries)
+        #        vertical = 'county'
 
-        results = root.search(**query)
-        brains = results.get_documents()
-        if module:
-            aux = []
-            mod = self.get_handler(module)
-            for brain in brains:
-                exam = mod.get_exam(brain.name)
-                #pp.pprint(exam)
-                if exam is None:
-                    continue
-                has_passed = exam.get_result(brain.name)[0]
-                if has_passed:
-                    aux.append(brain)
-            brains = aux
+        #    #vertical_criterias = countries
+        #    #pp.pprint(vertical_criterias)
+        ### TEST 015
+        ##users = self.get_members()
+        ##total_members = len(users)
+        ##pp.pprint(total_members)
 
-        ## Classify the users
-        table = {}
-        table[('', '')] = 0
-        for x in horizontal_criterias:
-            table[(x['id'], '')] = 0
-        for y in vertical_criterias:
-            table[('', y['id'])] = 0
-        for x in horizontal_criterias:
-            x = x['id']
-            for y in vertical_criterias:
-                table[(x, y['id'])] = 0
+        #results = root.search(**query)
+        #brains = results.get_documents()
+        #if module:
+        #    aux = []
+        #    mod = self.get_handler(module)
+        #    for brain in brains:
+        #        exam = mod.get_exam(brain.name)
+        #        #pp.pprint(exam)
+        #        if exam is None:
+        #            continue
+        #        has_passed = exam.get_result(brain.name)[0]
+        #        if has_passed:
+        #            aux.append(brain)
+        #    brains = aux
 
-        for brain in brains:
-            x = getattr(brain, horizontal)
-            y = getattr(brain, vertical)
-            if x and y and (x, y) in table:
-                table[(x, y)] += 1
-                table[(x, '')] += 1
-                table[('', y)] += 1
-                table[('', '')] += 1
+        ### Classify the users
+        #table = {}
+        #table[('', '')] = 0
+        #for x in horizontal_criterias:
+        #    table[(x['id'], '')] = 0
+        #for y in vertical_criterias:
+        #    table[('', y['id'])] = 0
+        #for x in horizontal_criterias:
+        #    x = x['id']
+        #    for y in vertical_criterias:
+        #        table[(x, y['id'])] = 0
 
-        #pp.pprint(table)
-        ## Base URLs
-        base_stats = context.uri
-        base_show = get_reference(';show_users')
-        if month:
-            base_show = base_show.replace(month=month)
-        if year:
-            base_show = base_show.replace(year=year)
-        if module:
-            base_show = base_show.replace(module=module)
+        #for brain in brains:
+        #    x = getattr(brain, horizontal)
+        #    y = getattr(brain, vertical)
+        #    if x and y and (x, y) in table:
+        #        table[(x, y)] += 1
+        #        table[(x, '')] += 1
+        #        table[('', y)] += 1
+        #        table[('', '')] += 1
 
-        ## Column headers
-        namespace['columns'] = [ x['title'] for x in horizontal_criterias ]
+        ##pp.pprint(table)
+        ### Base URLs
+        #base_stats = context.uri
+        #base_show = get_reference(';show_users')
+        #if month:
+        #    base_show = base_show.replace(month=month)
+        #if year:
+        #    base_show = base_show.replace(year=year)
+        #if module:
+        #    base_show = base_show.replace(module=module)
 
-        ## The rows
-        rows = []
-        total = [{'id': '', 'title': self.gettext(u'Total')}]
-        query = {}
-        for y in vertical_criterias + total:
-            key, value = vertical, y['id']
-            if value:
-                query[key] = value
-            elif key in query:
-                del query[key]
-            rows.append({'title': y['title'], 'url': None, 'columns': []})
-            if vertical == 'country' and country is None:
-                rows[-1]['url'] = base_stats.replace(**query)
+        ### Column headers
+        #namespace['columns'] = [ x['title'] for x in horizontal_criterias ]
 
-            for x in horizontal_criterias + [{'id': ''}]:
-                if x['id']:
-                    query[horizontal] = x['id']
-                elif horizontal in query:
-                    del query[horizontal]
-                rows[-1]['columns'].append({'n': table[(x['id'], y['id'])],
-                                            'url': base_show.replace(**query)})
+        ### The rows
+        #rows = []
+        #total = [{'id': '', 'title': self.gettext(u'Total')}]
+        #query = {}
+        #for y in vertical_criterias + total:
+        #    key, value = vertical, y['id']
+        #    if value:
+        #        query[key] = value
+        #    elif key in query:
+        #        del query[key]
+        #    rows.append({'title': y['title'], 'url': None, 'columns': []})
+        #    if vertical == 'country' and country is None:
+        #        rows[-1]['url'] = base_stats.replace(**query)
 
-        namespace['rows'] = rows
+        #    for x in horizontal_criterias + [{'id': ''}]:
+        #        if x['id']:
+        #            query[horizontal] = x['id']
+        #        elif horizontal in query:
+        #            del query[horizontal]
+        #        rows[-1]['columns'].append({'n': table[(x['id'], y['id'])],
+        #                                    'url': base_show.replace(**query)})
 
-        #pp.pprint(namespace['rows'])
-        handler = self.get_handler('/ui/abakuc/training/statistics.xml')
-        return stl(handler, namespace)
+        #namespace['rows'] = rows
+
+        ##pp.pprint(namespace['rows'])
+        #handler = self.get_handler('/ui/abakuc/training/statistics.xml')
+        #return stl(handler, namespace)
 
     show_users__access__ = True
     show_users__label__ = u'Show users'
     show_users__sublabel__ = u'Show users'
-    def show_users(self, context, functions=None, topics=None,
-                    types=None, address_country=None,
-                    address_region=None, address_county=None):
+    def show_users(self, context):
         from root import world
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
@@ -571,11 +573,11 @@ class Training(SiteRoot, WorkflowAware):
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
-        country = context.get_form_value('country', '')
-        region = context.get_form_value('region', '')
-        county = context.get_form_value('abakuc:county', '')
-        functions = context.get_form_value('functions', '')
+        #country = context.get_form_value('country', '')
+        #region = context.get_form_value('region', '')
+        #county = context.get_form_value('abakuc:county', '')
         topics = context.get_form_value('topics', '')
+        functions = context.get_form_value('job_function', '')
         types = context.get_form_value('types', '')
         # Build the namespace
         namespace = {}
@@ -600,24 +602,24 @@ class Training(SiteRoot, WorkflowAware):
              'selected': x.name == module}
             for i, x in enumerate(modules) ]
         # List authorized countries
-        countries = [
-            {'name': y, 'title': x, 'selected': x == address_country}
-            for x, y in root.get_active_countries(context) ]
-        nb_countries = len(countries)
-        if nb_countries < 1:
-            raise ValueError, 'Number of countries is invalid'
-        # Show a list with all authorized countries
-        countries.sort(key=lambda y: y['name'])
-        region = root.get_regions_stl(country_code=address_country,
-                                       selected_region=address_region)
-        county = root.get_counties_stl(region=address_region,
-                                       selected_county=address_county)
-        # Region, business function, job function and business profile
-        namespace['country'] = countries
-        namespace['region'] = region
-        namespace['county'] = county
+        #countries = [
+        #    {'name': y, 'title': x, 'selected': x == address_country}
+        #    for x, y in root.get_active_countries(context) ]
+        #nb_countries = len(countries)
+        #if nb_countries < 1:
+        #    raise ValueError, 'Number of countries is invalid'
+        ## Show a list with all authorized countries
+        #countries.sort(key=lambda y: y['name'])
+        #region = root.get_regions_stl(country_code=address_country,
+        #                               selected_region=address_region)
+        #county = root.get_counties_stl(region=address_region,
+        #                               selected_county=address_county)
+        ## Region, business function, job function and business profile
+        #namespace['country'] = countries
+        #namespace['region'] = region
+        #namespace['county'] = county
         namespace['topics'] = root.get_topics_namespace(topics)
-        namespace['functions'] = root.get_functions_namespace(functions)
+        namespace['job_function'] = root.get_functions_namespace(functions)
         namespace['types'] = root.get_types_namespace(types)
         # Search users
         root = context.root
@@ -657,10 +659,10 @@ class Training(SiteRoot, WorkflowAware):
             # Address
             address_handler = user.get_address()
             if address_handler is None:
-                phone = ''
-                fax = ''
-                address = ''
-                post_code = ''
+                phone = 'not available'
+                fax = 'not available'
+                address = 'not available'
+                post_code = 'not available'
             else:
                 get_property = address_handler.metadata.get_property
                 phone = get_property('abakuc:phone')
@@ -668,11 +670,20 @@ class Training(SiteRoot, WorkflowAware):
                 address = get_property('abakuc:address')
                 post_code = get_property('abakuc:postcode')
             # Company
-            company = address_handler.parent
-            if company is None:
-                company_title = ''
+            if address_handler is not None:
+                company = address_handler.parent
+                if company is None:
+                    company_title = 'not available'
+                    company_type = 'not available'
+                    company_topics = 'not available'
+                else:
+                    company_title = company.get_property('dc:title')
+                    company_type = company.get_property('abakuc:type')
+                    company_topic = company.get_property('abakuc:topic')
             else:
-                company_title = company.get_property('dc:title')
+                company_title = 'not available'
+                company_type = 'not available'
+                company_topics = 'not available'
             # All modules dates
             ns_modules = [{'date': date.encode('utf-8')} for date in
                           self.get_modules_dates(modules, user.name)]
@@ -689,6 +700,9 @@ class Training(SiteRoot, WorkflowAware):
                  'fax': fax,
                  'address': address,
                  'post_code': post_code,
+                 'job_function': get_property('abakuc:job_function'),
+                 'types': company_type,
+                 'topics': company_topic,
                  #'last_module': self.get_last_module_title(user.name),
                  'modules': ns_modules,
                  })

@@ -88,8 +88,8 @@ class Root(Handler, BaseRoot):
             KeywordField('level4', is_stored=True),
             KeywordField('user_id', is_stored=False),
             KeywordField('closing_date', is_stored=False),
-            KeywordField('company', is_stored=False),
-            KeywordField('address', is_stored=False),
+            KeywordField('company', is_stored=True),
+            KeywordField('address', is_stored=True),
             KeywordField('country', is_stored=True),
             KeywordField('region', is_stored=True),
             KeywordField('county', is_stored=True),
@@ -101,6 +101,10 @@ class Root(Handler, BaseRoot):
             KeywordField('registration_date'),
             KeywordField('registration_year'),
             KeywordField('registration_month'),
+            # Old TU search keys
+            KeywordField('business_profile', is_stored=True),
+            KeywordField('job_function', is_stored=True),
+            KeywordField('business_function', is_stored=True),
             KeywordField('types', is_stored=True),
             KeywordField('topics', is_stored=True),
             KeywordField('functions', is_stored=True),
@@ -263,9 +267,9 @@ class Root(Handler, BaseRoot):
         return namespace
 
     def get_functions_namespace(self, ids=None):
-        job_functions = self.get_handler('functions.csv')
+        job_function = self.get_handler('functions.csv')
         namespace = []
-        for row in job_functions.get_rows():
+        for row in job_function.get_rows():
             namespace.append({
                 'id': row[0], 'title': row[1],
                 'is_selected': (ids is not None) and (row[0] in ids)})

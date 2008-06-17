@@ -21,7 +21,7 @@
                 selected="${option/selected}">${option/value}</option>
             </select>
         </td>
-      <td colspan="2" rowspan="2">
+      <!-- <td colspan="2" rowspan="2">
         Country:<br />
         <select id="country" name="country" onchange="
           get_regions('/;get_regions_str?country_code='+ this.value,'div_regions');
@@ -32,7 +32,7 @@
         </select><br />
         Region:<br /> ${region}
         County:<br /> ${county}
-      </td>
+      </td> -->
         </tr>
         <tr>
         <td>
@@ -60,7 +60,7 @@
             </select>
           </p>
         </td> -->
-        <td>
+       <td>
           <p>
             Business function<br/>
            <select name="topics" style="font-size: 9px">
@@ -73,14 +73,14 @@
         <td>
           <p>
             Job function<br/>
-             <select name="functions" style="font-size: 9px">
+             <select name="job_function" style="font-size: 9px">
               <option value="">All</option>
-              <option stl:repeat="item functions" value="${item/id}" 
+              <option stl:repeat="item job_function" value="${item/id}" 
                 selected="${item/is_selected}">${item/title}</option>
             </select>
           </p>
          </td>
-        <td>
+         <td>
           <p>
             Business profile<br/>
             <select name="types" style="font-size: 9px">

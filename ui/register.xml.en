@@ -76,8 +76,8 @@
       </dt>
       <dd style="width: 90%">
         <select id="job_function" name="job_function">
-          <option stl:repeat="job_function job_functions" value="${job_function/id}"
-            selected="${job_function/is_selected}">${job_function/title}</option> 
+          <option stl:repeat="item job_function" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option> 
         </select>
       </dd>
     </dl>

@@ -128,10 +128,10 @@ class SiteRoot(Handler, BaseWebSite):
 
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
-    def register_form(self, context, job_functions=None):
+    def register_form(self, context, job_function=None):
         root = get_context().root
         namespace = context.build_form_namespace(self.register_fields)
-        namespace['job_functions'] = root.get_functions_namespace(job_functions)
+        namespace['job_function'] = root.get_functions_namespace(job_function)
         handler = self.get_handler('/ui/abakuc/register.xml')
         return stl(handler, namespace)
 

@@ -237,6 +237,7 @@ class User(iUser, WorkflowAware, Handler):
             doc['registration_month'] = registration_date.month
         # Other user fields
         doc['job_function'] = get_property('abakuc:job_function')
+        root = get_context().root
         # User's address fields
         address = self.get_address()
         if address:
@@ -254,9 +255,14 @@ class User(iUser, WorkflowAware, Handler):
             # User's company fields
             company = address.parent 
             doc['company_name'] = company.get_property('dc:title')
+            type = company.get_property('abakuc:type')
+            doc['types'] = type
+            topic = company.get_property('abakuc:topic')
+            # Make the tuple into a list
+            topics = list(topic) 
+            doc['topics'] = topics
         # Index the user's training programmes
         training_programmes = []
-        root = get_context().root
         training_handler = root.get_handler('training')
         if training_handler:
             trainings = \
@@ -565,14 +571,14 @@ class User(iUser, WorkflowAware, Handler):
     edit_account_form__sublabel__ = u'Account'
     def edit_account_form(self, context):
         root = get_context().root
-        job_functions = self.get_property('abakuc:job_function')
+        job_function = self.get_property('abakuc:job_function')
         logo = self.has_handler('logo')
 
         # Build the namespace
         namespace = {}
         for key in self.account_fields:
             namespace[key] = self.get_property(key)
-        namespace['job_functions'] = root.get_functions_namespace(job_functions)
+        namespace['job_function'] = root.get_functions_namespace(job_function)
         namespace['logo'] = logo
         # Ask for password to confirm the changes
         if self.name != context.user.name:
@@ -604,13 +610,13 @@ class User(iUser, WorkflowAware, Handler):
         if results.get_n_documents():
             message = (u'There is another user with the email "%s", '
                        u'please try again')
-        job_functions = context.get_form_values('job_function')
+        job_function = context.get_form_values('job_function')
         logo = context.get_form_value('logo')
         # Save changes
         for key in self.account_fields:
             value = context.get_form_value(key)
             self.set_property(key, value)
-        self.set_property('abakuc:job_function', job_functions)
+        self.set_property('abakuc:job_function', job_function)
 
 
         url = ';profile'
