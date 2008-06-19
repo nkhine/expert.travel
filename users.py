@@ -356,7 +356,6 @@ class User(iUser, WorkflowAware, Handler):
             bookings_module = list(root.search_handlers(handler_class=Bookings))
             is_training_manager = root.has_user_role(self.name, 'abakuc:training_manager')
             namespace['is_training_manager'] = is_training_manager
-            pp.pprint(is_branch_manager)
             if is_training_manager:
                 namespace['current_training'] = self.training(context)
                 if is_branch_manager:
@@ -918,7 +917,59 @@ class User(iUser, WorkflowAware, Handler):
     statistics__access__ = 'is_allowed_to_view'
     statistics__label__ = u'Statistics Module'
     def statistics(self, context):
-        return 'Statistics module'
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        namespace['business_function'] = self.business_function(context)
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
+            #handler = self.get_handler('/ui/abakuc/statistics/view.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            return stl(handler, namespace)
+
+    business_function__access__ = 'is_allowed_to_view'
+    business_function__label__ = u'Business function stats'
+    def business_function(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        #context.styles.append('/ui/abakuc/yui/container/assets/skins/sam/container.css')
+        #context.styles.append('/ui/abakuc/yui/menu/assets/skins/sam/menu.css')
+        #context.styles.append('/ui/abakuc/yui/button/assets/skins/sam/button.css')
+        #context.styles.append('/ui/abakuc/yui/calendar/assets/skins/sam/calendar.css')
+        #context.styles.append('/ui/abakuc/yui/editor/assets/skins/sam/editor.css')
+        #context.styles.append('/ui/abakuc/yui/resize/assets/skins/sam/resize.css')
+        #context.styles.append('/ui/abakuc/yui/layout/assets/skins/sam/layout.css')
+        # Add a script
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            return stl(handler, namespace)
     ########################################################################
     # Bookings UI
     bookings__access__ = 'is_allowed_to_view'

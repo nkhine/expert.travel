@@ -1,0 +1,32 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <script type="text/javascript">
+        var TABS_COOKIE = 'statistics_cookie';
+        $(function() {
+            $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+               $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+            },
+            fxFade: true,
+            fxSpeed: 'fast',
+            fxSpeed: "normal"
+            });
+        });
+    </script>
+    <div id="container-stats">
+        <ul>
+            <li><a href="#fragment-1s"><span>Business Type</span></a></li>
+            <li><a href="#fragment-2s"><span>Business Function</span></a></li>
+            <li><a href="#fragment-3s"><span>Job Function</span></a></li>
+        </ul>
+        <div id="fragment-1s">
+            Business Type
+        </div>
+        <div id="fragment-2s">
+            ${business_function}
+        </div>
+        <div id="fragment-3s">
+            Job Function
+        </div>
+      </div> <!-- container-user -->
+</stl:block>
