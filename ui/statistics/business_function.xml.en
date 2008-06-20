@@ -4,7 +4,7 @@
    <h1>Statistics module</h1>
         <div stl:if="office">
          <div class="yui-skin-sam"> 
-            <span class="chart_title">${title} overview of registered members</span>
+            <span class="chart_title">${title} Business Function overview</span>
             <div id="chart">
             </div>
             <div id="datatable"></div>

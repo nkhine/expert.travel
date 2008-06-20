@@ -4,11 +4,8 @@
    <h1>Statistics module</h1>
         <div stl:if="office">
          <div class="yui-skin-sam"> 
-            <span class="chart_title">${title} overview of registered members</span>
+            <span class="chart_title">${title} Business Type overview</span>
             <div id="chart">
-                Unable to load Flash content. The Statistics Module requires Flash Player 9.0.45 or higher.
-                You can download the latest version of Flash Player from the
-                <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.
             </div>
             <div id="datatable"></div>
             <script type="text/javascript" src="/ui/abakuc/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
@@ -19,8 +16,9 @@
             <script type="text/javascript" src="/ui/abakuc/yui/charts/charts-experimental-min.js"></script>
 
             <!-- chart container -->
-            <div id="chart" style="width: 200px; height: 50px;">Other text</div>
-                 <script type="text/javascript" src="/ui/abakuc/statistics/business_type.js" />
+             <div id="demo"></div>
+             <script type="text/javascript"
+             src="/ui/abakuc/statistics/business_type.js" />
              </div> <!--yui-skin-sam -->
         </div> <!-- office -->
 </stl:block>

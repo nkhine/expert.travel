@@ -31,6 +31,11 @@
   </table>
   <br/>
   Table layout<br/>
+    <select name="layout" style="font-size: 9px">
+    <option stl:repeat="option layout" value="${option/name}"   
+      selected="${option/selected}">${option/value}</option>
+  </select>
+
   <input style="font-size: 11px" type="submit" value=">> GO"/>
 </form>
 <br/>

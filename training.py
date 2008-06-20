@@ -385,105 +385,107 @@ class Training(SiteRoot, WorkflowAware):
                     'value': u'Region x Business profile'},
 
         '''
-        #from root import world
-        #root = get_context().root
-        #import pprint
-        #pp = pprint.PrettyPrinter(indent=4)
+        from root import world
+        root = get_context().root
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
 
 
-        #year = context.get_form_value('year')
-        #month = context.get_form_value('month')
-        #module = context.get_form_value('module')
-        #layout = context.get_form_value('layout', 'country/types')
-        #country = context.get_form_value('country')
-        ##region = context.get_form_value('region')
+        year = context.get_form_value('year')
+        month = context.get_form_value('month')
+        module = context.get_form_value('module')
+        layout = context.get_form_value('layout', 'country/types')
+        country = context.get_form_value('country')
+        #region = context.get_form_value('region')
 
-        ## Build the namespace
-        #namespace = {}
-        ## Registration dates
-        #namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
-        #                         'selected': str(i+1) == month}
-        #                        for i, title in enumerate(month_names) ]
-        #years = range(2001, datetime.date.today().year + 1)
-        #namespace['years'] = [
-        #    {'name': x, 'value': x, 'selected': str(x) == year}
-        #    for x in years ]
-        ## Get TP Modules
-        #modules = self.get_modules()
-        #namespace['modules'] = [
-        #    {'name': x.name, 'title': '%d - %s' % (i+1, x.title_or_name),
-        #     'selected': x.name == module}
-        #    for i, x in enumerate(modules)]
+        # Build the namespace
+        namespace = {}
+        # Registration dates
+        namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
+                                 'selected': str(i+1) == month}
+                                for i, title in enumerate(month_names) ]
+        years = range(2001, datetime.date.today().year + 1)
+        namespace['years'] = [
+            {'name': x, 'value': x, 'selected': str(x) == year}
+            for x in years ]
+        # Get TP Modules
+        modules = self.get_modules()
+        namespace['modules'] = [
+            {'name': x.name, 'title': '%d - %s' % (i+1, x.title_or_name),
+             'selected': x.name == module}
+            for i, x in enumerate(modules)]
 
-        ## Layout options
-        #layout_options = [
-        #    ('country/types', u'Region x Business profile'),
-        #    ('country/topics', u'Region x Business function'),
-        #    ('country/functions', u'Region x Job functions'),
-        #    ('topics/types', u'Business function x Business profile'),
-        #    ('topics/functions', u'Business function x Job functions'),
-        #    ('topics/types', u'Business function x Business profile')]
+        # Layout options
+        layout_options = [
+            ('country/types', u'Region x Business profile'),
+            ('country/topics', u'Region x Business function'),
+            ('country/functions', u'Region x Job functions'),
+            ('topics/types', u'Business function x Business profile'),
+            ('topics/functions', u'Business function x Job functions'),
+            ('topics/types', u'Business function x Business profile')]
 
-        #namespace['layout'] = [
-        #    {'name': name, 'value': value, 'selected': name == layout}
-        #    for name, value in layout_options ]
+        namespace['layout'] = [
+            {'name': name, 'value': value, 'selected': name == layout}
+            for name, value in layout_options ]
 
-        ##pp.pprint(namespace['layout'])
-        ## List authorized countries
-        #countries = [
-        #    {'id': y, 'title': x, 'is_selected': x == address_country}
-        #    for x, y in root.get_active_countries(context) ]
-        #nb_countries = len(countries)
-        #if nb_countries < 1:
-        #    raise ValueError, 'Number of countries is invalid'
-        ## Show a list with all authorized countries
-        #countries.sort(key=lambda x: x['title'])
-        ##regions = self.get_regions_stl(country=address_country,
-        ##                               selected_region=address_region)
-        ##regions = world.search(iana_root_zone='uk')
-        ##county = self.get_counties_stl(region=address_region,
-        ##                               selected_county=address_county)
-        ##namespace['country'] = countries
-        ##namespace['region'] = regions
-        ##namespace['counties'] = county
+        #pp.pprint(namespace['layout'])
+        # List authorized countries
+        countries = [
+            {'id': y, 'title': x, 'is_selected': x == address_country}
+            for x, y in root.get_active_countries(context) ]
+        nb_countries = len(countries)
+        if nb_countries < 1:
+            raise ValueError, 'Number of countries is invalid'
+        # Show a list with all authorized countries
+        countries.sort(key=lambda x: x['title'])
+        #regions = self.get_regions_stl(country=address_country,
+        #                               selected_region=address_region)
+        #regions = world.search(iana_root_zone='uk')
+        #county = self.get_counties_stl(region=address_region,
+        #                               selected_county=address_county)
+        #namespace['country'] = countries
+        #namespace['region'] = regions
+        #namespace['counties'] = county
 
-        ## Statistics criterias
-        #vertical, horizontal = layout.split('/')
-        #criterias = {'country': countries,
-        #             'topics': root.get_topics_namespace(topics),
-        #             'functions':  root.get_functions_namespace(functions),
-        #             'types': root.get_types_namespace(types)
-        #             }
-        ##pp.pprint(criterias)
-        #horizontal_criterias = criterias[horizontal]
-        #vertical_criterias = criterias[vertical]
+        # Statistics criterias
+        vertical, horizontal = layout.split('/')
+        criterias = {'country': countries,
+                     'topics': root.get_topics_namespace(topics),
+                     'functions':  root.get_functions_namespace(functions),
+                     'types': root.get_types_namespace(types)
+                     }
+        #pp.pprint(criterias)
+        horizontal_criterias = criterias[horizontal]
+        vertical_criterias = criterias[vertical]
 
-        ### Filter the users
-        #root = context.root
-        ##query = {'format': self.name}
+        ## Filter the users
+        root = context.root
+        query = {'training_programmes': self.name}
+        catalog = context.server.catalog
         #query = {'format': self.site_format}
+        #for key in context.get_form_keys():
+        #    value = context.get_form_value(key)
+        #    if value:
+        #        if key in ('year', 'month'):
+        #            query['registration_%s' % key] = value
+        #        elif key in catalog.field_numbers:
+        #            query[key] = value
         #if month:
         #    query['registration_month'] = month
         #if year:
         #    query['registration_year'] = year
-        ## XXX Fix this so that countries are listed, then regions etc...
+        # XXX Fix this so that countries are listed, then regions etc...
         #if countries:
         #    query['country'] = countries
-        #    vertical_criterias = self.get_regions(countries)
+        #    vertical_criterias = countries
         #    vertical = 'region'
-        #    if region:
-        #        vertical_criterias = self.get_regions(countries)
-        #        vertical = 'county'
-
-        #    #vertical_criterias = countries
         #    #pp.pprint(vertical_criterias)
-        ### TEST 015
-        ##users = self.get_members()
-        ##total_members = len(users)
-        ##pp.pprint(total_members)
+        ## TEST 015
+        #users = self.get_members()
+        #total_members = len(users)
+        #pp.pprint(total_members)
 
-        #results = root.search(**query)
-        #brains = results.get_documents()
+        results = root.search(**query)
         #if module:
         #    aux = []
         #    mod = self.get_handler(module)
@@ -497,68 +499,70 @@ class Training(SiteRoot, WorkflowAware):
         #            aux.append(brain)
         #    brains = aux
 
-        ### Classify the users
-        #table = {}
-        #table[('', '')] = 0
-        #for x in horizontal_criterias:
-        #    table[(x['id'], '')] = 0
-        #for y in vertical_criterias:
-        #    table[('', y['id'])] = 0
-        #for x in horizontal_criterias:
-        #    x = x['id']
-        #    for y in vertical_criterias:
-        #        table[(x, y['id'])] = 0
+        ## Classify the users
+        table = {}
+        table[('', '')] = 0
+        for x in horizontal_criterias:
+            table[(x['id'], '')] = 0
+        for y in vertical_criterias:
+            table[('', y['id'])] = 0
+        for x in horizontal_criterias:
+            x = x['id']
+            for y in vertical_criterias:
+                table[(x, y['id'])] = 0
 
-        #for brain in brains:
-        #    x = getattr(brain, horizontal)
-        #    y = getattr(brain, vertical)
-        #    if x and y and (x, y) in table:
-        #        table[(x, y)] += 1
-        #        table[(x, '')] += 1
-        #        table[('', y)] += 1
-        #        table[('', '')] += 1
+        brains = results.get_documents()
+        for brain in brains:
+            x = getattr(brain, horizontal)
+            y = getattr(brain, vertical)
+            pp.pprint(x)
+            pp.pprint(brain)
+            pp.pprint(horizontal)
+            if x and y and (x, y) in table:
+                table[(x, y)] += 1
+                table[(x, '')] += 1
+                table[('', y)] += 1
+                table[('', '')] += 1
+        ## Base URLs
+        base_stats = context.uri
+        base_show = get_reference(';show_users')
+        if month:
+            base_show = base_show.replace(month=month)
+        if year:
+            base_show = base_show.replace(year=year)
+        if module:
+            base_show = base_show.replace(module=module)
 
-        ##pp.pprint(table)
-        ### Base URLs
-        #base_stats = context.uri
-        #base_show = get_reference(';show_users')
-        #if month:
-        #    base_show = base_show.replace(month=month)
-        #if year:
-        #    base_show = base_show.replace(year=year)
-        #if module:
-        #    base_show = base_show.replace(module=module)
+        ## Column headers
+        namespace['columns'] = [ x['title'] for x in horizontal_criterias ]
 
-        ### Column headers
-        #namespace['columns'] = [ x['title'] for x in horizontal_criterias ]
+        ## The rows
+        rows = []
+        total = [{'id': '', 'title': self.gettext(u'Total')}]
+        query = {}
+        for y in vertical_criterias + total:
+            key, value = vertical, y['id']
+            if value:
+                query[key] = value
+            elif key in query:
+                del query[key]
+            rows.append({'title': y['title'], 'url': None, 'columns': []})
+            if vertical == 'country' and country is None:
+                rows[-1]['url'] = base_stats.replace(**query)
 
-        ### The rows
-        #rows = []
-        #total = [{'id': '', 'title': self.gettext(u'Total')}]
-        #query = {}
-        #for y in vertical_criterias + total:
-        #    key, value = vertical, y['id']
-        #    if value:
-        #        query[key] = value
-        #    elif key in query:
-        #        del query[key]
-        #    rows.append({'title': y['title'], 'url': None, 'columns': []})
-        #    if vertical == 'country' and country is None:
-        #        rows[-1]['url'] = base_stats.replace(**query)
+            for x in horizontal_criterias + [{'id': ''}]:
+                if x['id']:
+                    query[horizontal] = x['id']
+                elif horizontal in query:
+                    del query[horizontal]
+                rows[-1]['columns'].append({'n': table[(x['id'], y['id'])],
+                                            'url': base_show.replace(**query)})
 
-        #    for x in horizontal_criterias + [{'id': ''}]:
-        #        if x['id']:
-        #            query[horizontal] = x['id']
-        #        elif horizontal in query:
-        #            del query[horizontal]
-        #        rows[-1]['columns'].append({'n': table[(x['id'], y['id'])],
-        #                                    'url': base_show.replace(**query)})
+        namespace['rows'] = rows
 
-        #namespace['rows'] = rows
-
-        ##pp.pprint(namespace['rows'])
-        #handler = self.get_handler('/ui/abakuc/training/statistics.xml')
-        #return stl(handler, namespace)
+        #pp.pprint(namespace['rows'])
+        handler = self.get_handler('/ui/abakuc/training/statistics.xml')
+        return stl(handler, namespace)
 
     show_users__access__ = True
     show_users__label__ = u'Show users'

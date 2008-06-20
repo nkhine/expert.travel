@@ -255,12 +255,16 @@ class User(iUser, WorkflowAware, Handler):
             # User's company fields
             company = address.parent 
             doc['company_name'] = company.get_property('dc:title')
-            type = company.get_property('abakuc:type')
-            doc['types'] = type
-            topic = company.get_property('abakuc:topic')
+            doc['types'] = company.get_property('abakuc:type')
+            #doc['types'] = type
+            #topic = company.get_property('abakuc:topic')
             # Make the tuple into a list
-            topics = list(topic) 
-            doc['topics'] = topics
+            #topics = list(topic) 
+            # In the stats we cannot count lists
+            # So we only consider the first item
+            #first_topic = topics[0]
+            #doc['topics'] = first_topic
+            #doc['topics'] = topics
         # Index the user's training programmes
         training_programmes = []
         training_handler = root.get_handler('training')
@@ -939,8 +943,30 @@ class User(iUser, WorkflowAware, Handler):
             # Return the page
             #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
             #handler = self.get_handler('/ui/abakuc/statistics/view.xml')
-            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_type.xml')
             return stl(handler, namespace)
+
+    business_type__access__ = 'is_allowed_to_view'
+    business_type__label__ = u'Business type stats'
+    def business_type(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        # Add a script
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/statistics/business_type.xml')
+            return stl(handler, namespace)
+
 
     business_function__access__ = 'is_allowed_to_view'
     business_function__label__ = u'Business function stats'
@@ -970,6 +996,29 @@ class User(iUser, WorkflowAware, Handler):
             #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
             handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
             return stl(handler, namespace)
+
+    job_function__access__ = 'is_allowed_to_view'
+    job_function__label__ = u'Job function stats'
+    def job_function(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        # Add a script
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/statistics/job_function.xml')
+            return stl(handler, namespace)
+
+
     ########################################################################
     # Bookings UI
     bookings__access__ = 'is_allowed_to_view'
