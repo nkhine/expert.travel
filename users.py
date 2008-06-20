@@ -236,7 +236,7 @@ class User(iUser, WorkflowAware, Handler):
             doc['registration_year'] = registration_date.year
             doc['registration_month'] = registration_date.month
         # Other user fields
-        doc['job_function'] = get_property('abakuc:job_function')
+        #doc['job_function'] = get_property('abakuc:job_function')
         root = get_context().root
         # User's address fields
         address = self.get_address()

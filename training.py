@@ -394,7 +394,7 @@ class Training(SiteRoot, WorkflowAware):
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
-        layout = context.get_form_value('layout', 'country/types')
+        layout = context.get_form_value('layout', 'types/types')
         country = context.get_form_value('country')
         #region = context.get_form_value('region')
 
@@ -420,7 +420,7 @@ class Training(SiteRoot, WorkflowAware):
             ('country/types', u'Region x Business profile'),
             ('country/topics', u'Region x Business function'),
             ('country/functions', u'Region x Job functions'),
-            ('topics/types', u'Business function x Business profile'),
+            ('types/types', u'Business profile x Business profile'),
             ('topics/functions', u'Business function x Job functions'),
             ('topics/types', u'Business function x Business profile')]
 
@@ -486,18 +486,19 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(total_members)
 
         results = root.search(**query)
-        #if module:
-        #    aux = []
-        #    mod = self.get_handler(module)
-        #    for brain in brains:
-        #        exam = mod.get_exam(brain.name)
-        #        #pp.pprint(exam)
-        #        if exam is None:
-        #            continue
-        #        has_passed = exam.get_result(brain.name)[0]
-        #        if has_passed:
-        #            aux.append(brain)
-        #    brains = aux
+        brains = results.get_documents()
+        if module:
+            aux = []
+            mod = self.get_handler(module)
+            for brain in brains:
+                exam = mod.get_exam(brain.name)
+                #pp.pprint(exam)
+                if exam is None:
+                    continue
+                has_passed = exam.get_result(brain.name)[0]
+                if has_passed:
+                    aux.append(brain)
+            brains = aux
 
         ## Classify the users
         table = {}
@@ -511,7 +512,6 @@ class Training(SiteRoot, WorkflowAware):
             for y in vertical_criterias:
                 table[(x, y['id'])] = 0
 
-        brains = results.get_documents()
         for brain in brains:
             x = getattr(brain, horizontal)
             y = getattr(brain, vertical)
@@ -706,7 +706,7 @@ class Training(SiteRoot, WorkflowAware):
                  'post_code': post_code,
                  'job_function': get_property('abakuc:job_function'),
                  'types': company_type,
-                 'topics': company_topic,
+                 #'topics': company_topic,
                  #'last_module': self.get_last_module_title(user.name),
                  'modules': ns_modules,
                  })
