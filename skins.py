@@ -111,7 +111,8 @@ class FrontOffice(Skin):
 
     def build_namespace(self, context):
         root = context.root
-
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         namespace = Skin.build_namespace(self, context)
 
         # Level0 correspond to the country (uk, fr) ...
@@ -125,11 +126,13 @@ class FrontOffice(Skin):
             x = x.level1
             if isinstance(x, list):
                 level1.extend(x)
+                pp.pprint(x)
             else:
                 level1.append(x)
         # Unique
         # Only works on Expert.Travel and Company objects
         level1 = set(level1)
+        pp.pprint(level1)
         level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
                    for x in level1 ]
         level1.sort(key=lambda x: x['title'])

@@ -149,7 +149,7 @@ class Training(SiteRoot, WorkflowAware):
         return [Module, Bookings]
 
     def get_level1_title(self, level1):
-        return level1
+        return None
 
     def _get_virtual_handler(self, segment):
         name = segment.name
@@ -526,6 +526,7 @@ class Training(SiteRoot, WorkflowAware):
         ## Base URLs
         base_stats = context.uri
         base_show = get_reference(';show_users')
+        namespace['x'] =  base_show
         if month:
             base_show = base_show.replace(month=month)
         if year:
@@ -560,7 +561,6 @@ class Training(SiteRoot, WorkflowAware):
 
         namespace['rows'] = rows
 
-        #pp.pprint(namespace['rows'])
         handler = self.get_handler('/ui/abakuc/training/statistics.xml')
         return stl(handler, namespace)
 

@@ -79,7 +79,8 @@ class ExpertTravel(SiteRoot):
             if level1 == row[0]:
                 return row[1]
 
-        raise KeyError
+        #return None
+        #raise KeyError
 
     def get_user_menu(self, context):
         """Return a dict {user_icon, user, joinisopen}."""
