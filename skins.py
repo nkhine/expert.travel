@@ -122,13 +122,18 @@ class FrontOffice(Skin):
         results = root.search(level0=level0, format=site_root.site_format)
         # Flat
         level1 = []
+        # XXX Here is a bug #133 if you re-start
+        # the server you no longer have a list
+        # you need to re-index
+        # Why is it when you index all topics
+        # are a list, but when you restart they are not?
         for x in results.get_documents():
             x = x.level1
             if isinstance(x, list):
                 level1.extend(x)
-                pp.pprint(x)
             else:
-                level1.append(x)
+                y = x.split(' ')
+                level1.extend(y)
         # Unique
         # Only works on Expert.Travel and Company objects
         level1 = set(level1)
