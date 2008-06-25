@@ -119,6 +119,7 @@ class FrontOffice(Skin):
         level0 = [ x[1] for x in root.get_authorized_country(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
+        format = site_root.site_format
         results = root.search(level0=level0, format=site_root.site_format)
         # Flat
         level1 = []
@@ -132,12 +133,14 @@ class FrontOffice(Skin):
             if isinstance(x, list):
                 level1.extend(x)
             else:
-                y = x.split(' ')
-                level1.extend(y)
+                level1.append(x)
+                #y = x.split(' ')
+                #level1.extend(y)
+                #pp.pprint(y)
         # Unique
+            pp.pprint(x)
         # Only works on Expert.Travel and Company objects
         level1 = set(level1)
-        pp.pprint(level1)
         level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
                    for x in level1 ]
         level1.sort(key=lambda x: x['title'])

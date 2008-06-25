@@ -224,14 +224,14 @@ class SiteRoot(Handler, BaseWebSite):
         text = context.get_form_value('search_text')
 
         # XXX hack (fix the bug in itools ?)
-        if level1:
-            level1 = unicode(level1, 'utf-8')
-        if level2:
-            level2 = unicode(level2, 'utf-8')
-        if level3:
-            level3 = unicode(level3, 'utf-8')
-        if level4:
-            level4 = unicode(level4, 'utf-8')
+        #if level1:
+        #    level1 = unicode(level1, 'utf-8')
+        #if level2:
+        #    level2 = unicode(level2, 'utf-8')
+        #if level3:
+        #    level3 = unicode(level3, 'utf-8')
+        #if level4:
+        #    level4 = unicode(level4, 'utf-8')
 
         # Build the query
         query = {'format': self.site_format}
@@ -278,7 +278,6 @@ class SiteRoot(Handler, BaseWebSite):
                                                 'url': url,
                                                 'last_level': (i+2)==4})
 
-        pp.pprint(namespace['bread_path'])
         # Topic
         if level1 is not None:
             base = context.uri

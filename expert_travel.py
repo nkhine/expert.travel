@@ -74,13 +74,12 @@ class ExpertTravel(SiteRoot):
     site_format = 'address'
 
     def get_level1_title(self, level1):
+       #return level1
         topics = self.get_handler('../topics.csv')
         for row in topics.get_rows():
             if level1 == row[0]:
                 return row[1]
-
-        #return None
-        #raise KeyError
+        raise KeyError
 
     def get_user_menu(self, context):
         """Return a dict {user_icon, user, joinisopen}."""

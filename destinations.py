@@ -34,6 +34,7 @@ class Destinations(SiteRoot):
 
     def get_level1_title(self, level1):
         return level1
+        #return None 
 
     #######################################################################
     # User Interface

@@ -1359,7 +1359,8 @@ class Address(RoleAware, WorkflowAware, Folder):
             self.set_property(key, value)
 
         message = u'Changes Saved.'
-        goto = context.get_form_value('referrer') or None
+        #goto = context.get_form_value('referrer') or None
+        goto = context.uri.resolve(';edit_account_form')
         return context.come_back(message, goto=goto)
 
 

@@ -1641,6 +1641,7 @@ class User(iUser, WorkflowAware, Handler):
 
     setup_address_select__access__ = 'is_self_or_admin'
     def setup_address_select(self, context):
+        user = context.user
         company_name = context.get_form_value('company_name')
         address_name = context.get_form_value('address_name')
 
@@ -1660,12 +1661,14 @@ class User(iUser, WorkflowAware, Handler):
             old_address.set_user_role(self.name, None)
 
         message = u'Company/Address selected.'
-        goto = context.uri.resolve(';profile')
+        home = '/users/%s/;edit_account_form' % (user.name)
+        goto = context.uri.resolve(home)
         return context.come_back(message, goto=goto)
 
 
     setup_address__access__ = 'is_self_or_admin'
     def setup_address(self, context):
+        user = context.user
         name = context.get_form_value('company_name')
         company = self.get_handler('/companies/%s' % name)
 
@@ -1704,7 +1707,8 @@ class User(iUser, WorkflowAware, Handler):
             old_address.set_user_role(self.name, None)
 
         message = u'Company/Address setup done.'
-        goto = context.uri.resolve(';profile')
+        home = '/users/%s/;edit_account_form' % (user.name)
+        goto = context.uri.resolve(home)
         return context.come_back(message, goto=goto)
 
     ########################################################################

@@ -28,8 +28,7 @@
         <label for="topic">Business Function</label>
       </dt>
       <dd>
-        <select id="topic" name="topic" size="8" multiple="multiple"
-          style="width: 90%">
+        <select id="topic" name="topic">
           <option stl:repeat="topic topics" value="${topic/id}"
             selected="${topic/is_selected}">${topic/title}</option> 
         </select>
