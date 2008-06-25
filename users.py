@@ -236,7 +236,9 @@ class User(iUser, WorkflowAware, Handler):
             doc['registration_year'] = registration_date.year
             doc['registration_month'] = registration_date.month
         # Other user fields
-        #doc['job_function'] = get_property('abakuc:job_function')
+        job_function = get_property('abakuc:job_function')
+        doc['functions'] = job_function[0]
+
         root = get_context().root
         # User's address fields
         address = self.get_address()
@@ -246,24 +248,24 @@ class User(iUser, WorkflowAware, Handler):
             if county_id:
                 from root import world
                 row = world.get_row(county_id)
-                country = row[6]
+                country = row[5]
                 region = row[7]
                 county = row[8]
                 doc['country'] = country
                 doc['region'] = region
                 doc['county'] = county
+                pp.pprint(doc['county'])
             # User's company fields
             company = address.parent 
             doc['company_name'] = company.get_property('dc:title')
             doc['types'] = company.get_property('abakuc:type')
-            #doc['types'] = type
-            #topic = company.get_property('abakuc:topic')
+            topic = company.get_property('abakuc:topic')
             # Make the tuple into a list
-            #topics = list(topic) 
+            topics = list(topic) 
             # In the stats we cannot count lists
             # So we only consider the first item
-            #first_topic = topics[0]
-            #doc['topics'] = first_topic
+            first_topic = topics[0]
+            doc['topics'] = first_topic
             #doc['topics'] = topics
         # Index the user's training programmes
         training_programmes = []
