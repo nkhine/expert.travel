@@ -69,7 +69,7 @@ class Job(Folder, RoleAware):
     job_fields = [
         ('dc:title', True),
         ('dc:description', True),
-        ('abakuc:function', True),
+        ('abakuc:functions', True),
         ('abakuc:salary', True),
         ('abakuc:closing_date', True),
         ('abakuc:county', True),
@@ -133,7 +133,7 @@ class Job(Folder, RoleAware):
         metadata = handler.build_metadata()
         for key in ['dc:title' , 'dc:description', 'abakuc:job_text',
                     'abakuc:closing_date', 'abakuc:salary',
-                    'abakuc:function', 'abakuc:county']:
+                    'abakuc:functions', 'abakuc:county']:
             try:
                 value = context.get_form_value(key)
                 if not value:
@@ -200,8 +200,8 @@ class Job(Folder, RoleAware):
         namespace['company'] = company.get_property('dc:title')
         salary = self.get_property('abakuc:salary')
         namespace['abakuc:salary'] = SalaryRange.get_value(salary)
-        function = self.get_property('abakuc:function')
-        namespace['abakuc:function'] =  JobTitle.get_value(function)
+        function = self.get_property('abakuc:functions')
+        namespace['abakuc:functions'] =  JobTitle.get_value(function)
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
 
@@ -220,7 +220,7 @@ class Job(Folder, RoleAware):
         query.append(EqQuery('format', 'Job'))
         today = (datetime.date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
-        query.append(EqQuery('function', function))
+        query.append(EqQuery('functions', function))
         query = AndQuery(*query)
         results = catalog.search(query)
         documents = results.get_documents()
@@ -362,7 +362,7 @@ class Job(Folder, RoleAware):
     ###########################################################
 
     edit_job_fields = ['dc:title' , 'dc:description', 'abakuc:closing_date',
-                       'abakuc:salary', 'abakuc:function']
+                       'abakuc:salary', 'abakuc:functions']
 
 
     edit_metadata_form__access__ = 'is_branch_manager_or_member'
@@ -374,7 +374,7 @@ class Job(Folder, RoleAware):
         # Build namespace
         salary = self.get_property('abakuc:salary')
         namespace['salary'] = SalaryRange.get_namespace(salary)
-        function = self.get_property('abakuc:function')
+        function = self.get_property('abakuc:functions')
         namespace['functions'] =  JobTitle.get_namespace(function)
         job_text = self.get_property('abakuc:job_text')
         namespace['abakuc:job_text'] = job_text
@@ -414,7 +414,7 @@ class Job(Folder, RoleAware):
 
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
-        indexes['function'] = self.get_property('abakuc:function')
+        indexes['functions'] = self.get_property('abakuc:functions')
         indexes['salary'] = self.get_property('abakuc:salary')
         indexes['closing_date'] = self.get_property('abakuc:closing_date')
         address = self.parent

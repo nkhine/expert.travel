@@ -226,47 +226,42 @@ class User(iUser, WorkflowAware, Handler):
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         
-        doc = iUser.get_catalog_indexes(self)
-
+        indexes = iUser.get_catalog_indexes(self)
         get_property = self.get_metadata().get_property
         # The registration date
         registration_date = get_property('abakuc:registration_date')
         if registration_date is not None:
-            doc['registration_date'] = registration_date
-            doc['registration_year'] = registration_date.year
-            doc['registration_month'] = registration_date.month
+            indexes['registration_date'] = registration_date
+            indexes['registration_year'] = registration_date.year
+            indexes['registration_month'] = registration_date.month
         # Other user fields
-        job_function = get_property('abakuc:job_function')
-        doc['functions'] = job_function[0]
-
+        indexes['function'] = get_property('abakuc:functions')
         root = get_context().root
-        # User's address fields
-        address = self.get_address()
-        if address:
-            doc['address'] = address.get_property('abakuc:address')
-            county_id = address.get_property('abakuc:county')
-            if county_id:
-                from root import world
-                row = world.get_row(county_id)
-                country = row[5]
-                region = row[7]
-                county = row[8]
-                doc['country'] = country
-                doc['region'] = region
-                doc['county'] = county
-                pp.pprint(doc['county'])
-            # User's company fields
-            company = address.parent 
-            doc['company_name'] = company.get_property('dc:title')
-            doc['types'] = company.get_property('abakuc:type')
-            topic = company.get_property('abakuc:topic')
-            # Make the tuple into a list
-            topics = list(topic) 
-            # In the stats we cannot count lists
-            # So we only consider the first item
-            first_topic = topics[0]
-            doc['topics'] = first_topic
-            #doc['topics'] = topics
+        companies_handler = root.get_handler('companies')
+        if companies_handler:
+            companies = \
+            list(companies_handler.search_handlers(handler_class=Company))
+            for company in companies:
+                indexes['company'] = company.get_property('dc:title')
+                indexes['type'] = company.get_property('abakuc:type')
+                topics = company.get_property('abakuc:topic')
+                topic = list(topics)
+                indexes['topic'] = topic
+                #address = []
+                address_handler = \
+                list(company.search_handlers(handler_class=Address))
+                for address in address_handler:
+                    indexes['address'] = address.get_property('abakuc:address')
+                    county_id = address.get_property('abakuc:county')
+                    if county_id:
+                        from root import world
+                        row = world.get_row(county_id)
+                        country = row[5]
+                        region = row[7]
+                        county = row[8]
+                        indexes['country'] = country
+                        indexes['region'] = region
+                        indexes['county'] = county
         # Index the user's training programmes
         training_programmes = []
         training_handler = root.get_handler('training')
@@ -280,10 +275,10 @@ class User(iUser, WorkflowAware, Handler):
                 users = training.get_members()
                 if username in users:
                     training_programmes.append(to)
-        doc['training_programmes'] = training_programmes
+        indexes['training_programmes'] = training_programmes
     
-        pp.pprint(doc)
-        return doc
+        pp.pprint(indexes)
+        return indexes
         
 
     #######################################################################
@@ -576,14 +571,14 @@ class User(iUser, WorkflowAware, Handler):
     edit_account_form__sublabel__ = u'Account'
     def edit_account_form(self, context):
         root = get_context().root
-        job_function = self.get_property('abakuc:job_function')
+        functions = self.get_property('abakuc:functions')
         logo = self.has_handler('logo')
 
         # Build the namespace
         namespace = {}
         for key in self.account_fields:
             namespace[key] = self.get_property(key)
-        namespace['job_function'] = root.get_functions_namespace(job_function)
+        namespace['functions'] = root.get_functions_namespace(functions)
         namespace['logo'] = logo
         # Ask for password to confirm the changes
         if self.name != context.user.name:
@@ -615,13 +610,13 @@ class User(iUser, WorkflowAware, Handler):
         if results.get_n_documents():
             message = (u'There is another user with the email "%s", '
                        u'please try again')
-        job_function = context.get_form_values('job_function')
+        functions = context.get_form_values('functions')
         logo = context.get_form_value('logo')
         # Save changes
         for key in self.account_fields:
             value = context.get_form_value(key)
             self.set_property(key, value)
-        self.set_property('abakuc:job_function', job_function)
+        self.set_property('abakuc:functions', functions)
 
 
         url = ';profile'
@@ -999,9 +994,9 @@ class User(iUser, WorkflowAware, Handler):
             handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
             return stl(handler, namespace)
 
-    job_function__access__ = 'is_allowed_to_view'
-    job_function__label__ = u'Job function stats'
-    def job_function(self, context):
+    functions__access__ = 'is_allowed_to_view'
+    functions__label__ = u'Job function stats'
+    def functions(self, context):
         # Set Style
         context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
         context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
@@ -1017,7 +1012,7 @@ class User(iUser, WorkflowAware, Handler):
             namespace['title'] = office_name.title_or_name
 
             # Return the page
-            handler = self.get_handler('/ui/abakuc/statistics/job_function.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/functions.xml')
             return stl(handler, namespace)
 
 

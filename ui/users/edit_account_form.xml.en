@@ -24,12 +24,12 @@
           value="${abakuc:phone}" />
       </dd>
       <dt>
-        <label for="job_function">Job Function</label>
+        <label for="functions">Job Function</label>
       </dt>
       <dd>
-        <select id="job_function" name="job_function" style="width: 90%">
-          <option stl:repeat="job_function job_function" value="${job_function/id}"
-            selected="${job_function/is_selected}">${job_function/title}</option> 
+        <select id="functions" name="functions" style="width: 90%">
+          <option stl:repeat="functions functions" value="${functions/id}"
+            selected="${functions/is_selected}">${functions/title}</option> 
         </select>
       </dd>
       <dt><label for="ikaaro:email">E-mail</label></dt>

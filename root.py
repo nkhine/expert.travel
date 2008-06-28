@@ -20,8 +20,8 @@ from itools.cms.registry import register_object_class
 from itools.cms.root import Root as BaseRoot
 from itools.cms.html import XHTMLFile
 from itools.xhtml import Document as XHTMLDocument
-from itools.catalog import  KeywordField, IntegerField
-
+from itools.catalog import (TextField, KeywordField, 
+                            IntegerField, BoolField)
 # Import from abakuc our modules
 from base import Handler
 from handlers import EnquiriesLog
@@ -88,26 +88,26 @@ class Root(Handler, BaseRoot):
             KeywordField('level4', is_stored=True),
             KeywordField('user_id', is_stored=False),
             KeywordField('closing_date', is_stored=False),
-            KeywordField('company', is_stored=True),
-            KeywordField('address', is_stored=True),
+            TextField('company', is_stored=True),
+            TextField('address', is_stored=True),
             KeywordField('country', is_stored=True),
             KeywordField('region', is_stored=True),
             KeywordField('county', is_stored=True),
             # XXX Fix this as is repeated in TP
-            KeywordField('function', is_stored=False),
+            #KeywordField('function', is_stored=False),
             KeywordField('salary', is_stored=False),
-            KeywordField('description', is_stored=False),
+            TextField('description', is_stored=False),
             # For users KeywordField(training programme statistics)
             KeywordField('registration_date'),
             KeywordField('registration_year'),
             KeywordField('registration_month'),
             # Old TU search keys
-            KeywordField('business_profile', is_stored=True),
-            KeywordField('job_function', is_stored=True),
-            KeywordField('business_function', is_stored=True),
-            KeywordField('types', is_stored=True),
-            KeywordField('topics', is_stored=True),
-            KeywordField('functions', is_stored=True),
+            #KeywordField('business_profile', is_indexed=False, is_stored=True),
+            #KeywordField('functions', is_indexed=True, is_stored=True),
+            #KeywordField('business_function', is_stored=True),
+            KeywordField('type'),
+            KeywordField('topic'),
+            KeywordField('function'),
             KeywordField('training_programmes')]
 
 
@@ -267,9 +267,9 @@ class Root(Handler, BaseRoot):
         return namespace
 
     def get_functions_namespace(self, ids=None):
-        job_function = self.get_handler('functions.csv')
+        functions = self.get_handler('functions.csv')
         namespace = []
-        for row in job_function.get_rows():
+        for row in functions.get_rows():
             namespace.append({
                 'id': row[0], 'title': row[1],
                 'is_selected': (ids is not None) and (row[0] in ids)})

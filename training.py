@@ -3,6 +3,7 @@
 
 # Import from the Standard Library
 import datetime
+import string
 
 # Import from itools
 from itools.stl import stl
@@ -32,7 +33,7 @@ from exam import Exam
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange
-from namespaces import Region
+from namespaces import Region, BusinessProfile
 from marketing import Marketing
 
 month_names = [
@@ -354,6 +355,22 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(countries)
         return regions
         #return countries
+    ########################################################################
+    # Statistics
+    chart__access__ = True
+    #statistics__access__ = 'is_allowed_to_view_statistics'
+    chart__label__ = u'Statistics'
+    chart__sublabel__ = u'Statistics'
+    def chart(self, context):
+        # Set style
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
+        # Add the js scripts
+        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.tablesorter.js')
+        context.scripts.append('/ui/abakuc/jquery/addons/jquery.tablesorter.pager.js')
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/training/chart.xml')
+        return stl(handler, namespace)
 
 
     ########################################################################
@@ -363,7 +380,7 @@ class Training(SiteRoot, WorkflowAware):
     statistics__label__ = u'Statistics'
     statistics__sublabel__ = u'Statistics'
     def statistics(self, context, address_country=None, address_region=None,
-                    address_county=None, topics=None, types=None, functions=None):
+                    address_county=None, topic=None, type=None, function=None):
         '''
         This is the statistics module, which gives us an overview of users who
         are registered for each training programme.
@@ -385,6 +402,9 @@ class Training(SiteRoot, WorkflowAware):
                     'value': u'Region x Business profile'},
 
         '''
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/excanvas-compressed.js')
+        context.scripts.append('/ui/abakuc/fgCharting.jQuery.js')
         from root import world
         root = get_context().root
         import pprint
@@ -394,7 +414,7 @@ class Training(SiteRoot, WorkflowAware):
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
-        layout = context.get_form_value('layout', 'country/types')
+        layout = context.get_form_value('layout', 'country/function')
         country = context.get_form_value('country')
         #region = context.get_form_value('region')
 
@@ -417,12 +437,13 @@ class Training(SiteRoot, WorkflowAware):
 
         # Layout options
         layout_options = [
-            ('country/types', u'Country x Business profile'),
-            ('country/topics', u'Country x Business function'),
-            ('country/functions', u'Country x Job functions'),
-            ('functions/types', u'Job functions x Business profile'),
-            ('topics/functions', u'Business function x Job functions'),
-            ('topics/types', u'Business function x Business profile')]
+            ('country/country', u'Country x Business profile'),
+            ('country/type', u'Country x Business profile'),
+            ('country/topic', u'Country x Business function'),
+            ('country/function', u'Country x Job functions'),
+            ('function/type', u'Job functions x Business profile'),
+            ('topic/function', u'Business function x Job functions'),
+            ('topic/type', u'Business function x Business profile')]
 
         namespace['layout'] = [
             {'name': name, 'value': value, 'selected': name == layout}
@@ -447,12 +468,16 @@ class Training(SiteRoot, WorkflowAware):
         #namespace['region'] = regions
         #namespace['counties'] = county
 
+        #topics = [ 
+        #    {'id': x, 'is_selected': x == topic}
+        #    for x in root.get_topics_namespace(topic) ]
+        #pp.pprint(topics)
         # Statistics criterias
         vertical, horizontal = layout.split('/')
         criterias = {'country': countries,
-                     'topics': root.get_topics_namespace(topics),
-                     'functions':  root.get_functions_namespace(functions),
-                     'types': root.get_types_namespace(types)
+                     'topic': root.get_topics_namespace(topic),
+                     'function':  root.get_functions_namespace(function),
+                     'type': root.get_types_namespace(type)
                      }
         #pp.pprint(criterias)
         horizontal_criterias = criterias[horizontal]
@@ -462,7 +487,6 @@ class Training(SiteRoot, WorkflowAware):
         root = context.root
         query = {'training_programmes': self.name}
         catalog = context.server.catalog
-        #query = {'format': self.site_format}
         for key in context.get_form_keys():
             value = context.get_form_value(key)
             if value:
@@ -509,9 +533,8 @@ class Training(SiteRoot, WorkflowAware):
 
         for brain in brains:
             x = getattr(brain, horizontal)
+            x = string.join(x, '' )
             y = getattr(brain, vertical)
-            pp.pprint(x)
-            pp.pprint(y)
             if x and y and (x, y) in table:
                 table[(x, y)] += 1
                 table[(x, '')] += 1
@@ -575,9 +598,9 @@ class Training(SiteRoot, WorkflowAware):
         country = context.get_form_value('country', '')
         region = context.get_form_value('region', '')
         county = context.get_form_value('abakuc:county', '')
-        topics = context.get_form_value('topics', '')
-        functions = context.get_form_value('functions', '')
-        types = context.get_form_value('types', '')
+        topic = context.get_form_value('topic', '')
+        function = context.get_form_value('function', '')
+        type = context.get_form_value('type', '')
         # Build the namespace
         namespace = {}
         # Registration month
@@ -617,9 +640,9 @@ class Training(SiteRoot, WorkflowAware):
         namespace['country'] = countries
         namespace['region'] = region
         namespace['county'] = county
-        namespace['topics'] = root.get_topics_namespace(topics)
-        namespace['functions'] = root.get_functions_namespace(functions)
-        namespace['types'] = root.get_types_namespace(types)
+        namespace['topic'] = root.get_topics_namespace(topic)
+        namespace['function'] = root.get_functions_namespace(function)
+        namespace['type'] = root.get_types_namespace(type)
         # Search users
         root = context.root
         catalog = context.server.catalog
@@ -699,9 +722,9 @@ class Training(SiteRoot, WorkflowAware):
                  'fax': fax,
                  'address': address,
                  'post_code': post_code,
-                 'job_function': get_property('abakuc:job_function'),
-                 'types': company_type,
-                 #'topics': company_topic,
+                 'functions': get_property('abakuc:functions'),
+                 'type': company_type,
+                 'topic': company_topic,
                  #'last_module': self.get_last_module_title(user.name),
                  'modules': ns_modules,
                  })

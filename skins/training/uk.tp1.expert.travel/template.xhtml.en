@@ -14,7 +14,7 @@
     <!--<link href="http://developer.yahoo.com/yui/build/reset-fonts-grids/reset-fonts-grids.css"
     rel="stylesheet" type="text/css" /> -->
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
+    <link type="text/css" rel="stylesheet" href="/ui/uk.tp1.expert.travel/style.css" />
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <link rel="stylesheet" type="text/css" href="/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css" />
     <!-- JavaScript -->
@@ -99,6 +99,7 @@
                           <li><a href="${user/info/home}">
                           ${user/info/title}</a></li>
                       </stl:block>
+                    <li class="space">&nbsp;</li>
                 </ul>
             </div><!-- ft -->
         </div><!-- doc -->

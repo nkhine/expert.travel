@@ -87,7 +87,7 @@ class Schema(BaseSchema):
         'training_manager': Tokens(default=()),
         'partner': Tokens(default=()),
         'guest': Tokens(default=()),
-        'job_function': String,
+        'functions': String,
         'registration_date': Date,
         # Company
         'website': String,

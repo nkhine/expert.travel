@@ -238,7 +238,7 @@ class UserSchema(BaseSchema):
         'lastname': Unicode(title=u'Last Name', is_mandatory=True),
         'business_function': BusinessFunction(title=u'Business Function',
                                               is_mandatory=True),
-        'job_function': JobFunction(title=u'Job Function', is_mandatory=True),
+        'functions': JobFunction(title=u'Job Function', is_mandatory=True),
         'job_title': Unicode(title=u'Job Title', is_mandatory=True),
         'email': EMail(default='', title=u'', is_mandatory=True),
         'contact_me': Boolean(default=True, title=u'', is_mandatory=False),

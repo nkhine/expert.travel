@@ -128,10 +128,10 @@ class SiteRoot(Handler, BaseWebSite):
 
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
-    def register_form(self, context, job_function=None):
+    def register_form(self, context, functions=None):
         root = get_context().root
         namespace = context.build_form_namespace(self.register_fields)
-        namespace['job_function'] = root.get_functions_namespace(job_function)
+        namespace['functions'] = root.get_functions_namespace(functions)
         handler = self.get_handler('/ui/abakuc/register.xml')
         return stl(handler, namespace)
 
@@ -148,7 +148,7 @@ class SiteRoot(Handler, BaseWebSite):
         firstname = context.get_form_value('ikaaro:firstname').strip()
         lastname = context.get_form_value('ikaaro:lastname').strip()
         email = context.get_form_value('ikaaro:email').strip()
-        job_function = context.get_form_value('job_function')
+        functions = context.get_form_value('functions')
 
         # Do we already have a user with that email?
         root = context.root
@@ -177,7 +177,7 @@ class SiteRoot(Handler, BaseWebSite):
             #default_role = self.__roles__[0]['name']
             #self.set_user_role(user.name, default_role)
         # Set product specific data
-        user.set_property('abakuc:job_function', job_function)
+        user.set_property('abakuc:functions', functions)
         # Set the registration date
         user.set_property('abakuc:registration_date', datetime.date.today())
         # Send confirmation email

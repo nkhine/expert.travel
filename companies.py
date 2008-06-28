@@ -441,8 +441,8 @@ class Company(SiteRoot):
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(),
-                         'function': JobTitle.get_value(
-                                        get('abakuc:function')),
+                         'functions': JobTitle.get_value(
+                                        get('abakuc:functions')),
                          'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
             jobs.append(job_to_add)
@@ -487,15 +487,15 @@ class Company(SiteRoot):
                  EqQuery('company', self.name),
                  RangeQuery('closing_date', today, None)]
         # Search fields
-        function = context.get_form_value('function') or None
+        functions = context.get_form_value('functions') or None
         salary = context.get_form_value('salary') or None
         county = context.get_form_value('county') or None
         job_title = context.get_form_value('job_title') or None
         if job_title:
             job_title = job_title.lower()
         # Get Jobs (construct the query for the search)
-        if function:
-            query.append(EqQuery('function', function))
+        if functions:
+            query.append(EqQuery('functions', functions))
         if salary:
             query.append(EqQuery('salary', salary))
         if county:
@@ -529,7 +529,7 @@ class Company(SiteRoot):
                 jobs.append({
                     'url': url,
                     'title': job.title,
-                    'function': JobTitle.get_value(get('abakuc:function')),
+                    'functions': JobTitle.get_value(get('abakuc:functions')),
                     'salary': SalaryRange.get_value(get('abakuc:salary')),
                     'county': county,
                     'region': region,
@@ -559,7 +559,7 @@ class Company(SiteRoot):
         namespace['jobs'] = jobs
 
         # Search Namespace
-        namespace['function'] = JobTitle.get_namespace(function)
+        namespace['functions'] = JobTitle.get_namespace(functions)
         namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['job_title'] = job_title
         # Return the page
@@ -949,12 +949,12 @@ class Address(RoleAware, WorkflowAware, Folder):
         for username in self.get_members():
            user = users.get_handler(username)
            url = '/users/%s/;profile' % username
-           job_function = user.get_property('abakuc:job_function')
+           functions = user.get_property('abakuc:functions')
            state = user.get_property('state')
            if state == 'public':
                  members.append({'id': user.get_title,
                                  'url': url,
-                                 'job_function': job_function,
+                                 'functions': functions,
                                  'phone': user.get_property('abakuc:phone'),
                                  'title': user.get_title()})
         # List users
@@ -1177,8 +1177,8 @@ class Address(RoleAware, WorkflowAware, Folder):
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(),
-                         'function': JobTitle.get_value(
-                                        get('abakuc:function')),
+                         'functions': JobTitle.get_value(
+                                        get('abakuc:functions')),
                          'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
             jobs.append(job_to_add)

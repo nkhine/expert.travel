@@ -63,9 +63,9 @@
        <td>
           <p>
             Business function<br/>
-           <select name="topics" style="font-size: 9px">
+           <select name="topic" style="font-size: 9px">
               <option value="">All</option>
-              <option stl:repeat="item topics" value="${item/id}"
+              <option stl:repeat="item topic" value="${item/id}"
                 selected="${item/is_selected}">${item/title}</option>
             </select>
             </p>
@@ -73,9 +73,9 @@
         <td>
           <p>
             Job function<br/>
-             <select name="functions" style="font-size: 9px">
+             <select name="function" style="font-size: 9px">
               <option value="">All</option>
-              <option stl:repeat="item functions" value="${item/id}" 
+              <option stl:repeat="item function" value="${item/id}" 
                 selected="${item/is_selected}">${item/title}</option>
             </select>
           </p>
@@ -83,9 +83,9 @@
          <td>
           <p>
             Business profile<br/>
-            <select name="types" style="font-size: 9px">
+            <select name="type" style="font-size: 9px">
               <option value="">All</option>
-              <option stl:repeat="item types" value="${item/id}" 
+              <option stl:repeat="item type" value="${item/id}" 
                 selected="${item/is_selected}">${item/title}</option>
             </select>
             </p>
