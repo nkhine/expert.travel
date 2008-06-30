@@ -533,8 +533,9 @@ class Training(SiteRoot, WorkflowAware):
 
         for brain in brains:
             x = getattr(brain, horizontal)
-            x = string.join(x, '' )
+            #x = string.join(x, '' )
             y = getattr(brain, vertical)
+            #y = string.join(y, '' )
             if x and y and (x, y) in table:
                 table[(x, y)] += 1
                 table[(x, '')] += 1
@@ -697,7 +698,7 @@ class Training(SiteRoot, WorkflowAware):
                 if company is None:
                     company_title = 'not available'
                     company_type = 'not available'
-                    company_topics = 'not available'
+                    company_topic = 'not available'
                 else:
                     company_title = company.get_property('dc:title')
                     company_type = company.get_property('abakuc:type')
@@ -705,7 +706,7 @@ class Training(SiteRoot, WorkflowAware):
             else:
                 company_title = 'not available'
                 company_type = 'not available'
-                company_topics = 'not available'
+                company_topic = 'not available'
             # All modules dates
             ns_modules = [{'date': date.encode('utf-8')} for date in
                           self.get_modules_dates(modules, user.name)]
