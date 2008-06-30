@@ -282,8 +282,8 @@ th a.sort_none {
 #document  P, IMG { margin: 0em; }
 
 
-#ft { position:absolute;bottom:15px;right:15px;border-top: 1px solid #6899FF; font-size: 85%;} 
-#ft h1 { position:absolute;bottom:-9.5px;right:2px;background:url(images/travel-registry.png) top right no-repeat;width:100px;height:37px; }
+#ft { position:absolute;bottom:15px;border-top: 1px solid #6899FF; font-size: 85%;} 
+#ft h1 { position:absolute;bottom:-9.5px;background:url(images/travel-registry.png) top right no-repeat;width:100px;height:37px; }
 #ft h1 a {width:100px;line-height:37px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
 #ft ul {list-style:none;margin:0;padding:0;}
 #ft li {float:left;margin:0;padding:0;}
