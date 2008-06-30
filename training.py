@@ -441,9 +441,9 @@ class Training(SiteRoot, WorkflowAware):
             ('country/type', u'Country x Business profile'),
             ('country/topic', u'Country x Business function'),
             ('country/function', u'Country x Job functions'),
-            ('function/type', u'Job functions x Business profile'),
-            ('topic/function', u'Business function x Job functions'),
-            ('topic/type', u'Business function x Business profile')]
+            ('function/type', u'Job functions x Business profile')]
+            #('topic/function', u'Business function x Job functions'),
+            #('topic/type', u'Business function x Business profile')]
 
         namespace['layout'] = [
             {'name': name, 'value': value, 'selected': name == layout}
@@ -533,9 +533,17 @@ class Training(SiteRoot, WorkflowAware):
 
         for brain in brains:
             x = getattr(brain, horizontal)
-            #x = string.join(x, '' )
+            if isinstance(x, list):
+                for item in x:
+                    x = item
+            else:
+                x
             y = getattr(brain, vertical)
-            #y = string.join(y, '' )
+            if isinstance(y, list):
+                for item in y:
+                    y = item
+            else:
+                y
             if x and y and (x, y) in table:
                 table[(x, y)] += 1
                 table[(x, '')] += 1

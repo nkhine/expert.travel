@@ -133,10 +133,9 @@ class FrontOffice(Skin):
             if isinstance(x, list):
                 level1.extend(x)
             else:
-                #level1.append(x)
-                y = x.split(' ')
-                level1.extend(y)
-                #pp.pprint(y)
+                level1.append(x)
+                #y = x.split(' ')
+                #level1.extend(y)
         # Unique
             pp.pprint(x)
         # Only works on Expert.Travel and Company objects

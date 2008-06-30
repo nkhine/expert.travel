@@ -237,49 +237,33 @@ class User(iUser, WorkflowAware, Handler):
         # Other user fields
         indexes['function'] = get_property('abakuc:functions')
         root = get_context().root
-        #address = self.get_address()
-        #if address:
-        #    indexes['address'] = address.get_property('abakuc:address')
-        #    county_id = address.get_property('abakuc:county')
-        #    if county_id:
-        #        from root import world
-        #        row = world.get_row(county_id)
-        #        country = row[5]
-        #        region = row[7]
-        #        county = row[8]
-        #        indexes['country'] = country
-        #        indexes['region'] = region
-        #        indexes['county'] = county
-        #    company = address.parent
-        #    indexes['company_name'] = company.get_property('dc:title')
-        #    indexes['type'] = company.get_property('abakuc:type')
-        #    indexes['topic'] = company.get_property('abakuc:topic')
-        #companies_handler = root.get_handler('companies')
-        #if companies_handler:
-        #    companies = \
-        #    list(companies_handler.search_handlers(handler_class=Company))
-        #    for company in companies:
-        #        indexes['company'] = company.get_property('dc:title')
-        #        indexes['type'] = company.get_property('abakuc:type')
-        #        indexes['topic'] = company.get_property('abakuc:topic')
-        #        #topics = company.get_property('abakuc:topic')
-        #        #topic = list(topics)
-        #        #indexes['topic'] = topic
-        #        #address = []
-        #        address_handler = \
-        #        list(company.search_handlers(handler_class=Address))
-        #        for address in address_handler:
-        #            indexes['address'] = address.get_property('abakuc:address')
-        #            county_id = address.get_property('abakuc:county')
-        #            if county_id:
-        #                from root import world
-        #                row = world.get_row(county_id)
-        #                country = row[5]
-        #                region = row[7]
-        #                county = row[8]
-        #                indexes['country'] = country
-        #                indexes['region'] = region
-        #                indexes['county'] = county
+        companies_handler = root.get_handler('companies')
+        if companies_handler:
+            companies = \
+            list(companies_handler.search_handlers(handler_class=Company))
+            for company in companies:
+                company_title = company.get_handler(company.abspath)
+                addresses = \
+                    list(company.search_handlers(handler_class=Address))
+                for address in addresses:
+                    username = self.name
+                    users = address.get_members()
+                    if username in users:
+                        indexes['address'] = address.get_property('abakuc:address')
+                        county_id = address.get_property('abakuc:county')
+                        if county_id:
+                            from root import world
+                            row = world.get_row(county_id)
+                            country = row[5]
+                            region = row[7]
+                            county = row[8]
+                            indexes['country'] = country
+                            indexes['region'] = region
+                            indexes['county'] = county
+                        indexes['company'] = company.get_property('dc:title')
+                        indexes['type'] = company.get_property('abakuc:type')
+                        topics = company.get_property('abakuc:topic')
+                        indexes['topic'] = tuple(topics)
         # Index the user's training programmes
         training_programmes = []
         training_handler = root.get_handler('training')
@@ -287,9 +271,10 @@ class User(iUser, WorkflowAware, Handler):
             trainings = \
             list(training_handler.search_handlers(handler_class=Training))
             for training in trainings:
-                members = []
+                #members = []
                 to = training.get_property('dc:title')
                 username = self.name
+                #pp.pprint(members)
                 users = training.get_members()
                 if username in users:
                     training_programmes.append(to)

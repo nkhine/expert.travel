@@ -105,9 +105,9 @@ class Root(Handler, BaseRoot):
             #KeywordField('business_profile', is_indexed=False, is_stored=True),
             #KeywordField('functions', is_indexed=True, is_stored=True),
             #KeywordField('business_function', is_stored=True),
-            #KeywordField('type'),
-            #KeywordField('topic'),
-            #KeywordField('function'),
+            KeywordField('type'),
+            KeywordField('topic'),
+            KeywordField('function'),
             KeywordField('training_programmes')]
 
 
