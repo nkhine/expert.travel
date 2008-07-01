@@ -33,7 +33,7 @@ from exam import Exam
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange
-from namespaces import Region, BusinessProfile
+from namespaces import Regions, BusinessProfile
 from marketing import Marketing
 
 month_names = [
@@ -414,9 +414,9 @@ class Training(SiteRoot, WorkflowAware):
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
-        layout = context.get_form_value('layout', 'country/function')
+        layout = context.get_form_value('layout', 'country/type')
         country = context.get_form_value('country')
-        #region = context.get_form_value('region')
+        region = context.get_form_value('region')
 
         # Build the namespace
         namespace = {}
@@ -437,19 +437,17 @@ class Training(SiteRoot, WorkflowAware):
 
         # Layout options
         layout_options = [
-            ('country/country', u'Country x Business profile'),
             ('country/type', u'Country x Business profile'),
             ('country/topic', u'Country x Business function'),
             ('country/function', u'Country x Job functions'),
-            ('function/type', u'Job functions x Business profile')]
-            #('topic/function', u'Business function x Job functions'),
-            #('topic/type', u'Business function x Business profile')]
+            ('function/type', u'Job functions x Business profile'),
+            ('topic/function', u'Business function x Job functions'),
+            ('topic/type', u'Business function x Business profile')]
 
         namespace['layout'] = [
             {'name': name, 'value': value, 'selected': name == layout}
             for name, value in layout_options ]
 
-        #pp.pprint(namespace['layout'])
         # List authorized countries
         countries = [
             {'id': y, 'title': x, 'is_selected': x == address_country}
@@ -468,18 +466,17 @@ class Training(SiteRoot, WorkflowAware):
         #namespace['region'] = regions
         #namespace['counties'] = county
 
-        #topics = [ 
-        #    {'id': x, 'is_selected': x == topic}
-        #    for x in root.get_topics_namespace(topic) ]
-        #pp.pprint(topics)
         # Statistics criterias
+        regions = root.get_types_namespace(type)
+        counties = root.get_types_namespace(type)
         vertical, horizontal = layout.split('/')
         criterias = {'country': countries,
+                     'region': regions,
+                     'county': counties,
                      'topic': root.get_topics_namespace(topic),
                      'function':  root.get_functions_namespace(function),
                      'type': root.get_types_namespace(type)
                      }
-        #pp.pprint(criterias)
         horizontal_criterias = criterias[horizontal]
         vertical_criterias = criterias[vertical]
 
@@ -499,11 +496,16 @@ class Training(SiteRoot, WorkflowAware):
         if year:
             query['registration_year'] = year
         # XXX Fix this so that countries are listed, then regions etc...
-        #if country:
-        #    query['country'] = countries
-        #    vertical_criterias = regions 
-        #    vertical = 'region'
-        #    #pp.pprint(vertical_criterias)
+        if country:
+            query['country'] = country
+            vertical_criterias = Regions.get_regions(country) 
+            pp.pprint(vertical_criterias)
+            vertical = 'region'
+        if region:
+            query['region'] = region
+            vertical_criterias = Regions.get_counties(region) 
+            vertical = 'county'
+
         results = root.search(**query)
         brains = results.get_documents()
         if module:
@@ -529,26 +531,33 @@ class Training(SiteRoot, WorkflowAware):
         for x in horizontal_criterias:
             x = x['id']
             for y in vertical_criterias:
+                #table[ x['id'],y['id'] ] = 0
                 table[(x, y['id'])] = 0
 
         for brain in brains:
             x = getattr(brain, horizontal)
             if isinstance(x, list):
-                for item in x:
-                    x = item
-            else:
-                x
+                x = x[0]
+                pp.pprint(x)
+                #for item in x:
+                #    x = item
+                #    pp.pprint(x)
+            #else:
+            #    x
             y = getattr(brain, vertical)
             if isinstance(y, list):
-                for item in y:
-                    y = item
-            else:
-                y
+                y = y[0]
+                pp.pprint(y)
+                #for item in y:
+                #    y = item
+            #else:
+            #    y
             if x and y and (x, y) in table:
                 table[(x, y)] += 1
                 table[(x, '')] += 1
                 table[('', y)] += 1
                 table[('', '')] += 1
+        #pp.pprint(table)
         ## Base URLs
         base_stats = context.uri
         base_show = get_reference(';show_users')
@@ -575,6 +584,8 @@ class Training(SiteRoot, WorkflowAware):
                 del query[key]
             rows.append({'title': y['title'], 'url': None, 'columns': []})
             if vertical == 'country' and country is None:
+                rows[-1]['url'] = base_stats.replace(**query)
+            if vertical == 'region' and region is None:
                 rows[-1]['url'] = base_stats.replace(**query)
 
             for x in horizontal_criterias + [{'id': ''}]:

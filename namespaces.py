@@ -9,32 +9,6 @@ from itools.datatypes import Boolean, Date, Integer, String, Unicode, URI
 from itools.xml import xml
 from itools.schemas import Schema, register_schema
 
-
-
-#############################################################################
-# Data to load on start-up
-#############################################################################
-
-#path = get_abspath(globals(), 'regions.txt')
-#file = vfs.open(path)
-#lines = file.read().split('\n')
-#file.close()
-#regions = []
-#region_id = None
-#for line in lines:
-#    line = line.strip()
-#    if line:
-#        id, title = line.split('#')
-#        if region_id is None:
-#            region_id = id
-#            regions.append({'id': id, 'title': title, 'counties': []})
-#        else:
-#            id = '%s/%s' % (region_id, id)
-#            regions[-1]['counties'].append({'id': id, 'title': title})
-#    else:
-#        region_id = None
-#
-
 #############################################################################
 # Data Types
 #############################################################################
@@ -130,80 +104,62 @@ class JobFunction(Enumerate):
                 {'id': 'reservation_staff', 'label': 'Reservation Staff'},
                 {'id': 'other', 'label': 'Other'}]
 
+class Regions(Enumerate):
 
-class Norman(Enumerate):
+      @staticmethod
+      def get_regions(id, selected_region=None):
+          """
+          From the country id id (e.g 'uk') returns the list of the regions.
 
-    @staticmethod
-    def get_counties(id):
-        """
-        From a region id (e.g 'south_east') returns the list of the region's
-        counties.
-        """
-        for region in regions:
-            if region['id'] == id:
-                return region['counties'][:]
-        return None
-
-
-
-class Region(Enumerate):
-
-    @staticmethod
-    def get_labels(id):
-        """
-        From a given region id (e.g. 'south_east/oxfordshire'), returns a
-        tuple with the labels for the region and the county (e.g. 'South East'
-        and 'Oxfordshire').
-        """
-        if id:
-            region_id, county_id = id.split('/')
-            for region in regions:
-                if region['id'] == region_id:
-                    for county in region['counties']:
-                        if county['id'] == id:
-                            return region['title'], county['title']
-        return None, None
-
-
-    @staticmethod
-    def get_namespace(value):
-        """
-        Returns the namespace for all the regions and counties, ready to
-        use to draw a selection box in STL. The namespace structure is:
-
-          [{'id': <region id>, 'label': <region label>,
-            'counties': [{'id': <county id>, 'label': <county label>,
-                          'is_selected': <True | False>}
-                         ...]
-           }
-           ...
+          [   {'id': u'East Anglia', 'selected': False, 'title': u'East Anglia'},
+              ...
+              {'id': u'Yorkshire & Humberside', 'selected': False,
+               'title': u'Yorkshire & Humberside'}
           ]
-        """
-        aux = deepcopy(regions)
+          """
+          import pprint
+          pp = pprint.PrettyPrinter(indent=4)
 
-        if value is not None:
-            region_id = value.split('/')[0]
-        else:
-            region_id = None
+          from root import world
+          rows = world.get_rows()
+          regions = []
+          for row in rows:
+              if id == row[5]:
+                  region = row[7]
+                  if region not in regions:
+                      regions.append(region)
+          regions = [{'id': x,
+                      'title': x,
+                      'selected': x==selected_region} for x in regions]
+          regions.sort(key=lambda x: x['title'])
 
-        for region in aux:
-            region['is_selected'] = (region['id'] == region_id)
-            for county in region['counties']:
-                county['is_selected'] = (county['id'] == value)
-        return aux
+          return regions
 
 
-    @staticmethod
-    def get_counties(id):
-        """
-        From a region id (e.g 'south_east') returns the list of the region's
-        counties.
-        """
-        for region in regions:
-            if region['id'] == id:
-                return region['counties'][:]
-        return None
+      @staticmethod
+      def get_counties(id, selected_county=None):
+          """
+          From a region id (e.g 'South East') returns the list of the region's
+          counties.
+          """
+          import pprint
+          pp = pprint.PrettyPrinter(indent=4)
 
+          from root import world
+          pp.pprint(id)
+          rows = world.get_rows()
+          counties = []
+          for row in rows:
+              if id == row[7]:
+                  county = row[8]
+                  if county not in counties:
+                      counties.append(county)
+          counties = [{'id': x,
+                      'title': x,
+                      'selected': x==selected_county} for x in counties]
+          counties.sort(key=lambda x: x['title'])
+
+          return counties
 
 
 #############################################################################
@@ -275,25 +231,6 @@ class CompanySchema(BaseSchema):
         }
 
 register_schema(CompanySchema)
-
-
-
-class BranchSchema(BaseSchema):
-
-    class_uri = 'http://xml.traveluni.com/namespaces/branch'
-    class_prefix = 'branch'
-
-    schema = {
-        'address': Unicode(title=u'Address', is_mandatory=True),
-        'city': Unicode(title=u'Post Town', is_mandatory=True),
-        'postcode': Unicode(title=u'Post Code', is_mandatory=True),
-        'region': Region(title=u'Region', is_mandatory=True),
-        'phone': Unicode(title=u'Phone Number', is_mandatory=True),
-        'fax': Unicode(title=u'Fax Number', is_mandatory=True),
-        }
-
-register_schema(BranchSchema)
-
 
 
 class DocumentSchema(BaseSchema):
