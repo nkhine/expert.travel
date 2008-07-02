@@ -69,7 +69,7 @@ class Job(Folder, RoleAware):
     job_fields = [
         ('dc:title', True),
         ('dc:description', True),
-        ('abakuc:functions', True),
+        ('abakuc:function', True),
         ('abakuc:salary', True),
         ('abakuc:closing_date', True),
         ('abakuc:county', True),
@@ -133,7 +133,7 @@ class Job(Folder, RoleAware):
         metadata = handler.build_metadata()
         for key in ['dc:title' , 'dc:description', 'abakuc:job_text',
                     'abakuc:closing_date', 'abakuc:salary',
-                    'abakuc:functions', 'abakuc:county']:
+                    'abakuc:function', 'abakuc:county']:
             try:
                 value = context.get_form_value(key)
                 if not value:
@@ -186,22 +186,23 @@ class Job(Folder, RoleAware):
         # Country, Region, County
         from root import world
 
-        county_id = self.get_property('abakuc:county')
-        if county_id is None:
+        county = self.get_property('abakuc:county')
+        if county is None:
             # XXX Every job should have a county
             country = region = county = None
         else:
-            row = world.get_row(county_id)
-            country = row[6]
-            region = row[7]
-            county = row[8]
+            for row_number in world.search(county=county):
+                row = world.get_row(row_number)
+                country = row[5]
+                region = row[7]
+                county = county
         #namespace
         namespace = {}
         namespace['company'] = company.get_property('dc:title')
         salary = self.get_property('abakuc:salary')
         namespace['abakuc:salary'] = SalaryRange.get_value(salary)
-        function = self.get_property('abakuc:functions')
-        namespace['abakuc:functions'] =  JobTitle.get_value(function)
+        function = self.get_property('abakuc:function')
+        namespace['abakuc:function'] =  JobTitle.get_value(function)
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
 
@@ -220,7 +221,7 @@ class Job(Folder, RoleAware):
         query.append(EqQuery('format', 'Job'))
         today = (datetime.date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
-        query.append(EqQuery('functions', function))
+        query.append(EqQuery('function', function))
         query = AndQuery(*query)
         results = catalog.search(query)
         documents = results.get_documents()
@@ -362,7 +363,7 @@ class Job(Folder, RoleAware):
     ###########################################################
 
     edit_job_fields = ['dc:title' , 'dc:description', 'abakuc:closing_date',
-                       'abakuc:salary', 'abakuc:functions']
+                       'abakuc:salary', 'abakuc:function']
 
 
     edit_metadata_form__access__ = 'is_branch_manager_or_member'
@@ -374,8 +375,8 @@ class Job(Folder, RoleAware):
         # Build namespace
         salary = self.get_property('abakuc:salary')
         namespace['salary'] = SalaryRange.get_namespace(salary)
-        function = self.get_property('abakuc:functions')
-        namespace['functions'] =  JobTitle.get_namespace(function)
+        function = self.get_property('abakuc:function')
+        namespace['function'] =  JobTitle.get_namespace(function)
         job_text = self.get_property('abakuc:job_text')
         namespace['abakuc:job_text'] = job_text
         # XXX Form
@@ -386,9 +387,10 @@ class Job(Folder, RoleAware):
             address_country = None
             address_region = None
         else:
-            rows = world.get_row(address_county)
-            address_country = rows.get_value('country')
-            address_region = rows.get_value('region')
+            for row_number in world.search(county=address_county):
+                row = world.get_row(row_number)
+                address_country = row[5]
+                address_region = row[7]
         namespace['form'] = self.get_form(address_country, address_region,
                                           address_county)
         # Return stl
@@ -414,7 +416,7 @@ class Job(Folder, RoleAware):
 
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
-        indexes['functions'] = self.get_property('abakuc:functions')
+        indexes['function'] = self.get_property('abakuc:function')
         indexes['salary'] = self.get_property('abakuc:salary')
         indexes['closing_date'] = self.get_property('abakuc:closing_date')
         address = self.parent

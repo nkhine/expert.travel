@@ -445,15 +445,17 @@ class ExpertTravel(SiteRoot):
             # Information about the job
             address = job.parent
             company = address.parent
-            county_id = get('abakuc:county')
-            if county_id is None:
+            county = get('abakuc:county')
+            if county is None:
                 # XXX Every job should have a county
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    country = row[5]
+                    region = row[7]
+                    county = row[8]
             url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
             apply = '/companies/%s/%s/%s/;application_form' % (company.name, address.name, job.name)
             description = reduce_string(get('dc:description'),
@@ -463,6 +465,7 @@ class ExpertTravel(SiteRoot):
                          'url': url,
                          'apply': apply,
                          'region': region,
+                         'county': get('abakuc:county'),
                          'title': get('dc:title'),
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(),
@@ -534,15 +537,17 @@ class ExpertTravel(SiteRoot):
             get = job.get_property
             address = job.parent
             company = address.parent
-            county_id = get('abakuc:county')
-            if county_id is None:
+            county = get('abakuc:county')
+            if county is None:
                 # XXX Every job should have a county
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    country = row[5]
+                    region = row[7]
+                    county = get('abakuc:county')
             url = '/companies/%s/%s/%s' % (company.name, address.name,
                                            job.name)
             apply = '%s/;application_form' % (url)
@@ -555,8 +560,9 @@ class ExpertTravel(SiteRoot):
                     'title': job.title,
                     'function': JobTitle.get_value(get('abakuc:function')),
                     'salary': SalaryRange.get_value(get('abakuc:salary')),
-                    'county': county,
+                    'country': country,
                     'region': region,
+                    'county': county,
                     'apply': apply,
                     'closing_date': get('abakuc:closing_date'),
                     'description': description})

@@ -20,7 +20,7 @@
         </dt>
         <dd>
             <select name="abakuc:function">
-              <option stl:repeat="function functions" value="${function/name}" 
+              <option stl:repeat="function function" value="${function/name}" 
                   selected="${function/selected}">
                 ${function/value}&nbsp;&nbsp;&nbsp;
               </option>

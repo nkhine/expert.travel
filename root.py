@@ -92,7 +92,7 @@ class Root(Handler, BaseRoot):
             TextField('address', is_stored=True),
             KeywordField('country', is_stored=True),
             KeywordField('region', is_stored=True),
-            KeywordField('county', is_stored=True),
+            KeywordField('abakuc:county', is_stored=True),
             # XXX Fix this as is repeated in TP
             #KeywordField('function', is_stored=False),
             KeywordField('salary', is_stored=False),
@@ -376,7 +376,7 @@ class Root(Handler, BaseRoot):
                 if postcode:
                     address.set_property('abakuc:postcode', str(postcode))
                 if county:
-                    address.set_property('abakuc:county', county)
+                    address.set_property('abakuc:county', row[3])
                     address.set_property('abakuc:town', row[4])
                 address.set_property('abakuc:phone', str(row[8]))
                 address.set_property('abakuc:fax', str(row[9]))
@@ -430,15 +430,12 @@ class Root(Handler, BaseRoot):
         For now all TP's must have the country code in their URI
         i.e. http://uk.tp1.expert.travel etc...
         """
-        #import pprint
-        #pp = pprint.PrettyPrinter(indent=4)
         root = context.handler.get_site_root()
         country_code = get_host_prefix(context)
         if country_code is not None:
             if not isinstance(root, Company):
                 # Rule for address as: http://fr.expert.travel/
                 country_name = self.get_country_name(country_code)
-                #pp.pprint(country_code)
                 return [(country_name, country_code)]
             return self.get_active_countries(context)
         return [(country_name, country_code)]
@@ -593,9 +590,9 @@ class Root(Handler, BaseRoot):
         for index, row in enumerate(rows):
             if (region == row[7]):
                 county = row[8]
-                counties.append({'name': index,
+                counties.append({'name': county,
                                  'title': county,
-                                 'selected': selected_county==index})
+                                 'selected': selected_county==county})
         counties.sort(key=lambda x: x['title'])
         # Build stl
         namespace = {}

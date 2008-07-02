@@ -13,12 +13,12 @@
               ${enquiry/enquiry_subject}
               </dt>
               <dd>
-              <a href="${url}?index=${enquiry/index}">
+              <a href="${url};view_enquiry?index=${enquiry/index}">
               ${enquiry/email}</a>
               </dd>
             </dl>       
           </stl:block>
-              <a href="${url}/;view_enquiries">
+              <a href="${url};view_enquiries">
               Check enquiries (${howmany})</a>
         </div>
 </stl:block>

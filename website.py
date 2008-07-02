@@ -329,15 +329,16 @@ class SiteRoot(Handler, BaseWebSite):
             address = root.get_handler(address.abspath)
             get_property = address.metadata.get_property
             company = address.parent
-            county_id = get_property('abakuc:county')
-            if county_id is None:
+            county = get_property('abakuc:county')
+            if county is None:
                 # XXX Every address should have a county
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    region = row[7]
+                    county = get_property('abakuc:county')
             addresses.append(
                 {'href': '%s/;view' % self.get_pathto(address),
                  'title': company.title,

@@ -100,8 +100,8 @@ class Schema(BaseSchema):
         # once in production, we cannot change this.
         # to add new counties/regions we have to do 
         # it at the end of the the file.
-        'county': Integer,
-        #'county': Unicode,
+        #'county': Integer,
+        'county': Unicode,
         'town': Unicode,
         'phone': String,
         'fax': String,

@@ -457,22 +457,10 @@ class Training(SiteRoot, WorkflowAware):
             raise ValueError, 'Number of countries is invalid'
         # Show a list with all authorized countries
         countries.sort(key=lambda x: x['title'])
-        #regions = root.get_regions_stl(country=address_country,
-        #                               selected_region=address_region)
-        #regions = world.search(iana_root_zone='uk')
-        #county = self.get_counties_stl(region=address_region,
-        #                               selected_county=address_county)
-        #namespace['country'] = countries
-        #namespace['region'] = regions
-        #namespace['counties'] = county
 
         # Statistics criterias
-        regions = root.get_types_namespace(type)
-        counties = root.get_types_namespace(type)
         vertical, horizontal = layout.split('/')
         criterias = {'country': countries,
-                     'region': regions,
-                     'county': counties,
                      'topic': root.get_topics_namespace(topic),
                      'function':  root.get_functions_namespace(function),
                      'type': root.get_types_namespace(type)
@@ -480,7 +468,7 @@ class Training(SiteRoot, WorkflowAware):
         horizontal_criterias = criterias[horizontal]
         vertical_criterias = criterias[vertical]
 
-        ## Filter the users
+        # Filter the users
         root = context.root
         query = {'training_programmes': self.name}
         catalog = context.server.catalog
@@ -495,16 +483,16 @@ class Training(SiteRoot, WorkflowAware):
             query['registration_month'] = month
         if year:
             query['registration_year'] = year
-        # XXX Fix this so that countries are listed, then regions etc...
+        # Countries, regions 
         if country:
             query['country'] = country
             vertical_criterias = Regions.get_regions(country) 
-            pp.pprint(vertical_criterias)
             vertical = 'region'
+        # Regions, counties 
         if region:
             query['region'] = region
             vertical_criterias = Regions.get_counties(region) 
-            vertical = 'county'
+            vertical = 'abakuc:county'
 
         results = root.search(**query)
         brains = results.get_documents()

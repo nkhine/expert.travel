@@ -224,6 +224,7 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     def get_catalog_indexes(self):
         import pprint
+        from root import world
         pp = pprint.PrettyPrinter(indent=4)
         
         indexes = iUser.get_catalog_indexes(self)
@@ -250,16 +251,16 @@ class User(iUser, WorkflowAware, Handler):
                     users = address.get_members()
                     if username in users:
                         indexes['address'] = address.get_property('abakuc:address')
-                        county_id = address.get_property('abakuc:county')
-                        if county_id:
-                            from root import world
-                            row = world.get_row(county_id)
-                            country = row[5]
-                            region = row[7]
-                            county = row[8]
-                            indexes['country'] = country
-                            indexes['region'] = region
-                            indexes['county'] = county
+                        county = address.get_property('abakuc:county')
+                        indexes['abakuc:county'] = county
+                        pp.pprint(indexes['abakuc:county'])
+                        if county is not None:
+                            for row_number in world.search(county=county):
+                                row = world.get_row(row_number)
+                                country = row[5]
+                                region = row[7]
+                                indexes['country'] = country
+                                indexes['region'] = region
                         indexes['company'] = company.get_property('dc:title')
                         indexes['type'] = company.get_property('abakuc:type')
                         topics = company.get_property('abakuc:topic')
@@ -714,11 +715,10 @@ class User(iUser, WorkflowAware, Handler):
                                 'website': company.get_website(),
                                 'path': self.get_pathto(company)}
         # Address
-        county = address.get_property('abakuc:county')
         addr = {'name': address.name,
                 'address': address.get_property('abakuc:address'),
                 'town': address.get_property('abakuc:town'),
-                'county': world.get_row(county)[8],
+                'county': address.get_property('abakuc:county'),
                 'postcode':address.get_property('abakuc:postcode'),
                 'phone': address.get_property('abakuc:phone'),
                 'fax': address.get_property('abakuc:fax'),
@@ -1391,7 +1391,7 @@ class User(iUser, WorkflowAware, Handler):
         company = address.parent
 
         csv = address.get_handler('log_enquiry.csv')
-        url = '/companies/%s/%s/;view_enquiry' % (company.name, address.name)
+        url = '/companies/%s/%s/' % (company.name, address.name)
         results = []
         for row in csv.get_rows():
             date, user_id, phone, type, enquiry_subject, enquiry, resolved = row

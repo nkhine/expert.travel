@@ -419,15 +419,16 @@ class Company(SiteRoot):
             # Information about the job
             address = job.parent
             company = address.parent
-            county_id = get('abakuc:county')
-            if county_id is None:
+            county = get('abakuc:county')
+            if county is None:
                 # XXX Every job should have a county
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    region = row[7]
+                    county = get('abakuc:county')
             url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
             apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
@@ -441,7 +442,7 @@ class Company(SiteRoot):
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(),
-                         'functions': JobTitle.get_value(
+                         'function': JobTitle.get_value(
                                         get('abakuc:functions')),
                          'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
@@ -510,15 +511,15 @@ class Company(SiteRoot):
             get = job.get_property
             address = job.parent
             company = address.parent
-            county_id = get('abakuc:county')
-            if county_id is None:
+            county = get('abakuc:county')
+            if county is None:
                 # XXX Every job should have a county
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                for row_number in world.search(county=county):
+                    region = row[7]
+                    county = row[8]
             url = '/companies/%s/%s/%s' % (company.name, address.name,
                                            job.name)
             apply = '%s/;application_form' % (url)
@@ -900,12 +901,13 @@ class Address(RoleAware, WorkflowAware, Folder):
         topics = company.get_property('abakuc:topic')
         if topics is not None:
             indexes['level1'] = list(topics)
-        county_id = self.get_property('abakuc:county')
-        if county_id:
-            row = world.get_row(county_id)
-            indexes['level0'] = row.get_value('iana_root_zone')
-            indexes['level2'] = row[7]
-            indexes['level3'] = row[8]
+        county = self.get_property('abakuc:county')
+        if county:
+            for row_number in world.search(county=county):
+                row = world.get_row(row_number)
+                indexes['level0'] = row.get_value('iana_root_zone')
+                indexes['level2'] = row[7]
+                indexes['level3'] = self.get_property('abakuc:county')
         indexes['level4'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
         return indexes
@@ -1020,15 +1022,15 @@ class Address(RoleAware, WorkflowAware, Folder):
     def view(self, context):
         from root import world
 
-        county_id = self.get_property('abakuc:county')
-        if county_id is None:
+        county = self.get_property('abakuc:county')
+        if county is None:
             # XXX Every address should have a county
             country = region = county = '-'
         else:
-            row = world.get_row(county_id)
-            country = row[6]
-            region = row[7]
-            county = row[8]
+            for row_number in world.search(county=county):
+                row = world.get_row(row_number)
+                country = row[6]
+                region = row[7]
 
         namespace = {}
         namespace['company'] = self.parent.get_property('dc:title')
@@ -1040,7 +1042,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['fax'] = self.get_property('abakuc:fax')
         namespace['country'] = country
         namespace['region'] = region
-        namespace['county'] = county
+        namespace['county'] = self.get_property('abakuc:county')
 
         addresses = []
         for address in self.parent.search_handlers(handler_class=Address):
@@ -1154,15 +1156,15 @@ class Address(RoleAware, WorkflowAware, Folder):
             address = job.parent
             company = address.parent
             get = job.get_property
-            county_id = get('abakuc:county')
-            if county_id is None:
+            county = get('abakuc:county')
+            if county is None:
                 # XXX Every job should have a county
                 region = ''
                 county = ''
             else:
-                row = world.get_row(county_id)
-                region = row[7]
-                county = row[8]
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    region = row[7]
             # Information about the job
             url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
             apply = '%s/;application_form' % (url)
@@ -1173,11 +1175,11 @@ class Address(RoleAware, WorkflowAware, Folder):
                          'url': url,
                          'apply': apply,
                          'title': get('dc:title'),
-                         'county': county,
+                         'county': get('abakuc:county'),
                          'region': region,
                          'closing_date': get('abakuc:closing_date'),
                          'address': address.get_title_or_name(),
-                         'functions': JobTitle.get_value(
+                         'function': JobTitle.get_value(
                                         get('abakuc:functions')),
                          'salary': SalaryRange.get_value(get('abakuc:salary')),
                          'description': description}
@@ -1327,9 +1329,10 @@ class Address(RoleAware, WorkflowAware, Folder):
             address_country = None
             address_region = None
         else:
-            rows = world.get_row(address_county)
-            address_country = rows.get_value('iana_root_zone')
-            address_region = rows.get_value('region')
+            for row_number in world.search(county=address_county):
+                row = world.get_row(row_number)
+                address_country = row[5]
+                address_region = row[7]
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
                                           address_country, address_region,
                                           address_county)
@@ -1638,23 +1641,31 @@ class Address(RoleAware, WorkflowAware, Folder):
 
     view_enquiry__access__ = 'is_branch_manager_or_member'
     def view_enquiry(self, context):
-        index = context.get_form_value('index', type=Integer)
-
-        row = self.get_handler('log_enquiry.csv').get_row(index)
-        date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-
         root = context.root
-        user = root.get_handler('users/%s' % user_id)
-
+        index = context.get_form_value('index', type=Integer)
         namespace = {}
-        namespace['date'] = format_datetime(date)
-        namespace['enquiry_subject'] = enquiry_subject
-        namespace['enquiry'] = enquiry
-        namespace['type'] = type
-        namespace['firstname'] = user.get_property('ikaaro:firstname')
-        namespace['lastname'] = user.get_property('ikaaro:lastname')
-        namespace['email'] = user.get_property('ikaaro:email')
-        namespace['phone'] = phone
+        if index is not None:
+            row = self.get_handler('log_enquiry.csv').get_row(index)
+            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+            user = root.get_handler('users/%s' % user_id)
+
+            namespace['date'] = format_datetime(date)
+            namespace['enquiry_subject'] = enquiry_subject
+            namespace['enquiry'] = enquiry
+            namespace['type'] = type
+            namespace['firstname'] = user.get_property('ikaaro:firstname')
+            namespace['lastname'] = user.get_property('ikaaro:lastname')
+            namespace['email'] = user.get_property('ikaaro:email')
+            namespace['phone'] = phone
+        else:
+            namespace['date'] = None 
+            namespace['enquiry_subject'] = None
+            namespace['enquiry'] = None
+            namespace['type'] = None
+            namespace['firstname'] = None
+            namespace['lastname'] = None
+            namespace['email'] = None
+            namespace['phone'] = None
 
         handler = root.get_handler('ui/abakuc/enquiries/address_view_enquiry.xml')
         return stl(handler, namespace)
