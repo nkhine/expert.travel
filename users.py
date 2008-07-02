@@ -1028,6 +1028,7 @@ class User(iUser, WorkflowAware, Handler):
         pp = pprint.PrettyPrinter(indent=4)
         office_name = self.get_site_root()
         office = self.is_training()
+        user = context.user
         namespace = {}
         namespace['office'] = office
         # Bookings
