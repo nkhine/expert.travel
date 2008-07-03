@@ -369,6 +369,7 @@ class Training(SiteRoot, WorkflowAware):
         context.scripts.append('/ui/abakuc/jquery/jquery.tablesorter.js')
         context.scripts.append('/ui/abakuc/jquery/addons/jquery.tablesorter.pager.js')
         namespace = {}
+        #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
         handler = self.get_handler('/ui/abakuc/training/chart.xml')
         return stl(handler, namespace)
 

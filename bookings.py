@@ -268,8 +268,8 @@ class Bookings(AccessControl, Folder):
         '.destinations': SimpleTable,
         '.hotels': SimpleTable,
         '.tour_operators': SimpleTable}
-    class_icon16 = 'classic/images/group.png'
-    class_icon48 = 'traveluni//images/Bookings48.png'
+    class_icon16 = 'abakuc/images/Booking16.png'
+    class_icon48 = 'abakuc/images/Booking48.png'
     class_id = 'bookings'
     class_title = u'Bookings module'
     class_description = u"Manage Tourist Agent's bookings"
