@@ -403,15 +403,20 @@ class Training(SiteRoot, WorkflowAware):
                     'value': u'Region x Business profile'},
 
         '''
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
-        context.scripts.append('/ui/abakuc/excanvas-compressed.js')
-        context.scripts.append('/ui/abakuc/fgCharting.jQuery.js')
-        from root import world
+        # Set style
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
+        # Add the js scripts
+        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.tablesorter.js')
+        context.scripts.append('/ui/abakuc/jquery/addons/jquery.tablesorter.pager.js')
+
+        # Add any additional scrips for display
+        #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        #context.scripts.append('/ui/abakuc/excanvas-compressed.js')
+        #context.scripts.append('/ui/abakuc/fgCharting.jQuery.js')
+
+        # Get the variables from the form
         root = get_context().root
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-
-
         year = context.get_form_value('year')
         month = context.get_form_value('month')
         module = context.get_form_value('module')
@@ -421,6 +426,7 @@ class Training(SiteRoot, WorkflowAware):
 
         # Build the namespace
         namespace = {}
+
         # Registration dates
         namespace['months'] = [ {'name': i+1, 'value': self.gettext(title),
                                  'selected': str(i+1) == month}
@@ -429,6 +435,7 @@ class Training(SiteRoot, WorkflowAware):
         namespace['years'] = [
             {'name': x, 'value': x, 'selected': str(x) == year}
             for x in years ]
+
         # Get TP Modules
         modules = self.get_modules()
         namespace['modules'] = [
@@ -449,6 +456,11 @@ class Training(SiteRoot, WorkflowAware):
             {'name': name, 'value': value, 'selected': name == layout}
             for name, value in layout_options ]
 
+        # Layout options
+        current_layout = []
+        for x, y in layout_options:
+            if x == layout:
+                namespace['current_layout'] = y
         # List authorized countries
         countries = [
             {'id': y, 'title': x, 'is_selected': x == address_country}
@@ -469,7 +481,7 @@ class Training(SiteRoot, WorkflowAware):
         horizontal_criterias = criterias[horizontal]
         vertical_criterias = criterias[vertical]
 
-        # Filter the users
+        # Filter the users based on the search query
         root = context.root
         query = {'training_programmes': self.name}
         catalog = context.server.catalog
@@ -484,17 +496,18 @@ class Training(SiteRoot, WorkflowAware):
             query['registration_month'] = month
         if year:
             query['registration_year'] = year
-        # Countries, regions 
+        # Filter by country which then lists the regions 
         if country:
             query['country'] = country
             vertical_criterias = Regions.get_regions(country) 
             vertical = 'region'
-        # Regions, counties 
+        # Filter by regions which then lists the counties 
         if region:
             query['region'] = region
             vertical_criterias = Regions.get_counties(region) 
             vertical = 'abakuc:county'
 
+        # Get the results
         results = root.search(**query)
         brains = results.get_documents()
         if module:
@@ -502,7 +515,6 @@ class Training(SiteRoot, WorkflowAware):
             mod = self.get_handler(module)
             for brain in brains:
                 exam = mod.get_exam(brain.name)
-                #pp.pprint(exam)
                 if exam is None:
                     continue
                 has_passed = exam.get_result(brain.name)[0]
@@ -527,7 +539,6 @@ class Training(SiteRoot, WorkflowAware):
             x = getattr(brain, horizontal)
             if isinstance(x, list):
                 x = x[0]
-                pp.pprint(x)
                 #for item in x:
                 #    x = item
                 #    pp.pprint(x)
@@ -536,7 +547,6 @@ class Training(SiteRoot, WorkflowAware):
             y = getattr(brain, vertical)
             if isinstance(y, list):
                 y = y[0]
-                pp.pprint(y)
                 #for item in y:
                 #    y = item
             #else:
@@ -598,6 +608,13 @@ class Training(SiteRoot, WorkflowAware):
         from root import world
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
+
+        # Set style
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
+        # Add the js scripts
+        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.tablesorter.js')
+        context.scripts.append('/ui/abakuc/jquery/addons/jquery.tablesorter.pager.js')
 
         root = get_context().root
         # Extract the parameters from the request form
@@ -737,14 +754,14 @@ class Training(SiteRoot, WorkflowAware):
                  #'last_module': self.get_last_module_title(user.name),
                  'modules': ns_modules,
                  })
-        users.sort(lambda x, y: cmp(x['firstname'].lower(),
+        users.sort(lambda x, y: cmp(x['lastname'].lower(),
                                     y['firstname'].lower()))
         namespace['users'] = users
-        pp.pprint(namespace['users'])
         # CSV
         query = '&'.join([ '%s=%s' % (x, context.get_form_value(x))
                            for x in context.get_form_keys() ])
         namespace['csv'] = ';statistics_csv?%s' % query
+        namespace['overview'] = ';statistics'
 
         handler = self.get_handler('/ui/abakuc/training/show_users.xml')
         return stl(handler, namespace)

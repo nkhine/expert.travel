@@ -3,139 +3,193 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
            xmlns="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" href="/ui/abakuc/jquery/css/jquery.tablesorter.css" />
 <script type="text/javascript" src="/ui/abakuc/abakuc.js"></script>
+<script type="text/javascript">
+  $(function() {
+    $("table")
+      .tablesorter({widthFixed: true, widgets: ['zebra']})
+      .tablesorterPager({container: $("#pager")});
+  });
+</script>
 
   <form method="get" action=";show_users">
-    <table>
-      <tr>
-        <td>
-            Registration date<br/>
-           <select name="month" style="font-size: 9px">
-              <option value="">[Month]</option>
-              <option stl:repeat="option months" value="${option/name}" 
-                selected="${option/selected}">${option/value}</option>
-            </select>
-            <select name="year" style="font-size: 9px">
-              <option value="">[Year]</option>
-              <option stl:repeat="option years" value="${option/name}"
-                selected="${option/selected}">${option/value}</option>
-            </select>
-        </td>
-      <td colspan="2" rowspan="2">
-        Country:<br />
-        <select id="country" name="country" onchange="
-          get_regions('/;get_regions_str?country_code='+ this.value,'div_regions');
-          get_regions('/;get_counties_str?', 'div_county')"  style="font-size: 9px">
-          <option value="">All</option>
-          <option stl:repeat="item country" value="${item/name}"
-            selected="${item/selected}">${item/title}</option>
-        </select><br />
-        Region:<br /> ${region}
-        County:<br /> ${county}
-      </td>
+    <table width="500px">
+        <thead>
+            <tr>
+                <th colspan="3">Selection filters</th>
+            </tr>
+        </thead>
+        <tfoot>
+                <th></th>
+                <th></th>
+                <th><input type="submit" value=">> Filter"/></th>
+        </tfoot>
+        <tbody>
+
+        <tr>
+            <td>
+                Registration date:
+            </td>
+            <td colspan="2">
+                Modules:
+            </td>
         </tr>
         <tr>
-        <td>
-          Module<br/>
-          <select name="module" style="font-size: 9px">
-            <option value="">[Modules]</option>
-            <option stl:repeat="module modules" value="${module/name}" 
-              selected="${module/selected}">${module/title}</option>
-          </select>
-        </td>
-      </tr>
+            <td>
+               <select name="month" style="font-size: 9px">
+                  <option value="">[Month]</option>
+                  <option stl:repeat="option months" value="${option/name}" 
+                    selected="${option/selected}">${option/value}</option>
+                </select>
+                <select name="year" style="font-size: 9px">
+                  <option value="">[Year]</option>
+                  <option stl:repeat="option years" value="${option/name}"
+                    selected="${option/selected}">${option/value}</option>
+                </select>
+            </td>
+            <td colspan="2">
+              <select name="module" style="font-size: 9px">
+                <option value="">[Modules]</option>
+                <option stl:repeat="module modules" value="${module/name}" 
+                  selected="${module/selected}">${module/title}</option>
+              </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Geographical breakdown:
+            </td>
+            <td>
+                Region:
+            </td>
+            <td>
+                County:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <select id="country" name="country" onchange="
+                  get_regions('/;get_regions_str?country_code='+ this.value,'div_regions');
+                  get_regions('/;get_counties_str?', 'div_county')"  style="font-size: 9px">
+                  <option value="">All</option>
+                  <option stl:repeat="item country" value="${item/name}"
+                    selected="${item/selected}">${item/title}</option>
+                </select>
+            </td>
+            <td>
+                ${region}
+            </td>
+            <td>
+                ${county}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Business function:
+            </td>
+            <td>
+                Business type:
+            </td>
+            <td>
+                Job function:
+            </td>
+        </tr>
       <tr>
-      <!--  <td>
-          <p>
-            Region<br/>
-            <select name="region" style="font-size: 9px">
-              <option value="">All</option>
-              <stl:block stl:repeat="region regions">
-                <option style="font-weight: bold" value="${region/id}" 
-                  selected="${region/is_selected}">${region/title}</option>
-                <option stl:repeat="county region/counties" 
-                  value="${county/id}"
-                  selected="${county/is_selected}">${county/title}</option>
-              </stl:block>   
-            </select>
-          </p>
-        </td> -->
        <td>
-          <p>
-            Business function<br/>
            <select name="topic" style="font-size: 9px">
               <option value="">All</option>
               <option stl:repeat="item topic" value="${item/id}"
                 selected="${item/is_selected}">${item/title}</option>
             </select>
-            </p>
         </td>
         <td>
-          <p>
-            Job function<br/>
-             <select name="function" style="font-size: 9px">
-              <option value="">All</option>
-              <option stl:repeat="item function" value="${item/id}" 
-                selected="${item/is_selected}">${item/title}</option>
-            </select>
-          </p>
-         </td>
-         <td>
-          <p>
-            Business profile<br/>
             <select name="type" style="font-size: 9px">
               <option value="">All</option>
               <option stl:repeat="item type" value="${item/id}" 
                 selected="${item/is_selected}">${item/title}</option>
             </select>
-            </p>
+         </td>
+         <td>
+             <select name="function" style="font-size: 9px">
+              <option value="">All</option>
+              <option stl:repeat="item function" value="${item/id}" 
+                selected="${item/is_selected}">${item/title}</option>
+            </select>
         </td>
       </tr>
       <tr>
-        <td colspan="3">
-          <input type="submit" value=">> Filter"/>
+         <td colspan="3">
+          <stl:block stl:if="users">
+            <span xstyle="font-size: 12px">
+              &raquo; Download the results as an <a href="${csv}">CSV file</a>.
+            </span>
+          </stl:block>
+          <stl:block stl:if="not users">
+            <span xstyle="font-size: 12px">
+            Select values for the different criteria (region, business function,
+            job function and business profile) to view the travel agents that
+            match those criteria values.
+            </span>
+          </stl:block>
         </td>
       </tr>
+        </tbody>
     </table>
   </form>
-  <br/>
-  <stl:block stl:if="users">
+  <p>
     <span xstyle="font-size: 12px">
-      &raquo; Download the results as an <a href="${csv}">CSV file</a>.
+      &raquo; Back to <a href="${overview}">overview</a>.
     </span>
-    <br/><br/>
-    <table style="font-size: 12px; white-space: nowrap;">
-      <tr style="border-bottom: 1px solid black">
-        <th style="border-bottom: 1px solid black" valign="bottom">Title</th>
-        <th style="border-bottom: 1px solid black" valign="bottom">
-          First name</th>
-        <th style="border-bottom: 1px solid black" valign="bottom">
-          Last name</th>
-        <th style="border-bottom: 1px solid black" valign="bottom">Company</th>
-        <th style="border-bottom: 1px solid black" valign="bottom">email</th>
-        <th style="border-bottom: 1px solid black" valign="bottom">
-          Phone number</th>
-        <th style="border-bottom: 1px solid black" valign="bottom">
-          Post code</th>
-        <th style="border-bottom: 1px solid black;" valign="bottom" 
-          stl:repeat="module modules">${module/short_title}</th>
-      </tr>
+  </p>
+  <stl:block stl:if="users">
+    <table class="tablesorter">
+      <thead>
+          <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Company</th>
+            <th>email</th>
+            <th>Phone number</th>
+            <th stl:repeat="module modules">${module/short_title}</th>
+          </tr>
+      </thead>
+      <tfoot>
+          <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Company</th>
+            <th>email</th>
+            <th>Phone number</th>
+            <th stl:repeat="module modules">${module/short_title}</th>
+          </tr>
+      </tfoot>
+      <tbody>
       <tr stl:repeat="user users">
-        <td style="font-size: 11px">{user/title}</td>
-        <td style="font-size: 11px">${user/firstname}</td>
-        <td style="font-size: 11px">${user/lastname}</td>
-        <td style="font-size: 11px">${user/company}</td>
-        <td style="font-size: 11px">${user/email}</td>
-        <td style="font-size: 11px">${user/phone}</td>
-        <td style="font-size: 11px">${user/post_code}</td>
-        <td style="font-size: 11px; text-align: center" 
+        <td>${user/firstname}</td>
+        <td>${user/lastname}</td>
+        <td>${user/company}</td>
+        <td>${user/email}</td>
+        <td>${user/phone}</td>
+        <td 
           stl:repeat="module user/modules">${module/date}</td>
       </tr>
+      </tbody>
     </table>
+    <div id="pager" class="pager">
+      <form>
+        <img src="/ui/abakuc/jquery/addons/images/first.png" class="first"/>
+        <img src="/ui/abakuc/jquery/addons/images/prev.png" class="prev"/>
+        <input type="text" class="pagedisplay"/>
+        <img src="/ui/abakuc/jquery/addons/images/next.png" class="next"/>
+        <img src="/ui/abakuc/jquery/addons/images/last.png" class="last"/>
+        <select class="pagesize">
+          <option selected="selected" value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option  value="40">40</option>
+        </select>
+      </form>
+    </div>
   </stl:block>
-  <p stl:if="not users">
-    Select values for the different criteria (region, business function,
-    job function and business profile) to view the travel agents that
-    match those criteria values.
-  </p>
 </stl:block>
