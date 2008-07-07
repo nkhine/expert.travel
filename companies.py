@@ -488,15 +488,15 @@ class Company(SiteRoot):
                  EqQuery('company', self.name),
                  RangeQuery('closing_date', today, None)]
         # Search fields
-        functions = context.get_form_value('functions') or None
+        function = context.get_form_value('function') or None
         salary = context.get_form_value('salary') or None
         county = context.get_form_value('county') or None
         job_title = context.get_form_value('job_title') or None
         if job_title:
             job_title = job_title.lower()
         # Get Jobs (construct the query for the search)
-        if functions:
-            query.append(EqQuery('functions', functions))
+        if function:
+            query.append(EqQuery('function', function))
         if salary:
             query.append(EqQuery('salary', salary))
         if county:
@@ -518,6 +518,7 @@ class Company(SiteRoot):
                 county = ''
             else:
                 for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
                     region = row[7]
                     county = row[8]
             url = '/companies/%s/%s/%s' % (company.name, address.name,
@@ -530,7 +531,7 @@ class Company(SiteRoot):
                 jobs.append({
                     'url': url,
                     'title': job.title,
-                    'functions': JobTitle.get_value(get('abakuc:functions')),
+                    'function': JobTitle.get_value(get('abakuc:function')),
                     'salary': SalaryRange.get_value(get('abakuc:salary')),
                     'county': county,
                     'region': region,
@@ -560,7 +561,7 @@ class Company(SiteRoot):
         namespace['jobs'] = jobs
 
         # Search Namespace
-        namespace['functions'] = JobTitle.get_namespace(functions)
+        namespace['function'] = JobTitle.get_namespace(function)
         namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['job_title'] = job_title
         # Return the page

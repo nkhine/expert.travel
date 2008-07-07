@@ -1,23 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-   <h1>Statistics module</h1>
         <div stl:if="office">
          <div class="yui-skin-sam"> 
-            <span class="chart_title">${title} Business Function overview</span>
-            <div id="chart">
-            </div>
-            <div id="datatable"></div>
-            <script type="text/javascript" src="/ui/abakuc/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-            <script type="text/javascript" src="/ui/abakuc/yui/json/json-min.js"></script>
-            <script type="text/javascript" src="/ui/abakuc/yui/element/element-beta-min.js"></script>
-            <script type="text/javascript" src="/ui/abakuc/yui/datasource/datasource-beta-min.js"></script>
-            <script type="text/javascript" src="/ui/abakuc/yui/datatable/datatable-beta-min.js"></script>
-            <script type="text/javascript" src="/ui/abakuc/yui/charts/charts-experimental-min.js"></script>
-
             <!-- chart container -->
-             <div id="demo"></div>
-             <script type="text/javascript" src="/ui/abakuc/statistics/business_function.js" />
-             </div> <!--yui-skin-sam -->
+             ${response}
+         </div> <!--yui-skin-sam -->
         </div> <!-- office -->
 </stl:block>

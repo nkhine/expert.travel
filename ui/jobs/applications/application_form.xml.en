@@ -6,15 +6,18 @@
 <form action=";new_resource" enctype="multipart/form-data" method="post">
   <dl>
       <dt>
-        <label>Your notes</label>
+        <label>Your cover letter / note</label>
       </dt>
+      <dd>Please type your cover letter / note to the recruiter in here. </dd>
+      <dd>Your cover letter is your best chance to sell why you specifically are
+      the best candidate for this job. Take care and your time when making this.</dd>
       <dd>
       <textarea cols="90" id="abakuc:applicant_note"
       name="abakuc:applicant_note" rows="20">${abakuc:applicant_note/value}</textarea>
       </dd>
       
       <dt>
-        <label>Your CV (Format : .doc, .pdf or .odt)</label>
+        <label>Your CV (Format : .doc, or .pdf)</label>
       </dt>
       <dd>
         <input id="file" name="file" size="35" type="file"/>
@@ -30,7 +33,6 @@
         <input type="text" size="40" name="ikaaro:firstname"
         value="${ikaaro:firstname/value}" />
         </dd>
-        
         <dt>
         Last Name
         </dt>
@@ -38,7 +40,6 @@
       <input type="text" size="40" name="ikaaro:lastname"
         value="${ikaaro:lastname/value}" />
         </dd>
-        
         <dt>
         Email
         </dt>
@@ -46,7 +47,6 @@
       <input type="text" size="40" name="ikaaro:email"
         value="${ikaaro:email/value}" />
         </dd>
-        
         <dt>
         Phone Number
         </dt>
@@ -57,10 +57,17 @@
     </dl>
   </stl:block>
   <p>
-    Only genuine enquiries will be sent !
-    <input type="submit" value="Apply to the Job" class="button_ok" />
+    Only genuine applications will be sent!
+    <input type="submit" value="Apply for the Job" class="button_ok" />
     <input type="hidden" value="${class_id}" name="class_id"/>
   </p>
 </form>
-
+<p>
+By choosing to continue you will become a registered user. You will be able to
+log into any of the Expert.Travel sites, and set up a candidate profile, keep
+track of your applications and create new jobs by email accounts. We will use
+your contact information to send you relevant jobs that match your criteria, 
+as well as emails about other relevant goods and services available from
+Expert.Travel.
+</p>
 </stl:block>

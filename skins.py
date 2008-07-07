@@ -30,8 +30,8 @@ class Node(object):
     def click(self, path):
         handler =  self.handler
         # fill children
-        if isinstance(handler, Folder):
-            #allowed_instances = Module, Topic, Document
+        if isinstance(handler, Company):
+            allowed_instances = Module, Topic, Document
             #
             #XXX For some reason, I get to dictionary items
             #one with .en extentsion and the other without:
@@ -53,7 +53,7 @@ class Node(object):
             #                     'short_name': u'First page',
             #                     'submenus': [   ],
             #                     'url': 'page1.xhtml.en/;view'},
-            allowed_instances = Module, Topic 
+            #allowed_instances = Module, Topic 
             handlers = [
                 handler.get_handler(x) for x in handler.get_handler_names()
                 ]
@@ -111,39 +111,42 @@ class FrontOffice(Skin):
 
     def build_namespace(self, context):
         root = context.root
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        namespace = Skin.build_namespace(self, context)
-
         # Level0 correspond to the country (uk, fr) ...
         level0 = [ x[1] for x in root.get_authorized_country(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
         format = site_root.site_format
-        results = root.search(level0=level0, format=site_root.site_format)
-        # Flat
+        namespace = Skin.build_namespace(self, context)
         level1 = []
-        # XXX Here is a bug #133 if you re-start
-        # the server you no longer have a list
-        # you need to re-index
-        # Why is it when you index all topics
-        # are a list, but when you restart they are not?
-        for x in results.get_documents():
-            x = x.level1
-            if isinstance(x, list):
-                level1.extend(x)
-            else:
-                level1.append(x)
-                #y = x.split(' ')
-                #level1.extend(y)
-        # Unique
-            pp.pprint(x)
-        # Only works on Expert.Travel and Company objects
-        level1 = set(level1)
-        level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
-                   for x in level1 ]
-        level1.sort(key=lambda x: x['title'])
-        namespace['level1'] = level1
+        if isinstance(site_root, ExpertTravel):
+            # Navigation
+            results = root.search(level0=level0, format=site_root.site_format)
+            print 'Expert Travel site' 
+            # Flat
+            ## XXX Here is a bug #133 if you re-start
+            ## the server you no longer have a list
+            ## you need to re-index
+            ## Why is it when you index all topics
+            ## are a list, but when you restart they are not?
+            for x in results.get_documents():
+                x = x.level1
+                if isinstance(x, list):
+                    level1.extend(x)
+                else:
+                    #level1.append(x)
+                    y = x.split(' ')
+                    level1.extend(y)
+            # Unique
+            # Only works on Expert.Travel and Company objects
+            level1 = set(level1)
+            level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
+                       for x in level1 ]
+            level1.sort(key=lambda x: x['title'])
+            namespace['level1'] = level1
+        else:
+            # Navigation
+            namespace['level1'] = '' 
+            print 'Comapny in Expert Travel' 
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
         if context_menu_html is None:
@@ -179,7 +182,6 @@ class FrontOffice(Skin):
                 'content': build_menu(menu)}
 
     def get_main_menu_options(self, context):
-        #handler = context.handler
         root = context.handler.get_site_root()
         path = root.abspath
 
@@ -204,15 +206,16 @@ class FrontOffice(Skin):
         Lists contents of objects menu.
         """
         # FIXME Hard-Coded
-        from jobs import Job
-        from news import News
+        #from jobs import Job
+        #from news import News
+        #from training import Module 
         here = context.handler
-        while here is not None:
-            if isinstance(here, (Job, News)):
-                break
-            here = here.parent
-        else:
-            return None
+        #while here is not None:
+        #    if isinstance(here, (Job, News, Module)):
+        #        break
+        #    here = here.parent
+        #else:
+        #    return None
 
         base = context.handler.get_pathto(here)
 
@@ -236,42 +239,42 @@ class FrontOffice(Skin):
                 'content': build_menu(menu)}
 
 
-    #def get_content_menu(self, context):
-    #    here = context.handler
-    #    user = context.user
+    def get_content_menu(self, context):
+        here = context.handler
+        user = context.user
 
-    #    options = []
-    #    # Parent
-    #    parent = here.parent
-    #    if parent is not None:
-    #        firstview = parent.get_firstview()
-    #        options.append({'href': '../;%s' % (firstview),
-    #                        'src': None,
-    #                        'title': '<<',
-    #                        'class': '',
-    #                        'items': []})
+        options = []
+        # Parent
+        parent = here.parent
+        if parent is not None:
+            firstview = parent.get_firstview()
+            options.append({'href': '../;%s' % (firstview),
+                            'src': None,
+                            'title': '<<',
+                            'class': '',
+                            'items': []})
 
-    #    # Content
-    #    size = 0
-    #    allowed_instances = Folder
-    #    if isinstance(here, allowed_instances):
-    #        for handler in here.search_handlers():
-    #            ac = handler.get_access_control()
-    #            if not ac.is_allowed_to_view(user, handler):
-    #                continue
-    #            firstview = handler.get_firstview()
-    #            src = handler.get_path_to_icon(size=16, from_handler=here)
-    #            options.append({'href': '%s/;%s' % (handler.name, firstview),
-    #                            'src': src,
-    #                            'title': handler.get_title(),
-    #                            'class': '',
-    #                            'items': []})
-    #            size += 1
+        # Content
+        size = 0
+        allowed_instances = Module, Topic, Document 
+        if isinstance(here, allowed_instances):
+            for handler in here.search_handlers():
+                ac = handler.get_access_control()
+                if not ac.is_allowed_to_view(user, handler):
+                    continue
+                firstview = handler.get_firstview()
+                src = handler.get_path_to_icon(size=16, from_handler=here)
+                options.append({'href': '%s/;%s' % (handler.name, firstview),
+                                'src': src,
+                                'title': handler.get_title(),
+                                'class': '',
+                                'items': []})
+                size += 1
 
-    #    menu = build_menu(options)
-    #    title = Template(u'Content ($size)').substitute(size=size)
+        menu = build_menu(options)
+        title = Template(u'Content ($size)').substitute(size=size)
 
-    #    return {'title': title, 'content': menu}
+        return {'title': title, 'content': menu}
 
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
@@ -308,45 +311,46 @@ class FrontOffice(Skin):
         """Build the namespace for the navigation menu."""
         root = context.handler.get_site_root()
         menu = tree(root, active_node=context.handler,
-                    allow=Training, user=context.user)
+                    allow=Company, user=context.user)
         return {'title': self.gettext(u'Modules'), 'content': menu}
 
-    def is_training(self, context):
-        '''Return a bool'''
-        training = self.get_site_root()
-        if isinstance(training, Training):
-            training = True
-        return training
 
     def get_left_menus(self, context):
         root =  context.handler.get_site_root()
  
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         menus = []
-        if isinstance(root, Company):
+        if isinstance(root, ExpertTravel):
             # Navigation
             menu = self.get_navigation_menu(context)
             menus.append(menu)
+        elif isinstance(root, Company):
+            # Navigation
+            menu = self.get_navigation_menu(context)
+            if menu is not None:
+                menus.append(menu)
             # Main Menu
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
-            # Parent's Menu
+            # Object's Menu
             menu = self.get_context_menu(context)
             if menu is not None:
                 menus.append(menu)
         elif isinstance(root, Training):
             # Navigation
             menu = self.get_navigation_menu(context)
-            menus.append(menu)
+            if menu is not None:
+                menus.append(menu)
             # Main Menu
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
-        elif isinstance(root, ExpertTravel):
-            # Navigation
-            menu = self.get_navigation_menu(context)
-            menus.append(menu)
-
+            # Modules
+            #menu = self.get_content_menu(context)
+            #if menu is not None:
+            #    menus.append(menu)
         return menus
 
 

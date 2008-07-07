@@ -58,6 +58,8 @@ class Trainings(SiteRoot):
     def get_document_types(self):
         return [Training]
 
+    def get_level1_title(self, level1):
+        return None
 
     #######################################################################
     # User Interface
@@ -194,6 +196,80 @@ class Training(SiteRoot, WorkflowAware):
 
         return response
 
+    def get_news(self, address):
+        results = address.search(format='news')
+        for news in results.get_documents():
+            return address.get_handler(news.abspath)
+        return None
+
+    def get_modules_dates(self, modules, username):
+        last_exam_passed = True
+        dates = []
+        for m in modules:
+            date = ''
+            if last_exam_passed:
+                exam = m.get_exam(username)
+                if exam is not None:
+                    last_exam_passed = False
+                    result = exam.get_result(username)
+                    if result is not None:
+                        last_exam_passed = result[0]
+                        if last_exam_passed:
+                            date = result[-1]
+            dates.append(date)
+        return dates
+
+    #def get_regions(self, context, country=None, selected_region=None):
+    #    """
+    #    Returns the namespace for all the countries, regions and counties,
+    #    ready to use in STL.
+
+    #    The namespace structure is:
+
+    #      [{'id': <country id>,
+    #        'region': [{'id': <region id>,
+    #                    'county': [ {'id': <county id>,
+    #                                 'title': <county title>,
+    #                                 'is_selected': <True | False>
+    #                                }
+    #                              ...]
+    #                    'title': <region title>,
+    #                    'is_selected': <True | False>
+    #                    }
+    #                 ...]
+    #        'title': <country title>,
+    #        'is_selected': <True | False>,
+    #        }
+    #       ...]
+
+    #    """
+    #    from root import world
+    #    #root = get_context().root
+    #    #countries = [
+    #    #    {'id': y, 'title': x, 'is_selected': y == country}
+    #    #    for x, y in root.get_active_countries(context) ]
+    #    #nb_countries = len(countries)
+    #    #if nb_countries < 1:
+    #    #    raise ValueError, 'Number of countries is invalid'
+    #    #countries.sort(key=lambda x: x['title'])
+
+    #    regions = []
+    #    #for country in countries:
+    #    rows = world.get_rows()
+    #    for row in rows:
+    #        region = row[7]
+    #        if region not in regions:
+    #            regions.append(region)
+    #    regions = [{'id': x,
+    #                'title': x,
+    #                'is_selected': x==selected_region} for x in regions]
+    #    regions.sort(key=lambda x: x['title'])
+    #    import pprint
+    #    pp = pprint.PrettyPrinter(indent=4)
+    #    pp.pprint(regions)
+    #    #pp.pprint(countries)
+    #    return regions
+    #    #return countries
     #######################################################################
     # User Interface / Edit
     #######################################################################
@@ -211,6 +287,24 @@ class Training(SiteRoot, WorkflowAware):
     #######################################################################
     # Security / Access Control
     #######################################################################
+    def is_admin(self, user, object):
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        #return self.is_branch_manager(user, object)
+
+
+    def is_training_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        ## Is reviewer or member
+        return self.has_user_role(user.name, 'abakuc:training_manager')
+
+
     def is_branch_manager_or_member(self, user, object):
         if not user:
             return False
@@ -221,22 +315,6 @@ class Training(SiteRoot, WorkflowAware):
         # Is reviewer or member
         return (self.has_user_role(user.name, 'abakuc:branch_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
-
-
-    def is_admin(self, user, object):
-        return self.is_branch_manager(user, object)
-
-
-    def is_training_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        return True
-        ## Is reviewer or member
-        #return self.has_user_role(user.name, 'abakuc:training_manager')
 
     def is_branch_manager(self, user, object):
         if not user:
@@ -281,84 +359,14 @@ class Training(SiteRoot, WorkflowAware):
         passed = exam.get_result()[0]
         return bool(passed)
 
-    def get_news(self, address):
-        results = address.search(format='news')
-        for news in results.get_documents():
-            return address.get_handler(news.abspath)
-        return None
-
-    def get_modules_dates(self, modules, username):
-        last_exam_passed = True
-        dates = []
-        for m in modules:
-            date = ''
-            if last_exam_passed:
-                exam = m.get_exam(username)
-                if exam is not None:
-                    last_exam_passed = False
-                    result = exam.get_result(username)
-                    if result is not None:
-                        last_exam_passed = result[0]
-                        if last_exam_passed:
-                            date = result[-1]
-            dates.append(date)
-        return dates
-
-    def get_regions(self, context, country=None, selected_region=None):
-        """
-        Returns the namespace for all the countries, regions and counties,
-        ready to use in STL.
-
-        The namespace structure is:
-
-          [{'id': <country id>,
-            'region': [{'id': <region id>,
-                        'county': [ {'id': <county id>,
-                                     'title': <county title>,
-                                     'is_selected': <True | False>
-                                    }
-                                  ...]
-                        'title': <region title>,
-                        'is_selected': <True | False>
-                        }
-                     ...]
-            'title': <country title>,
-            'is_selected': <True | False>,
-            }
-           ...]
-
-        """
-        from root import world
-        #root = get_context().root
-        #countries = [
-        #    {'id': y, 'title': x, 'is_selected': y == country}
-        #    for x, y in root.get_active_countries(context) ]
-        #nb_countries = len(countries)
-        #if nb_countries < 1:
-        #    raise ValueError, 'Number of countries is invalid'
-        #countries.sort(key=lambda x: x['title'])
-
-        regions = []
-        #for country in countries:
-        rows = world.get_rows()
-        for row in rows:
-            region = row[7]
-            if region not in regions:
-                regions.append(region)
-        regions = [{'id': x,
-                    'title': x,
-                    'is_selected': x==selected_region} for x in regions]
-        regions.sort(key=lambda x: x['title'])
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(regions)
-        #pp.pprint(countries)
-        return regions
-        #return countries
+    # Statistics Access Control
+    def is_allowed_to_view_statistics(self, user, object):
+        if self.is_admin(user, object):
+            return True
+        return self.has_user_role(user.name, 'abakuc:training_manager')
     ########################################################################
     # Statistics
-    chart__access__ = True
-    #statistics__access__ = 'is_allowed_to_view_statistics'
+    statistics__access__ = 'is_allowed_to_view_statistics'
     chart__label__ = u'Statistics'
     chart__sublabel__ = u'Statistics'
     def chart(self, context):
@@ -376,8 +384,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # Statistics
-    statistics__access__ = True
-    #statistics__access__ = 'is_allowed_to_view_statistics'
+    statistics__access__ = 'is_allowed_to_view_statistics'
     statistics__label__ = u'Statistics'
     statistics__sublabel__ = u'Statistics'
     def statistics(self, context, address_country=None, address_region=None,
@@ -404,11 +411,11 @@ class Training(SiteRoot, WorkflowAware):
 
         '''
         # Set style
-        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
+        #context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
         # Add the js scripts
-        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
-        context.scripts.append('/ui/abakuc/jquery/jquery.tablesorter.js')
-        context.scripts.append('/ui/abakuc/jquery/addons/jquery.tablesorter.pager.js')
+        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        #context.scripts.append('/ui/abakuc/jquery/jquery.tablesorter.js')
+        #context.scripts.append('/ui/abakuc/jquery/addons/jquery.tablesorter.pager.js')
 
         # Add any additional scrips for display
         #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
@@ -559,7 +566,7 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(table)
         ## Base URLs
         base_stats = context.uri
-        base_show = get_reference(';show_users')
+        base_show = get_reference('/;show_users')
         namespace['x'] =  base_show
         if month:
             base_show = base_show.replace(month=month)
@@ -600,15 +607,14 @@ class Training(SiteRoot, WorkflowAware):
         handler = self.get_handler('/ui/abakuc/training/statistics.xml')
         return stl(handler, namespace)
 
-    show_users__access__ = True
-    show_users__label__ = u'Show users'
-    show_users__sublabel__ = u'Show users'
+
+    ########################################################################
+    # Show users  
+    show_users__access__ = 'is_allowed_to_view_statistics'
+    show_users__label__ = u'Show training members'
+    show_users__sublabel__ = u'Show members'
     def show_users(self, context, address_country=None,\
                     address_region=None, address_county=None):
-        from root import world
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-
         # Set style
         context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
         # Add the js scripts
@@ -686,7 +692,6 @@ class Training(SiteRoot, WorkflowAware):
         users = []
         if module:
             module = self.get_handler(module)
-            #pp.pprint(module)
         # TEST 015
         results = root.search(**query)
         for brain in results.get_documents():
@@ -728,6 +733,8 @@ class Training(SiteRoot, WorkflowAware):
                     company_title = company.get_property('dc:title')
                     company_type = company.get_property('abakuc:type')
                     company_topic = company.get_property('abakuc:topic')
+                    topic = company.get_property('abakuc:topic')
+                    company_topic = topic[0]
             else:
                 company_title = 'not available'
                 company_type = 'not available'
@@ -736,7 +743,6 @@ class Training(SiteRoot, WorkflowAware):
             ns_modules = [{'date': date.encode('utf-8')} for date in
                           self.get_modules_dates(modules, user.name)]
 
-            #pp.pprint(ns_modules)
             get_property = user.metadata.get_property
             users.append(
                 {#'title': get_property('abakuc:user_title'),
@@ -765,6 +771,170 @@ class Training(SiteRoot, WorkflowAware):
 
         handler = self.get_handler('/ui/abakuc/training/show_users.xml')
         return stl(handler, namespace)
+
+    ########################################################################
+    # Statistics CSV 
+    statistics_csv__access__ = 'is_allowed_to_view_statistics'
+    def statistics_csv(self, context):
+        # Geographic
+        country = context.get_form_value('country')
+        region = context.get_form_value('region')
+        county = context.get_form_value('abakuc:county')
+
+        # Topic, Function, Type
+        topic = context.get_form_value('topic')
+        function = context.get_form_value('function')
+        type = context.get_form_value('type')
+
+        year = context.get_form_value('year')
+        month = context.get_form_value('month')
+        module = context.get_form_value('module')
+
+        # The header
+        header = [
+            "registration_date","topic", "function", "type",
+            "firstname", "lastname", "job_title","email", "contact_me",
+            "company_name", "website", "address",
+            "town", "county", "region", "postcode",
+            "country", "phone", "fax"
+            ]
+
+        # All modules
+        modules = self.get_modules()
+        for i, x in enumerate(modules):
+            header.append('"M%d - %s"' % (i+1, x.get_property('dc:title')))
+
+        data = [u','.join(header) + u'\n']
+
+        root = context.root
+        companies = root.get_handler('companies')
+
+        # Search users
+        root = context.root
+        catalog = context.server.catalog
+        query = {}
+        #Returns the name of the training programme
+        query['training_programmes'] = self.name
+        
+        for key in context.get_form_keys():
+            value = context.get_form_value(key)
+            if value:
+                if key in ('year', 'month'):
+                    query['registration_%s' % key] = value
+                elif key in catalog.field_numbers:
+                    query[key] = value
+        if module:
+            module = self.get_handler(module)
+        # TEST 015
+        results = root.search(**query)
+        for brain in results.get_documents():
+            # Filter by module
+            if module:
+                exam = module.get_exam(brain.name)
+                if exam is None:
+                    continue
+                # Not passed
+                if not exam.get_result(brain.name)[0]:
+                    continue
+
+            if not root.has_handler(brain.abspath):
+                context.server.log_error(context)
+                continue
+
+            line = []
+            user = root.get_handler(brain.abspath)
+            # Address
+            address_handler = user.get_address()
+            if address_handler is None:
+                phone = 'not available'
+                fax = 'not available'
+                address = 'not available'
+                town = 'not available'
+                post_code = 'not available'
+                county = 'not available'
+                region = 'not available'
+                country = 'not available'
+            else:
+                get_property = address_handler.metadata.get_property
+                phone = get_property('abakuc:phone')
+                fax = get_property('abakuc:fax')
+                address = get_property('abakuc:address')
+                town = get_property('abakuc:town')
+                postcode = get_property('abakuc:postcode')
+                county = get_property('abakuc:county')
+                if county is not None:
+                    from root import world
+                    for row_number in world.search(county=county):
+                        row = world.get_row(row_number)
+                        country = row[6]
+                        region = row[7]
+            # Company
+            if address_handler is not None:
+                company = address_handler.parent
+                if company is None:
+                    company_title = 'not available'
+                    company_type = 'not available'
+                    company_topic = 'not available'
+                    company_website = 'not available'
+                else:
+                    company_title = company.get_property('dc:title')
+                    company_type = company.get_property('abakuc:type')
+                    topic = company.get_property('abakuc:topic')
+                    company_topic = topic[0]
+                    company_website =  company.get_property('abakuc:website')
+            else:
+                company_title = 'not available'
+                company_type = 'not available'
+                company_topic = 'not available'
+                company_website = 'not available'
+
+            # All modules dates
+            ns_modules = [{'date': date.encode('utf-8')} for date in
+                          self.get_modules_dates(modules, user.name)]
+
+            get_property = user.metadata.get_property
+            registration_date = get_property('abakuc:registration_date')
+            
+            # Build the data
+            if registration_date is None:
+                line.append(u'""')
+            else:
+                line.append(u'"%s"' % registration_date.strftime('%Y-%m-%d'))
+
+            line.append(u'"%s"' % company_topic)
+            line.append(u'"%s"' % company_type)
+            line.append(u'"%s"' % (get_property('abakuc:functions')))
+            
+            line.append(u'"%s"' % \
+                        (get_property('ikaaro:firstname') or '').title())
+            line.append(u'"%s"' % \
+                        (get_property('ikaaro:lastname') or '').title())
+
+
+            line.append(u'"%s"' % (get_property('abakuc:job_title')))
+            line.append(u'"%s"' % (get_property('ikaaro:email')))
+            line.append(u'"%s"' % ('yes'))
+            line.append(u'"%s"' % company_title)
+            line.append(u'"%s"' % company_website)
+            line.append(u'"%s"' % address)
+            line.append(u'"%s"' % town)
+            line.append(u'"%s"' % county)
+            line.append(u'"%s"' % region)
+            line.append(u'"%s"' % postcode)
+            line.append(u'"%s"' % country)
+            line.append(u'"%s"' % phone)
+            line.append(u'"%s"' % fax)
+
+            # Make the CSV file
+            line = u','.join(line) + u'\n'
+            data.append(line)
+
+        response = context.response
+        response.set_header('Content-Type', 'text/comma-separated-values')
+        response.set_header('Content-Disposition',
+                            'attachment; filename="expert_travel.csv"')
+        return (u''.join(data)).encode('utf-8')
+
 
     ########################################################################
     # View

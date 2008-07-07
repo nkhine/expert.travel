@@ -4,23 +4,23 @@
 
 	YAHOO.example.publicOpinion =
 	[
-		{ response: "Multiple", count: 564815 },
-		{ response: "Independent", count: 664182 },
-		{ response: "Homeworker", count: 248124 },
-		{ response: "Call Centre", count: 271214 },
-		{ response: "Other", count: 81845 }
+		{ title: "MultipleX", n: 8 },
+		{ title: "Independent", n: 82 },
+		{ title: "Homeworker", n: 24 },
+		{ title: "Call Centre", n: 14 },
+		{ title: "Other", n: 5 }
 	]
 
 	var opinionData = new YAHOO.util.DataSource( YAHOO.example.publicOpinion );
 	opinionData.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-	opinionData.responseSchema = { fields: [ "response", "count" ] };
+	opinionData.responseSchema = { fields: [ "title", "n" ] };
 
 //--- chart
 
 	var mychart = new YAHOO.widget.PieChart( "chart", opinionData,
 	{
-		dataField: "count",
-		categoryField: "response",
+		dataField: "n",
+		categoryField: "title",
 		style:
 		{
 			padding: 20,

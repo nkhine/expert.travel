@@ -337,7 +337,7 @@ class User(iUser, WorkflowAware, Handler):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
@@ -568,7 +568,7 @@ class User(iUser, WorkflowAware, Handler):
 
     #######################################################################
     # Edit Account
-    account_fields = iUser.account_fields + ['abakuc:phone']
+    account_fields = iUser.account_fields + ['abakuc:phone', 'abakuc:job_title']
 
     edit_account_form__access__ = 'is_allowed_to_edit'
     edit_account_form__label__ = u'Edit'
@@ -614,6 +614,7 @@ class User(iUser, WorkflowAware, Handler):
         if results.get_n_documents():
             message = (u'There is another user with the email "%s", '
                        u'please try again')
+        job_title = context.get_form_values('job_title')
         functions = context.get_form_values('functions')
         logo = context.get_form_value('logo')
         # Save changes
@@ -698,6 +699,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['firstname'] = self.get_property('ikaaro:firstname')
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
+        namespace['job_title'] = self.get_property('abakuc:job_title')
         namespace['portrait'] = portrait
         if address is None:
             handler = self.get_handler('/ui/abakuc/users/profile.xml')
@@ -933,9 +935,15 @@ class User(iUser, WorkflowAware, Handler):
         pp = pprint.PrettyPrinter(indent=4)
         office_name = self.get_site_root()
         office = self.is_training()
+        path_to = office_name.abspath
+        pp.pprint(path_to)
         namespace = {}
         namespace['office'] = office
         namespace['business_function'] = self.business_function(context)
+        response = Training.statistics(office_name, context)
+        pp.pprint(response)
+        namespace['response'] = response
+        pp.pprint(namespace['response'])
         # Statistics
         if office:
             namespace['title'] = office_name.title_or_name
@@ -943,7 +951,7 @@ class User(iUser, WorkflowAware, Handler):
             # Return the page
             #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
             #handler = self.get_handler('/ui/abakuc/statistics/view.xml')
-            handler = self.get_handler('/ui/abakuc/statistics/business_type.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
             return stl(handler, namespace)
 
     business_type__access__ = 'is_allowed_to_view'

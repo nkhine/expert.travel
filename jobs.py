@@ -99,9 +99,9 @@ class Job(Folder, RoleAware):
         namespace = context.build_form_namespace(cls.job_fields)
         # XXX Someone can change this on the form
         namespace['class_id'] = Job.class_id
-        namespace['countries'] = countries
-        namespace['regions'] = regions
-        namespace['counties'] = county
+        namespace['country'] = countries
+        namespace['region'] = regions
+        namespace['county'] = county
 
         path = '/ui/abakuc/jobs/new_instance_form.xml'
         handler = context.root.get_handler(path)

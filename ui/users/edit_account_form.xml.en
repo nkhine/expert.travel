@@ -24,6 +24,13 @@
           value="${abakuc:phone}" />
       </dd>
       <dt>
+        <label for="job_title">Job Title</label>
+      </dt>
+      <dd>
+        <input type="text" id="abakuc:job_title" name="abakuc:job_title"
+          value="${abakuc:job_title}" />
+      </dd>
+      <dt>
         <label for="functions">Job Function</label>
       </dt>
       <dd>
