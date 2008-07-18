@@ -3,12 +3,9 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <head>
-    <title>Welcome to the UK.Expert.Travel</title>
-  </head>
-  <body>
-    <h2>Welcome to the UK.Expert.Travel on-line portal!</h2>
-    <div class="content">
+    <h1>Welcome 
+             to the training programme!</h1>
+ <div class="content">
     <p>
     An on-line directory of the UK Travel market covers: travel trade
     services; land and sea travel; air travel; travel trade information;
@@ -16,6 +13,7 @@
     travel professionals and site visitors with comprehensive and up to
     date contact information about the UK travel industry.
     </p>
+
     <p>
     Listing within this site is <b>FREE of Charge</b>, should you find
     that your company is not listed, please go to
@@ -23,76 +21,13 @@
     is incorrect please login or re-register.
     </p>
     </div>
-    <p>
-    ${tabs}
-    </p>
-    <div class="login-box">
-      <stl:block if="not user/info">
-          <div class="general-box">
-            <div class="title">
-              <h3>Sign in to Expert Travel</h3>
-            </div>
-            <div class="content">
-              <div class="info">
-                <div class="text">
-                    <form id="loginform" name="loginform" method="post" action="${action}">
-                        <dl>
-                          <dt><label for="username">Email address</label></dt>
-                          <dd>
-                            <input type="text" id="username" name="username" value="${username}" />
-                          </dd>
-                          <dt><label for="password">Password</label></dt>
-                          <dd>
-                            <input type="password" id="password" name="password" />
-                          </dd>
-                        </dl>
-                        <p>
-                          <input type="submit" value="Sign in" class="button_ok"/>
-                        </p>
-                      </form>
+<div class="yui-gc">
+    <div class="yui-u first">
+    {tabs}
+    </div> <!-- yui-u first -->
+    <!-- 1/3 column -->
+    <div class="yui-u">
+    </div> <!-- yui-u -->
+</div> <!-- yui-g -->
 
-                      <script language="javascript">
-                        <stl:inline if="not username">focus("username");</stl:inline>
-                        <stl:inline if="username">focus("password");</stl:inline>
-                      </script>
-                </div>
-              </div>
-               <ul>
-                  <li><a href=";forgotten_password_form">I cannot access my account</a></li>
-               </ul>
-            </div>
-          </div>
-      </stl:block>
-      <stl:block if="user/info">
-          <div class="user">
-            <h3>${user/info/title} Resources</h3>
-            <div class="user-info">
-               <ul>
-                    <li><a href="${user/info/home}">My Profile</a></li>
-                    <li><a href="${user/info/home}">Add news item</a></li>
-                    <li><a href="${user/info/home}">Add job item</a></li>
-                    <li><a href="${user/info/home}">Administrate</a></li>
-               </ul>
-            </div>
-          </div>
-      </stl:block>
-    </div> 
-
-
-          <!--    <div class="newslist">
-                  <dl stl:repeat="news_items news" class="ListItem" onmouseover="this.className='ListItem_Hover';"
-                    onmouseout="this.className='ListItem';">  
-                    <dt>
-                      <a href="${news_items/url}">${news_items/title}</a>
-                    </dt>
-                    <dd>
-                      ${news_items/description} 
-                    </dd>
-                  </dl>       
-          <p class="viewall"><strong><a href="${news_url}">View all »</a></strong></p>
-          </div> -->
-
-        
-        
-  </body>
 </stl:block>

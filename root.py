@@ -200,6 +200,10 @@ class Root(Handler, BaseRoot):
     #######################################################################
     def get_skin(self):
         hostname = get_context().uri.authority.host
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        #pp.pprint(hostname)
+
         ui = self.get_handler('ui')
 
         # Production / Exact match
@@ -238,13 +242,13 @@ class Root(Handler, BaseRoot):
     #######################################################################
     # API
     #######################################################################
-    def get_training(self):
-        root = get_context().root
-        handler = root.get_handler('training')
-        training = list(handler.search_handlers(format=Training.class_id))
-        training.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                     get_sort_name(y.name)))
-        return training
+    #def get_training(self):
+    #    root = get_context().root
+    #    handler = root.get_handler('training')
+    #    training = list(handler.search_handlers(format=Training.class_id))
+    #    training.sort(lambda x, y: cmp(get_sort_name(x.name),
+    #                                 get_sort_name(y.name)))
+    #    return training
 
     def get_topics_namespace(self, ids=None):
         topics = self.get_handler('topics.csv')
@@ -275,15 +279,6 @@ class Root(Handler, BaseRoot):
                 'is_selected': (ids is not None) and (row[0] in ids)})
 
         return namespace
-
-    def is_training(self):
-        '''Return a bool'''
-        training = self.get_site_root()
-        if isinstance(training, Training):
-            training = True
-        else:
-            training = False
-        return training
 
     #######################################################################
     # User Interface / Import

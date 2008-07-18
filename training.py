@@ -361,8 +361,13 @@ class Training(SiteRoot, WorkflowAware):
 
     # Statistics Access Control
     def is_allowed_to_view_statistics(self, user, object):
-        if self.is_admin(user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
             return True
+        # Is training manager
         return self.has_user_role(user.name, 'abakuc:training_manager')
     ########################################################################
     # Statistics
@@ -421,7 +426,10 @@ class Training(SiteRoot, WorkflowAware):
         #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         #context.scripts.append('/ui/abakuc/excanvas-compressed.js')
         #context.scripts.append('/ui/abakuc/fgCharting.jQuery.js')
-
+        hostname = get_context().uri.authority.host
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(hostname)
         # Get the variables from the form
         root = get_context().root
         year = context.get_form_value('year')
@@ -452,9 +460,9 @@ class Training(SiteRoot, WorkflowAware):
 
         # Layout options
         layout_options = [
-            ('country/type', u'Country x Business profile'),
-            ('country/topic', u'Country x Business function'),
-            ('country/function', u'Country x Job functions'),
+            ('country/type', u'Geographical x Business profile'),
+            ('country/topic', u'Geographical x Business function'),
+            ('country/function', u'Geographical x Job functions'),
             ('function/type', u'Job functions x Business profile'),
             ('topic/function', u'Business function x Job functions'),
             ('topic/type', u'Business function x Business profile')]
@@ -566,7 +574,11 @@ class Training(SiteRoot, WorkflowAware):
         #pp.pprint(table)
         ## Base URLs
         base_stats = context.uri
-        base_show = get_reference('/;show_users')
+        pp.pprint(base_stats)
+        if hostname == 'localhost':
+            base_show = get_reference(';show_users')
+        else:
+            base_show = get_reference('/;show_users')
         namespace['x'] =  base_show
         if month:
             base_show = base_show.replace(month=month)
@@ -942,10 +954,13 @@ class Training(SiteRoot, WorkflowAware):
     #view__access__ = 'is_allowed_to_edit'
     view__label__ = u'View'
     def view(self, context):
+        root = context.root
         here = context.handler
         namespace = {}
         title = here.get_title()
         items = self.get_modules()
+        #namespace['user']= self.get_user_menu(context)
+        namespace['user']= 'user namespace' 
         namespace['items'] = []
         for item in items:
             get = item.get_property
@@ -958,14 +973,18 @@ class Training(SiteRoot, WorkflowAware):
                       'title': item.title_or_name})
 
         namespace['title'] = title
-        namespace['vhosts'] = []
-        vhosts = self.get_vhosts()
-        for vhost in vhosts:
-            url = '%s' % vhost
-            namespace['vhosts'].append({'url': url})
+        #namespace['vhosts'] = []
+        #vhosts = self.get_vhosts()
+        #for vhost in vhosts:
+        #    url = '%s' % vhost
+        #    namespace['vhosts'].append({'url': url})
 
         #namespace['vhosts'] = self.get_vhosts()
-        handler = self.get_handler('/ui/abakuc/training/view.xml')
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        skin = root.get_skin()
+        handler = root.get_skin().get_handler('home.xhtml')
+        #handler = self.get_handler('/ui/abakuc/training/view.xml')
         return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))

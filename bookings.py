@@ -312,7 +312,6 @@ class Bookings(AccessControl, Folder):
     def is_training_manager(self, user, object):
         return self.parent.is_training_manager(user, object)
 
-
     def is_allowed_to_manage(self, user, object):
         if user is None:
             return False

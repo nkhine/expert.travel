@@ -1,4 +1,4 @@
-/*Copyright 2007 Abakuc Limited  uk.tp1*/
+/*Copyright 2007 Abakuc Limited */
 h1, h2 {
 font-size:116%;
 font-weight:bold;
@@ -8,7 +8,7 @@ font-weight:bold;
  * Header 
  **************************************************************************/
 #hd{ background:#6899FF;}
-#hd h1 { background:url(./images/logo.png) top left
+#hd h1 { background:url(images/logo.png) top left
 no-repeat;width:400px;height:62px;}
 #hd h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
 #hd h1 a:hover {background:none;border:none;text-decoration: none;}
@@ -52,13 +52,11 @@ no-repeat;width:400px;height:62px;}
 }
 #left ul {
   display: block;
-  border:1px solid; border-color:transparent;
   padding: 0.1em 0.3em;
 }
 
 #left ul:hover {
   background:#6899FF;
-  border:1px solid; border-color:transparent;
   font-color: #ffffff;
 }
 #left a {
@@ -282,12 +280,12 @@ th a.sort_none {
 #document  P, IMG { margin: 0em; }
 
 
-#ft { position:absolute;bottom:15px;right:15px;border-top: 1px solid #6899FF; font-size: 85%;} 
-#ft h1 { position:absolute;bottom:-9.5px;right:2px;background:url(./images/travel-registry.png) top right no-repeat;width:100px;height:37px; }
-#ft h1 a {width:100px;line-height:37px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
+#ft { border-top: 1px solid #6899FF;margin-top:15px;font-size: 85%;} 
+#ft h1 {position:relative;top:-15px;background:url(images/travel-registry.png) top left no-repeat;width:100px;height:37px; }
+#ft h1 a { width:100px;line-height:37px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
 #ft ul {list-style:none;margin:0;padding:0;}
-#ft li {float:left;margin:0;padding:0;}
-#ft a {margin-left: 1em; margin-right: 1em; text-decoration: none;}
+#ft li {float:left;margin-top:5px;padding:0;}
+#ft a {margin-left: 1em; margin-right: 1em; margin-right: 1em;text-decoration: none;}
 #ft a:hover {text-decoration: underline;}
 .space { width:95px; }
 

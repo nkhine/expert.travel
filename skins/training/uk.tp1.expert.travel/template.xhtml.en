@@ -88,6 +88,11 @@
             </div><!-- bd -->
             <div id="ft">
                 <ul>
+                    <li class="space">
+                <h1 title=".tarvel member since 2005">
+                    <a href="/" title="Abakuc Expert.Travel">
+                        .tarvel member since 2005</a>
+                </h1></li>
                     <li><a href="/;about">About</a></li>
                     <li><a href="/;credits">Credits</a></li>
                     <li><a href="/;license">License</a></li>
@@ -98,7 +103,6 @@
                           <li><a href="${user/info/home}">
                           ${user/info/title}</a></li>
                       </stl:block>
-                    <li class="space">&nbsp;</li>
                 </ul>
             </div><!-- ft -->
         </div><!-- doc -->
