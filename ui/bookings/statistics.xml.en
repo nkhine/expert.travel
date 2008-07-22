@@ -7,7 +7,7 @@
   <table class="form" width="100%">
     <tr class="header">
       <td>
-	<form method="GET" action=";statistics">
+	<form method="GET" action="/${booking_name}/;statistics">
 	  <select name="column">
             <option stl:repeat="criteria criterias" value="${criteria/value}" selected="${criteria/selected}">${criteria/title}</option>
 	  </select>
@@ -85,7 +85,7 @@
 	  <a href="${total/url_2}">${total/2}</a>
 	</td>
 	<td style="text-align:center">
-	  <a href="./;manage_bookings">${total/total}</a>
+	  <a href="/${booking_name}/;manage_bookings">${total/total}</a>
 	</td>
       </tr>
     </stl:block>

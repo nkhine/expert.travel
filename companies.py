@@ -123,7 +123,7 @@ class Company(SiteRoot):
 
     new_resource_form__access__ = 'is_allowed_to_edit'
     new_resource__access__ = 'is_allowed_to_edit'
-
+    browse_content__access__ = 'is_allowed_to_edit'
     def get_document_types(self):
         return [Address, Folder]
 

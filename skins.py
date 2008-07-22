@@ -347,6 +347,10 @@ class FrontOffice(Skin):
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
+            # Object's Menu
+            menu = self.get_context_menu(context)
+            if menu is not None:
+                menus.append(menu)
             # Modules
             #menu = self.get_content_menu(context)
             #if menu is not None:

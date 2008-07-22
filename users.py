@@ -180,6 +180,31 @@ class User(iUser, WorkflowAware, Handler):
         url = str(where_from.get_pathto(self)) + home
         return url
 
+
+    # FIXME 015 Check usage of this method and clean up
+    def is_tourist_office_manager(self, user, object):
+        root = self.get_site_root()
+        return root.has_user_role(self.name, 'abakuc:training_manager')
+
+    # FIXME 015 Check usage of this method and clean up
+    def is_branch_member(self, user, object):
+        if user is None:
+            return False
+        if self.is_admin(user, object):
+            return False
+        if self.is_tourist_office_manager(user, object):
+            return False
+        return True
+
+    #def is_travel_agent(self):
+    #    """
+    #    Check to see if the user is on a training site.
+    #    Return a bool
+    #    """
+    #    root = self.get_site_root()
+    #    is_travel_agent = root.has_user_role(self.name, 'abakuc:branch_member')
+    #    return is_travel_agent
+
     def is_training(self):
         """
         Check to see if the user is on a training site.
@@ -365,17 +390,22 @@ class User(iUser, WorkflowAware, Handler):
                 namespace['current_training'] = self.training(context)
                 if is_branch_manager:
                     namespace['news'] = self.news_table(context)
-                    if bookings_module:
-                        namespace['bookings'] = self.bookings(context)
-                    else:
-                        namespace['bookings'] = None 
+                    #if bookings_module:
+                    #    namespace['bookings'] = self.booking_statistics(context)
+                    #else:
+                    #    namespace['bookings'] = None 
                 else:
                     namespace['news'] = self.news(context)
                     if bookings_module:
-                        namespace['bookings'] = self.bookings(context)
+                        for bookings in bookings_module:
+                            booking = bookings.get_handler('.bookings')
+                            bookings = []
+                            for row in booking.get_rows():
+                                bookings.append({'index': row.number})
+                            namespace['howmany_bookings'] = len(bookings)
+                        namespace['bookings'] = self.booking_statistics(context)
                     else:
                         namespace['bookings'] = None 
-                #namespace['bookings'] = self.bookings(context)
                 namespace['statistics'] = self.statistics(context)
             else:
                 namespace['news'] = self.news(context)
@@ -434,7 +464,8 @@ class User(iUser, WorkflowAware, Handler):
                         <li><a href="#fragment-1"><span>Manage training</span></a></li>
                         <li><a href="#fragment-2"><span>News</span></a></li>
                         <stl:block if="bookings">
-                            <li><a href="#fragment-3"><span>Bookings (Manage)</span></a></li>
+                            <li><a href="#fragment-3"><span>Bookings
+                                (${howmany_bookings})</span></a></li>
                         </stl:block>
                         <li><a href="#fragment-5"><span>Statistics</span></a></li>
                         <stl:block if="is_branch_manager">
@@ -637,6 +668,9 @@ class User(iUser, WorkflowAware, Handler):
         from root import world
         from datetime import datetime, date
 
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+
         namespace = {}
         user = context.user
         root = context.root
@@ -646,6 +680,18 @@ class User(iUser, WorkflowAware, Handler):
         # Get Company and Address
         namespace['address'] = None
         address = self.get_address()
+
+        namespace['contact'] = None
+        if user is None:
+            return u'You need to be registered!'
+        if address.has_user_role(user.name, 'abakuc:guest'):
+            contacts = address.get_property('abakuc:branch_manager')
+            if contacts:
+                contact = users.get_handler(contacts[0])
+                namespace['contact'] = contact.get_property('ikaaro:email')
+            else:
+                contact = '<span style="color:red;">The administrator</span>'
+                namespace['contact'] = Parser(contact)
 
         # Is the user on a Training Portal?
         office_name = self.get_site_root()
@@ -822,17 +868,6 @@ class User(iUser, WorkflowAware, Handler):
         # Tabs
         namespace['tabs'] = self.get_tabs_stl(context)
 
-        namespace['contact'] = None
-        if user is None:
-            return u'You need to be registered!'
-        if address.has_user_role(user.name, 'abakuc:guest'):
-            contacts = address.get_property('abakuc:branch_manager')
-            if contacts:
-                contact = users.get_handler(contacts[0])
-                namespace['contact'] = contact.get_property('ikaaro:email')
-            else:
-                contact = '<span style="color:red;">The administrator</span>'
-                namespace['contact'] = Parser(contact)
         handler = self.get_handler('/ui/abakuc/users/profile.xml')
         return stl(handler, namespace)
 
@@ -920,131 +955,140 @@ class User(iUser, WorkflowAware, Handler):
 
     ########################################################################
     # Statistics UI 
-    #statistics__access__ = 'is_allowed_to_view'
-    #statistics__label__ = u'Statistics Module'
-    #def statistics(self, context):
-    #    # Set Style
-    #    context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
-    #    context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
-    #    context.styles.append('/ui/abakuc/images/ui.tabs.css')
-    #    # Add a script
-    #    context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
-    #    context.scripts.append('/ui/abakuc/jquery.cookie.js')
-    #    context.scripts.append('/ui/abakuc/ui.tabs.js')
-    #    import pprint
-    #    pp = pprint.PrettyPrinter(indent=4)
-    #    office_name = self.get_site_root()
-    #    office = self.is_training()
-    #    path_to = office_name.abspath
-    #    pp.pprint(path_to)
-    #    namespace = {}
-    #    namespace['office'] = office
-    #    namespace['business_function'] = self.business_function(context)
-    #    response = Training.statistics(office_name, context)
-    #    pp.pprint(response)
-    #    namespace['response'] = response
-    #    pp.pprint(namespace['response'])
-    #    # Statistics
-    #    if office:
-    #        namespace['title'] = office_name.title_or_name
-
-    #        # Return the page
-    #        #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
-    #        #handler = self.get_handler('/ui/abakuc/statistics/view.xml')
-    #        handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
-    #        return stl(handler, namespace)
-
-    #business_type__access__ = 'is_allowed_to_view'
-    #business_type__label__ = u'Business type stats'
-    #def business_type(self, context):
-    #    # Set Style
-    #    context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
-    #    context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
-    #    # Add a script
-    #    import pprint
-    #    pp = pprint.PrettyPrinter(indent=4)
-    #    office_name = self.get_site_root()
-    #    office = self.is_training()
-    #    namespace = {}
-    #    namespace['office'] = office
-    #    # Statistics
-    #    if office:
-    #        namespace['title'] = office_name.title_or_name
-
-    #        # Return the page
-    #        handler = self.get_handler('/ui/abakuc/statistics/business_type.xml')
-    #        return stl(handler, namespace)
-
-
-    #business_function__access__ = 'is_allowed_to_view'
-    #business_function__label__ = u'Business function stats'
-    #def business_function(self, context):
-    #    # Set Style
-    #    context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
-    #    context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
-    #    #context.styles.append('/ui/abakuc/yui/container/assets/skins/sam/container.css')
-    #    #context.styles.append('/ui/abakuc/yui/menu/assets/skins/sam/menu.css')
-    #    #context.styles.append('/ui/abakuc/yui/button/assets/skins/sam/button.css')
-    #    #context.styles.append('/ui/abakuc/yui/calendar/assets/skins/sam/calendar.css')
-    #    #context.styles.append('/ui/abakuc/yui/editor/assets/skins/sam/editor.css')
-    #    #context.styles.append('/ui/abakuc/yui/resize/assets/skins/sam/resize.css')
-    #    #context.styles.append('/ui/abakuc/yui/layout/assets/skins/sam/layout.css')
-    #    # Add a script
-    #    import pprint
-    #    pp = pprint.PrettyPrinter(indent=4)
-    #    office_name = self.get_site_root()
-    #    office = self.is_training()
-    #    namespace = {}
-    #    namespace['office'] = office
-    #    # Statistics
-    #    if office:
-    #        namespace['title'] = office_name.title_or_name
-
-    #        # Return the page
-    #        #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
-    #        handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
-    #        return stl(handler, namespace)
-
-    #functions__access__ = 'is_allowed_to_view'
-    #functions__label__ = u'Job function stats'
-    #def functions(self, context):
-    #    # Set Style
-    #    context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
-    #    context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
-    #    # Add a script
-    #    import pprint
-    #    pp = pprint.PrettyPrinter(indent=4)
-    #    office_name = self.get_site_root()
-    #    office = self.is_training()
-    #    namespace = {}
-    #    namespace['office'] = office
-    #    # Statistics
-    #    if office:
-    #        namespace['title'] = office_name.title_or_name
-
-    #        # Return the page
-    #        handler = self.get_handler('/ui/abakuc/statistics/functions.xml')
-    #        return stl(handler, namespace)
-
-
-    ########################################################################
-    # Bookings UI
-    bookings__access__ = 'is_allowed_to_view'
-    bookings__label__ = u'Booking Module'
-    def bookings(self, context):
+    statistics__access__ = 'is_allowed_to_view'
+    statistics__label__ = u'Statistics Module'
+    def statistics(self, context):
+        ## Set Style
+        #context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        #context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        ## Add a script
+        #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        #context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         office_name = self.get_site_root()
         office = self.is_training()
-        user = context.user
+        path_to = office_name.abspath
+        pp.pprint(path_to)
         namespace = {}
         namespace['office'] = office
+        namespace['business_function'] = self.business_function(context)
+        response = Training.statistics(office_name, context)
+        pp.pprint(response)
+        namespace['response'] = response
+        pp.pprint(namespace['response'])
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
+            #handler = self.get_handler('/ui/abakuc/statistics/view.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            return stl(handler, namespace)
+
+    business_type__access__ = 'is_allowed_to_view'
+    business_type__label__ = u'Business type stats'
+    def business_type(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        # Add a script
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/statistics/business_type.xml')
+            return stl(handler, namespace)
+
+
+    business_function__access__ = 'is_allowed_to_view'
+    business_function__label__ = u'Business function stats'
+    def business_function(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        #context.styles.append('/ui/abakuc/yui/container/assets/skins/sam/container.css')
+        #context.styles.append('/ui/abakuc/yui/menu/assets/skins/sam/menu.css')
+        #context.styles.append('/ui/abakuc/yui/button/assets/skins/sam/button.css')
+        #context.styles.append('/ui/abakuc/yui/calendar/assets/skins/sam/calendar.css')
+        #context.styles.append('/ui/abakuc/yui/editor/assets/skins/sam/editor.css')
+        #context.styles.append('/ui/abakuc/yui/resize/assets/skins/sam/resize.css')
+        #context.styles.append('/ui/abakuc/yui/layout/assets/skins/sam/layout.css')
+        # Add a script
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            #handler = self.get_handler('/ui/abakuc/statistics/chart.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            return stl(handler, namespace)
+
+    functions__access__ = 'is_allowed_to_view'
+    functions__label__ = u'Job function stats'
+    def functions(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/yui/fonts/fonts-min.css')
+        context.styles.append('/ui/abakuc/yui/datatable/assets/skins/sam/datatable.css')
+        # Add a script
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+        # Statistics
+        if office:
+            namespace['title'] = office_name.title_or_name
+
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/statistics/functions.xml')
+            return stl(handler, namespace)
+
+
+    ########################################################################
+    # Bookings UI
+    booking_statistics__access__ = 'is_allowed_to_view'
+    booking_statistics__label__ = u'Booking Module'
+    def booking_statistics(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+
+        #root = context.root
+        #here = context.handler
+        #site_root = here.get_site_root()
+        #skin_path = here.get_pathto(site_root)
+        #pp.pprint(skin_path)
+
+        user = context.user
         # Bookings
         if office:
             items = office_name.search_handlers(handler_class=Bookings)
             if items is not None:
                 bookings = []
                 for item in list(items):
+                    response = Bookings.statistics(item, context)
+                    namespace['response'] = response
                     csv = item.get_handler('.bookings')
                     results = []
                     for row in csv.get_rows():
@@ -1059,18 +1103,32 @@ class User(iUser, WorkflowAware, Handler):
                                'index': row.number,
                                'user': user})
                     namespace['howmany_bookings'] = len(results)
-                    namespace['results'] = results
-                    get = item.get_property
-                    url = '/%s' % item.name
-                    booking_to_add = { 'url': url,
-                                        'title': get('dc:title')}
-                    bookings.append(booking_to_add)    
-                namespace['items'] = bookings
-            else: 
-                namespace['items'] = None 
 
             # Return the page
-            handler = self.get_handler('/ui/abakuc/bookings/list.xml')
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            #handler = self.get_handler('/ui/abakuc/bookings/list.xml')
+            return stl(handler, namespace)
+    ########################################################################
+    # Bookings UI
+    bookings__access__ = 'is_allowed_to_view'
+    bookings__label__ = u'Booking Module'
+    def bookings(self, context):
+        office_name = self.get_site_root()
+        office = self.is_training()
+        namespace = {}
+        namespace['office'] = office
+
+        # Bookings
+        if office:
+            items = office_name.search_handlers(handler_class=Bookings)
+            if items is not None:
+                bookings = []
+                for item in list(items):
+                    response = Bookings.manage_bookings(item, context)
+                    namespace['response'] = response
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/statistics/business_function.xml')
+            #handler = self.get_handler('/ui/abakuc/bookings/list.xml')
             return stl(handler, namespace)
     #######################################################################
     # News - Search Interface
@@ -1525,6 +1583,147 @@ class User(iUser, WorkflowAware, Handler):
         return stl(handler, namespace)
 
     ########################################################################
+    # Current training
+    training__access__ = 'is_allowed_to_view'
+    training__sublabel__ = u'Current training programme'
+    def training(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        namespace = {}
+        user = context.user
+        root = context.root
+        users = root.get_handler('users')
+
+        # Get Company and Address
+        namespace['address'] = None
+        address = self.get_address()
+
+        # Is the user on a Training Portal?
+        office = self.is_training()
+        namespace['office'] = office
+        if office is True:
+            root = self.get_site_root()
+            is_training_manager = root.has_user_role(self.name, 'abakuc:training_manager')
+            namespace['is_training_manager'] = is_training_manager
+        pp.pprint(namespace['is_training_manager'])
+        # Get TP modules
+        module_ns = []
+        if office:
+            modules = self.parent.parent.get_modules()
+            xx = [
+                {'name': x.name, 'title': '%d - %s' % (i+1, x.title)}
+                for i, x in enumerate(modules)]
+            namespace['modules'] = []
+            for module in modules:
+                get = module.get_property
+                url = '/%s/;view' %  module.name
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                namespace['modules'].append({'url': url,
+                          'description': description,
+                          'title': module.title_or_name})
+
+                last_exam_passed = True
+                modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                                get_sort_name(y.name)))
+                #for index, module in enumerate(modules):
+                ns = {'title': module.title_or_name, 'url': None}
+                if last_exam_passed is True:
+                    path_to_module = '../../%s' % module.name
+                    ns['url'] = '%s' % path_to_module
+                    # Check for marketing form.
+                    marketing_form = module.get_marketing_form(self.name)
+                    ns['marketing'] = None
+                    if marketing_form is not None:
+                        url = '/%s/%s/;fill_form' % (module.name,
+                                                    marketing_form.name)
+                        marketing = {'url': url}
+                        ns['marketing'] = marketing
+
+                    else:
+                        ns['exam'] = None
+                        # Check for exam
+                        exam = None
+                        exams = list(module.search_handlers(format=Exam.class_id))
+                        if exams != []:
+                            exam = module.get_exam(self.name)
+                            last_exam_passed = False
+                            if exam is not None:
+                                title = exam.title_or_name
+                                result = exam.get_result(self.name)
+                                passed, n_attempts, kk, mark, kk = result
+                                url = '/%s/%s/;take_exam_form' % (module.name,
+                                                                exam.name)
+                                exam = {'title': title,
+                                        'passed': passed,
+                                        'attempts': n_attempts,
+                                        'mark': str(round(mark, 2)),
+                                        'url': url}
+                                last_exam_passed = passed
+                                ns['exam'] = exam
+                    # Exams
+                    exams = list(module.search_handlers(format=Exam.class_id))
+                    if exams != []:
+                        exam = module.get_exam(self.name)
+                        last_exam_passed = False
+                        if exam is not None:
+                            title = exam.title_or_name
+                            result = exam.get_result(self.name)
+                            passed, n_attempts, kk, mark, kk = result
+                            url = '/%s/%s/;take_exam_form' % (module.name,
+                                                            exam.name)
+                            exam = {'title': title,
+                                    'passed': passed,
+                                    'attempts': n_attempts,
+                                    'mark': str(round(mark, 2)),
+                                    'url': url}
+                            last_exam_passed = passed
+                            ns['exam'] = exam
+                module_ns.append(ns)
+                # Add namespace
+                namespace['programme'] = {'title': root.title_or_name,
+                          'modules': module_ns,
+                          'league': '../../;league_table'}
+                # Check namespace
+
+        # User Role
+        # XXX Fix so that we have the permissions for TP
+        is_self = user is not None and user.name == self.name
+        is_admin = root.is_admin(user, self)
+        namespace['is_self_or_admin'] = is_self or is_admin
+        namespace['is_admin'] = is_admin
+        if address:
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
+        else:
+            is_branch_manager = False
+            is_branch_member = False
+            is_guest = False
+            is_branch_manager_or_member = False
+
+        namespace['is_branch_manager'] = is_branch_manager
+        namespace['is_branch_member'] = is_branch_member
+        namespace['is_guest'] = is_guest
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
+
+        namespace['contact'] = None
+        if user is None:
+            return u'You need to be registered!'
+        if address.has_user_role(user.name, 'abakuc:guest'):
+            contacts = address.get_property('abakuc:branch_manager')
+            if contacts:
+                contact = users.get_handler(contacts[0])
+                namespace['contact'] = contact.get_property('ikaaro:email')
+            else:
+                contact = '<span style="color:red;">The administrator</span>'
+                namespace['contact'] = Parser(contact)
+
+        handler = self.get_handler('/ui/abakuc/training/profile.xml')
+        return stl(handler, namespace)
+    ########################################################################
     # Setup Company/Address
     setup_company_form__access__ = 'is_self_or_admin'
     setup_company_form__sublabel__ = u'Switch to another company'
@@ -1565,6 +1764,8 @@ class User(iUser, WorkflowAware, Handler):
             message = u'Please give a Name to your Company'
             return context.come_back(message)
 
+        # Description
+        description = context.get_form_value('dc:description')
         # Check the Logo
         logo_form = context.get_form_value('logo')
         if logo_form:
@@ -1603,6 +1804,7 @@ class User(iUser, WorkflowAware, Handler):
         types = context.get_form_values('type')
 
         metadata.set_property('dc:title', title, language='en')
+        metadata.set_property('dc:description', description)
         metadata.set_property('abakuc:website', website)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('abakuc:type', types)
@@ -1783,141 +1985,5 @@ class User(iUser, WorkflowAware, Handler):
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
 
-    ########################################################################
-    # Current training
-    training__access__ = 'is_allowed_to_view'
-    training__sublabel__ = u'Current training programme'
-    def training(self, context):
-        namespace = {}
-        user = context.user
-        root = context.root
-        users = root.get_handler('users')
-
-        # Get Company and Address
-        namespace['address'] = None
-        address = self.get_address()
-
-        # Is the user on a Training Portal?
-        office_name = self.get_site_root()
-        office = self.is_training()
-        namespace['office'] = office
-        # Get TP modules
-        module_ns = []
-        if office:
-            modules = self.parent.parent.get_modules()
-            xx = [
-                {'name': x.name, 'title': '%d - %s' % (i+1, x.title)}
-                for i, x in enumerate(modules)]
-            import pprint
-            pp = pprint.PrettyPrinter(indent=4)
-            namespace['modules'] = []
-            for module in modules:
-                get = module.get_property
-                url = '/%s/;view' %  module.name
-                description = reduce_string(get('dc:description'),
-                                            word_treshold=90,
-                                            phrase_treshold=240)
-                namespace['modules'].append({'url': url,
-                          'description': description,
-                          'title': module.title_or_name})
-
-                last_exam_passed = True
-                modules.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                                get_sort_name(y.name)))
-                #for index, module in enumerate(modules):
-                ns = {'title': module.title_or_name, 'url': None}
-                if last_exam_passed is True:
-                    path_to_module = '../../%s' % module.name
-                    ns['url'] = '%s' % path_to_module
-                    # Check for marketing form.
-                    marketing_form = module.get_marketing_form(self.name)
-                    ns['marketing'] = None
-                    if marketing_form is not None:
-                        url = '/%s/%s/;fill_form' % (module.name,
-                                                    marketing_form.name)
-                        marketing = {'url': url}
-                        ns['marketing'] = marketing
-
-                    else:
-                        ns['exam'] = None
-                        # Check for exam
-                        exam = None
-                        exams = list(module.search_handlers(format=Exam.class_id))
-                        if exams != []:
-                            exam = module.get_exam(self.name)
-                            last_exam_passed = False
-                            if exam is not None:
-                                title = exam.title_or_name
-                                result = exam.get_result(self.name)
-                                passed, n_attempts, kk, mark, kk = result
-                                url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                exam.name)
-                                exam = {'title': title,
-                                        'passed': passed,
-                                        'attempts': n_attempts,
-                                        'mark': str(round(mark, 2)),
-                                        'url': url}
-                                last_exam_passed = passed
-                                ns['exam'] = exam
-                    # Exams
-                    exams = list(module.search_handlers(format=Exam.class_id))
-                    if exams != []:
-                        exam = module.get_exam(self.name)
-                        last_exam_passed = False
-                        if exam is not None:
-                            title = exam.title_or_name
-                            result = exam.get_result(self.name)
-                            passed, n_attempts, kk, mark, kk = result
-                            url = '/%s/%s/;take_exam_form' % (module.name,
-                                                            exam.name)
-                            exam = {'title': title,
-                                    'passed': passed,
-                                    'attempts': n_attempts,
-                                    'mark': str(round(mark, 2)),
-                                    'url': url}
-                            last_exam_passed = passed
-                            ns['exam'] = exam
-                module_ns.append(ns)
-                # Add namespace
-                namespace['programme'] = {'title': office_name.title_or_name,
-                          'modules': module_ns,
-                          'league': '../../;league_table'}
-                # Check namespace
-
-        # User Role
-        # XXX Fix so that we have the permissions for TP
-        is_self = user is not None and user.name == self.name
-        is_admin = root.is_admin(user, self)
-        namespace['is_self_or_admin'] = is_self or is_admin
-        namespace['is_admin'] = is_admin
-        if address:
-            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
-            is_guest = address.has_user_role(self.name, 'abakuc:guest')
-            is_branch_manager_or_member = is_branch_manager or is_branch_member
-        else:
-            is_branch_manager = False
-            is_branch_member = False
-            is_guest = False
-            is_branch_manager_or_member = False
-
-        namespace['is_branch_manager'] = is_branch_manager
-        namespace['is_branch_member'] = is_branch_member
-        namespace['is_guest'] = is_guest
-        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
-
-        namespace['contact'] = None
-        if user is None:
-            return u'You need to be registered!'
-        if address.has_user_role(user.name, 'abakuc:guest'):
-            contacts = address.get_property('abakuc:branch_manager')
-            if contacts:
-                contact = users.get_handler(contacts[0])
-                namespace['contact'] = contact.get_property('ikaaro:email')
-            else:
-                contact = '<span style="color:red;">The administrator</span>'
-                namespace['contact'] = Parser(contact)
-        handler = self.get_handler('/ui/abakuc/training/profile.xml')
-        return stl(handler, namespace)
 
 register_object_class(User)

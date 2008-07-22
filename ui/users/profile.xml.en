@@ -43,13 +43,16 @@
             </ul>
         <div stl:if="not is_branch_manager_or_member">
             <p stl:if="contact">
-              To manage these records, please contact ${contact} who is
-              the Manager for this record or contact the site administrator.
+              To manage these records, please contact 
+              <a href="mailto:${contact}">${contact}</a>
+              who is the Manager for this record or contact
+              the site administrator.
             </p>
             <p stl:if="not contact">
               This record has no manager, please contact the site administrator.
             </p>
         </div>
+        <!-- The tabs have to account for a user who is in a TP -->
         <div stl:if="is_branch_manager_or_member">
             <!-- Tabs -->
                 ${tabs}

@@ -32,5 +32,8 @@
             </dt>
           </stl:block>
           <stl:block stl:if="not module/url">${module/title}</stl:block>
+          <stl:block stl:if="is_training_manager">
+          Manage module
+          </stl:block>
       </dt>
   </stl:block>

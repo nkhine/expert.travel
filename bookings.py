@@ -318,7 +318,7 @@ class Bookings(AccessControl, Folder):
         if self.is_training_manager(user, object):
             return True
 
-        return user is not None and user.is_travel_agent(user, self)
+        return user is not None and user.is_branch_member(user, self)
 
 
     def is_allowed_to_edit(self, user, object):
@@ -382,21 +382,26 @@ class Bookings(AccessControl, Folder):
 
 
     manage_bookings__access__ = 'is_allowed_to_manage'
-    manage_bookings__label__ = u'Manage Bookings'
-    manage_bookings__sublabel__ = u'Manage Bookings'
+    manage_bookings__label__ = u'Manage bookings'
+    manage_bookings__sublabel__ = u'Manage bookings'
     def manage_bookings(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+
         filter_criteria = context.get_form_value('filter_criteria')
         filter_value = context.get_form_value('filter_value')
         filter_duration = context.get_form_value('filter_duration')
 
         root = context.root
+        booking_name = self.name
         bookings = self.get_handler('.bookings')
         holiday_types = self.get_handler('.holiday_types')
-        edit_url = './;booking_edit_form?'
         #skin_name = context.root.get_skin_name()
 
         user = context.user
         namespace = {}
+        namespace['booking_name'] = booking_name 
+        edit_url = '/%s/;booking_edit_form?' % booking_name
         namespace['user'] = None
 
         filters = filter_criteria or filter_duration
@@ -406,65 +411,64 @@ class Bookings(AccessControl, Folder):
         namespace['filter_duration'] = filter_duration
 
         #to = self.parent
-        #office_name = self.get_site_root() 
-        #if office_name.is_training_manager(user, self):
-        #    manager = True
-        #else:
-        #    manager = False
-        #import pprint
-        #pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(manager) 
-        csv_url = './;csv?'
-        is_travel_agent = False
-        states = ['Reject', 'Approve']
-
-        # Search
-        if not filters:
-            objects = bookings.get_rows()
-        else:
+        office_name = self.get_site_root() 
+        if office_name.is_training_manager(user, self):
+            manager = True
+            is_travel_agent = False
+            csv_url = '/%s/;csv?' % booking_name
+            states = ['Reject', 'Approve']
             # Search
-            query = self.build_query(filter_duration, filter_criteria,
-                                     filter_value)
-            objects = self.search_bookings(query)
+            if not filters:
+                objects = bookings.get_rows()
+            else:
+                # Search
+                query = self.build_query(filter_duration, filter_criteria,
+                                         filter_value)
+                objects = self.search_bookings(query)
 
-            # Update namespace
-            if filter_duration is not None:
-                # Duration
-                label = duration_values[int(filter_duration)]
-                namespace['filter_duration_label'] = label
-                # Update CSV URL
-                csv_url += 'filter_duration=%s' % filter_duration
+                # Update namespace
+                if filter_duration is not None:
+                    # Duration
+                    label = duration_values[int(filter_duration)]
+                    namespace['filter_duration_label'] = label
+                    # Update CSV URL
+                    csv_url += 'filter_duration=%s' % filter_duration
 
-            if filter_criteria is not None:
-                # file_criteria_label
-                label = {'tour_operator': 'Tour Operator',
-                         'destination': 'Destination',
-                         'hotel': 'Hotel',
-                         'holiday_type': 'Holiday Type',
-                         'holiday_subtype': 'Holiday Sub-Type',
-                         'user': 'User'}[filter_criteria]
-                namespace['filter_criteria_label'] = label
-                # file_value_label
-                if filter_criteria == 'tour_operator':
-                    index = int(filter_value)
-                    label = self.get_tour_operator(index)
-                elif filter_criteria == 'destination':
-                    index = int(filter_value)
-                    label = self.get_destination(index)
-                else:
-                    label = filter_value
-                namespace['filter_value_label'] = label
-                # Update CSV URL
-                csv_url += '&filter_criteria=%s' % filter_criteria
-                csv_url += '&filter_value=%s' % filter_value
-        # CSV URL
-        namespace['csv_url'] = csv_url
+                if filter_criteria is not None:
+                    # file_criteria_label
+                    label = {'tour_operator': 'Tour Operator',
+                             'destination': 'Destination',
+                             'hotel': 'Hotel',
+                             'holiday_type': 'Holiday Type',
+                             'holiday_subtype': 'Holiday Sub-Type',
+                             'user': 'User'}[filter_criteria]
+                    namespace['filter_criteria_label'] = label
+                    # file_value_label
+                    if filter_criteria == 'tour_operator':
+                        index = int(filter_value)
+                        label = self.get_tour_operator(index)
+                    elif filter_criteria == 'destination':
+                        index = int(filter_value)
+                        label = self.get_destination(index)
+                    else:
+                        label = filter_value
+                    namespace['filter_value_label'] = label
+                    # Update CSV URL
+                    csv_url += '&filter_criteria=%s' % filter_criteria
+                    csv_url += '&filter_value=%s' % filter_value
+            # CSV URL
+            namespace['csv_url'] = csv_url
+        else:
+            manager = False
+            is_travel_agent = True 
+            states = ['Cancel','Request']
+            namespace['user'] = user.name
+            namespace['manage_action'] = u"Cancel selected bookings"
+            objects = self.search_bookings(**{'user': user.name})
+
+        pp.pprint(manager) 
+
         #else:
-        is_travel_agent = False 
-        states = ['Cancel','Request']
-        namespace['user'] = user.name
-        namespace['manage_action'] = u"Cancel selected bookings"
-        objects = self.search_bookings(**{'user': user.name})
         namespace['is_travel_agent'] = is_travel_agent
 
         # FIXME 015
@@ -500,7 +504,7 @@ class Bookings(AccessControl, Folder):
             try:
                 index = int(index)
             except:
-                # This happens when there are not tour operators defined
+                # This happens when there are no tour operators defined
                 info['tour_operator'] = ''
             else:
                 info['tour_operator'] = self.get_tour_operator(index)
@@ -538,7 +542,7 @@ class Bookings(AccessControl, Folder):
                        ('booking_state_form', u'Approve', 'button_ok', None)]
 
         total = len(rows)
-        size = 20
+        size = 5
         rows = rows[start:start+size]
         namespace['table'] = widgets.table(columns, rows, [sortby],
                                            sortorder, actions, self.gettext)
@@ -862,14 +866,19 @@ class Bookings(AccessControl, Folder):
                 else:
                     booking['destination%i' % i] = datatype.decode('')
 
-            holiday_types = context.get_form_value('holiday_types')
-            if '/' in holiday_types:
-                holiday_types = holiday_types.split('/')
-                holiday_types = holiday_types[0]
-                holiday_subtype = holiday_types[1]
+            import pprint
+            pp = pprint.PrettyPrinter(indent=4)
+            holiday_type = context.get_form_value('holiday_types')
+            pp.pprint(holiday_type)
+            if '/' in holiday_type:
+                holiday_type, holiday_subtype = holiday_type.split('/')
+                #holiday_types = holiday_types[0]
+                pp.pprint(holiday_type)
+                #holiday_subtype = holiday_types[:1]
+                pp.pprint(holiday_subtype)
             else:
                 holiday_subtype = ''
-            booking['holiday_type'] = holiday_types
+            booking['holiday_type'] = holiday_type
             booking['holiday_subtype'] = holiday_subtype
             booking['user'] = context.get_form_value('user', context.user)
             bookings.set_changed()
@@ -887,7 +896,7 @@ class Bookings(AccessControl, Folder):
         return context.come_back(message, goto=goto)
 
 
-    booking_state_form__access__ = 'is_training_manager'
+    booking_state_form__access__ = 'is_allowed_to_delete'
     def booking_state_form(self, context):
         states = {'Approve': 0, 'Reject': 2, 'Cancel': 1, 'Request': 3}
         state_label = context.get_form_value(';booking_state_form')
@@ -912,7 +921,7 @@ class Bookings(AccessControl, Folder):
         return stl(handler, namespace)
 
 
-    booking_change_state__access__ = 'is_training_manager'
+    booking_change_state__access__ = 'is_allowed_to_delete'
     def booking_change_state(self, context):
         states = {0: 'Approve', 2: 'Reject', 1: 'Cancel', 3: 'Request'}
         booking_ids = context.get_form_values('booking_ids')
@@ -1219,12 +1228,11 @@ class Bookings(AccessControl, Folder):
     statistics__access__ = 'is_training_manager'
     statistics__label__ = u'Statistics'
     def statistics(self, context):
-        root = context.root
-        column = context.get_form_value('column')
+        booking_name = self.name
+        column = context.get_form_value('column', 'holiday_type')
         holiday_type = context.get_form_value('holiday_type')
-        #skin_name = context.root.get_skin_name()
         namespace = {}
-
+        namespace['booking_name'] = booking_name
         bookings = self.get_handler('.bookings')
         tour_operators = self.get_handler('.tour_operators')
         destinations = self.get_handler('.destinations')
@@ -1272,13 +1280,13 @@ class Bookings(AccessControl, Folder):
         durations = ['0', '1', '2']
         total = {'0': 0, '1': 0, '2': 0}
 
-##        indexes = bookings.indexes
+#        indexes = bookings.indexes
         if column == 'holiday_subtype' and holiday_type:
             namespace['holiday_type_value'] = holiday_type
-##            if holiday_type in columns['holiday_type']:
-##                values = holiday_types.items.get(holiday_type)
-##        else:
-##            values = bookings.get_index(column)
+#            if holiday_type in columns['holiday_type']:
+#                values = holiday_types.items.get(holiday_type)
+#        else:
+#            values = bookings.get_index(column)
 
         results = []
         total = {'0' : 0, '1' : 0, '2' : 0, 'total' : 0}
@@ -1297,7 +1305,7 @@ class Bookings(AccessControl, Folder):
 
             if column == 'holiday_type':
                 params = {'column': 'holiday_subtype', 'holiday_type': value}
-                line['holiday_type_filter_url'] = "./;statistics?" + \
+                line['holiday_type_filter_url'] = "/%s/;statistics?" % booking_name + \
                                                   urlencode(params)
             if column == 'destination':
                 # Destinations 1 to 5
@@ -1318,21 +1326,21 @@ class Bookings(AccessControl, Folder):
                 params['filter_duration'] = duration
                 params['filter_criteria'] = column
                 params['filter_value'] = value
-                href = "./;manage_bookings?" + urlencode(params)
+                href = "/%s/;manage_bookings?" % booking_name + urlencode(params)
                 count = len(bookings.search(query))
                 line[str(duration)] = {'href': href, 'size': count}
 
                 params_column = params.copy()
                 del params_column['filter_criteria']
                 del params_column['filter_value']
-                total['url_%s' % duration] = "./;manage_bookings?" + \
+                total['url_%s' % duration] = "/%s/;manage_bookings?" % booking_name + \
                                              urlencode(params_column)
                 total[str(duration)] += count
 
                 params_row = params.copy()
                 del params_row['filter_duration']
                 line['total'] += count
-                line['total_url'] = "./;manage_bookings?" + \
+                line['total_url'] = "/%s/;manage_bookings?" % booking_name + \
                                     urlencode(params_row)
 
             total['total'] += line['total']

@@ -263,7 +263,12 @@ class ExpertTravel(SiteRoot):
         #XXX Fix as this does not work when viewing from Back-Office
         #XXX See [#119] http://bugs.abakuc.com/show_bug.cgi?id=119
         # Return the page
-        handler = root.get_skin().get_handler('home.xhtml')
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/home.xml')
+        else:
+            handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
 
     ####################################################################

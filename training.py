@@ -426,10 +426,10 @@ class Training(SiteRoot, WorkflowAware):
         #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         #context.scripts.append('/ui/abakuc/excanvas-compressed.js')
         #context.scripts.append('/ui/abakuc/fgCharting.jQuery.js')
-        hostname = get_context().uri.authority.host
+        #hostname = get_context().uri.authority.host
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(hostname)
+        #pp.pprint(hostname)
         # Get the variables from the form
         root = get_context().root
         year = context.get_form_value('year')
@@ -575,7 +575,13 @@ class Training(SiteRoot, WorkflowAware):
         ## Base URLs
         base_stats = context.uri
         pp.pprint(base_stats)
-        if hostname == 'localhost':
+        #if hostname == 'localhost':
+        #    base_show = get_reference(';show_users')
+        #else:
+        #    base_show = get_reference('/;show_users')
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        if skin_path == '/ui/aruni':
             base_show = get_reference(';show_users')
         else:
             base_show = get_reference('/;show_users')
@@ -973,18 +979,19 @@ class Training(SiteRoot, WorkflowAware):
                       'title': item.title_or_name})
 
         namespace['title'] = title
-        #namespace['vhosts'] = []
-        #vhosts = self.get_vhosts()
-        #for vhost in vhosts:
-        #    url = '%s' % vhost
-        #    namespace['vhosts'].append({'url': url})
+        namespace['vhosts'] = []
+        vhosts = self.get_vhosts()
+        for vhost in vhosts:
+            url = '%s' % vhost
+            namespace['vhosts'].append({'url': url})
 
         #namespace['vhosts'] = self.get_vhosts()
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         skin = root.get_skin()
-        handler = root.get_skin().get_handler('home.xhtml')
-        #handler = self.get_handler('/ui/abakuc/training/view.xml')
+        skin_path = skin.abspath
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/home.xml')
+        else:
+            handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))

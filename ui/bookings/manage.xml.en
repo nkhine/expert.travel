@@ -5,7 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
   <div style="text-align: center; margin: 1em">
-    <a href="./;booking_create_form">Register a new booking</a>
+    <a href="/${booking_name}/;booking_create_form">Register a new booking</a>
     | Manage bookings
   </div>
 
@@ -26,7 +26,7 @@
   <em>Click on value to modify it. <strong>Never</strong> press 'Enter'
   click on Button instead</em>
   <br/>
-  <form action=";booking_state_form" method="get" id="browse_list">
+  <form action="/${booking_name}/;booking_state_form" method="get" id="browse_list">
     <input stl:if="filter_criteria" type="hidden" name="filter_criteria"
 	    value="${filter_criteria}" />
     <input stl:if="filter_duration" type="hidden" name="filter_duration"
