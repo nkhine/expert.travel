@@ -143,8 +143,9 @@ class Training(SiteRoot, WorkflowAware):
          'unit': u"Branch Member"},
     ]
 
-    new_resource_form__access__ = 'is_branch_manager'
-    new_resource__access__ = 'is_branch_manager'
+    new_resource_form__access__ = 'is_training_manager'
+    new_resource__access__ = 'is_training_manager'
+    permissions_form__access__ = 'is_admin'
 
     site_format = 'module'
 
@@ -264,10 +265,6 @@ class Training(SiteRoot, WorkflowAware):
     #                'title': x,
     #                'is_selected': x==selected_region} for x in regions]
     #    regions.sort(key=lambda x: x['title'])
-    #    import pprint
-    #    pp = pprint.PrettyPrinter(indent=4)
-    #    pp.pprint(regions)
-    #    #pp.pprint(countries)
     #    return regions
     #    #return countries
     #######################################################################
@@ -427,9 +424,6 @@ class Training(SiteRoot, WorkflowAware):
         #context.scripts.append('/ui/abakuc/excanvas-compressed.js')
         #context.scripts.append('/ui/abakuc/fgCharting.jQuery.js')
         #hostname = get_context().uri.authority.host
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(hostname)
         # Get the variables from the form
         root = get_context().root
         year = context.get_form_value('year')
@@ -439,6 +433,8 @@ class Training(SiteRoot, WorkflowAware):
         country = context.get_form_value('country')
         region = context.get_form_value('region')
 
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         # Build the namespace
         namespace = {}
 
@@ -537,7 +533,7 @@ class Training(SiteRoot, WorkflowAware):
                     aux.append(brain)
             brains = aux
 
-        ## Classify the users
+        # Classify the users
         table = {}
         table[('', '')] = 0
         for x in horizontal_criterias:
@@ -556,7 +552,6 @@ class Training(SiteRoot, WorkflowAware):
                 x = x[0]
                 #for item in x:
                 #    x = item
-                #    pp.pprint(x)
             #else:
             #    x
             y = getattr(brain, vertical)
@@ -571,20 +566,23 @@ class Training(SiteRoot, WorkflowAware):
                 table[(x, '')] += 1
                 table[('', y)] += 1
                 table[('', '')] += 1
-        #pp.pprint(table)
-        ## Base URLs
+        # Base URLs
         base_stats = context.uri
-        pp.pprint(base_stats)
-        #if hostname == 'localhost':
-        #    base_show = get_reference(';show_users')
-        #else:
-        #    base_show = get_reference('/;show_users')
+        # Where are we?
         skin = root.get_skin()
         skin_path = skin.abspath
         if skin_path == '/ui/aruni':
-            base_show = get_reference(';show_users')
+            office_path = self.get_abspath()
+            base_show = get_reference('%s/;show_users' % office_path)
+            namespace['base'] = '%s/;show_users' % office_path
+            namespace['action'] = '%s/;statistics' % office_path
+            namespace['download'] = '%s/;statistics_csv' % office_path
         else:
             base_show = get_reference('/;show_users')
+            namespace['base'] = '/;show_users'
+            namespace['action'] = '/;statistics'
+            namespace['download'] = '/;statistics_csv'
+
         namespace['x'] =  base_show
         if month:
             base_show = base_show.replace(month=month)
@@ -593,10 +591,10 @@ class Training(SiteRoot, WorkflowAware):
         if module:
             base_show = base_show.replace(module=module)
 
-        ## Column headers
+        # Column headers
         namespace['columns'] = [ x['title'] for x in horizontal_criterias ]
 
-        ## The rows
+        # The rows
         rows = []
         total = [{'id': '', 'title': self.gettext(u'Total')}]
         query = {}
@@ -1091,8 +1089,6 @@ class Training(SiteRoot, WorkflowAware):
         Return all the news of the training manager's company
         including the addresses.
         '''
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         root = context.root
         office = self.get_site_root()
         users = self.get_handler('/users')
@@ -1135,11 +1131,9 @@ class Training(SiteRoot, WorkflowAware):
                 news_ns.append(ns)
 
         #namespace['all_news'] = {'news': news_ns}
-        #pp.pprint(namespace['all_news'])
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
         batch_total = len(news_ns)
-        pp.pprint(len(news_ns))
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total

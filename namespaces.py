@@ -117,9 +117,6 @@ class Regions(Enumerate):
                'title': u'Yorkshire & Humberside'}
           ]
           """
-          import pprint
-          pp = pprint.PrettyPrinter(indent=4)
-
           from root import world
           rows = world.get_rows()
           regions = []
@@ -142,11 +139,7 @@ class Regions(Enumerate):
           From a region id (e.g 'South East') returns the list of the region's
           counties.
           """
-          import pprint
-          pp = pprint.PrettyPrinter(indent=4)
-
           from root import world
-          pp.pprint(id)
           rows = world.get_rows()
           counties = []
           for row in rows:

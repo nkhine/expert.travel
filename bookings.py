@@ -221,7 +221,7 @@ class BookingData(CSV):
 
 
     def append(self, line):
-        line.setdefault('state', '0')
+        line.setdefault('state', '3')
         if 'id' not in line:
             line['id'] = len(self.lines) + 1
 
@@ -385,9 +385,6 @@ class Bookings(AccessControl, Folder):
     manage_bookings__label__ = u'Manage bookings'
     manage_bookings__sublabel__ = u'Manage bookings'
     def manage_bookings(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-
         filter_criteria = context.get_form_value('filter_criteria')
         filter_value = context.get_form_value('filter_value')
         filter_duration = context.get_form_value('filter_duration')
@@ -466,22 +463,20 @@ class Bookings(AccessControl, Folder):
             namespace['manage_action'] = u"Cancel selected bookings"
             objects = self.search_bookings(**{'user': user.name})
 
-        pp.pprint(manager) 
-
         #else:
         namespace['is_travel_agent'] = is_travel_agent
 
         # FIXME 015
-        columns = [('reference_number', u'Reference number'),
+        columns = [('reference_number', u'Reference'),
                    ('user', u'User'),
                    ('email', u'E-Mail'),
                    ('tour_operator', u'Tour Operator'),
                    ('holiday_type', u'Holiday Type'),
-                   ('holiday_subtype', u'Holiday SubType'),
-                   ('duration', u'Length of stay'),
+                   ('holiday_subtype', u'Sub Type'),
+                   ('duration', u'Duration'),
                    ('state', u'State')]
         if is_travel_agent:
-            del columns[1:3]
+            del columns[1:3] 
 
         rows = []
         for booking in objects:
@@ -614,6 +609,8 @@ class Bookings(AccessControl, Folder):
 
     edit_booking__access__ = 'is_allowed_to_edit'
     def edit_booking(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         destinations = context.get_form_values('destination')
         if not destinations or len(destinations) > 5:
             message = (u'Please select a destination.')
@@ -635,8 +632,6 @@ class Bookings(AccessControl, Folder):
             return context.come_back(message, goto=goto)
 
         booking_id = context.get_form_value('booking_id')
-        holiday_types = context.get_form_value('holiday_types')
-
         bookings = self.get_handler('.bookings')
         booking = bookings.get_booking_by_id(booking_id)
         if not booking:
@@ -664,12 +659,13 @@ class Bookings(AccessControl, Folder):
             else:
                 booking.set_value('destination%i' % i, datatype.decode(''))
 
-        holiday_subtype = ''
-        if '/' in holiday_types:
-            holiday_types = holiday_types.split('/')
-            holiday_types = holiday_types[0]
-            holiday_subtype = holiday_types[1]
-        booking.set_value('holiday_type', holiday_types)
+
+        holiday_type = context.get_form_value('holiday_types')
+        if '/' in holiday_type:
+            holiday_type, holiday_subtype = holiday_type.split('/')
+        else:
+            holiday_subtype = ''
+        booking.set_value('holiday_type', holiday_type)
         booking.set_value('holiday_subtype', holiday_subtype)
         # Reindex row
         catalog.index_document(booking, booking.number)
@@ -866,16 +862,12 @@ class Bookings(AccessControl, Folder):
                 else:
                     booking['destination%i' % i] = datatype.decode('')
 
-            import pprint
-            pp = pprint.PrettyPrinter(indent=4)
+            # Holiday type and sub type
             holiday_type = context.get_form_value('holiday_types')
-            pp.pprint(holiday_type)
             if '/' in holiday_type:
                 holiday_type, holiday_subtype = holiday_type.split('/')
                 #holiday_types = holiday_types[0]
-                pp.pprint(holiday_type)
                 #holiday_subtype = holiday_types[:1]
-                pp.pprint(holiday_subtype)
             else:
                 holiday_subtype = ''
             booking['holiday_type'] = holiday_type
@@ -1228,6 +1220,9 @@ class Bookings(AccessControl, Folder):
     statistics__access__ = 'is_training_manager'
     statistics__label__ = u'Statistics'
     def statistics(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        root = context.root
         booking_name = self.name
         column = context.get_form_value('column', 'holiday_type')
         holiday_type = context.get_form_value('holiday_type')
@@ -1292,14 +1287,19 @@ class Bookings(AccessControl, Folder):
         total = {'0' : 0, '1' : 0, '2' : 0, 'total' : 0}
         namespace['total'] = 0
 
+        namespace['users'] = None 
         for value, label in y_axis:
             line = {'value': label, 'total': 0}
-            #if column == 'user':
-            #    username = root.search(name=label, format=User.class_id)
-            #    username = username.get_documents()
-            #    if username:
-            #        line['value'] = username[0].username
-
+            if column == 'user':
+                from users import User
+                namespace['users'] = (column == 'user')
+                pp.pprint(namespace['users'])
+                username = root.search(name=label, format=User.class_id)
+                username = username.get_documents()
+                if username:
+                    href = "/users/%s/;view" % username[0].name
+                    line['value'] = {'href': href,
+                                     'title': username[0].title_or_name}
             # Forget changes on query (destination & duration filters)
             c_query = base_query
 
@@ -1326,6 +1326,7 @@ class Bookings(AccessControl, Folder):
                 params['filter_duration'] = duration
                 params['filter_criteria'] = column
                 params['filter_value'] = value
+                pp.pprint(params['filter_criteria'])
                 href = "/%s/;manage_bookings?" % booking_name + urlencode(params)
                 count = len(bookings.search(query))
                 line[str(duration)] = {'href': href, 'size': count}

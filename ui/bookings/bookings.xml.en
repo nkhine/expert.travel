@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <div stl:if="office">
+         <div class="yui-skin-sam"> 
+             ${response}
+         </div> <!--yui-skin-sam -->
+    </div> <!-- office -->
+</stl:block>

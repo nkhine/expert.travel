@@ -121,7 +121,7 @@ class FrontOffice(Skin):
         if isinstance(site_root, ExpertTravel):
             # Navigation
             results = root.search(level0=level0, format=site_root.site_format)
-            print 'Expert Travel site' 
+            print 'We are on an Expert Travel site' 
             # Flat
             ## XXX Here is a bug #133 if you re-start
             ## the server you no longer have a list
@@ -146,7 +146,7 @@ class FrontOffice(Skin):
         else:
             # Navigation
             namespace['level1'] = '' 
-            print 'Comapny in Expert Travel' 
+            print 'We are either on a Company view or a TP' 
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
         if context_menu_html is None:

@@ -200,10 +200,6 @@ class Root(Handler, BaseRoot):
     #######################################################################
     def get_skin(self):
         hostname = get_context().uri.authority.host
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(hostname)
-
         ui = self.get_handler('ui')
 
         # Production / Exact match
@@ -470,9 +466,6 @@ class Root(Handler, BaseRoot):
                     'selected': x==selected_region} for x in regions]
         regions.sort(key=lambda x: x['title'])
         return regions
-        #import pprint
-        #pp = pprint.PrettyPrinter(indent=4)
-        #pp.pprint(regions)
 
     def list_country_codes(self):
         return world.get_unique_values('iana_root_zone')
@@ -508,8 +501,6 @@ class Root(Handler, BaseRoot):
     ##########################################################################
     get_regions_str__access__ = True
     def get_regions_str(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         response = context.response
         response.set_header('Content-Type', 'text/plain')
         #country_code = get_host_prefix(context)

@@ -3,9 +3,8 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
            xmlns="http://www.w3.org/1999/xhtml">
-<link rel="stylesheet" type="text/css" href="/ui/abakuc/jquery/css/jquery.tablesorter.css" />
 <h1>Registered members  - overview</h1>
-<form method="get" action="/;statistics">
+<form method="get" action="${action}">
   <table>
       <thead>
           <tr>
@@ -53,14 +52,14 @@
   </table>
 </form>
 <p style="font-size: 12px">
-  &raquo; View <a href="/;show_users">detailed statistics</a>.
+  &raquo; View <a href="${base}">detailed statistics</a>.
 </p>
 <p style="font-size: 12px">
   &raquo; Download all registred users as
-  <a href="/;statistics_csv">CSV file</a>.
+  <a href="${download}">CSV file</a>.
 </p>
 <p style="font-size: 12px">
-  &raquo; <a href="/;statistics">Reset filter</a>.
+  &raquo; <a href="${action}">Reset filter</a>.
 </p>
 <table cellspacing="1" class="tablesorter">
   <thead>

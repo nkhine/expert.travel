@@ -353,10 +353,6 @@ class Exam(Folder):
     def get_results(self):
         return self.get_handler('.results')
     results = property(get_results, None, None, '')
-    import pprint
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(results)
-
 
     #########################################################################
     # Index and search

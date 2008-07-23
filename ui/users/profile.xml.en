@@ -57,6 +57,12 @@
             <!-- Tabs -->
                 ${tabs}
         </div>
+        <stl:block stl:if="office">
+        <div stl:if="not is_branch_manager_or_member">
+            <!-- XXX Clean these Tabs and reduce code -->
+                ${tabs}
+        </div>
+        </stl:block>
     </stl:block>
     </div> <!-- yui-u first -->
     <div class="yui-u">

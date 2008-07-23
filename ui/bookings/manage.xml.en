@@ -3,7 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
+<link rel="stylesheet" type="text/css" href="/ui/abakuc/jquery/css/jquery.tablesorter.css" />
   <div style="text-align: center; margin: 1em">
     <a href="/${booking_name}/;booking_create_form">Register a new booking</a>
     | Manage bookings
@@ -33,7 +33,7 @@
 	    value="${filter_duration}" />
     <input stl:if="filter_value" type="hidden" name="filter_value"
 	    value="${filter_value}" />
-    ${table}
+        ${table}
   </form>
   <a stl:if="not is_travel_agent" href="${csv_url}" >[CSV Download]</a>
 </stl:block>

@@ -23,7 +23,7 @@
             Business Type
         </div>
         <div id="fragment-2s">
-            ${business_function}
+            {business_function}
         </div>
         <div id="fragment-3s">
             Job Function

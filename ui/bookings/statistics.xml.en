@@ -1,93 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
-
-  <h1>Statistics for Bookings</h1>
-  <table class="form" width="100%">
-    <tr class="header">
-      <td>
-	<form method="GET" action="/${booking_name}/;statistics">
-	  <select name="column">
-            <option stl:repeat="criteria criterias" value="${criteria/value}" selected="${criteria/selected}">${criteria/title}</option>
-	  </select>
-	  <input type="submit" value="Select"/>
-	</form>
-      </td>
-      <th style="text-align:center" width="15%">Less than 7</th>
-      <th style="text-align:center" width="15%">From 7 to 14</th>
-      <th style="text-align:center" width="15%">More than 14</th>
-      <th style="text-align:center" width="15%">Total</th>
-    </tr>
-    <stl:block stl:if="results">
-      <stl:block stl:if="holiday_type">
-	<tr stl:repeat="result results">
-	  <td>
-	    <a href="${result/holiday_type_filter_url}">${result/value}</a>   
-	  </td>
-	  <td style="text-align:center">
-	    <b>
-	      <a href="${result/0/href}">${result/0/size}</a>
-	    </b>
-	  </td>
-	  <td style="text-align:center">
-	    <b>
-	      <a href="${result/1/href}">${result/1/size}</a>
-	    </b>
-	  </td>
-	  <td style="text-align:center">
-	    <b>
-	      <a href="${result/2/href}">${result/2/size}</a>
-	    </b>
-	  </td>
-	  <td style="text-align:center">
-	    <a href="${result/total_url}">
-	      ${result/total}
-	    </a>
-	  </td>
-	</tr>
-      </stl:block>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl"
+    xmlns="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" href="/ui/abakuc/jquery/css/jquery.tablesorter.css" />
+  <h1>Booking's module - overview
       <stl:block stl:if="not holiday_type">
-	<tr stl:if="holiday_subtype">
-	  <td colspan="5">
-	    <h2>
-	      For Holiday Type '${holiday_type_value}'
-	    </h2>
-	  </td>
-	</tr>
-	<tr stl:repeat="result results">
-	  <td>${result/value}</td>   
-	  <td style="text-align:center">
-	    <a href="${result/0/href}">${result/0/size}</a>
-	  </td>
-	  <td style="text-align:center">
-            <a href="${result/1/href}">${result/1/size}</a>
-	  </td>
-	  <td style="text-align:center">
-            <a href="${result/2/href}">${result/2/size}</a>
-	  </td>
-	  <td style="text-align:center">
-	    <a href="${result/total_url}">
-	      ${result/total}
-	    </a>
-	  </td>
-	</tr>
-      </stl:block>
+          <span stl:if="holiday_subtype">
+                by Holiday Type - '${holiday_type_value}'
+          </span>
+      </stl:block>    
+ </h1> 
+  <table cellspacing="1" class="tablesorter">
+    <thead>
+        <tr>
+          <th>
+            <form method="GET" action="/${booking_name}/;statistics">
+                <select name="column">
+                    <option stl:repeat="criteria criterias" 
+                            value="${criteria/value}" 
+                            selected="${criteria/selected}">
+                            ${criteria/title}
+                    </option>
+                </select>
+                <input type="submit" value="Select"/>
+              </form>
+          </th>
+          <th style="text-align:center" width="15%">Less than 7</th>
+          <th style="text-align:center" width="15%">From 7 to 14</th>
+          <th style="text-align:center" width="15%">More than 14</th>
+          <th style="text-align:center" width="15%">Total</th>
+        </tr>
+    </thead>
+    <tfoot>
+    <stl:block stl:if="results">
       <tr>
-	<td>Total</td>
-	<td style="text-align:center">
-	  <a href="${total/url_0}">${total/0}</a>
-	</td>
-	<td style="text-align:center">
-	  <a href="${total/url_1}">${total/1}</a>
-	</td>
-	<td style="text-align:center">
-	  <a href="${total/url_2}">${total/2}</a>
-	</td>
-	<td style="text-align:center">
-	  <a href="/${booking_name}/;manage_bookings">${total/total}</a>
-	</td>
+          <th>Total</th>
+          <th style="text-align:center">
+            <a href="${total/url_0}">${total/0}</a>
+          </th>
+          <th style="text-align:center">
+            <a href="${total/url_1}">${total/1}</a>
+          </th>
+          <th style="text-align:center">
+            <a href="${total/url_2}">${total/2}</a>
+          </th>
+          <th style="text-align:center">
+            <a href="/${booking_name}/;manage_bookings">${total/total}</a>
+          </th>
       </tr>
     </stl:block>
+    <stl:block stl:if="not results">
+    <tr>
+        <th colspan="5">No sub holiday types for
+        ${holiday_type_value}</th>
+    </tr>
+    </stl:block>
+    </tfoot>  
+    <tbody>
+    <stl:block stl:if="results">
+      <stl:block stl:if="holiday_type">
+          <tr stl:repeat="result results">
+            <td>
+              <a href="${result/holiday_type_filter_url}">${result/value}</a>   
+            </td>
+            <td style="text-align:center">
+                <a href="${result/0/href}">${result/0/size}</a>
+            </td>
+            <td style="text-align:center">
+                <a href="${result/1/href}">${result/1/size}</a>
+            </td>
+            <td style="text-align:center">
+                <a href="${result/2/href}">${result/2/size}</a>
+            </td>
+            <td style="text-align:center">
+              <a href="${result/total_url}">
+                ${result/total}
+              </a>
+            </td>
+          </tr>
+      </stl:block>
+      <stl:block stl:if="not holiday_type">
+              <tr stl:repeat="result results">
+                <stl:block stl:if="users">
+                    <td><a href="${result/value/href}">
+                        ${result/value/title}</a>
+                    </td>   
+                </stl:block>
+                <stl:block stl:if="not users">
+                    <td>${result/value}</td>   
+                </stl:block>
+                <td style="text-align:center">
+                  <a href="${result/0/href}">${result/0/size}</a>
+                </td>
+                <td style="text-align:center">
+                        <a href="${result/1/href}">${result/1/size}</a>
+                </td>
+                <td style="text-align:center">
+                        <a href="${result/2/href}">${result/2/size}</a>
+                </td>
+                <td style="text-align:center">
+                  <a href="${result/total_url}">
+                    ${result/total}
+                  </a>
+                </td>
+              </tr>
+      </stl:block>
+    </stl:block>
+    <stl:block stl:if="not results">
+    <tr>
+        <td colspan="5">To add new sub holiday categories, please visit the<a
+        href="./;manage_holiday_types">
+        Manage ${holiday_type_value}</a> interface</td>
+    </tr>
+    </stl:block>
+    </tbody>
   </table>
+  <h2>Management links</h2>
+    <p>
+    Use these links to add or edit any of the settings.
+    </p>
+    <span>» <a href="./;manage_holiday_types">Holiday Types</a></span>
+    <span>» <a href="./;manage_destinations">Destinations</a></span>
+    <span>» <a href="./;manage_hotels">Hotels</a></span>
+    <span>» <a href="./;manage_tour_operators">Tour Operators</a></span>
+    <p>» Download bookings made as CSV file.
+    <a href="/${booking_name}/;csv?">bookings.csv</a></p>
 </stl:block>
