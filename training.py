@@ -356,6 +356,32 @@ class Training(SiteRoot, WorkflowAware):
         passed = exam.get_result()[0]
         return bool(passed)
 
+    # Marketing Form Access Control
+    def is_allowed_to_fill_marketing(self, user, object):
+        if self.is_admin(user, object):
+            return True
+
+        if not self.is_travel_agent(user, object):
+            return False
+
+        # Has the user already filled the Marketing Form?
+        passed = object.get_result()[0]
+        if passed:
+            return False
+        # Is this the first module?
+        module = object.parent
+        prev_module = module.get_prev_module()
+        if prev_module is None:
+            return True
+        marketing = prev_module.get_marketing_form()
+        #exam = prev_module.get_exam()
+        # Previous module has no Marketing Form
+        if marketing is None:
+            return True
+        # Has the user filled the previous Marketing Form?
+        passed = marketing.get_result()[0]
+        return bool(passed)
+
     # Statistics Access Control
     def is_allowed_to_view_statistics(self, user, object):
         if not user:

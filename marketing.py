@@ -586,7 +586,7 @@ class Marketing(Folder):
 
     #########################################################################
     # Fill marketing form
-    fill_form__access__ = 'is_allowed_to_take_exam'
+    fill_form__access__ = 'is_allowed_to_fill_marketing'
     fill_form__label__ = u'Fill form'
     def fill_form(self, context):
         user = context.user
@@ -603,7 +603,7 @@ class Marketing(Folder):
         # Send data
         return data
 
-    fill__access__ = 'is_allowed_to_take_exam'
+    fill__access__ = 'is_allowed_to_fill_marketing'
     def fill(self, context):
         username = context.user.name
         filled = self.results.get_n_attempts(username)
