@@ -1256,7 +1256,10 @@ class Module(Folder):
     def get_marketing_form(self, username=None):
         """
         Returns the marketing form, if the user has not filled it yet.
-        I he has, or if there is not any marketing form, then return None.
+        If he has, or if there is not any marketing form, then return None.
+        We have an issue here, in that if we have two Marketing Forms
+        on the profile page these are listed.
+        We need to only display the Marketing Form which has not been filled.
         """
         if username is None:
             context = get_context()
@@ -1364,6 +1367,26 @@ class Module(Folder):
     #########################################################################
     end__access__ = 'is_allowed_to_view'
     def end(self, context):
+        '''
+        This is the end of the training and the programme and we have several
+        use cases:
+
+        1) If the module has a Marketing Form we first ask the user to submit
+        it.
+
+        2) Once this is submitted, if there is an Exam, we ask the user to take
+        the Exam.
+
+        3) Or the user is free to go back to review the module contents.
+
+        An issue that we have to resolve is that if for example we have a
+        Marketing Form from a previous module that has not been filled, the user
+        is not allowed to proceed.
+
+        We have to ensure that this option is provided.
+        '''
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         here = context.handler
         user = context.user
         # Build the namespace
@@ -1380,15 +1403,91 @@ class Module(Folder):
         #    popup = ("window.open('%s/;play',null,'scrollbars=no,"
         #            "width=800,height=700'); return false;") % game.name
         #    namespace['game'] = popup
-        # The marketing form
+        exam = self.get_exam(user.name)
         marketing_form = self.get_marketing_form(user.name)
-        if marketing_form is None:
-            # Take the exam
-            exam = self.get_exam(user.name)
-            if exam is not None:
-                result = exam.get_result(user.name)
+        # Do we have a previous module?
+        prev_module = self.get_prev_module()
+        pp.pprint(prev_module)
+        if prev_module is not None:
+            # Check to see if there is a marketing form.
+            prev_marketing = prev_module.get_marketing_form(user.name)
+            pp.pprint(prev_marketing)
+            if prev_marketing is not None:
+                result = prev_marketing.get_result(user.name)
                 passed, n_attempts, time, mark, kk = result
-                if passed:
+                pp.pprint(passed)
+                if passed is False:
+                    namespace['prev_module'] = '/%s/;view' % (prev_module.name) 
+                    namespace['marketing'] = '/%s/%s/;fill_form' % (prev_module.name,
+                                                            prev_marketing.name)
+                    pp.pprint(namespace['prev_module'])
+                    pp.pprint(namespace['marketing'])
+
+            else:
+                if marketing_form is not None:
+                    namespace['marketing'] = '%s/;fill_form' % marketing_form.name
+            # Do we have a previous exam? 
+            prev_exam = prev_module.get_exam(user.name)
+            pp.pprint(prev_exam)
+            if prev_exam is not None:
+                result = prev_exam.get_result(user.name)
+                passed, n_attempts, time, mark, kk = result
+                if passed is False:
+                    exam_path = self.get_pathto(prev_exam)
+                    namespace['prev_module'] = '/%s/;view' % (prev_module.name) 
+                    namespace['exam'] = '/%s/%s/;take_exam_form' % (prev_module.name,
+                                                            prev_exam.name)
+                    pp.pprint(namespace['prev_module'])
+                    pp.pprint(namespace['exam'])
+                    print 'Boo, please go to the previous module and take exam'
+                # Take the exam
+                else:
+                    if exam is not None:
+                        result = exam.get_result(user.name)
+                        passed, n_attempts, time, mark, kk = result
+                        if passed:
+                            modules = self.parent.get_modules()
+                            module_index = modules.index(self)
+                            if module_index == len(modules) - 1:
+                                namespace['finished'] = True
+                                namespace['profile'] = user.get_profile_url(self)
+                            else:
+                                next = modules[module_index + 1]
+                                namespace['next'] = '../%s/;view' % next.name
+                        else:
+                            exam_path = self.get_pathto(exam)
+                            namespace['exam'] = '%s/;take_exam_form' % exam_path
+                            pp.pprint(namespace['exam'])
+            
+        # First module in programme
+        else:
+            namespace['prev_module'] = None 
+            # The marketing form
+            pp.pprint(marketing_form)
+            if marketing_form is not None:
+                result = marketing_form.get_result(user.name)
+                passed, n_attempts, time, mark, kk = result
+                pp.pprint(passed)
+                if passed is False:
+                    namespace['marketing'] = '%s/;fill_form' % marketing_form.name
+            else:
+                if exam is not None:
+                    result = exam.get_result(user.name)
+                    passed, n_attempts, time, mark, kk = result
+                    if passed:
+                        modules = self.parent.get_modules()
+                        module_index = modules.index(self)
+                        if module_index == len(modules) - 1:
+                            namespace['finished'] = True
+                            namespace['profile'] = user.get_profile_url(self)
+                        else:
+                            next = modules[module_index + 1]
+                            namespace['next'] = '../%s/;view' % next.name
+                    else:
+                        exam_path = self.get_pathto(exam)
+                        namespace['exam'] = '%s/;take_exam_form' % exam_path
+
+                else:
                     modules = self.parent.get_modules()
                     module_index = modules.index(self)
                     if module_index == len(modules) - 1:
@@ -1397,22 +1496,6 @@ class Module(Folder):
                     else:
                         next = modules[module_index + 1]
                         namespace['next'] = '../%s/;view' % next.name
-                else:
-                    exam_path = self.get_pathto(exam)
-                    namespace['exam'] = '%s/;take_exam_form' % exam_path
-
-            else:
-                modules = self.parent.get_modules()
-                module_index = modules.index(self)
-                if module_index == len(modules) - 1:
-                    namespace['finished'] = True
-                    namespace['profile'] = user.get_profile_url(self)
-                else:
-                    next = modules[module_index + 1]
-                    namespace['next'] = '../%s/;view' % next.name
-
-        else:
-            namespace['marketing'] = '%s/;fill_form' % marketing_form.name
 
         namespace['previous'] = ';view'
 

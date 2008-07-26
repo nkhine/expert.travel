@@ -15,6 +15,7 @@ from itools.web import get_context
 from itools.cms.folder import Folder
 from itools.cms import widgets
 from itools.cms.registry import register_object_class
+from itools.cms.catalog import schedule_to_reindex
 
 # Import from Abakuc
 from namespaces import BusinessFunction
@@ -374,6 +375,13 @@ class Exam(Folder):
 
 
     def get_points(self, username):
+        '''
+        Here we give the uesr points based on their performance.
+        The maximum number of points that they can get is 120
+        per exam. Based on:
+        If user scores above 90% and the last attempt is
+        less then the given time we add 20 points.
+        '''
         score = self.get_score(username)
         if score < 70.0:
             return 0
@@ -653,6 +661,7 @@ class Exam(Folder):
         namespace['questions'] = [ questions[x] for x in question_keys ]
         # Metadata
         namespace['title'] = self.get_property('dc:title')
+        namespace['pass_mark'] = self.get_property('abakuc:pass_marks_percentage')
         namespace['exam_time'] = self.get_property('abakuc:exam_time')
         namespace['user_attempts'] = self.results.get_n_attempts(user.name) + 1
         namespace['questions_nums'] = no_questions
@@ -666,6 +675,9 @@ class Exam(Folder):
 
     take_exam__access__ = 'is_allowed_to_take_exam'
     def take_exam(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        user = context.user
         questions = context.get_form_values('questions')
         time_submit = context.get_cookie('exam_time')
 
@@ -691,12 +703,21 @@ class Exam(Folder):
         attempts = self.results.attempts.setdefault(username, [])
         attempt.set_score(self)
         attempts.append(attempt)
+        # Points
+        current_points = self.get_points(user.name)
+        # Get user's old points
+        existing_points = user.get_property('abakuc:points')
+        # Set user's points
+        points = str(existing_points + current_points)
+        user.set_property('abakuc:points', points)
         # Redirect to the results page
-        return context.come_back(message, ';take_exam_result')
+        return context.come_back(message, ';result')
 
 
-    take_exam_result__access__ = 'is_allowed_to_view'
-    def take_exam_result(self, context):
+    result__access__ = 'is_allowed_to_view'
+    def result(self, context):
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
         user = context.user
 
         last_attempt = self.results.get_last_attempt(user.name)
@@ -735,16 +756,18 @@ class Exam(Folder):
         # Metadata
         namespace['title'] = self.get_property('dc:title')
         namespace['exam_time'] = self.get_property('abakuc:exam_time')
+        namespace['pass_mark'] = self.get_property('abakuc:pass_marks_percentage')
         n_attempts = self.results.get_n_attempts(user.name)
         namespace['user_attempts'] = n_attempts
         namespace['time_taken'] = last_attempt.time_taken
         namespace['score'] = str(self.get_score(user.name))
+        namespace['current_points'] = self.get_points(user.name)
         namespace['questions_nums'] = self.get_property('abakuc:questions_nums')
         namespace['profile_url'] = user.get_profile_url(self)
         namespace['try_again_url'] = ';take_exam_form'
-
         passed = self.get_result(user.name)[0]
-
+        # Display points
+        namespace['points'] = user.get_property('abakuc:points')
         namespace['next_module_url'] = None
         if passed:
             program = self.get_program()
@@ -757,8 +780,10 @@ class Exam(Folder):
                 next_module_url = str(self.get_pathto(next_module))
                 next_module_url += '/;view'
                 namespace['next_module_url'] = next_module_url
+                namespace['finnished'] = None 
             else:
                 namespace['next_module_url'] = user.get_profile_url(self)
+                namespace['finnished'] = user.get_profile_url(self)
 
         handler = self.get_handler('/ui/abakuc/exam/take_exam.xml')
         return stl(handler, namespace)

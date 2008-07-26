@@ -766,36 +766,36 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace['address'] = addr
         # Bookings
-        if office:
-            items = office_name.search_handlers(handler_class=Bookings)
-            if items is not None:
-                bookings = []
-                for item in list(items):
-                    csv = item.get_handler('.bookings')
-                    if csv:
-                        namespace['csv'] = csv 
-                        results = []
-                        for row in csv.get_rows():
-                            keys = ["date_booking", "reference_number", "from_date", "to_date",
-                                    "party_name",
-                                    "user", "tour_operator", "holiday_type", "holiday_subtype",
-                                    "number", "duration", "destination1", "destination2",
-                                    "destination3", "destination4", "destination5", "comments",
-                                    "hotel"]                    
-                            keys = row
-                            results.append({
-                                   'index': row.number,
-                                   'user': user})
-                        namespace['howmany_bookings'] = len(results)
-                        namespace['results'] = results
-                        get = item.get_property
-                        url = '/%s' % item.name
-                        booking_to_add = { 'url': url,
-                                            'title': get('dc:title')}
-                        bookings.append(booking_to_add)    
-                namespace['items'] = bookings
-            else: 
-                namespace['items'] = None 
+        #if office:
+        #    items = office_name.search_handlers(handler_class=Bookings)
+        #    if items is not None:
+        #        bookings = []
+        #        for item in list(items):
+        #            csv = item.get_handler('.bookings')
+        #            if csv:
+        #                namespace['csv'] = csv 
+        #                results = []
+        #                for row in csv.get_rows():
+        #                    keys = ["date_booking", "reference_number", "from_date", "to_date",
+        #                            "party_name",
+        #                            "user", "tour_operator", "holiday_type", "holiday_subtype",
+        #                            "number", "duration", "destination1", "destination2",
+        #                            "destination3", "destination4", "destination5", "comments",
+        #                            "hotel"]                    
+        #                    keys = row
+        #                    results.append({
+        #                           'index': row.number,
+        #                           'user': user})
+        #                namespace['howmany_bookings'] = len(results)
+        #                namespace['results'] = results
+        #                get = item.get_property
+        #                url = '/%s' % item.name
+        #                booking_to_add = { 'url': url,
+        #                                    'title': get('dc:title')}
+        #                bookings.append(booking_to_add)    
+        #        namespace['items'] = bookings
+        #    else: 
+        #        namespace['items'] = None 
                 
         # Enquiries
         csv = address.get_handler('log_enquiry.csv')

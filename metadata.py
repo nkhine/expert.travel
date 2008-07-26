@@ -90,6 +90,7 @@ class Schema(BaseSchema):
         'job_title': String,
         'functions': String,
         'registration_date': Date,
+        'points': Integer(default=0),
         # Company
         'website': String,
         'topic': Tokens,
