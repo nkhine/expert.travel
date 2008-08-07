@@ -63,6 +63,10 @@ class Question(object):
         return code[i:]
 
 
+    def get_responses(self):
+        return self.responses
+
+
     #########################################################################
     # The methods below are used for the user interface
     def options_as_text(self):
@@ -93,7 +97,7 @@ class Question(object):
 class Survey(Text):
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                  'questions']
+                  'questions', 'responses']
 
 
     def new(self):
@@ -144,6 +148,8 @@ class Survey(Text):
         lines.append('</survey>')
         return ''.join(lines)
 
+    def get_responses(self):
+        return 0 
 
 #############################################################################
 # Exam results
@@ -169,8 +175,6 @@ class Attempt(object):
         time_taken = 20
         return self.time_taken
 
-
-
 class Response(Text):
     """
     The handler's state is stored in the variable 'attempts', whose
@@ -180,10 +184,10 @@ class Response(Text):
 
     For instance:
 
-      {'Claire_Taylor': [<abakuc/exam.Exam.Attempt object at 0x44fd450c>],
-       'Emma_Bicknell2': [<abakuc/exam.Exam.Attempt object at 0x4445760c>,
+      {'1': [<abakuc/exam.Exam.Attempt object at 0x44fd450c>],
+       '2': [<abakuc/exam.Exam.Attempt object at 0x4445760c>,
                           <abakuc/exam.Exam.Attempt object at 0x444c580c>],
-       'LINDA_MYERS': [<abakuc/exam.Exam.Attempt object at 0x4503be2c>]}
+       '3': [<abakuc/exam.Exam.Attempt object at 0x4503be2c>]}
     """
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
@@ -250,6 +254,118 @@ class Response(Text):
         lines.append('</response>')
         return '\n'.join(lines)
 
+    #def get_analysis(self):
+    #    ret = {}
+    #    attempts = self.attempts
+    #    for username in attempts:
+    #        for attempt in attempts[username]:
+    #            answer = attempt.questions
+    #            ''' 
+    #            Return all answers the user has submitted
+    #            as a dictionary
+    #            '''
+    #            #answers = question.values()
+    #            answers = answer.items()
+    #            print answers
+    #            for answer in answers:
+    #                print answer
+    #                for code in answer:
+    #                    if ret.has_key(code):
+    #                        options = answers.items()
+    #                        print options
+    #                    else:
+    #                        pass
+    #            print ret 
+    #            #print len(questions.values())
+    #            #questions
+    #            #for answers in questions.has_keys(question_code):
+    #            #    print answers
+    #            #if not questions.values():
+    #            #    ret[questions] = {'count': 1}
+    #            #else:
+    #            #    ret[questions]['count'] += 1
+    #            #    
+    #            #for question_code in questions:
+    #            #    if not ret.has_key(question_code):
+    #            #        for answer in questions[question_code]:
+    #            #            print 'not in ret' 
+    #            #            ret[answer] = {'question_code': answer}
+    #            #    else:
+    #            #        for answer in questions[question_code]:
+    #            #            print 'in ret'
+
+    #            #         ret[question_code] = {'count': 1}
+    #            #    else:
+    #            #        ret[question_code]['count'] += 1
+    #            #for answer in questions:
+    #                #if not ret.has_key(answer):
+    #                #    ret[answer] = {'count': 1}
+    #                #else:
+    #                #    ret[answer]['count'] += 1
+    #            #answers = []
+    #            #for question_code in questions:
+    #            #    for answer in questions[question_code]:
+    #            #        if not ret.has_key(answer):
+    #            #            ret[answer] = {'count': 1}
+    #            #        else:
+    #            #            ret[answer]['count'] += 1
+    #            #        answers.append(answer)
+    #            #        question.append(question_code)
+    #            #print ret
+    #        #print user, question, answers
+
+    #def getResults(self)
+    #    """
+    #    getResults(self,) -> dict {option: {'count': count}}
+    #    """
+    #    ret = {}
+    #    poll_results = self._results.get(poll_id, {}).items()
+    #    for user, choices in poll_results :
+    #        for choice in choices:
+    #            if not ret.has_key(choice):
+    #                ret[choice] = {'count': 1}
+    #            else:
+    #                ret[choice]['count'] += 1
+    #    return ret
+
+    #def get_analysis(self, question_code):
+    #    attempts = self.attempts
+    #    result = []
+    #    for username in attempts:
+    #        for attempt in attempts[username]:
+    #            questions = attempt.questions
+    #            # This puts in a list all the answers the user has added.
+    #            for code in questions:
+    #                answers = []
+    #                for answer in questions[code]:
+    #                    answers.append(answer)
+    #                results = {'code': code, 'answer': answers}
+    #                result.append(results)
+    #    question_code = [code for code in questions]
+    #    question_code = {'username': username, 'response': result }
+    #    return result
+
+    def get_analysis(self, username):
+        attempts = self.attempts
+        responses = {}
+        for username in attempts:
+            user = []
+            question = []
+            for attempt in attempts[username]:
+                user.append(username)
+                questions = attempt.questions
+                for question_code in questions:
+                    answers = []
+                    for answer in questions[question_code]:
+                        answers.append(answer)
+                        question.append(question_code)
+                        results = {question_code: answers}
+                    responses.update(results)
+                return responses
+        #return results
+
+    def get_no_responses(self):
+        return len(self.attempts)
 
     def get_first_attempt(self, username):
         attempts = self.attempts
@@ -272,6 +388,8 @@ class Response(Text):
     def get_n_attempts(self, username):
         return len(self.attempts.get(username, []))
 
+    def get_n_totals(self, option):
+        return len(self.attempts.get(option, []))
 
     def remove_attempt(self, username, date):
         """ date = '2004-06-30T13:20:00' """
@@ -299,6 +417,7 @@ class Marketing(Folder):
     class_views = [['edit'],
                    ['edit_metadata_form'],
                    ['add_question_form'],
+                   ['analyse'],
                    ['fill_form']]
 
 
@@ -329,28 +448,25 @@ class Marketing(Folder):
     # API
     #########################################################################
     def get_score(self, username):
-        score = 0.0
-        last_attempt = self.results.get_last_attempt(username)
-        if last_attempt:
-            score = last_attempt.get_score()
-
+        score = 100.0
         return score
 
 
     def get_points(self, username):
         score = self.get_score(username)
-        if score < 70.0:
-            return 0
-        n_attempts = self.results.get_n_attempts(username)
-        points = score/n_attempts
-        last_attempt = self.results.get_last_attempt(username)
-        exam_time = self.get_property('abakuc:exam_time')
-        if score > 90.0:
-            if last_attempt.time_taken < exam_time:
-                points += 20
-        if last_attempt.time_taken > exam_time:
-            delay = last_attempt.time_taken - exam_time
-            points = points - delay
+        points = self.get_property('abakuc:points')
+        #if score < 70.0:
+        #    return 0
+        #n_attempts = self.results.get_n_attempts(username)
+        #points = score/n_attempts
+        #last_attempt = self.results.get_last_attempt(username)
+        #exam_time = self.get_property('abakuc:exam_time')
+        #if score > 90.0:
+        #    if last_attempt.time_taken < exam_time:
+        #        points += 20
+        #if last_attempt.time_taken > exam_time:
+        #    delay = last_attempt.time_taken - exam_time
+        #    points = points - delay
         return int(points)
 
 
@@ -413,6 +529,37 @@ class Marketing(Folder):
     def get_program(self):
         return self.parent.parent
 
+    #def getResults(self)
+    #"""
+    #getResults(self)
+    #    -> return results as a TUPLE of tuples (id, count, percentage).
+    #    percentage is 0 <= percentage <= 100
+    #"""
+    #    return self.parent
+
+    def get_statistics(self, username=None):
+        """
+        Return a dictionary in the sort:
+        {'question_code': a1, 'answers': [],
+         'question_code': a2, 'answers': [],
+         ... }
+        """
+        if username is None:
+            username = get_context().user.name
+
+        #n_attempts = self.results.get_n_attempts(username)
+        n_attempts = self.results.get_analysis(username)
+        if n_attempts == 0:
+            return False, 0, 0, 0.0, ''
+
+        #last_attempt = self.results.get_last_attempt(username)
+        #time_spent = 20
+
+        #mark = last_attempt.get_score()
+        #date = Date.encode(last_attempt.date)
+
+        #has_passed = mark >= self.get_property('abakuc:pass_marks_percentage')
+        return has_passed, n_attempts, time_spent, mark, date
     #########################################################################
     # User Interface
     #########################################################################
@@ -523,8 +670,7 @@ class Marketing(Folder):
         # Build the namespace
         namespace = {}
         namespace['dc:title'] = self.get_property('dc:title', language='en')
-        for pname in ['abakuc:exam_time', 'abakuc:questions_nums',
-                      'abakuc:pass_marks_percentage']:
+        for pname in ['dc:description', 'abakuc:points']:
             namespace[pname] = self.get_property(pname)
 
         # Business functions
@@ -545,8 +691,7 @@ class Marketing(Folder):
         self.set_property('dc:title', context.get_form_value('dc:title'),
                           language='en')
         # The other metadata
-        for key in ['abakuc:exam_time', 'abakuc:questions_nums',
-                    'abakuc:pass_marks_percentage']:
+        for key in ['dc:description', 'abakuc:points']:
              self.set_property(key, context.get_form_value(key))
         # Business functions
         #business_functions = context.get_form_values('topic')
@@ -576,7 +721,7 @@ class Marketing(Folder):
         title = unicode(title, 'utf-8')
         options = unicode(options, 'utf-8')
         options = [ x.replace('&', '&amp;') for x in options.splitlines() if x ]
-        question = Question(code, type, title, options)
+        question = Question(code, type, title, options, responses)
         # Add the question
         definition = self.definition
         definition.set_changed()
@@ -605,22 +750,50 @@ class Marketing(Folder):
 
     fill__access__ = 'is_allowed_to_fill_marketing'
     def fill(self, context):
+        user = context.user 
         username = context.user.name
+        questions = self.definition.questions
         filled = self.results.get_n_attempts(username)
         if filled == 0:
-            questions = context.get_form_values('questions')
             attempt = Attempt(username, datetime.now())
-            exam_questions = self.definition.questions
-            for key in questions:
-                if key in exam_questions:
+            for  key in context.get_form_keys():
+                if key in questions:
                     value = context.get_form_values(key)
-                    value = [ int(x) + 1 for x in value ]
+                    value = [ int(x) for x in value ]
+                    response = self.definition.get_responses()
+                    print response
                     attempt.questions[key] = value
 
             self.results.set_changed()
             attempts = self.results.attempts.setdefault(username, [])
             attempt.set_score(self)
             attempts.append(attempt)
+            # Points
+            current_points = self.get_points(user.name)
+            # Get user's old points
+            existing_points = user.get_property('abakuc:points')
+            # Set user's points
+            points = str(existing_points + current_points)
+            user.set_property('abakuc:points', points)
+            # Send mail to the manager
+            main_body = []
+            print questions
+            for question_id, answers in attempt.questions.items():
+                question = questions[question_id]
+                question_title = question.title 
+                answer_title = ', '.join(
+                    [ question.options[answer] for answer in answers
+                      if answer < len(question.options) ])
+
+                
+                # Get the definition
+                definition = self.definition
+                definition.set_changed()
+                # Modify the question
+                response += 1
+                item_line = '%s : %s' % (question_title, answer_title)
+                main_body.append(item_line)
+            print main_body              
             # Redirect the user to the end of Module
             message = 'Thank you'
             return context.come_back(message, '../;end')
@@ -628,5 +801,61 @@ class Marketing(Folder):
             message = 'Form already submited, please proceed!'
             return context.come_back(message, '../;end')
 
+    analyse__access__ = 'is_allowed_to_edit' 
+    analyse__label__ = u'Analysis overview'
+    def analyse(self, context):
+        from collections import defaultdict
+        user = context.user 
+        username = context.user.name
+        questions = self.definition.questions
+        attempts = self.results.attempts
+        namespace = {}
+        namespace['title'] = self.get_property('dc:title')
+        #namespace['questions'] = [ questions[x] for x in questions ]
+        #print namespace['questions']
+        # Analyse
+        for question_id, answers in questions.items():
+            question = questions[question_id]
+            question_title = question.title 
+            print question_title
+            for attempt in attempts:
+                responses = []
+                for username in attempts:
+                    for attempt in attempts[username]:
+                        response = attempt.questions
+                    responses.append(response)
+            namespace['responses'] = len(responses)
+            answered = defaultdict(list)
+            for response in responses:
+                for q, a in response.items():
+                    answered[q].extend(a)
+            totals = {}
+            for q, answers in answered.items():
+                counts = totals[q] = defaultdict(int)
+                for a in answers:
+                    counts[a] += 1
 
+        # Create a new tuple that includes the percentage as well
+        result=[]
+        for r in totals.items():
+            result.append((r[0], r[1]))
+            result.sort(lambda x,y: cmp(y[1], x[1]))
+
+        print tuple(result)
+
+        namespace['totals'] = [{'question': x, 
+                    'title': y.title,
+                    'options': [{'option': id, 'title': x, 'total': 'XXX'}
+                                for id, x in enumerate(y.options)]}
+                                 for x, y in questions.items()]
+
+
+        results = [{'question': x, 'totals': [{'total': x, 
+                     'percentage': float(x)/float(len(responses))*100.0 }
+                                  for x in y.values()]}
+                                  for x, y in totals.items()]
+
+        print results
+        handler = self.get_handler('/ui/abakuc/marketing/analysis.xml')
+        return stl(handler, namespace)
 register_object_class(Marketing)

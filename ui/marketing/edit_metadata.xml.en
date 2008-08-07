@@ -1,46 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" 
            xmlns="http://www.w3.org/1999/xhtml">
-
 <form method="post" action=";edit_metadata">
-  <table class="form">
-    <tr>
-      <th class="title" colspan="2">Metadata list</th>
-    </tr>
-    <tr>
-      <th>
-        Title
-      </th>
-      <td>
-        <input name="dc:title" size="50" type="text" value="${dc:title}"/>
-      </td>
-    </tr>
-    <tr>
-      <th> Exam Time (HH:MM)</th>
-      <td>
-        <input name="abakuc:exam_time" size="50" type="text" 
-          value="${abakuc:exam_time}"/>
-      </td>
-    </tr>
-    <tr>
-      <th> Number of Questions for Exam </th>
-      <td>
-        <input name="abakuc:questions_nums" size="50" type="text" 
-          value="${abakuc:questions_nums}"/>
-      </td>
-    </tr>
-    <tr>
-      <th> Pass marks in percentage </th>
-      <td>
-        <input name="abakuc:pass_marks_percentage" size="50" type="text" 
-          value="${abakuc:pass_marks_percentage}"/>
-      </td>
-    </tr>
-    <tr>
-      <th></th>
-      <td class="submit"><input type="submit" value="OK"/></td>
-    </tr>
-  </table>
+  <dl>
+    <dt>Title</dt>
+    <dd>
+      <input name="dc:title" size="50" type="text" value="${dc:title}"/>
+    </dd>
+    <dt>Description</dt>
+    <textarea name="dc:description" cols="80" rows="6">
+    ${dc:description}
+    </textarea>
+    <dd>
+        Type a short description about this form, that you would like to display
+        to the user.
+    </dd>
+    <dt>Points to allocate on submission</dt>
+    <dd>
+      <input name="abakuc:points" size="5" type="int" 
+        value="${abakuc:points}"/>
+    </dd>
+    <dd>
+        You can allocate the amount of points each user will receive after they
+        have submitted the form.
+    </dd>
+  </dl>
+  <p>
+    <input type="Submit" value="Change"/>
+  </p>
 </form>
-
 </stl:block>

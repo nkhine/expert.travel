@@ -6,88 +6,51 @@
         xmlns:stl="http://xml.itools.org/namespaces/stl">
 <form name="addquesansform" method="post" action=";add_question"
       id="addquesansform">
+  <dl>
+    <dt>
+        <label for="type">Question type</label>
+    </dt>
+    <dd>
+      <select name="type">
+        <option value=""> --Select One-- </option>
+        <option value="MCQ"> MCQ </option>
+        <option value="MAQ"> MAQ </option>
+      </select>
+    </dd>
+    <dt>
+        <label for="code">Question code</label>
+    </dt>
+    <dd>
+        <input name="code" size="3"/>
+    </dd>
+    <dd class="info">
+     (a letter followed by a number)
+    </dd>
+    <dt>
+        <label for="title">Question</label>
+    </dt>
+    <dd>
+        <textarea name="title" cols="90" rows="6"></textarea>
+    </dd>
+    <dd class="info">
+     (Type your question in this box)
+    </dd>
+    <dt>
+        <label for="options">Possible answers</label>
+    </dt>
+    <dd>
+        <textarea name="options" cols="90" rows="6"></textarea>
+    </dd>
+    <dd class="info">
+     (Enter one below the other)
+    </dd>
 
-  <table border="0" cellpadding="0" cellspacing="0" width="90%" align="center">
+  </dl>
+  <p>
+    <input type="Submit" value="Add question"/>
+  </p>
 
-    <tr>
-      <td width="100%">
-        <table border="0" cellpadding="0" cellspacing="0">
-          <tr>
-            <td class="headbg">&nbsp; Add Question Answer &nbsp;</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
 
-    <tr>
-      <td width="100%" class="headbg">
-        <p align="right"><img border="0" src="images/2-tb-2-tr.gif" 
-                              width="9" height="9" /></p>
-      </td>
-    </tr>
-
-    <tr>
-      <td width="100%">
-        <table class="profile" width="100%">
-          <tr>
-            <td width="100%" align="center">
-              <table width="100%">
-                <tr class="rowodd">
-                  <td width="50%">Question Type :</td>
-
-                  <td>Code (a number followed by a letter):</td>
-                </tr>
-
-                <tr class="roweven">
-                  <td><select name="type">
-                    <option value=""> --Select One-- </option>
-                    <option value="MCQ"> Exam MCQ </option>
-                    <option value="MAQ"> Exam MAQ </option>
-                  </select></td>
-
-                  <td><input name="code" size="25" /></td>
-                </tr>
-
-                <tr class="rowodd">
-                  <td width="50%">Question:</td>
-                  <td>Answer<br />(<b>Enter one below the other</b>)</td>
-                </tr>
-
-                <tr class="roweven">
-                  <td>
-                    <textarea name="title" cols="40" rows="6"/>
-                  </td>
-                  <td>
-                    <textarea name="options" cols="40" rows="6"/>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td width="100%" align="right">
-        <table border="0" cellpadding="0" cellspacing="0" width=
-        "109">
-          <tr>
-            <td width="100%" class="headbg" align="center">
-            <input type="Submit" value="Add" />
-            <img border="0" src="images/trans-space.gif" 
-                 width="3" height="22" /></td>
-          </tr>
-
-          <tr>
-            <td width="100%" class="headbg">
-              <img border="0" width="109" height="8" 
-                   src="images/2-tb-bot.gif"/></td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
 </form>
 </stl:block>
 

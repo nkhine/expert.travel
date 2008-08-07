@@ -764,6 +764,8 @@ class Exam(Folder):
         namespace['current_points'] = self.get_points(user.name)
         namespace['questions_nums'] = self.get_property('abakuc:questions_nums')
         namespace['profile_url'] = user.get_profile_url(self)
+        namespace['user'] = user.get_title()
+        pp.pprint(namespace['user'])
         namespace['try_again_url'] = ';take_exam_form'
         passed = self.get_result(user.name)[0]
         # Display points

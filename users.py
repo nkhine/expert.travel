@@ -738,6 +738,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['lastname'] = self.get_property('ikaaro:lastname')
         namespace['email'] = self.get_property('ikaaro:email')
         namespace['job_title'] = self.get_property('abakuc:job_title')
+        namespace['points'] = self.get_property('abakuc:points')
         namespace['portrait'] = portrait
         if address is None:
             handler = self.get_handler('/ui/abakuc/users/profile.xml')

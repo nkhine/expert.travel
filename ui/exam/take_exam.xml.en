@@ -4,34 +4,38 @@
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
 <div class="yui-ge">
     <div class="yui-u first">
-      <h1>${title}</h1>
-      <p>
-      ${user/title_or_name}
-      </p>
-             <stl:block stl:if="not next_module_url">
+      <h1>Feedback about ${title}</h1>
+         <stl:block stl:if="not next_module_url">
+              <dd>Unfortunantly, ${user}, you did not  
+                  meet the required standard to successfully complete this module!
+              </dd>
+              <dd>Please either <a href="../;view">revisit</a> the content of the module or you may
+              retake the exam.
+              </dd>
                <a  href="${try_again_url}" class="action">
                <span>Re-take exam</span></a>
-             </stl:block>
-             <stl:block stl:if="next_module_url">
-               <stl:block stl:if="not finnished"> 
-                <dl>
-                  <dd>Well done, you have
-                      successfully completed this module.
-                  </dd>
-                      <a href="${next_module_url}" class="action">
-                      <span>Go to next module</span></a>
-                </dl>
-               </stl:block>
-               <stl:block stl:if="finnished"> 
-                <dl>
-                  <dd>
-                    Well done, you have successfully completed the Training programme.
-                  </dd>
-                    <a href="${next_module_url}" class="action">
-                    <span>Profile Page</span></a>
-                </dl>
-               </stl:block>
-             </stl:block>
+         </stl:block>
+         <stl:block stl:if="next_module_url">
+           <stl:block stl:if="not finnished"> 
+            <dl>
+              <dd>Well done, ${user}, you have
+                  successfully completed this module! You can now proceed to
+                  the next module.
+              </dd>
+                  <a href="${next_module_url}" class="action">
+                  <span>Go to next module</span></a>
+            </dl>
+           </stl:block>
+           <stl:block stl:if="finnished"> 
+            <dl>
+              <dd>
+                Well done, ${user},  you have successfully completed the Training programme.
+              </dd>
+                <a href="${next_module_url}" class="action">
+                <span>Profile Page</span></a>
+            </dl>
+           </stl:block>
+         </stl:block>
          <h2>${title}</h2>
          <dl>
            <dd>No. of questions: ${questions_nums}</dd>
@@ -44,33 +48,38 @@
            <dd>Your final score: ${score}%</dd>
            <dd>You gained: ${current_points} points</dd>
          </dl>
-          <div class="job-details">
-              <h2>Question by question</h2>
-                  <ol>
-                    <li stl:repeat="question questions">
+          <div class="questions">
+              <h2>Answer by answer</h2>
+                  <dl>
+                    <dd stl:repeat="question questions">
+                      <p>
                       ${question/title}
-                      <br/>
-                      <stl:block stl:repeat="option question/options">
-                        <input name="${question/code}" type="${question/input_type}" value="${repeat/option/index}" checked="${option/is_checked}" disabled="1"/>
-                        ${option/value}<br/>
-                      </stl:block>
-                      <br/>
+                      </p>
+                      <ol>
+                        <li stl:repeat="option question/options"> 
+                        <input name="${question/code}" type="${question/input_type}"
+                        value="${repeat/option/index}" checked="${option/is_checked}"
+                        disabled="1"/>
+                        ${option/value}
+                      </li>
+                      </ol>
+                      <div>
                       <strong>
                         <span stl:if="question/is_correct" style="color: green">Correct:</span>
                         <span stl:if="not question/is_correct" style="color: red">Wrong:</span>
                       </strong>
                           ${question/answer}
-                      <br/><br/>
-                    </li>
-                  </ol>
-                <a href=";application_form" class="action"><span>Apply Now</span></a> 
+                          </div>
+                    </dd>
+                  </dl>
           </div>        
               <h3>Additional Information</h3>
           <div id="message">
                 <strong>Feedback:</strong>  <a href="/;contact_form">report this</a> 
           </div>        
           <div class="info">
-               No. of attempts:  Your final score: 
+               No. of attempts: ${user_attempts} Your final score: ${score}% You
+               gained: ${current_points} points.
           </div>
     </div> <!-- yui-u first -->
     <div class="yui-u">
