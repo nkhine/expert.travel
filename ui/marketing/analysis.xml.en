@@ -2,15 +2,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
-<h1>Marketing Analysis for ${title}</h1>
-  <ol>
-    <li stl:repeat="total totals">
-      ${total/title}<br/>
-        <stl:block stl:repeat="option total/options">
-          ${option/title} - ${option/total}<br/>
-        </stl:block>
-    </li>
-  </ol>
-  Total respondants: ${responses}
+    <h1>Analysis for ${title}</h1>
+    <stl:block stl:if="responses">
+      <ol>
+        <li stl:repeat="total totals">
+          ${total/title}<br/>
+            <stl:block stl:repeat="option total/options">
+              ${option/title} -
+              <span stl:if="option/total">${option/total} - ${option/percentage}%
+              <img src="/ui/abakuc/images/bar_1_10.gif"
+                       height="10" width="${option/percentage}" /></span>
+              <span stl:if="not option/total">No results available!</span><br />
+            </stl:block>
+        </li>
+      </ol>
+      Total respondants: ${responses}
+    </stl:block>
+    <stl:block stl:if="not responses">
+        <p>No data available</p>
+    </stl:block>
 </stl:block>
 

@@ -3,6 +3,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from collections import defaultdict
 import random
 from time import time
 
@@ -97,7 +98,7 @@ class Question(object):
 class Survey(Text):
 
     __slots__ = ['uri', 'timestamp', 'parent', 'name', 'real_handler',
-                  'questions', 'responses']
+                  'questions']
 
 
     def new(self):
@@ -254,115 +255,28 @@ class Response(Text):
         lines.append('</response>')
         return '\n'.join(lines)
 
-    #def get_analysis(self):
-    #    ret = {}
-    #    attempts = self.attempts
-    #    for username in attempts:
-    #        for attempt in attempts[username]:
-    #            answer = attempt.questions
-    #            ''' 
-    #            Return all answers the user has submitted
-    #            as a dictionary
-    #            '''
-    #            #answers = question.values()
-    #            answers = answer.items()
-    #            print answers
-    #            for answer in answers:
-    #                print answer
-    #                for code in answer:
-    #                    if ret.has_key(code):
-    #                        options = answers.items()
-    #                        print options
-    #                    else:
-    #                        pass
-    #            print ret 
-    #            #print len(questions.values())
-    #            #questions
-    #            #for answers in questions.has_keys(question_code):
-    #            #    print answers
-    #            #if not questions.values():
-    #            #    ret[questions] = {'count': 1}
-    #            #else:
-    #            #    ret[questions]['count'] += 1
-    #            #    
-    #            #for question_code in questions:
-    #            #    if not ret.has_key(question_code):
-    #            #        for answer in questions[question_code]:
-    #            #            print 'not in ret' 
-    #            #            ret[answer] = {'question_code': answer}
-    #            #    else:
-    #            #        for answer in questions[question_code]:
-    #            #            print 'in ret'
-
-    #            #         ret[question_code] = {'count': 1}
-    #            #    else:
-    #            #        ret[question_code]['count'] += 1
-    #            #for answer in questions:
-    #                #if not ret.has_key(answer):
-    #                #    ret[answer] = {'count': 1}
-    #                #else:
-    #                #    ret[answer]['count'] += 1
-    #            #answers = []
-    #            #for question_code in questions:
-    #            #    for answer in questions[question_code]:
-    #            #        if not ret.has_key(answer):
-    #            #            ret[answer] = {'count': 1}
-    #            #        else:
-    #            #            ret[answer]['count'] += 1
-    #            #        answers.append(answer)
-    #            #        question.append(question_code)
-    #            #print ret
-    #        #print user, question, answers
-
-    #def getResults(self)
-    #    """
-    #    getResults(self,) -> dict {option: {'count': count}}
-    #    """
-    #    ret = {}
-    #    poll_results = self._results.get(poll_id, {}).items()
-    #    for user, choices in poll_results :
-    #        for choice in choices:
-    #            if not ret.has_key(choice):
-    #                ret[choice] = {'count': 1}
-    #            else:
-    #                ret[choice]['count'] += 1
-    #    return ret
-
-    #def get_analysis(self, question_code):
-    #    attempts = self.attempts
-    #    result = []
-    #    for username in attempts:
-    #        for attempt in attempts[username]:
-    #            questions = attempt.questions
-    #            # This puts in a list all the answers the user has added.
-    #            for code in questions:
-    #                answers = []
-    #                for answer in questions[code]:
-    #                    answers.append(answer)
-    #                results = {'code': code, 'answer': answers}
-    #                result.append(results)
-    #    question_code = [code for code in questions]
-    #    question_code = {'username': username, 'response': result }
-    #    return result
-
-    def get_analysis(self, username):
+    def get_analysis(self):
         attempts = self.attempts
-        responses = {}
-        for username in attempts:
-            user = []
-            question = []
-            for attempt in attempts[username]:
-                user.append(username)
-                questions = attempt.questions
-                for question_code in questions:
-                    answers = []
-                    for answer in questions[question_code]:
-                        answers.append(answer)
-                        question.append(question_code)
-                        results = {question_code: answers}
-                    responses.update(results)
-                return responses
-        #return results
+        totals = {}
+        if len(attempts) < 1:
+            return totals
+        else:
+            for attempt in attempts:
+                responses = []
+                for username in attempts:
+                    for attempt in attempts[username]:
+                        response = attempt.questions
+                    responses.append(response)
+            answered = defaultdict(list)
+            for response in responses:
+                for q, a in response.items():
+                    answered[q].extend(a)
+            for q, answers in answered.items():
+                counts = totals[q] = defaultdict(int)
+                for a in answers:
+                    counts[a] += 1
+            print totals
+            return totals
 
     def get_no_responses(self):
         return len(self.attempts)
@@ -529,37 +443,29 @@ class Marketing(Folder):
     def get_program(self):
         return self.parent.parent
 
-    #def getResults(self)
-    #"""
-    #getResults(self)
-    #    -> return results as a TUPLE of tuples (id, count, percentage).
-    #    percentage is 0 <= percentage <= 100
-    #"""
-    #    return self.parent
+    #def get_statistics(self, username=None):
+    #    """
+    #    Return a dictionary in the sort:
+    #    {'question_code': a1, 'answers': [],
+    #     'question_code': a2, 'answers': [],
+    #     ... }
+    #    """
+    #    if username is None:
+    #        username = get_context().user.name
 
-    def get_statistics(self, username=None):
-        """
-        Return a dictionary in the sort:
-        {'question_code': a1, 'answers': [],
-         'question_code': a2, 'answers': [],
-         ... }
-        """
-        if username is None:
-            username = get_context().user.name
+    #    #n_attempts = self.results.get_n_attempts(username)
+    #    n_attempts = self.results.get_analysis(username)
+    #    if n_attempts == 0:
+    #        return False, 0, 0, 0.0, ''
 
-        #n_attempts = self.results.get_n_attempts(username)
-        n_attempts = self.results.get_analysis(username)
-        if n_attempts == 0:
-            return False, 0, 0, 0.0, ''
+    #    #last_attempt = self.results.get_last_attempt(username)
+    #    #time_spent = 20
 
-        #last_attempt = self.results.get_last_attempt(username)
-        #time_spent = 20
+    #    #mark = last_attempt.get_score()
+    #    #date = Date.encode(last_attempt.date)
 
-        #mark = last_attempt.get_score()
-        #date = Date.encode(last_attempt.date)
-
-        #has_passed = mark >= self.get_property('abakuc:pass_marks_percentage')
-        return has_passed, n_attempts, time_spent, mark, date
+    #    #has_passed = mark >= self.get_property('abakuc:pass_marks_percentage')
+    #    return has_passed, n_attempts, time_spent, mark, date
     #########################################################################
     # User Interface
     #########################################################################
@@ -721,7 +627,7 @@ class Marketing(Folder):
         title = unicode(title, 'utf-8')
         options = unicode(options, 'utf-8')
         options = [ x.replace('&', '&amp;') for x in options.splitlines() if x ]
-        question = Question(code, type, title, options, responses)
+        question = Question(code, type, title, options)
         # Add the question
         definition = self.definition
         definition.set_changed()
@@ -804,58 +710,35 @@ class Marketing(Folder):
     analyse__access__ = 'is_allowed_to_edit' 
     analyse__label__ = u'Analysis overview'
     def analyse(self, context):
-        from collections import defaultdict
-        user = context.user 
-        username = context.user.name
         questions = self.definition.questions
-        attempts = self.results.attempts
+        tot = self.results.get_analysis()
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
-        #namespace['questions'] = [ questions[x] for x in questions ]
-        #print namespace['questions']
+        responses = self.results.get_no_responses() 
+        namespace['responses'] = responses
         # Analyse
-        for question_id, answers in questions.items():
-            question = questions[question_id]
-            question_title = question.title 
-            print question_title
-            for attempt in attempts:
-                responses = []
-                for username in attempts:
-                    for attempt in attempts[username]:
-                        response = attempt.questions
-                    responses.append(response)
-            namespace['responses'] = len(responses)
-            answered = defaultdict(list)
-            for response in responses:
-                for q, a in response.items():
-                    answered[q].extend(a)
-            totals = {}
-            for q, answers in answered.items():
-                counts = totals[q] = defaultdict(int)
-                for a in answers:
-                    counts[a] += 1
+        if responses < 1:
+            namespace['totals'] = None
+        else:
+            results = []
+            for question_id, y in questions.items():
+                ns = {}
+                question = questions[question_id]
+                question_title = question.title
+                ns['title'] = question_title
+                option = []
+                # XXX Perhaps it can be done more cleanly
+                options = [{'q_code': question_id, 'option': id, 'title': x,
+                            'total': str([r[1] for r in tot[question_id].items()
+                                          if id == r[0]]).strip('[]'), 
+                            'percentage': str([ float(r[1])/float(responses)*100.0 for r in tot[question_id].items()
+                                          if id == r[0]]).strip('[]')[:5]}
+                                            for id, x in enumerate(y.options)]
+                ns['options'] = options
+                option.append(ns)
+                results.append(ns)
+            namespace['totals'] = results 
 
-        # Create a new tuple that includes the percentage as well
-        result=[]
-        for r in totals.items():
-            result.append((r[0], r[1]))
-            result.sort(lambda x,y: cmp(y[1], x[1]))
-
-        print tuple(result)
-
-        namespace['totals'] = [{'question': x, 
-                    'title': y.title,
-                    'options': [{'option': id, 'title': x, 'total': 'XXX'}
-                                for id, x in enumerate(y.options)]}
-                                 for x, y in questions.items()]
-
-
-        results = [{'question': x, 'totals': [{'total': x, 
-                     'percentage': float(x)/float(len(responses))*100.0 }
-                                  for x in y.values()]}
-                                  for x, y in totals.items()]
-
-        print results
         handler = self.get_handler('/ui/abakuc/marketing/analysis.xml')
         return stl(handler, namespace)
 register_object_class(Marketing)
