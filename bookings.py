@@ -304,8 +304,6 @@ class Bookings(AccessControl, Folder):
 
     def get_tour_operator(self, index):
         return self.get_handler('.tour_operators').get_row_title(index)
-
-
     #######################################################################
     # ACL
     #######################################################################
@@ -319,7 +317,6 @@ class Bookings(AccessControl, Folder):
             return True
 
         return user is not None and user.is_branch_member(user, self)
-
 
     def is_allowed_to_edit(self, user, object):
         if self.is_training_manager(user, object):
@@ -477,6 +474,7 @@ class Bookings(AccessControl, Folder):
                    ('state', u'State')]
         if is_travel_agent:
             del columns[1:3] 
+            del columns[4] 
 
         rows = []
         for booking in objects:

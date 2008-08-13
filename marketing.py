@@ -67,7 +67,6 @@ class Question(object):
     def get_responses(self):
         return self.responses
 
-
     #########################################################################
     # The methods below are used for the user interface
     def options_as_text(self):
@@ -275,7 +274,6 @@ class Response(Text):
                 counts = totals[q] = defaultdict(int)
                 for a in answers:
                     counts[a] += 1
-            print totals
             return totals
 
     def get_no_responses(self):
@@ -316,7 +314,21 @@ class Response(Text):
             else:
                 del self.attempts[username]
 
+    def get_respondants(self):
+        attempts = self.attempts
+        respondants = []
+        for username in attempts:
+            respondants.append(username)
+        return respondants
 
+    def get_response(self, username):
+        attempts = self.attempts
+        responses = []
+        for attempt in attempts[username]:
+            response = attempt.questions
+            return response
+        #responses.append(response)
+        #return responses
 
 class Marketing(Folder):
 
@@ -331,7 +343,8 @@ class Marketing(Folder):
     class_views = [['edit'],
                    ['edit_metadata_form'],
                    ['add_question_form'],
-                   ['analyse'],
+                   ['analyse', 'csv'],
+                   ['clean_attempts_form'],
                    ['fill_form']]
 
 
@@ -443,36 +456,13 @@ class Marketing(Folder):
     def get_program(self):
         return self.parent.parent
 
-    #def get_statistics(self, username=None):
-    #    """
-    #    Return a dictionary in the sort:
-    #    {'question_code': a1, 'answers': [],
-    #     'question_code': a2, 'answers': [],
-    #     ... }
-    #    """
-    #    if username is None:
-    #        username = get_context().user.name
-
-    #    #n_attempts = self.results.get_n_attempts(username)
-    #    n_attempts = self.results.get_analysis(username)
-    #    if n_attempts == 0:
-    #        return False, 0, 0, 0.0, ''
-
-    #    #last_attempt = self.results.get_last_attempt(username)
-    #    #time_spent = 20
-
-    #    #mark = last_attempt.get_score()
-    #    #date = Date.encode(last_attempt.date)
-
-    #    #has_passed = mark >= self.get_property('abakuc:pass_marks_percentage')
-    #    return has_passed, n_attempts, time_spent, mark, date
     #########################################################################
     # User Interface
     #########################################################################
 
     #########################################################################
     # Edit
-    edit__access__ = 'is_allowed_to_edit'
+    edit__access__ = 'is_training_manager'
     edit__label__ = u'Edit'
     def edit(self, context):
         # Columns
@@ -521,7 +511,7 @@ class Marketing(Folder):
         return stl(handler, namespace)
 
 
-    remove__access__ = 'is_allowed_to_edit'
+    remove__access__ = 'is_training_manager'
     def remove(self, context):
         ids = context.get_form_values('ids')
         if not ids:
@@ -533,7 +523,7 @@ class Marketing(Folder):
         return context.come_back(u'Question(s) removed.')
 
 
-    edit_question_form__access__ = 'is_allowed_to_edit'
+    edit_question_form__access__ = 'is_training_manager'
     edit_question_form__label__ = u'View'
     def edit_question_form(self, context):
         namespace = {}
@@ -543,7 +533,7 @@ class Marketing(Folder):
         handler = self.get_handler('/ui/abakuc/marketing/edit_question.xml')
         return stl(handler, namespace)
 
-    edit_question__access__ = 'is_allowed_to_edit'
+    edit_question__access__ = 'is_training_manager'
     def edit_question(self, context):
         # Get form values
         old_code = context.get_form_value('old_code')
@@ -570,7 +560,7 @@ class Marketing(Folder):
 
     #########################################################################
     # Metadata
-    edit_metadata_form__access__ = 'is_allowed_to_edit'
+    edit_metadata_form__access__ = 'is_training_manager'
     edit_metadata_form__label__ = u'Metadata'
     def edit_metadata_form(self, context):
         # Build the namespace
@@ -591,7 +581,7 @@ class Marketing(Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_allowed_to_edit'
+    edit_metadata__access__ = 'is_training_manager'
     def edit_metadata(self, context):
         # The title
         self.set_property('dc:title', context.get_form_value('dc:title'),
@@ -610,13 +600,13 @@ class Marketing(Folder):
 
     #########################################################################
     # Add
-    add_question_form__access__ = 'is_allowed_to_edit'
+    add_question_form__access__ = 'is_training_manager'
     add_question_form__label__ = u'Add question'
     def add_question_form(self, context):
         handler = self.get_handler('/ui/abakuc/marketing/add_question.xml')
         return stl(handler)
 
-    add_question__access__ = 'is_allowed_to_edit'
+    add_question__access__ = 'is_training_manager'
     add_question__label__ = u'view'
     def add_question(self, context):
         code =  context.get_form_value('code')
@@ -667,7 +657,6 @@ class Marketing(Folder):
                     value = context.get_form_values(key)
                     value = [ int(x) for x in value ]
                     response = self.definition.get_responses()
-                    print response
                     attempt.questions[key] = value
 
             self.results.set_changed()
@@ -683,7 +672,6 @@ class Marketing(Folder):
             user.set_property('abakuc:points', points)
             # Send mail to the manager
             main_body = []
-            print questions
             for question_id, answers in attempt.questions.items():
                 question = questions[question_id]
                 question_title = question.title 
@@ -707,13 +695,15 @@ class Marketing(Folder):
             message = 'Form already submited, please proceed!'
             return context.come_back(message, '../;end')
 
-    analyse__access__ = 'is_allowed_to_edit' 
+    analyse__access__ = 'is_allowed_to_view_statistics' 
     analyse__label__ = u'Analysis overview'
+    analyse__sublabel__ = u'Analysis overview'
     def analyse(self, context):
         questions = self.definition.questions
         tot = self.results.get_analysis()
         namespace = {}
         namespace['title'] = self.get_property('dc:title')
+        namespace['download'] = ';csv'
         responses = self.results.get_no_responses() 
         namespace['responses'] = responses
         # Analyse
@@ -725,10 +715,16 @@ class Marketing(Folder):
                 ns = {}
                 question = questions[question_id]
                 question_title = question.title
+                ns['type'] = question.type
+                if question.type == 'MCQ':
+                    ns['type_full_name'] = 'Multiple Choice Question'
+                else:
+                    ns['type_full_name'] = 'Multiple Answer Question'
                 ns['title'] = question_title
                 option = []
                 # XXX Perhaps it can be done more cleanly
                 options = [{'q_code': question_id, 'option': id, 'title': x,
+                            'type': question.type,
                             'total': str([r[1] for r in tot[question_id].items()
                                           if id == r[0]]).strip('[]'), 
                             'percentage': str([ float(r[1])/float(responses)*100.0 for r in tot[question_id].items()
@@ -741,4 +737,218 @@ class Marketing(Folder):
 
         handler = self.get_handler('/ui/abakuc/marketing/analysis.xml')
         return stl(handler, namespace)
+
+    csv__access__ = 'is_allowed_to_view_statistics' 
+    csv__label__ = u'Download'
+    csv__sublabel__ = u'Download'
+    def csv(self, context):
+        root = context.root
+        companies = root.get_handler('companies')
+        users = root.get_handler('users')
+
+        questions = self.definition.questions
+        tot = self.results.get_analysis()
+        data = []
+        keys = [
+            "topic", "type",
+            "firstname", "lastname", "function","email", "contact_me",
+            "company_name", "website", "address",
+            "town", "county", "region", "postcode",
+            "country", "phone", "fax"
+            ]
+        # Questions
+        for question_id, y in self.definition.questions.items():
+            keys.append(u'%s' % question_id)
+            for id, x in enumerate(y.options):
+                keys.append(u'%s' % x)
+        # The header
+        header = ','.join([ '"%s"' % x for x in keys ]) + u'\n'
+        data.append(header)
+
+        respondants = self.results.get_respondants()
+        for username in respondants:
+            line = []
+            user = users.get_handler(username)
+            # Address
+            address_handler = user.get_address()
+            if address_handler is None:
+                phone = 'not available'
+                fax = 'not available'
+                address = 'not available'
+                town = 'not available'
+                post_code = 'not available'
+                county = 'not available'
+                region = 'not available'
+                country = 'not available'
+            else:
+                get_property = address_handler.metadata.get_property
+                phone = get_property('abakuc:phone')
+                fax = get_property('abakuc:fax')
+                address = get_property('abakuc:address')
+                town = get_property('abakuc:town')
+                postcode = get_property('abakuc:postcode')
+                county = get_property('abakuc:county')
+                if county is not None:
+                    from root import world
+                    for row_number in world.search(county=county):
+                        row = world.get_row(row_number)
+                        country = row[6]
+                        region = row[7]
+            # Company
+            if address_handler is not None:
+                company = address_handler.parent
+                if company is None:
+                    company_title = 'not available'
+                    company_type = 'not available'
+                    company_topic = 'not available'
+                    company_website = 'not available'
+                else:
+                    company_title = company.get_property('dc:title')
+                    company_type = company.get_property('abakuc:type')
+                    topic = company.get_property('abakuc:topic')
+                    company_topic = topic[0]
+                    company_website =  company.get_property('abakuc:website')
+            else:
+                company_title = 'not available'
+                company_type = 'not available'
+                company_topic = 'not available'
+                company_website = 'not available'
+
+            # User
+            get_property = user.metadata.get_property
+
+            line.append(u'"%s"' % company_topic)
+            line.append(u'"%s"' % company_type)
+            line.append(u'"%s"' % \
+                        (get_property('ikaaro:firstname') or '').title())
+            line.append(u'"%s"' % \
+                        (get_property('ikaaro:lastname') or '').title())
+            line.append(u'"%s"' % (get_property('abakuc:functions')))
+            line.append(u'"%s"' % (get_property('ikaaro:email')))
+            line.append(u'"%s"' % ('yes'))
+            line.append(u'"%s"' % company_title)
+            line.append(u'"%s"' % company_website)
+            line.append(u'"%s"' % address)
+            line.append(u'"%s"' % town)
+            line.append(u'"%s"' % county)
+            line.append(u'"%s"' % region)
+            line.append(u'"%s"' % postcode)
+            line.append(u'"%s"' % country)
+            line.append(u'"%s"' % phone)
+            line.append(u'"%s"' % fax)
+
+            # Questions
+            for question_id, y in self.definition.questions.items():
+                line.append(u'%s' % question_id)
+                options = []
+                for id, x in enumerate(y.options):
+                    options.append(id)
+                response = \
+                    self.results.get_response(username)[question_id]
+                for x in options:
+                    if x in response:
+                        line.append(u'"1"')
+                    else:
+                        line.append(u'"0"')
+
+
+            # Make the CSV file
+            line = u','.join(line) + u'\n'
+            data.append(line)
+        response = context.response
+        response.set_header('Content-Type', 'text/comma-separated-values')
+        response.set_header('Content-Disposition',
+                            'attachment; filename="expert_travel.csv"')
+        return (u''.join(data)).encode('utf-8')
+
+
+    ########################################################################
+    # Exams overview
+    ########################################################################
+    clean_attempts_form__access__ = 'is_training_manager'
+    clean_attempts_form__label__ = u'Maintenance'
+    clean_attempts_form__sublabel__ = u'Exams'
+    def clean_attempts_form(self, context):
+        """ 
+        TP1
+          ta_34 mod2 exam1 attempt1 : mark 43%
+          ta_34 mod2 exam1 attempt2 : mark 56% 
+          ta_34 mod2 exam1 attempt3 : mark 0% 
+        """ 
+        users = context.root.get_handler('users')
+        get_user = users.get_handler
+
+        namespace = {}
+        # Get the objects ta_attempts
+        rows = []
+        attempts = self.results.attempts
+        for userid in attempts:
+            user = get_user(userid)
+            for attempt in attempts[userid]:
+                points = int(self.get_points(userid))
+                date = attempt.date.isoformat()
+                url = self.get_pathto(users).resolve2(userid)
+                id = ('%s##%s##%s##%s' % (self.abspath, userid,
+                       date, points))
+                username = user.get_property('ikaaro:username')
+                #username = (firstname+lastname or '').title()
+                rows.append({
+                    'checkbox': True,
+                    'id': id,
+                    'username': (username, url),
+                    'points': points,
+                    'module': self.get_property('dc:title'),
+                    'date': date,
+                    'checked': ''})
+        # Sort
+        sortby = context.get_form_values('sortby', default=['username'])
+        sortorder = context.get_form_value('sortorder', default='up')
+        rows.sort(key=lambda x: x[sortby[0]])
+        if sortorder == 'down':
+            rows.reverse()
+
+        # Batch
+        start = context.get_form_value('batchstart', type=Integer, default=0)
+        size = 50
+        total = len(rows)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
+        rows = rows[start:start+size]
+
+        # Table
+        columns = [('username', u'Username'),
+                   ('points', u'Points'),
+                   ('module', u'Module'),
+                   ('date', u'Date')]
+        actions = [('remove_attempts', u'Remove', None, None)]
+        namespace['table'] = widgets.table(columns, rows, sortby, sortorder,
+            actions, self.gettext)
+
+        handler = self.get_handler('/ui/abakuc/training/clean_attempts.xml')
+        return stl(handler, namespace)
+
+
+    remove_attempts__access__ = 'is_training_manager'
+    def remove_attempts(self, context):
+        root = context.root
+        ids = context.get_form_values('ids')
+        users = context.root.get_handler('users')
+        get_user = users.get_handler
+
+        if not ids:
+            return context.come_back(u'No attempts to removed.')
+
+        for id in ids: 
+            abspath, name, date, points = id.split('##')
+            #exam = root.get_handler(abspath)
+            self.results.remove_attempt(name, date)
+            points = int(points)
+            # Update the users points
+            user = get_user(name)
+            existing_points = user.get_property('abakuc:points')
+            # Get the exam points based on score
+            new_points = existing_points - points
+            user.set_property('abakuc:points', new_points)
+
+        return context.come_back(u'Attempt/s removed.')
+
 register_object_class(Marketing)

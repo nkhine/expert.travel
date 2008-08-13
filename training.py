@@ -7,6 +7,7 @@ import string
 
 # Import from itools
 from itools.stl import stl
+from itools.cms import widgets
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.registry import register_object_class
@@ -15,7 +16,7 @@ from itools.cms.skins import Skin
 from itools.cms.file import File
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
-from itools.datatypes import FileName
+from itools.datatypes import FileName, Integer
 from itools.web import get_context
 from itools.cms.catalog import schedule_to_reindex
 from itools.catalog import EqQuery, AndQuery, RangeQuery
@@ -123,6 +124,7 @@ class Training(SiteRoot, WorkflowAware):
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
                    ['statistics', 'show_users','league'],
+                   ['clean_attempts_form'],
                    ['edit_metadata_form',
                     'virtual_hosts_form',
                     'anonymous_form',
@@ -143,11 +145,14 @@ class Training(SiteRoot, WorkflowAware):
          'unit': u"Branch Member"},
     ]
 
-    new_resource_form__access__ = 'is_training_manager'
-    new_resource__access__ = 'is_training_manager'
+    browse_content__access__ = 'is_training_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
+    new_resource_form__access__ = 'is_admin'
+    new_resource__access__ = 'is_admin'
     permissions_form__access__ = 'is_admin'
-
+    
     site_format = 'module'
+
 
     def get_document_types(self):
         return [Module, Bookings]
@@ -302,7 +307,7 @@ class Training(SiteRoot, WorkflowAware):
         return self.has_user_role(user.name, 'abakuc:training_manager')
 
 
-    def is_branch_manager_or_member(self, user, object):
+    def is_training_manager_or_member(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -310,7 +315,7 @@ class Training(SiteRoot, WorkflowAware):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+        return (self.has_user_role(user.name, 'abakuc:training_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
 
     def is_branch_manager(self, user, object):
@@ -335,7 +340,8 @@ class Training(SiteRoot, WorkflowAware):
     def is_allowed_to_take_exam(self, user, object):
         if self.is_admin(user, object):
             return True
-
+        if self.has_user_role(user.name, 'abakuc:training_manager'):
+            return True
         if not self.is_travel_agent(user, object):
             return False
 
@@ -360,7 +366,8 @@ class Training(SiteRoot, WorkflowAware):
     def is_allowed_to_fill_marketing(self, user, object):
         if self.is_admin(user, object):
             return True
-
+        if self.has_user_role(user.name, 'abakuc:training_manager'):
+            return True
         if not self.is_travel_agent(user, object):
             return False
 
@@ -852,7 +859,6 @@ class Training(SiteRoot, WorkflowAware):
         companies = root.get_handler('companies')
 
         # Search users
-        root = context.root
         catalog = context.server.catalog
         query = {}
         #Returns the name of the training programme
@@ -977,6 +983,109 @@ class Training(SiteRoot, WorkflowAware):
                             'attachment; filename="expert_travel.csv"')
         return (u''.join(data)).encode('utf-8')
 
+    ########################################################################
+    # Exams overview
+    ########################################################################
+    clean_attempts_form__access__ = 'is_training_manager'
+    clean_attempts_form__label__ = u'Maintenance'
+    clean_attempts_form__sublabel__ = u'Exams'
+    def clean_attempts_form(self, context):
+        """ 
+        TP1
+          ta_34 mod2 exam1 attempte1 : mark 43%
+          ta_34 mod2 exam1 attempte2 : mark 56% 
+          ta_34 mod2 exam1 attempte3 : mark 0% 
+        """ 
+        users = context.root.get_handler('users')
+        get_user = users.get_handler
+
+        namespace = {}
+        # Get the objects ta_attempts
+        rows = []
+        for module in self.get_modules():
+            for exam in module.search_handlers(format=Exam.class_id):
+                attempts = exam.results.attempts
+                for userid in attempts:
+                    user = get_user(userid)
+                    for attempt in attempts[userid]:
+                        score = int(attempt.get_score())
+                        n_attempts = int(exam.get_result(userid)[1])
+                        points = int(exam.get_points(userid))
+                        date = attempt.date.isoformat()
+                        url = self.get_pathto(users).resolve2(userid)
+                        id = ('%s##%s##%s##%s##%s##%s' % (exam.abspath, userid,
+                              score, n_attempts, date, points))
+                        #url = '%s/;view' % url
+                        username = user.get_property('ikaaro:username')
+                        #username = (firstname+lastname or '').title()
+                        rows.append({
+                            'checkbox': True,
+                            'id': id,
+                            'username': (username, url),
+                            'score': score,
+                            'module': exam.get_property('dc:title'),
+                            'date': date,
+                            'checked': (score == 0 and 'checked' or '')})
+        # Sort
+        sortby = context.get_form_values('sortby', default=['score'])
+        sortorder = context.get_form_value('sortorder', default='up')
+        rows.sort(key=lambda x: x[sortby[0]])
+        if sortorder == 'down':
+            rows.reverse()
+
+        # Batch
+        start = context.get_form_value('batchstart', type=Integer, default=0)
+        size = 50
+        total = len(rows)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
+        rows = rows[start:start+size]
+
+        # Table
+        columns = [('username', u'Username'),
+                   ('score', u'Score'),
+                   ('module', u'Module'),
+                   ('date', u'Date')]
+        actions = [('remove_attempts', u'Remove', None, None)]
+        namespace['table'] = widgets.table(columns, rows, sortby, sortorder,
+            actions, self.gettext)
+
+        handler = self.get_handler('/ui/abakuc/training/clean_attempts.xml')
+        return stl(handler, namespace)
+
+
+    remove_attempts__access__ = 'is_training_manager'
+    def remove_attempts(self, context):
+        root = context.root
+        ids = context.get_form_values('ids')
+        users = context.root.get_handler('users')
+        get_user = users.get_handler
+
+        if not ids:
+            return context.come_back(u'No attempts to removed.')
+
+        for id in ids: 
+            abspath, name, score, n_attempts, date, points = id.split('##')
+            exam = root.get_handler(abspath)
+            exam.results.remove_attempt(name, date)
+            score = int(score)
+            n_attempts = int(n_attempts)
+            points = int(points)
+            # Update the users points
+            user = get_user(name)
+            existing_points = user.get_property('abakuc:points')
+            # Get the exam points based on score
+            if score > 90.0:
+                if n_attempts == 1:
+                    score += 20
+                    new_points = existing_points - score
+                else:
+                    new_points = existing_points - points
+            else:
+                new_points = existing_points - score
+            user.set_property('abakuc:points', new_points)
+
+        return context.come_back(u'Attempts removed.')
+
 
     ########################################################################
     # View
@@ -1042,7 +1151,7 @@ class Training(SiteRoot, WorkflowAware):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    edit_metadata_form__access__ = 'is_branch_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
     def edit_metadata_form(self, context):
         root = get_context().root
         namespace = {}
@@ -1061,7 +1170,7 @@ class Training(SiteRoot, WorkflowAware):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_branch_manager'
+    edit_metadata__access__ = 'is_training_manager'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -1083,23 +1192,25 @@ class Training(SiteRoot, WorkflowAware):
         here = context.handler
         namespace = {}
         title = here.get_title()
-        items = self.search_handlers(handler_class=Module)
-        namespace['items'] = []
-        for item in items:
+        modules = self.get_modules()
+        items = []
+        for item in modules:
             get = item.get_property
             url = '%s/;view' %  item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            namespace['items'].append({'url': url,
+            items.append({'url': url,
                       'description': description,
                       'title': item.title_or_name})
+
+        namespace['items'] = items
         namespace['title'] = title
-        namespace['vhosts'] = []
-        vhosts = self.get_vhosts()
-        for vhost in vhosts:
-            url = '%s' % vhost
-            namespace['vhosts'].append({'url': url})
+        #namespace['vhosts'] = []
+        #vhosts = self.get_vhosts()
+        #for vhost in vhosts:
+        #    url = '%s' % vhost
+        #    namespace['vhosts'].append({'url': url})
 
         #namespace['vhosts'] = self.get_vhosts()
         handler = self.get_handler('/ui/abakuc/training/view.xml')
@@ -1201,7 +1312,10 @@ class Module(Folder):
     def get_document_types(self):
         return [Topic, Exam, Marketing]
 
+    browse_content__access__ = 'is_training_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
     new_resource_form__access__ = 'is_admin'
+    new_resource__access__ = 'is_admin'
 
     #######################################################################
     # API
@@ -1322,7 +1436,7 @@ class Module(Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    edit_metadata_form__access__ = 'is_branch_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -1348,7 +1462,7 @@ class Module(Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_branch_manager'
+    edit_metadata__access__ = 'is_training_manager'
     def edit_metadata(self, context):
         name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
@@ -1518,8 +1632,13 @@ class Topic(Folder):
                    ['new_resource_form'],
                    ['edit_metadata_form']]
 
+    new_resource_form__access__ = 'is_training_manager'
+    new_resource__access__ = 'is_training_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
+
     def get_document_types(self):
         return [Document, File]
+
 
     #######################################################################
     # API
@@ -1543,7 +1662,7 @@ class Topic(Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_branch_manager_or_member'
+    view__access__ = 'is_training_manager_or_member'
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -1592,7 +1711,7 @@ class Topic(Folder):
     #######################################################################
     # User Interface / Edit
     #######################################################################
-    edit_metadata_form__access__ = 'is_branch_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
     def edit_metadata_form(self, context):
         namespace = {}
         namespace['referrer'] = None
@@ -1609,7 +1728,7 @@ class Topic(Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_branch_manager'
+    edit_metadata__access__ = 'is_training_manager'
     def edit_metadata(self, context):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
@@ -1625,7 +1744,7 @@ class Topic(Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_branch_manager_or_member(self, user, object):
+    def is_training_manager_or_member(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -1633,7 +1752,7 @@ class Topic(Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+        return (self.has_user_role(user.name, 'abakuc:training_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
 
 
@@ -1641,7 +1760,7 @@ class Topic(Folder):
         return self.is_branch_manager(user, object)
 
 
-    def is_branch_manager(self, user, object):
+    def is_training_manager(self, user, object):
         if not user:
             return False
         # Is global admin
@@ -1649,7 +1768,7 @@ class Topic(Folder):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:branch_manager')
+        return self.has_user_role(user.name, 'abakuc:training_manager')
 
 
 register_object_class(Trainings)

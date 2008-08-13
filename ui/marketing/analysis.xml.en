@@ -3,23 +3,48 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
     <h1>Analysis for ${title}</h1>
-    <stl:block stl:if="responses">
-      <ol>
-        <li stl:repeat="total totals">
-          ${total/title}<br/>
-            <stl:block stl:repeat="option total/options">
-              ${option/title} -
-              <span stl:if="option/total">${option/total} - ${option/percentage}%
-              <img src="/ui/abakuc/images/bar_1_10.gif"
-                       height="10" width="${option/percentage}" /></span>
-              <span stl:if="not option/total">No results available!</span><br />
-            </stl:block>
-        </li>
-      </ol>
-      Total respondants: ${responses}
-    </stl:block>
+
     <stl:block stl:if="not responses">
         <p>No data available</p>
+    </stl:block>
+
+    <stl:block stl:if="responses">
+      <table stl:repeat="total totals">
+        <thead>
+          <tr>
+            <th colspan="4">${total/title} </th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <th colspan="4">
+            Question type: ${total/type_full_name} (${total/type})
+            </th>
+          </tr>
+        </tfoot>
+        <tbody>
+          <tr stl:repeat="option total/options">
+            <td>${option/title}</td>
+            <stl:block stl:if="option/total">
+                <td>${option/percentage}%</td>
+                <td><img src="/ui/abakuc/images/bar_1_10.gif"
+                       height="10" width="${option/percentage}" alt="The
+                       '${total/title}' question with '${option/title}' as a
+                       possible response had ${option/total} responses" />
+                </td>
+                <td>(${option/total})</td>
+            </stl:block>
+            <stl:block stl:if="not option/total">
+                <td>No results available!</td>
+            </stl:block>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Total respondants: ${responses}</h2>
+      <p>
+        &raquo; Download respondant details as a
+        <a href="${download}">CSV file</a>.
+      </p>
     </stl:block>
 </stl:block>
 

@@ -7,6 +7,7 @@
           <stl:block stl:if="module/url">
             <a href="${module/url}">${module/title}</a>
             <dt>
+              <stl:block stl:if="not is_training_manager">
               <!-- Marketing -->
               <dd stl:if="module/marketing">
                 Fill <a href="${module/marketing/url}">marketing
@@ -29,11 +30,23 @@
                     This module does not have an exam.
                 </dt>
               </stl:block>
+            </stl:block>
             </dt>
-          </stl:block>
+            </stl:block>
           <stl:block stl:if="not module/url">${module/title}</stl:block>
           <stl:block stl:if="is_training_manager">
-          Manage module
+              <h2>Management links</h2>
+              <dt>
+                <dd>
+                  <a href="${module/url_add_topic}">Add topic</a>
+                </dd>
+                <dd stl:if="module/exam">
+                  <a href="${module/exam/url}">Manage exam</a>
+                </dd>
+                <dd stl:if="module/marketing">
+                   <a href="${module/marketing/url}">Manage marketing form</a>
+                </dd>
+              </dt>
           </stl:block>
       </dt>
   </stl:block>

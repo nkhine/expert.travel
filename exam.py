@@ -14,6 +14,7 @@ from itools.stl import stl
 from itools.web import get_context
 from itools.cms.folder import Folder
 from itools.cms import widgets
+from itools.cms.messages import *
 from itools.cms.registry import register_object_class
 from itools.cms.catalog import schedule_to_reindex
 
@@ -336,6 +337,7 @@ class Exam(Folder):
     class_icon48 = 'abakuc/images/Exam48.png'
     class_views = [['edit'],
                    ['edit_metadata_form'],
+                   ['clean_attempts_form'],
                    ['add_question_form'],
                    ['take_exam_form']]
 
@@ -360,6 +362,34 @@ class Exam(Folder):
     def text(self):
         # XXX To be fixed
         return u''
+
+    #######################################################################
+    # ACL
+    #######################################################################
+    def is_training_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        ## Is reviewer or member
+        return self.has_user_role(user.name, 'abakuc:training_manager')
+
+    def is_allowed_to_manage(self, user, object):
+        if user is None:
+            return False
+        if self.is_training_manager(user, object):
+            return True
+
+        return user is not None and user.is_branch_member(user, self)
+
+    def is_allowed_to_edit(self, user, object):
+        if self.is_training_manager(user, object):
+            return True
+
+        if user is None:
+            return False
 
 
     #########################################################################
@@ -457,16 +487,17 @@ class Exam(Folder):
     def get_program(self):
         return self.parent.parent
 
-
     #########################################################################
     # User Interface
     #########################################################################
 
     #########################################################################
     # Edit
-    edit__access__ = 'is_allowed_to_edit'
+    edit__access__ = 'is_training_manager'
     edit__label__ = u'Edit'
     def edit(self, context):
+        # Add the js scripts
+        context.scripts.append('/ui/table/javascript.js')        
         # Columns
         columns = [('code', u'Code'), ('title', u'Title'), ('type', u'Type')]
         # Rows
@@ -499,7 +530,11 @@ class Exam(Folder):
         start = context.get_form_value('batchstart', type=Integer, default=0)
         rows = rows[start:start+20]
         # Actions
-        actions = [('remove', u'Remove', None, 'return confirmation();')]
+        message = self.gettext(MSG_DELETE_SELECTION)
+        actions = [('add_question_form', u'Add question', 'button_ok', None),
+                   ('remove', u'Remove', 'button_delete',
+                    'return confirmation(%s);' % message.encode('utf_8')),
+                    ('take_exam_form', u'Preview exam', 'button_ok', None)]
 
         # Build the namespace
         namespace = {}
@@ -511,17 +546,19 @@ class Exam(Folder):
         return stl(handler, namespace)
 
 
-    remove__access__ = 'is_allowed_to_edit'
+    remove__access__ = 'is_training_manager'
     def remove(self, context):
-        codes = context.get_form_values('codes')
+        ids = context.get_form_values('ids')
+        if not ids:
+            return context.come_back(u'Please select a question to remove')
         self.definition.set_changed()
-        for code in codes:
+        for code in ids:
             del self.definition.questions[code]
 
         return context.come_back(u'Question(s) removed.')
 
 
-    edit_question_form__access__ = 'is_allowed_to_edit'
+    edit_question_form__access__ = 'is_training_manager'
     edit_question_form__label__ = u'View'
     def edit_question_form(self, context):
         namespace = {}
@@ -532,7 +569,7 @@ class Exam(Folder):
         return stl(handler, namespace)
 
 
-    edit_question__access__ = 'is_allowed_to_edit'
+    edit_question__access__ = 'is_training_manager'
     def edit_question(self, context):
         # Get form values
         old_code = context.get_form_value('old_code')
@@ -566,7 +603,7 @@ class Exam(Folder):
 
     #########################################################################
     # Metadata
-    edit_metadata_form__access__ = 'is_allowed_to_edit'
+    edit_metadata_form__access__ = 'is_training_manager'
     edit_metadata_form__label__ = u'Metadata'
     def edit_metadata_form(self, context):
         # Build the namespace
@@ -588,7 +625,7 @@ class Exam(Folder):
         return stl(handler, namespace)
 
 
-    edit_metadata__access__ = 'is_allowed_to_edit'
+    edit_metadata__access__ = 'is_training_manager'
     def edit_metadata(self, context):
         # The title
         self.set_property('dc:title', context.get_form_value('dc:title'),
@@ -608,14 +645,14 @@ class Exam(Folder):
 
     #########################################################################
     # Add
-    add_question_form__access__ = 'is_allowed_to_edit'
+    add_question_form__access__ = 'is_training_manager'
     add_question_form__label__ = u'Add question'
     def add_question_form(self, context):
         handler = self.get_handler('/ui/abakuc/exam/add_question.xml')
         return stl(handler)
 
 
-    add_question__access__ = 'is_allowed_to_edit'
+    add_question__access__ = 'is_training_manager'
     add_question__label__ = u'view'
     def add_question(self, context):
         code =  context.get_form_value('code')
@@ -789,5 +826,109 @@ class Exam(Folder):
 
         handler = self.get_handler('/ui/abakuc/exam/take_exam.xml')
         return stl(handler, namespace)
+
+
+    ########################################################################
+    # Exams overview
+    ########################################################################
+    clean_attempts_form__access__ = 'is_training_manager'
+    clean_attempts_form__label__ = u'Maintenance'
+    clean_attempts_form__sublabel__ = u'Exams'
+    def clean_attempts_form(self, context):
+        """ 
+        TP1
+          ta_34 mod2 exam1 attempt1 : mark 43%
+          ta_34 mod2 exam1 attempt2 : mark 56% 
+          ta_34 mod2 exam1 attempt3 : mark 0% 
+        """ 
+        users = context.root.get_handler('users')
+        get_user = users.get_handler
+
+        namespace = {}
+        # Get the objects ta_attempts
+        rows = []
+        attempts = self.results.attempts
+        for userid in attempts:
+            user = get_user(userid)
+            for attempt in attempts[userid]:
+                score = int(attempt.get_score())
+                n_attempts = int(self.get_result(userid)[1])
+                points = int(self.get_points(userid))
+                date = attempt.date.isoformat()
+                url = self.get_pathto(users).resolve2(userid)
+                id = ('%s##%s##%s##%s##%s##%s' % (self.abspath, userid,
+                      score, n_attempts, date, points))
+                url = '%s/;view' % url
+                username = user.get_property('ikaaro:username')
+                #username = (firstname+lastname or '').title()
+                rows.append({
+                    'checkbox': True,
+                    'id': id,
+                    'username': (username, url),
+                    'score': score,
+                    'module': self.get_property('dc:title'),
+                    'date': date,
+                    'checked': (score == 0 and 'checked' or '')})
+        # Sort
+        sortby = context.get_form_values('sortby', default=['score'])
+        sortorder = context.get_form_value('sortorder', default='up')
+        rows.sort(key=lambda x: x[sortby[0]])
+        if sortorder == 'down':
+            rows.reverse()
+
+        # Batch
+        start = context.get_form_value('batchstart', type=Integer, default=0)
+        size = 50
+        total = len(rows)
+        namespace['batch'] = widgets.batch(context.uri, start, size, total)
+        rows = rows[start:start+size]
+
+        # Table
+        columns = [('username', u'Username'),
+                   ('score', u'Score'),
+                   ('module', u'Module'),
+                   ('date', u'Date')]
+        actions = [('remove_attempts', u'Remove', None, None)]
+        namespace['table'] = widgets.table(columns, rows, sortby, sortorder,
+            actions, self.gettext)
+
+        handler = self.get_handler('/ui/abakuc/training/clean_attempts.xml')
+        return stl(handler, namespace)
+
+
+    remove_attempts__access__ = 'is_training_manager'
+    def remove_attempts(self, context):
+        root = context.root
+        ids = context.get_form_values('ids')
+        users = context.root.get_handler('users')
+        get_user = users.get_handler
+
+        if not ids:
+            return context.come_back(u'No attempts to removed.')
+
+        for id in ids: 
+            abspath, name, score, n_attempts, date, points = id.split('##')
+            #exam = root.get_handler(abspath)
+            self.results.remove_attempt(name, date)
+            score = int(score)
+            n_attempts = int(n_attempts)
+            points = int(points)
+            # Update the users points
+            user = get_user(name)
+            existing_points = user.get_property('abakuc:points')
+            # Get the exam points based on score
+            if score > 90.0:
+                if n_attempts == 1:
+                    score += 20
+                    new_points = existing_points - score
+                else:
+                    new_points = existing_points - points
+            else:
+                new_points = existing_points - score
+            user.set_property('abakuc:points', new_points)
+
+        return context.come_back(u'Attempt/s removed.')
+
+
 
 register_object_class(Exam)

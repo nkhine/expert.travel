@@ -7,7 +7,6 @@
   <tr>
   <td valign="top">
     <h1>${title}</h1>
-    <stl:block stl:repeat="vhost vhosts">${vhost/url}</stl:block>
     <div id="List">
     <stl:block stl:repeat="item items">
           <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
