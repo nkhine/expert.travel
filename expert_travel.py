@@ -238,7 +238,13 @@ class ExpertTravel(SiteRoot):
 
         namespace['tabs'] = self.get_tabs_stl(context)
         if address is None:
-            handler = root.get_skin().get_handler('home.xhtml')
+            skin = root.get_skin()
+            skin_path = skin.abspath
+            if skin_path == '/ui/aruni':
+                handler = self.get_handler('/ui/abakuc/home.xml')
+            else:
+                handler = root.get_skin().get_handler('home.xhtml')
+            #handler = root.get_skin().get_handler('home.xhtml')
             return stl(handler, namespace)
         company = address.parent
 

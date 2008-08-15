@@ -227,6 +227,7 @@ class Root(Handler, BaseRoot):
 
         # Default
         return ui.get_handler('aruni')
+        #return ui.get_handler('abakuc')
 
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
@@ -405,7 +406,8 @@ class Root(Handler, BaseRoot):
         """
         root = context.handler.get_site_root()
         country_code = get_host_prefix(context)
-        if country_code is not None:
+        country_codes = self.list_country_codes()
+        if country_code in country_codes:
             # Rule for address as: http://fr.expert.travel/
             country_name = self.get_country_name(country_code)
             return [(country_name, country_code)]
@@ -423,6 +425,7 @@ class Root(Handler, BaseRoot):
         """
         root = context.handler.get_site_root()
         country_code = get_host_prefix(context)
+        print country_code
         if country_code is not None:
             if not isinstance(root, Company):
                 # Rule for address as: http://fr.expert.travel/

@@ -11,6 +11,8 @@ from itools.cms import widgets
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
 from itools.cms.registry import register_object_class
+from itools.rest import checkid
+from itools.cms.messages import *
 from itools.cms.widgets import batch
 from itools.cms.skins import Skin
 from itools.cms.file import File
@@ -1318,6 +1320,71 @@ class Module(Folder):
     new_resource__access__ = 'is_training_manager'
 
     #######################################################################
+    # New instance form 
+    #######################################################################
+    @classmethod
+    def new_instance_form(cls, context, name=''):
+        root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
+
+        namespace = {}
+        # The class id
+
+        namespace['class_id'] = cls.class_id
+        # Languages
+        document_names = [ x for x in here.get_handler_names()
+                           if x.startswith(cls.class_id) ]
+        print document_names
+        if document_names:
+            i = get_sort_name(document_names[-1])[1] + 1
+            name = '%s%d' % (cls.class_id, i)
+        else:
+            name = '%s1' % cls.class_id
+        namespace['name'] = name
+
+        handler = root.get_handler('/ui/abakuc/training/%s/new_instance.xml' \
+                                   % cls.class_id)
+        return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+        website_languages = site_root.get_property('ikaaro:website_languages')
+        language = website_languages[0]
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            return context.come_back(MSG_NAME_MISSING)
+
+        name = checkid(name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        #name = FileName.encode((name, cls.class_extension, language))
+
+        # Check the name is free
+        if container.has_handler(name):
+            return context.come_back(MSG_NAME_CLASH)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        metadata.set_property('dc:title', title, language=language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+    #######################################################################
     # API
     #######################################################################
     def get_prev_module(self):
@@ -1636,6 +1703,71 @@ class Topic(Folder):
 
     def get_document_types(self):
         return [Document, File]
+
+    #######################################################################
+    # New instance form 
+    #######################################################################
+    @classmethod
+    def new_instance_form(cls, context, name=''):
+        root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
+
+        namespace = {}
+        # The class id
+
+        namespace['class_id'] = cls.class_id
+        # Languages
+        document_names = [ x for x in here.get_handler_names()
+                           if x.startswith(cls.class_id) ]
+        print document_names
+        if document_names:
+            i = get_sort_name(document_names[-1])[1] + 1
+            name = '%s%d' % (cls.class_id, i)
+        else:
+            name = '%s1' % cls.class_id
+        namespace['name'] = name
+
+        handler = root.get_handler('/ui/abakuc/training/%s/new_instance.xml' \
+                                   % cls.class_id)
+        return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+        website_languages = site_root.get_property('ikaaro:website_languages')
+        language = website_languages[0]
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            return context.come_back(MSG_NAME_MISSING)
+
+        name = checkid(name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        #name = FileName.encode((name, cls.class_extension, language))
+
+        # Check the name is free
+        if container.has_handler(name):
+            return context.come_back(MSG_NAME_CLASH)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        metadata.set_property('dc:title', title, language=language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     #######################################################################

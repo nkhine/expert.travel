@@ -30,8 +30,8 @@ class Node(object):
     def click(self, path):
         handler =  self.handler
         # fill children
-        if isinstance(handler, Company):
-            allowed_instances = Module, Topic, Document
+        if isinstance(handler, Training):
+            allowed_instances =  Training, Module, Topic, Document
             #
             #XXX For some reason, I get to dictionary items
             #one with .en extentsion and the other without:
@@ -56,7 +56,7 @@ class Node(object):
             #allowed_instances = Module, Topic 
             handlers = [
                 handler.get_handler(x) for x in handler.get_handler_names()
-                ]
+                if not x.startswith('.') ]
             handlers = [
                 h for h in handlers if isinstance(h, allowed_instances) ]
             handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
@@ -67,6 +67,7 @@ class Node(object):
             child_name, path = path[0], path[1:]
             child_name = str(child_name)
             for child in self.children:
+                print child.handler.name
                 if child.handler.name == child_name:
                     child.click(path)
                     break
@@ -112,7 +113,7 @@ class FrontOffice(Skin):
     def build_namespace(self, context):
         root = context.root
         # Level0 correspond to the country (uk, fr) ...
-        level0 = [ x[1] for x in root.get_authorized_country(context) ]
+        level0 = [ x[1] for x in root.get_authorized_countries(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
         format = site_root.site_format
@@ -238,44 +239,6 @@ class FrontOffice(Skin):
         return {'title': self.gettext(here.class_title),
                 'content': build_menu(menu)}
 
-
-    def get_content_menu(self, context):
-        here = context.handler
-        user = context.user
-
-        options = []
-        # Parent
-        parent = here.parent
-        if parent is not None:
-            firstview = parent.get_firstview()
-            options.append({'href': '../;%s' % (firstview),
-                            'src': None,
-                            'title': '<<',
-                            'class': '',
-                            'items': []})
-
-        # Content
-        size = 0
-        allowed_instances = Module, Topic, Document 
-        if isinstance(here, allowed_instances):
-            for handler in here.search_handlers():
-                ac = handler.get_access_control()
-                if not ac.is_allowed_to_view(user, handler):
-                    continue
-                firstview = handler.get_firstview()
-                src = handler.get_path_to_icon(size=16, from_handler=here)
-                options.append({'href': '%s/;%s' % (handler.name, firstview),
-                                'src': src,
-                                'title': handler.get_title(),
-                                'class': '',
-                                'items': []})
-                size += 1
-
-        menu = build_menu(options)
-        title = Template(u'Content ($size)').substitute(size=size)
-
-        return {'title': title, 'content': menu}
-
     def get_navigation_menu(self, context):
         """Build the namespace for the navigation menu."""
         handler = context.handler
@@ -295,7 +258,8 @@ class FrontOffice(Skin):
         # Namespace
         site_root = here.get_site_root()
         tree = Node(site_root)
-        tree.click(context.path[2:])
+        print tree
+        tree.click(context.path[1:])
         menus = tree.get_tree(here)
         template_path = \
           'ui/abakuc/training/context_menu_html.xml'

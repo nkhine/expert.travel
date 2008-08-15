@@ -46,12 +46,12 @@ class Document(XHTMLFile):
         namespace['class_id'] = cls.class_id
         # Languages
         document_names = [ x for x in here.get_handler_names()
-                           if x.startswith('page') ]
+                           if x.startswith(cls.class_id) ]
         if document_names:
             i = get_sort_name(document_names[-1])[1] + 1
-            name = 'page%d' % i
+            name = '%s%d' % (cls.class_id, i)
         else:
-            name = 'page1'
+            name = '%s1' % cls.class_id
         namespace['name'] = name
         website_languages = site_root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
