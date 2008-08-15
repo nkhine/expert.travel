@@ -33,6 +33,14 @@
               </tr>
               <tr>
                 <td class="examtext" align="right" width="104">
+                 Business Topic 
+                </td>
+                <td class="examtext" width="4">:</td>
+
+                <td class="examtext">${topics}</td>
+              </tr>
+              <tr>
+                <td class="examtext" align="right" width="104">
                   Attempt
                 </td>
                 <td class="examtext" width="4">:</td>

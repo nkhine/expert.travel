@@ -19,7 +19,6 @@ from itools.cms.registry import register_object_class
 from itools.cms.catalog import schedule_to_reindex
 
 # Import from Abakuc
-from namespaces import BusinessFunction
 from utils import get_sort_name
 
 
@@ -605,7 +604,8 @@ class Exam(Folder):
     # Metadata
     edit_metadata_form__access__ = 'is_training_manager'
     edit_metadata_form__label__ = u'Metadata'
-    def edit_metadata_form(self, context):
+    def edit_metadata_form(self, context, topics=None):
+        root = get_context().root
         # Build the namespace
         namespace = {}
         namespace['dc:title'] = self.get_property('dc:title', language='en')
@@ -614,12 +614,13 @@ class Exam(Folder):
             namespace[pname] = self.get_property(pname)
 
         # Business functions
-        namespace['abakuc:topic'] = BusinessFunction.get_options()
-        namespace['abakuc:topic'].insert(0, {'id': 'all',
-                                                   'label': 'All'})
+        #namespace['abakuc:topic'] = BusinessFunction.get_options()
+        namespace['topics'] = root.get_topics_namespace(topics)
+        namespace['topics'].insert(0, {'is_selected': 'False', 'id': 'all',
+                                                   'title': 'All'})
         business_functions = self.definition.business_functions
-        for x in namespace['abakuc:topic']:
-            x['selected'] = x['id'] in business_functions
+        for x in namespace['topics']:
+            x['is_selected'] = x['id'] in business_functions
 
         handler = self.get_handler('/ui/abakuc/exam/edit_metadata.xml')
         return stl(handler, namespace)
@@ -700,6 +701,7 @@ class Exam(Folder):
         namespace['title'] = self.get_property('dc:title')
         namespace['pass_mark'] = self.get_property('abakuc:pass_marks_percentage')
         namespace['exam_time'] = self.get_property('abakuc:exam_time')
+        namespace['topics'] = self.get_property('abakuc:topic')
         namespace['user_attempts'] = self.results.get_n_attempts(user.name) + 1
         namespace['questions_nums'] = no_questions
 

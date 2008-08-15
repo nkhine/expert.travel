@@ -38,15 +38,26 @@
               <h2>Management links</h2>
               <dt>
                 <dd>
-                  <a href="${module/url_add_topic}">Add topic</a>
+                  <a href="${module/add_topic}">Add topic</a>
                 </dd>
-                <dd stl:if="module/exam">
+              <stl:block stl:if="module/exam">
+                <dd>
                   <a href="${module/exam/url}">Manage exam</a>
                 </dd>
-                <dd stl:if="module/marketing">
+              </stl:block>
+              <stl:block stl:if="module/marketing">
+                <dd>
                    <a href="${module/marketing/url}">Manage marketing form</a>
                 </dd>
+              </stl:block>
               </dt>
+              <stl:block stl:if="not module/exam">
+                <dt>
+                    <dd>
+                      <a href="${module/add_exam}">Add exam</a>
+                    </dd>
+                </dt>
+              </stl:block>
           </stl:block>
       </dt>
   </stl:block>

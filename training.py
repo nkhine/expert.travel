@@ -1306,7 +1306,7 @@ class Module(Folder):
     class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
-                   ['new_resource_form'],
+                   ['new_resource_form'], 
                    ['edit_metadata_form']]
 
     def get_document_types(self):
@@ -1314,8 +1314,8 @@ class Module(Folder):
 
     browse_content__access__ = 'is_training_manager'
     edit_metadata_form__access__ = 'is_training_manager'
-    new_resource_form__access__ = 'is_admin'
-    new_resource__access__ = 'is_admin'
+    new_resource_form__access__ = 'is_training_manager'
+    new_resource__access__ = 'is_training_manager'
 
     #######################################################################
     # API
@@ -1351,20 +1351,18 @@ class Module(Folder):
             username = get_context().user.name
 
         for exam in self.search_handlers(format=Exam.class_id):
-            #business_functions = exam.definition.business_functions
-            #if 'all' in business_functions:
-            #    return exam
-            #if business_function is None:
-            #    site_root = self.get_site_root()
-            #    user = site_root.get_handler('users/%s' % username)
-            #    address = user.get_address()
-            #    company = address.parent
-            #    business_function = company.get_property('abakuc:business_function')
-
-            #if business_function in business_functions:
-            #    return exam
-            return exam
-
+            business_functions = exam.definition.business_functions
+            if 'all' in business_functions:
+                return exam
+            if business_function is None:
+                site_root = self.get_site_root()
+                user = site_root.get_handler('users/%s' % username)
+                address = user.get_address()
+                company = address.parent
+                business_function = company.get_property('abakuc:topic')
+                for x in business_function:
+                    if x in business_functions:
+                        return exam
         return None
 
     def get_marketing_form(self, username=None):
@@ -1744,31 +1742,31 @@ class Topic(Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_training_manager_or_member(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        return (self.has_user_role(user.name, 'abakuc:training_manager') or
-                self.has_user_role(user.name, 'abakuc:branch_member'))
+    #def is_training_manager_or_member(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    return (self.has_user_role(user.name, 'abakuc:training_manager') or
+    #            self.has_user_role(user.name, 'abakuc:branch_member'))
 
 
-    def is_admin(self, user, object):
-        return self.is_branch_manager(user, object)
+    #def is_admin(self, user, object):
+    #    return self.is_branch_manager(user, object)
 
 
-    def is_training_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:training_manager')
+    #def is_training_manager(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    return self.has_user_role(user.name, 'abakuc:training_manager')
 
 
 register_object_class(Trainings)

@@ -98,11 +98,6 @@ class Schema(BaseSchema):
         # Address
         'address': Unicode,
         'postcode': String,
-        # The county_id is based on the row number
-        # once in production, we cannot change this.
-        # to add new counties/regions we have to do 
-        # it at the end of the the file.
-        #'county': Integer,
         'county': Unicode,
         'town': Unicode,
         'phone': String,

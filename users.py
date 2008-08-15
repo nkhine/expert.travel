@@ -1588,20 +1588,47 @@ class User(iUser, WorkflowAware, Handler):
                 modules.sort(lambda x, y: cmp(get_sort_name(x.name),
                                                 get_sort_name(y.name)))
                 #for index, module in enumerate(modules):
-                ns = {'title': module.title_or_name, 'url': None}
+                ns = {'title': module.title_or_name, 'url': None,
+                'add_exam': None, 'add_marketing': None, 'add_topic':
+                None}
+                path_to_module = '../../%s' % module.name
+                ns['url'] = '%s' % path_to_module
                 if is_training_manager:
-                        path_to_module = '../../%s' % module.name
-                        ns['url'] = '%s' % path_to_module
-                        ns['url_add_topic'] = '%s/;new_resource_form?type=topic' \
-                                        % path_to_module
+                    ns['add_topic'] = '/%s/;new_resource_form?type=topic' % path_to_module
+                    ns['add_marketing'] = '/%s/;new_resource_form?type=marketing'  % path_to_module
+                    ns['add_exam'] = '/%s/;new_resource_form?type=Exam'  % path_to_module
+                    if last_exam_passed is True:
                         # Check for marketing form.
-                        ns['marketing'] = None
                         marketing_form = module.get_marketing_form(self.name)
+                        ns['marketing'] = None
                         if marketing_form is not None:
-                            url = '/%s/%s/;analyse' % (module.name,
+                            url = '/%s/%s/;fill_form' % (module.name,
                                                         marketing_form.name)
                             marketing = {'url': url}
                             ns['marketing'] = marketing
+
+                        else:
+                            ns['exam'] = None
+                            # Check for exam
+                            exam = None
+                            exams = list(module.search_handlers(format=Exam.class_id))
+                            if exams != []:
+                                exam = module.get_exam(self.name)
+                                last_exam_passed = False
+                                if exam is not None:
+                                    title = exam.title_or_name
+                                    result = exam.get_result(self.name)
+                                    passed, n_attempts, kk, mark, kk = result
+                                    url = '/%s/%s/;take_exam_form' % (module.name,
+                                                                    exam.name)
+                                    exam = {'title': title,
+                                            'passed': passed,
+                                            'attempts': n_attempts,
+                                            'mark': str(round(mark, 2)),
+                                            'url': url}
+                                    last_exam_passed = passed
+                                    ns['exam'] = exam
+                        # Exams
                         exams = list(module.search_handlers(format=Exam.class_id))
                         if exams != []:
                             exam = module.get_exam(self.name)
@@ -1610,7 +1637,7 @@ class User(iUser, WorkflowAware, Handler):
                                 title = exam.title_or_name
                                 result = exam.get_result(self.name)
                                 passed, n_attempts, kk, mark, kk = result
-                                url = '/%s/%s/;edit' % (module.name,
+                                url = '/%s/%s/;take_exam_form' % (module.name,
                                                                 exam.name)
                                 exam = {'title': title,
                                         'passed': passed,
@@ -1619,10 +1646,10 @@ class User(iUser, WorkflowAware, Handler):
                                         'url': url}
                                 last_exam_passed = passed
                                 ns['exam'] = exam
+
                 else:
+                    # Not training manager
                     if last_exam_passed is True:
-                        path_to_module = '../../%s' % module.name
-                        ns['url'] = '%s' % path_to_module
                         # Check for marketing form.
                         marketing_form = module.get_marketing_form(self.name)
                         ns['marketing'] = None

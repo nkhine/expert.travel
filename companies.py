@@ -779,7 +779,7 @@ class Company(SiteRoot):
         logo = context.get_form_value('logo')
 
         self.set_property('dc:title', title, language='en')
-        self.set_property('dc:description', description, language='en')
+        self.set_property('dc:description', description)
         self.set_property('abakuc:website', website)
         self.set_property('abakuc:topic', tuple(topics))
         self.set_property('abakuc:type', types)
