@@ -1498,6 +1498,10 @@ class Module(Folder):
         #namespace['batch'] = news_batch
         #namespace['msg'] = msg
 
+    topics__access__ = True
+    topics__label__ = u'Topics View'
+    def topics(self, context):
+        pass
     #######################################################################
     # User Interface / Edit
     #######################################################################

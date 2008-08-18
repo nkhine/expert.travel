@@ -24,6 +24,7 @@ from itools.cms.catalog import schedule_to_reindex
 from itools.cms.utils import reduce_string
 from itools.cms.workflow import WorkflowAware
 from itools.uri import encode_query, Reference, Path
+from itools.cms.versioning import VersioningAware
 
 # Import from abakuc
 from base import Handler, Folder
@@ -104,7 +105,7 @@ class Companies(Folder):
         handler = self.get_handler('/ui/abakuc/companies/list.xml')
         return stl(handler, namespace)
 
-class Company(SiteRoot):
+class Company(SiteRoot, VersioningAware):
 
     class_id = 'company'
     class_title = u'Company'
@@ -116,18 +117,16 @@ class Company(SiteRoot):
     class_views = [['view'],
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
-                   ['new_resource_form'],
                    ['permissions_form', 'new_user_form'],
+                   ['history_form'],
                    ['edit_metadata_form']]
 
 
-    new_resource_form__access__ = 'is_allowed_to_edit'
-    new_resource__access__ = 'is_allowed_to_edit'
     permissions_form__access__ = 'is_allowed_to_edit'
     new_user_form__access__ = 'is_allowed_to_edit'
     browse_content__access__ = 'is_allowed_to_edit'
     def get_document_types(self):
-        return [Address, Folder]
+        return []
 
 
     def get_level1_title(self, level1):
@@ -771,6 +770,8 @@ class Company(SiteRoot):
 
     edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
+        username = get_context().user.name
+        print username
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
         website = context.get_form_value('abakuc:website')
@@ -823,6 +824,13 @@ class Company(SiteRoot):
                 logo, metadata = self.set_object(logo_name, logo)
                 metadata.set_property('state', 'public')
 
+
+        property = {
+            (None, 'user'): username,
+            ('dc', 'date'): datetime.now(),
+        }
+        self.set_property('ikaaro:history', property)
+
         # Re-index addresses
         for address in self.search_handlers(handler_class=Address):
             schedule_to_reindex(address)
@@ -832,7 +840,7 @@ class Company(SiteRoot):
         return context.come_back(message, goto=goto)
 
 
-class Address(RoleAware, WorkflowAware, Folder):
+class Address(RoleAware, WorkflowAware, VersioningAware,  Folder):
 
     class_id = 'address'
     class_title = u'Address'

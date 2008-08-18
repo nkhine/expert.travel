@@ -30,8 +30,7 @@ class Node(object):
     def click(self, path):
         handler =  self.handler
         # fill children
-        if isinstance(handler, Training):
-            allowed_instances =  Training, Module, Topic, Document
+        if isinstance(handler, Folder):
             #
             #XXX For some reason, I get to dictionary items
             #one with .en extentsion and the other without:
@@ -53,7 +52,7 @@ class Node(object):
             #                     'short_name': u'First page',
             #                     'submenus': [   ],
             #                     'url': 'page1.xhtml.en/;view'},
-            #allowed_instances = Module, Topic 
+            allowed_instances = Module, Topic, Document
             handlers = [
                 handler.get_handler(x) for x in handler.get_handler_names()
                 if not x.startswith('.') ]
@@ -61,6 +60,7 @@ class Node(object):
                 h for h in handlers if isinstance(h, allowed_instances) ]
             handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
                                            get_sort_name(y.name)))
+            print handlers
             self.children = [ Node(h) for h in handlers ]
         # parse the path
         if path:
@@ -80,6 +80,7 @@ class Node(object):
         ns['short_name'] = name # XXX
         submenus = [ child.get_tree(here) for child in self.children ]
         ns['submenus'] = submenus
+        print ns['submenus']
         ns['open'] = bool(len(submenus))
         ns['class'] = ''
         ns['class2'] = ''
@@ -150,10 +151,11 @@ class FrontOffice(Skin):
             print 'We are either on a Company view or a TP' 
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
-        if context_menu_html is None:
-            namespace['context_menu_html'] = 'None' 
-        else:    
-            namespace['context_menu_html'] = context_menu_html
+        #if context_menu_html is None:
+        #    namespace['context_menu_html'] = 'None' 
+        #else:    
+        #    namespace['context_menu_html'] = context_menu_html
+        namespace['context_menu_html'] = context_menu_html
 
         return namespace
 
@@ -258,8 +260,7 @@ class FrontOffice(Skin):
         # Namespace
         site_root = here.get_site_root()
         tree = Node(site_root)
-        print tree
-        tree.click(context.path[1:])
+        tree.click(context.path[2:])
         menus = tree.get_tree(here)
         template_path = \
           'ui/abakuc/training/context_menu_html.xml'
@@ -271,19 +272,16 @@ class FrontOffice(Skin):
         return stl(template, namespace)
 
 
-    def get_modules_menu(self, context):
-        """Build the namespace for the navigation menu."""
-        root = context.handler.get_site_root()
-        menu = tree(root, active_node=context.handler,
-                    allow=Company, user=context.user)
-        return {'title': self.gettext(u'Modules'), 'content': menu}
+    #def get_modules_menu(self, context):
+    #    """Build the namespace for the navigation menu."""
+    #    root = context.handler.get_site_root()
+    #    menu = tree(root, active_node=context.handler,
+    #                allow=Company, user=context.user)
+    #    return {'title': self.gettext(u'Modules'), 'content': menu}
 
 
     def get_left_menus(self, context):
         root =  context.handler.get_site_root()
- 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         menus = []
         if isinstance(root, ExpertTravel):
             # Navigation
