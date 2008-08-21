@@ -160,6 +160,17 @@ class ExpertTravel(SiteRoot):
         template = XHTMLDocument(string=template)
         return stl(template, namespace)
 
+    def is_training(self):
+        """
+        Check to see if the user is on a training site.
+        Return a bool
+        """
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False
+        return training
 
     def get_address(self):
         root = self.get_root()

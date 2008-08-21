@@ -13,6 +13,7 @@ from itools.cms.utils import reduce_string
 from itools.uri.generic import decode_query
 from itools.handlers import Folder
 from itools.cms.base import Node
+from itools.xml import Parser
 # Import from abakuc
 from expert_travel import ExpertTravel
 from companies import Company, Address
@@ -30,7 +31,7 @@ class Node(object):
     def click(self, path):
         handler =  self.handler
         # fill children
-        if isinstance(handler, Folder):
+        #if isinstance(handler, Folder):
             #
             #XXX For some reason, I get to dictionary items
             #one with .en extentsion and the other without:
@@ -52,22 +53,20 @@ class Node(object):
             #                     'short_name': u'First page',
             #                     'submenus': [   ],
             #                     'url': 'page1.xhtml.en/;view'},
-            allowed_instances = Module, Topic, Document
-            handlers = [
-                handler.get_handler(x) for x in handler.get_handler_names()
-                if not x.startswith('.') ]
-            handlers = [
-                h for h in handlers if isinstance(h, allowed_instances) ]
-            handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                           get_sort_name(y.name)))
-            print handlers
-            self.children = [ Node(h) for h in handlers ]
+        allowed_instances = Module, Topic
+        handlers = [
+            handler.get_handler(x) for x in handler.get_handler_names()
+            if not x.startswith('.') ]
+        handlers = [
+            h for h in handlers if isinstance(h, allowed_instances) ]
+        handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                       get_sort_name(y.name)))
+        self.children = [ Node(h) for h in handlers ]
         # parse the path
         if path:
             child_name, path = path[0], path[1:]
             child_name = str(child_name)
             for child in self.children:
-                print child.handler.name
                 if child.handler.name == child_name:
                     child.click(path)
                     break
@@ -80,15 +79,14 @@ class Node(object):
         ns['short_name'] = name # XXX
         submenus = [ child.get_tree(here) for child in self.children ]
         ns['submenus'] = submenus
-        print ns['submenus']
         ns['open'] = bool(len(submenus))
         ns['class'] = ''
         ns['class2'] = ''
         ns['active'] = handler.name in str(get_context().uri.path)
-        if isinstance(handler, Document):
-            ns['url'] = '%s/;view' % here.get_pathto(handler)
-        else:
-            ns['url'] = '%s/;view' % here.get_pathto(handler)
+        #if isinstance(handler, Document):
+        #    ns['url'] = '%s/;view' % here.get_pathto(handler)
+        #else:
+        ns['url'] = '%s/;view' % here.get_pathto(handler)
 
         return ns
 
@@ -151,11 +149,11 @@ class FrontOffice(Skin):
             print 'We are either on a Company view or a TP' 
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
-        #if context_menu_html is None:
-        #    namespace['context_menu_html'] = 'None' 
-        #else:    
-        #    namespace['context_menu_html'] = context_menu_html
-        namespace['context_menu_html'] = context_menu_html
+        if context_menu_html is None:
+            namespace['context_menu_html'] = 'None' 
+        else:    
+            namespace['context_menu_html'] = context_menu_html
+        #namespace['context_menu_html'] = context_menu_html
 
         return namespace
 
@@ -185,6 +183,11 @@ class FrontOffice(Skin):
                 'content': build_menu(menu)}
 
     def get_main_menu_options(self, context):
+        '''
+        We need to determine whether we are on
+        either expert.travel site or a TP, as this
+        determines what menus to display.
+        '''
         root = context.handler.get_site_root()
         path = root.abspath
 
@@ -199,22 +202,22 @@ class FrontOffice(Skin):
         append({'path': path, 'method': 'addresses',
                 'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
-        append({'path': path, 'method': 'modules',
-                'title': u'Training Modules',
-                'icon': '/ui/abakuc/images/Resources16.png'})
+        #append({'path': path, 'method': 'modules',
+        #        'title': u'Training Modules',
+        #        'icon': '/ui/abakuc/images/Resources16.png'})
         return options
 
     def get_context_menu(self, context):
         """
         Lists contents of objects menu.
         """
+        here = context.handler
         # FIXME Hard-Coded
         #from jobs import Job
         #from news import News
         #from training import Module 
-        here = context.handler
         #while here is not None:
-        #    if isinstance(here, (Job, News, Module)):
+        #    if isinstance(here, (Module)):
         #        break
         #    here = here.parent
         #else:
@@ -260,6 +263,7 @@ class FrontOffice(Skin):
         # Namespace
         site_root = here.get_site_root()
         tree = Node(site_root)
+        # XXX Controls the depth 
         tree.click(context.path[2:])
         menus = tree.get_tree(here)
         template_path = \
@@ -271,13 +275,159 @@ class FrontOffice(Skin):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
+    ###########################################################################
+    # Menu
+    ###########################################################################
+    #namespaces = {
+    #None: 'http://www.w3.org/1999/xhtml',
+    #'stl': 'http://xml.itools.org/namespaces/stl'}
 
-    #def get_modules_menu(self, context):
-    #    """Build the namespace for the navigation menu."""
-    #    root = context.handler.get_site_root()
-    #    menu = tree(root, active_node=context.handler,
-    #                allow=Company, user=context.user)
-    #    return {'title': self.gettext(u'Modules'), 'content': menu}
+    #menu_template = list(Parser("""
+    #<dl>
+    #<stl:block repeat="item items">
+    #  <dt class="${item/class}">
+    #    <img stl:if="item/src" src="${item/src}" alt="" width="16" height="16" />
+    #    <stl:block if="not item/href">{item/title}</stl:block>
+    #    <a stl:if="item/href" href="${item/href}">{item/title}</a>
+    #  </dt>
+    #  <dd>${item/items}</dd>
+    #</stl:block>
+    #</dl>
+    #""", namespaces))
+
+
+
+    #def build_training_menu(options):
+    #    """
+    #    The input (options) is a tree:
+
+    #      [{'href': ...,
+    #        'class': ...,
+    #        'src': ...,
+    #        'title': ...,
+    #        'items': [....]}
+    #       ...
+    #       ]
+    #       
+    #    """
+    #    for option in options:
+    #        if option['items']:
+    #            option['items'] = build_menu(option['items'])
+    #        else:
+    #            option['items'] = None
+
+    #    namespace = {'items': options}
+    #    return stl(events=menu_template, namespace=namespace)
+
+
+    def get_modules_menu(self, context, depth=6):
+        """Build the namespace for the navigation menu."""
+        root = context.site_root
+        options = []
+        # Parent
+        modules = root.get_modules()
+        allow = Module, Topic
+        from exam import Exam
+        from marketing import Marketing
+        deny = Exam, Marketing
+        handlers = [
+            root.get_handler(x) for x in root.get_handler_names()
+            if not x.startswith('.') ]
+        handlers = [
+            h for h in handlers if isinstance(h, allow) ]
+        handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                       get_sort_name(y.name)))
+        #namespace = {}
+        for node in handlers:
+            active_node=context.handler
+            src = node.get_path_to_icon(size=16, from_handler=active_node)
+            ##namespace['title'] = node.get_title()
+
+            ## The href
+            firstview = node.get_firstview()
+            if firstview is None:
+                href = None
+            else:
+                path = active_node.get_pathto(node)
+                href = '%s/;%s' % (path, firstview)
+
+            ## The CSS style
+            node_class = ''
+            print node is active_node
+            items = []
+            if node is active_node:
+                node_class = 'nav_active'
+
+                # Expand only if in path
+                aux = active_node
+                while True:
+                    # Match
+                    if aux is node:
+                        break
+                    # Reach the root, do not expand
+                    if aux is root:
+                        items = []
+                        return items, False
+                    # Next
+                    aux = aux.parent
+
+                # Expand till a given depth
+                if depth <= 0:
+                    items = []
+                    return items, True
+
+                # Expand the children
+                depth = depth - 1
+
+                search = node.search_handlers(handler_class=allow)
+                search = [ x for x in search if not isinstance(x, deny) ]
+
+                children = []
+                counter = 0
+                width=5
+                for child in search:
+                    #active_node=context.handler
+                    ac = child.get_access_control()
+                    user = context.user
+                    if ac.is_allowed_to_view(user, child):
+                        #ns, in_path = _tree(child, root, depth, active_node, allow, deny,
+                        #                    user, width)
+                        #if in_path:
+                        #    children.append(ns)
+                        #elif counter < width:
+                        #    children.append(ns)
+                        counter += 1
+                #if counter > width:
+                        children.append({'href': '/%s/%s' % (node.name, child.name),
+                                        'src': '/%s' % child.get_path_to_icon(size=16, from_handler=active_node),
+                                        'title': child.get_title(),
+                                        'class': node_class,
+                                        'items': []})
+                    #else:
+                    #    children.append({'href': None,
+                    #                     'class': '',
+                    #                     'src': None, 
+                    #                     'title': '...',
+                    #                     'items': []})
+
+                items = children
+                options.append({'href': '/%s' % (node.name),
+                                'src': src,
+                                'title': node.get_title(),
+                                'class': node_class,
+                                'items': items})
+            else:
+                options.append({'href': '/%s' % (node.name),
+                                'src': src,
+                                'title': node.get_title(),
+                                'class': '',
+                                'items': []})
+
+        #menu = build_training_menu(options)
+        menu = build_menu(options)
+        #menu = tree(root, active_node=context.handler,
+        #            allow=Training, user=context.user)
+        return {'title': self.gettext(u'Modules'), 'content': menu}
 
 
     def get_left_menus(self, context):
@@ -300,6 +450,13 @@ class FrontOffice(Skin):
             menu = self.get_context_menu(context)
             if menu is not None:
                 menus.append(menu)
+            office = context.site_root
+            is_office = office.is_training()
+            if is_office:
+                # Modules
+                menu = self.get_modules_menu(context)
+                if menu is not None:
+                    menus.append(menu)
         elif isinstance(root, Training):
             # Navigation
             menu = self.get_navigation_menu(context)
@@ -309,14 +466,10 @@ class FrontOffice(Skin):
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
-            # Object's Menu
-            menu = self.get_context_menu(context)
+            # Modules
+            menu = self.get_modules_menu(context)
             if menu is not None:
                 menus.append(menu)
-            # Modules
-            #menu = self.get_content_menu(context)
-            #if menu is not None:
-            #    menus.append(menu)
         return menus
 
 
@@ -418,4 +571,5 @@ trainings = {
     #'training.expert.travel': TrainingSkin,
     'tp1.training.expert.travel': FrontOffice,
     'uk.tp1.expert.travel': FrontOffice,
+    'zambia.expert.travel': FrontOffice,
 }
