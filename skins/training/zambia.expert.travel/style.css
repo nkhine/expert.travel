@@ -69,6 +69,15 @@ no-repeat;width:400px;height:62px;}
 /**************************************************************************
  * Left menu style 
  **************************************************************************/
+.menu2_block {
+  margin: 0px 0px 0px 5px;
+}
+
+
+.menu3_block {
+  margin: 0px 0px 0px 10px;
+}
+
 #left_menu {
   text-align: center;
   margin-top: 5px;

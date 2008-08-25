@@ -53,40 +53,55 @@ class Node(object):
             #                     'short_name': u'First page',
             #                     'submenus': [   ],
             #                     'url': 'page1.xhtml.en/;view'},
-        allowed_instances = Module, Topic
+        allowed_instances = Module, Topic, Document
         handlers = [
             handler.get_handler(x) for x in handler.get_handler_names()
             if not x.startswith('.') ]
-        handlers = [
-            h for h in handlers if isinstance(h, allowed_instances) ]
-        handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                       get_sort_name(y.name)))
-        self.children = [ Node(h) for h in handlers ]
+        search = handler.search_handlers(handler_class=allowed_instances)
+        #handlers = [
+        #    h for h in handlers if isinstance(h, allowed_instances) ]
+        #search.sort(lambda x, y: cmp(get_sort_name(x.name),
+        #                               get_sort_name(y.name)))
+        self.children = [ Node(h) for h in search ]
         # parse the path
         if path:
             child_name, path = path[0], path[1:]
             child_name = str(child_name)
             for child in self.children:
                 if child.handler.name == child_name:
+                    print child.handler.name
                     child.click(path)
                     break
 
     def get_tree(self, here):
+        '''
+        The input (options) is a tree:
+
+          [{'href': ...,
+            'class': ...,
+            'src': ...,
+            'title': ...,
+            'items': [....]}
+           ...
+           ]
+        '''   
         ns = {}
         handler = self.handler
         name = handler.title or handler.name
-        ns['name'] = name
-        ns['short_name'] = name # XXX
+        ns['label'] = 'Modules'
+        ns['title'] = name
+        #ns['short_name'] = name # XXX
         submenus = [ child.get_tree(here) for child in self.children ]
-        ns['submenus'] = submenus
+        ns['items'] = submenus
         ns['open'] = bool(len(submenus))
-        ns['class'] = ''
+        ns['src'] = '%s' % handler.get_path_to_icon(size=16)
+        ns['class'] = 'nav_active'
         ns['class2'] = ''
         ns['active'] = handler.name in str(get_context().uri.path)
-        #if isinstance(handler, Document):
-        #    ns['url'] = '%s/;view' % here.get_pathto(handler)
-        #else:
-        ns['url'] = '%s/;view' % here.get_pathto(handler)
+        if isinstance(handler, Document):
+            ns['href'] = '%s.en/;view' % here.get_pathto(handler)
+        else:
+            ns['href'] = '%s/;view' % here.get_pathto(handler)
 
         return ns
 
@@ -427,7 +442,7 @@ class FrontOffice(Skin):
         menu = build_menu(options)
         #menu = tree(root, active_node=context.handler,
         #            allow=Training, user=context.user)
-        return {'title': self.gettext(u'Modules'), 'content': menu}
+        return {'title': self.gettext(u'Modules XXX'), 'content': menu}
 
 
     def get_left_menus(self, context):
@@ -446,10 +461,7 @@ class FrontOffice(Skin):
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
-            # Object's Menu
-            menu = self.get_context_menu(context)
-            if menu is not None:
-                menus.append(menu)
+            # Menu for Training site
             office = context.site_root
             is_office = office.is_training()
             if is_office:
@@ -457,6 +469,10 @@ class FrontOffice(Skin):
                 menu = self.get_modules_menu(context)
                 if menu is not None:
                     menus.append(menu)
+            # Object's Menu
+            menu = self.get_context_menu(context)
+            if menu is not None:
+                menus.append(menu)
         elif isinstance(root, Training):
             # Navigation
             menu = self.get_navigation_menu(context)
@@ -467,9 +483,9 @@ class FrontOffice(Skin):
             if menu is not None:
                 menus.append(menu)
             # Modules
-            menu = self.get_modules_menu(context)
-            if menu is not None:
-                menus.append(menu)
+            #menu = self.get_modules_menu(context)
+            #if menu is not None:
+            #    menus.append(menu)
         return menus
 
 
