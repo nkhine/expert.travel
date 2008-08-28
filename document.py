@@ -6,6 +6,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import get_reference, Path
+from itools import get_abspath
 from itools import i18n
 from itools.web import get_context
 from itools.xml import xml
@@ -23,7 +24,7 @@ from itools.html import Parser as HTMLParser
 # Import from abakuc
 #from workflow import iHTML, TraveluniWorkflowAware
 #from namespaces import BusinessFunction
-from utils import get_sort_name
+from utils import get_new_id, get_sort_name
 
 class Document(XHTMLFile):
 
@@ -40,19 +41,9 @@ class Document(XHTMLFile):
         root = context.root
         here = context.handler
         site_root = here.get_site_root()
-
         namespace = {}
         # The class id
         namespace['class_id'] = cls.class_id
-        # Languages
-        document_names = [ x for x in here.get_handler_names()
-                           if x.startswith(cls.class_id) ]
-        if document_names:
-            i = get_sort_name(document_names[-1])[1] + 1
-            name = '%s%d' % (cls.class_id, i)
-        else:
-            name = '%s1' % cls.class_id
-        namespace['name'] = name
         website_languages = site_root.get_property('ikaaro:website_languages')
         default_language = website_languages[0]
         languages = []
@@ -69,12 +60,21 @@ class Document(XHTMLFile):
 
     @classmethod
     def new_instance(cls, container, context):
-        name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
         language = context.get_form_value('dc:language')
 
+        # Generate the new_instance name
+        # based on the class_id
+        document_names = [ x for x in container.get_handler_names()
+                           if x.startswith(cls.class_id) ]
+        if document_names:
+            i = get_sort_name(max(document_names))[1]+ 1
+            name = '%s%d.%s' % (cls.class_id, i, cls.class_extension)
+        else:
+            name = '%s1.%s' % (cls.class_id, cls.class_extension)
+
         # Check the name
-        name = name.strip() or title.strip()
+        name = name.strip()
         if not name:
             return context.come_back(MSG_NAME_MISSING)
 
@@ -83,7 +83,7 @@ class Document(XHTMLFile):
             return context.come_back(MSG_BAD_NAME)
 
         # Add the language extension to the name
-        name = FileName.encode((name, cls.class_extension, language))
+        #name = FileName.encode((name, cls.class_extension, language))
 
         # Check the name is free
         if container.has_handler(name):
@@ -113,7 +113,7 @@ class Document(XHTMLFile):
     def view(self, context):
         here = context.handler
         # Module and Topic
-        topic = self.parent
+        topic = here.parent
         module = topic.parent
         # List of topics
         topics = module.get_topics()
@@ -270,8 +270,9 @@ class Document(XHTMLFile):
 
     edit_image__access__ = 'is_admin'
     def edit_image(self, context):
+        media_folder = '/media'
         namespace = {}
-        namespace['bc'] = Breadcrumb(filter_type=itoolsFile, start=self.parent)
+        namespace['bc'] = Breadcrumb(filter_type=itoolsFile, start=media_folder)
         # Avoid general template
         response = context.response
         response.set_header('Content-Type', 'text/html; charset=UTF-8')
@@ -282,38 +283,37 @@ class Document(XHTMLFile):
 
     #######################################################################
     # use epoz method to upload and link image
-    addimage_form__access__ = 'is_allowed_to_edit'
-    def addimage_form(self, context):
+    document_image_form__access__ = 'is_allowed_to_edit'
+    def document_image_form(self, context):
         from itools.cms.file import File
         from itools.cms.binary import Image
         from itools.cms.widgets import Breadcrumb
-        # Build the bc
-        if isinstance(self, File):
-            start = self.parent
-        else:
-            start = self
+        here = context.handler
+        site_root = here.get_site_root()
+        start = site_root.get_handler('media')
         # Construct namespace
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
         namespace['message'] = context.get_form_value('message')
 
-        prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/addimage.xml')
-        handler = self.get_handler('/ui/abakuc/training/document/addimage.xml')
+        prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/epozimage.xml')
+        handler = self.get_handler('/ui/abakuc/training/document/epozimage.xml')
         return stl(handler, namespace, prefix=prefix)
 
-
-    addimage__access__ = 'is_allowed_to_edit'
-    def addimage(self, context):
+    document_image__access__ = 'is_allowed_to_edit'
+    def document_image(self, context):
         """
         Allow to upload and add an image to epoz
         """
         from itools.cms.binary import Image
-        root = context.root
         # Get the container
-        container = root.get_handler(context.get_form_value('target_path'))
+        here = context.handler
+        site_root = here.get_site_root()
+        container = site_root.get_handler('media')
+        #container = root.get_handler(context.get_form_value('target_path'))
         # Add the image to the handler
         uri = Image.new_instance(container, context)
-        if ';addimage_form' not in uri.path:
+        if ';document_image_form' not in uri.path:
             handler = container.get_handler(uri.path[0])
             return """
             <script type="text/javascript">
@@ -322,6 +322,25 @@ class Document(XHTMLFile):
                     """ % handler.abspath
 
         return context.come_back(message=uri.query['message'])
+
+    #addimage_form__access__ = 'is_allowed_to_edit'
+    #def addimage_form(self, context):
+    #    from itools.cms.file import File
+    #    from itools.cms.binary import Image
+    #    from itools.cms.widgets import Breadcrumb
+    #    here = context.handler
+    #    site_root = here.get_site_root()
+    #    start = site_root.get_handler('media')
+    #    # Construct namespace
+    #    namespace = {}
+    #    namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
+    #    namespace['message'] = context.get_form_value('message')
+
+    #    prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/addimage.xml')
+    #    handler = self.get_handler('/ui/abakuc/training/document/addimage.xml')
+    #    return stl(handler, namespace, prefix=prefix)
+
+
 
 
     #######################################################################

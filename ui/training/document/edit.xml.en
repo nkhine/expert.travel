@@ -20,7 +20,7 @@
             <dd>
               <input value="${image1}" name="abakuc:image1" size="50" 
                 id="image1" type="text"/>
-              <a onclick="popup(';addimage_form?bc_id=image1', 640, 480); return false;"
+              <a onclick="popup(';document_image_form?bc_id=image1', 640, 480); return false;"
                 href="#">Edit...</a><br />
                 please make sure the image has a maximum width of 250px
 
@@ -54,7 +54,7 @@
             <dd>
               <input value="${image2}" name="abakuc:image2" size="50" 
                 id="image2" type="text"/>
-              <a onclick="popup(';addimage_form?bc_id=image2', 640, 480); return false;"
+              <a onclick="popup(';document_image_form?bc_id=image2', 640, 480); return false;"
                 href="#">Edit...</a>
             </dd>
             <dt>

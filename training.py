@@ -24,6 +24,8 @@ from itools.cms.catalog import schedule_to_reindex
 from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.uri import Path, get_reference
 from itools.xhtml import Document as XHTMLDocument
+from itools.cms.html import XHTMLFile
+from itools.cms.folder import Folder as iFolder
 
 # Import from abakuc
 from bookings import Bookings
@@ -34,6 +36,7 @@ from document import Document
 from utils import get_sort_name
 from exam import Exam
 from news import News
+from media import Media
 from jobs import Job
 from metadata import JobTitle, SalaryRange
 from namespaces import Regions, BusinessProfile
@@ -155,9 +158,34 @@ class Training(SiteRoot, WorkflowAware):
     
     site_format = 'module'
 
+    def new(self, **kw):
+        SiteRoot.new(self, **kw)
+        cache = self.cache
+        # Add extra handlers here
+        terms = XHTMLFile()
+        cache['terms.xhtml'] = terms
+        cache['terms.xhtml.metadata'] = terms.build_metadata(
+            **{'dc:title': {'en': u'Terms & Conditions'}})
+        privacy = XHTMLFile()
+        cache['privacy.xhtml'] = privacy
+        cache['privacy.xhtml.metadata'] = privacy.build_metadata(
+            **{'dc:title': {'en': u'Privacy'}})
+        faq = XHTMLFile()
+        cache['faq.xhtml'] = faq
+        cache['faq.xhtml.metadata'] = faq.build_metadata(
+            **{'dc:title': {'en': u'FAQs'}})
+        help = XHTMLFile()
+        cache['help.xhtml'] = help
+        cache['help.xhtml.metadata'] = help.build_metadata(
+            **{'dc:title': {'en': u'Help'}})
+        media = Media()
+        cache['media'] = media
+        cache['media.metadata'] = media.build_metadata(
+            **{'dc:title': {'en': u'Media folder'}})
+
 
     def get_document_types(self):
-        return [Module, Bookings]
+        return [Module, Bookings, Media]
 
     def get_level1_title(self, level1):
         return None
@@ -401,6 +429,15 @@ class Training(SiteRoot, WorkflowAware):
             return True
         # Is training manager
         return self.has_user_role(user.name, 'abakuc:training_manager')
+    ########################################################################
+    # Media folder 
+    media__access__ = True 
+    media__label__ = u'media'
+    media__sublabel__ = u'media'
+    def media(self, context):
+        def get_document_types(self):
+            return [File]
+
     ########################################################################
     # Statistics
     statistics__access__ = 'is_allowed_to_view_statistics'
@@ -1096,12 +1133,12 @@ class Training(SiteRoot, WorkflowAware):
     view__label__ = u'View'
     def view(self, context):
         root = context.root
-        here = context.handler
         namespace = {}
-        title = here.get_title()
+        title = self.get_title()
+        print title
         items = self.get_modules()
         #namespace['user']= self.get_user_menu(context)
-        namespace['user']= 'user namespace' 
+        #namespace['user']= 'user namespace' 
         namespace['items'] = []
         for item in items:
             get = item.get_property
@@ -1114,6 +1151,9 @@ class Training(SiteRoot, WorkflowAware):
                       'title': item.title_or_name})
 
         namespace['title'] = title
+        description = self.get_property('dc:description')
+        namespace['description'] = description
+        print description
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
         for vhost in vhosts:
@@ -1195,6 +1235,8 @@ class Training(SiteRoot, WorkflowAware):
         namespace = {}
         title = here.get_title()
         modules = self.get_modules()
+        modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                get_sort_name(y.name)))
         items = []
         for item in modules:
             get = item.get_property
@@ -1208,6 +1250,7 @@ class Training(SiteRoot, WorkflowAware):
 
         namespace['items'] = items
         namespace['title'] = title
+        namespace['description'] = self.get_property('dc:description')
         #namespace['vhosts'] = []
         #vhosts = self.get_vhosts()
         #for vhost in vhosts:
@@ -1323,26 +1366,10 @@ class Module(Folder):
     # New instance form 
     #######################################################################
     @classmethod
-    def new_instance_form(cls, context, name=''):
+    def new_instance_form(cls, context):
         root = context.root
-        here = context.handler
-        site_root = here.get_site_root()
-
         namespace = {}
-        # The class id
-
         namespace['class_id'] = cls.class_id
-        # Languages
-        document_names = [ x for x in here.get_handler_names()
-                           if x.startswith(cls.class_id) ]
-        print document_names
-        if document_names:
-            i = get_sort_name(document_names[-1])[1] + 1
-            name = '%s%d' % (cls.class_id, i)
-        else:
-            name = '%s1' % cls.class_id
-        namespace['name'] = name
-
         handler = root.get_handler('/ui/abakuc/training/%s/new_instance.xml' \
                                    % cls.class_id)
         return stl(handler, namespace)
@@ -1353,11 +1380,19 @@ class Module(Folder):
         root = context.root
         here = context.handler
         site_root = here.get_site_root()
-        name = context.get_form_value('name')
-        title = context.get_form_value('dc:title')
+        title = context.get_form_value('title')
+        description = context.get_form_value('description')
         website_languages = site_root.get_property('ikaaro:website_languages')
         language = website_languages[0]
 
+        # Generate the new instance name
+        handlers = [ x for x in container.get_handler_names()
+                           if x.startswith(cls.class_id) ]
+        if handlers:
+            i = get_sort_name(max(handlers))[1]+ 1
+            name = '%s%d' % (cls.class_id, i)
+        else:
+            name = '%s1' % cls.class_id
         # Check the name
         name = name.strip() or title.strip()
         if not name:
@@ -1367,9 +1402,6 @@ class Module(Folder):
         if name is None:
             return context.come_back(MSG_BAD_NAME)
 
-        # Add the language extension to the name
-        #name = FileName.encode((name, cls.class_extension, language))
-
         # Check the name is free
         if container.has_handler(name):
             return context.come_back(MSG_NAME_CLASH)
@@ -1378,6 +1410,7 @@ class Module(Folder):
         handler = cls()
         metadata = handler.build_metadata()
         metadata.set_property('dc:title', title, language=language)
+        metadata.set_property('dc:description', description, language=language)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
 
@@ -1456,10 +1489,10 @@ class Module(Folder):
     view__access__ = True
     view__label__ = u'View'
     def view(self, context):
-        here = context.handler
+        #here = context.handler
         programme = self.parent
         namespace = {}
-        title = here.get_title()
+        title = self.get_title()
         items = self.search_handlers(handler_class=Topic)
         namespace['items'] = []
         for item in items:
@@ -1473,17 +1506,16 @@ class Module(Folder):
                       'title': item.title_or_name})
 
         namespace['title'] = title
+        namespace['description'] = self.get_property('dc:description')
         namespace['to_name'] = programme.get_vhosts()
-        handler = self.get_handler('/ui/abakuc/training/module/view.xml')
-        return stl(handler, namespace)
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
         #batch_size = 5
-        #batch_total = len(items)
+        #batch_total = len(modules)
         #batch_fin = batch_start + batch_size
         #if batch_fin > batch_total:
         #    batch_fin = batch_total
-        #items = items[batch_start:batch_fin]
+        #items = modules[batch_start:batch_fin]
         ## Namespace
         #if items:
         #    msgs = (u'There is one topic.',
@@ -1495,8 +1527,10 @@ class Module(Folder):
         #    batch = None
         #    msg = u'This module has no published topics.'
         #
-        #namespace['batch'] = news_batch
+        #namespace['batch'] = batch
         #namespace['msg'] = msg
+        handler = self.get_handler('/ui/abakuc/training/module/view.xml')
+        return stl(handler, namespace)
 
     topics__access__ = True
     topics__label__ = u'Topics View'
@@ -1712,26 +1746,10 @@ class Topic(Folder):
     # New instance form 
     #######################################################################
     @classmethod
-    def new_instance_form(cls, context, name=''):
+    def new_instance_form(cls, context):
         root = context.root
-        here = context.handler
-        site_root = here.get_site_root()
-
         namespace = {}
-        # The class id
-
         namespace['class_id'] = cls.class_id
-        # Languages
-        document_names = [ x for x in here.get_handler_names()
-                           if x.startswith(cls.class_id) ]
-        print document_names
-        if document_names:
-            i = get_sort_name(document_names[-1])[1] + 1
-            name = '%s%d' % (cls.class_id, i)
-        else:
-            name = '%s1' % cls.class_id
-        namespace['name'] = name
-
         handler = root.get_handler('/ui/abakuc/training/%s/new_instance.xml' \
                                    % cls.class_id)
         return stl(handler, namespace)
@@ -1742,11 +1760,19 @@ class Topic(Folder):
         root = context.root
         here = context.handler
         site_root = here.get_site_root()
-        name = context.get_form_value('name')
-        title = context.get_form_value('dc:title')
+        title = context.get_form_value('title')
+        description = context.get_form_value('description')
         website_languages = site_root.get_property('ikaaro:website_languages')
         language = website_languages[0]
 
+        # Generate the new instance name
+        handlers = [ x for x in container.get_handler_names()
+                           if x.startswith(cls.class_id) ]
+        if handlers:
+            i = get_sort_name(max(handlers))[1]+ 1
+            name = '%s%d' % (cls.class_id, i)
+        else:
+            name = '%s1' % cls.class_id
         # Check the name
         name = name.strip() or title.strip()
         if not name:
@@ -1767,6 +1793,7 @@ class Topic(Folder):
         handler = cls()
         metadata = handler.build_metadata()
         metadata.set_property('dc:title', title, language=language)
+        metadata.set_property('dc:description', description, language=language)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
 
@@ -1793,54 +1820,98 @@ class Topic(Folder):
                 documents.append((sort_name, handler.name))
         documents.sort()
         return [ x[1] for x in documents ]
+
     #######################################################################
     # User Interface / View
     #######################################################################
     view__access__ = 'is_training_manager_or_member'
     view__label__ = u'View'
     def view(self, context):
-        here = context.handler
+        #here = context.handler
+        #site_root = here.get_site_root()
+        #website_languages = site_root.get_property('ikaaro:website_languages')
+        title = self.get_title()
+        handlers = list(self.search_handlers(handler_class=Document))
+        handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
         namespace = {}
-        title = here.get_title()
-        items = self.search_handlers(handler_class=Document)
-        namespace['items'] = []
-        for item in items:
+        items = []
+        images = []
+        for item in handlers:
             get = item.get_property
             # XXX Had to hard link the .en in the uri
             # item name seems to strip the language
             language = item.get_property('dc:language')
-            url = './%s.%s/;view' %  (item.name, language)
+            url = './%s' % item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
-            namespace['items'].append({'url': url,
+            image1 = item.get_property('abakuc:image1')
+            image2 = item.get_property('abakuc:image2')
+            if image1:
+                try:
+                    image1 = item.parent.get_handler(image1[3:])
+                    print image1
+                except:
+                    pass
+                else:
+                    image = image1.get_property('dc:title')
+                    credit = image1.get_property('dc:description')
+                    keywords = image1.get_property('dc:subject')
+                    images.append({'url': image1, 
+                              'image': image,
+                              'credit': credit,
+                              'keywords': keywords})
+            if image2:
+                try:
+                    image2 = item.parent.get_handler(image2[3:])
+                    print image2
+                except:
+                    pass
+                else:
+                    image = image2.get_property('dc:title')
+                    credit = image2.get_property('dc:description')
+                    keywords = image2.get_property('dc:subject')
+                    images.append({'url': image2, 
+                              'image': image,
+                              'credit': credit,
+                              'keywords': keywords})
+
+            items.append({'url': url,
                       'description': description,
                       'title': item.title_or_name})
 
+        print images
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(items)
+        print batch_total
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        items = items[batch_start:batch_fin]
+        print items
+        # Namespace
+        if items:
+            msgs = (u'There is one published document.',
+                    u'This topic has ${n} published documents.')
+            items_batch = batch(context.uri, batch_start, batch_size,
+                          batch_total, msgs=msgs)
+            msg = None
+        else:
+            items_batch = None
+            msg = u'This topic has no published documents.'
+        
+        namespace['batch'] = items_batch 
+        namespace['msg'] = msg
+
         namespace['title'] = title
+        namespace['description'] = self.get_property('dc:description')
+        namespace['items'] = items
         handler = self.get_handler('/ui/abakuc/training/topic/view.xml')
         return stl(handler, namespace)
-      # Set batch informations
-        #batch_start = int(context.get_form_value('batchstart', default=0))
-        #batch_size = 5
-        #batch_total = len(items)
-        #batch_fin = batch_start + batch_size
-        #if batch_fin > batch_total:
-        #    batch_fin = batch_total
-        #items = items[batch_start:batch_fin]
-        ## Namespace
-        #if items:
-        #    msgs = (u'There is one topic.',
-        #            u'This module has ${n} topics.')
-        #    batch = batch(context.uri, batch_start, batch_size,
-        #                  batch_total, msgs=msgs)
-        #    msg = None
-        #else:
-        #    batch = None
-        #    msg = u'This module has no published topics.'
-        #
-        #namespace['batch'] = news_batch
-        #namespace['msg'] = msg
+
 
     #######################################################################
     # User Interface / Edit
@@ -1904,7 +1975,26 @@ class Topic(Folder):
     #    # Is reviewer or member
     #    return self.has_user_role(user.name, 'abakuc:training_manager')
 
+#class Media(Folder, RoleAware):
+#
+#    class_id = 'Media'
+#    class_title = u'Media'
+#    class_description = u'Media content folder'
+#    class_icon16 = 'abakuc/images/JobBoard16.png'
+#    class_icon48 = 'abakuc/images/JobBoard48.png'
+#    class_views = [
+#                ['view'],
+#                ['browse_content?mode=list',
+#                'browse_content?mode=thumbnails'],
+#                ['new_resource_form'],
+#                ['edit_metadata_form',
+#                ['edit_metadata_form']]
+#
+#    def get_document_types(self):
+#        return [File]
 
+
+#register_object_class(Media)
 register_object_class(Trainings)
 register_object_class(Training)
 register_object_class(Module)

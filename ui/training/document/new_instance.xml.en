@@ -12,10 +12,6 @@
       <dd>
         <input type="text" id="dc:title" name="dc:title" size="40" />
       </dd>
-      <dt>(optional)<label for="name">Name</label></dt>
-      <dd>
-        <input type="text" id="name" name="name" size="40" value="${name}" />
-      </dd>
       <dt><label for="dc:language">Language</label></dt>
       <dd>
         <select id="dc:language" name="dc:language">

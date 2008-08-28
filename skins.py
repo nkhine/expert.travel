@@ -31,45 +31,23 @@ class Node(object):
     def click(self, path):
         handler =  self.handler
         # fill children
-        #if isinstance(handler, Folder):
-            #
-            #XXX For some reason, I get to dictionary items
-            #one with .en extentsion and the other without:
-            #...
-            #'short_name': u'topic1',
-            # 'submenus': [   {   'active': False,
-            #                     'class': '',
-            #                     'class2': '',
-            #                     'name': u'First page',
-            #                     'open': False,
-            #                     'short_name': u'First page',
-            #                     'submenus': [   ],
-            #                     'url': 'page1.xhtml/;view'},
-            #                 {   'active': False,
-            #                     'class': '',
-            #                     'class2': '',
-            #                     'name': u'First page',
-            #                     'open': False,
-            #                     'short_name': u'First page',
-            #                     'submenus': [   ],
-            #                     'url': 'page1.xhtml.en/;view'},
         allowed_instances = Module, Topic, Document
         handlers = [
             handler.get_handler(x) for x in handler.get_handler_names()
             if not x.startswith('.') ]
-        search = handler.search_handlers(handler_class=allowed_instances)
-        #handlers = [
-        #    h for h in handlers if isinstance(h, allowed_instances) ]
-        #search.sort(lambda x, y: cmp(get_sort_name(x.name),
-        #                               get_sort_name(y.name)))
-        self.children = [ Node(h) for h in search ]
+        handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                       get_sort_name(y.name)))
+        handlers = [
+            h for h in handlers if isinstance(h, allowed_instances) ]
+        self.children = [ Node(h) for h in handlers ]
+        #search = handler.search_handlers(handler_class=allowed_instances)
+        #self.children = [ Node(h) for h in search ]
         # parse the path
         if path:
             child_name, path = path[0], path[1:]
             child_name = str(child_name)
             for child in self.children:
                 if child.handler.name == child_name:
-                    print child.handler.name
                     child.click(path)
                     break
 
@@ -90,19 +68,19 @@ class Node(object):
         name = handler.title or handler.name
         ns['label'] = 'Modules'
         ns['title'] = name
-        #ns['short_name'] = name # XXX
         submenus = [ child.get_tree(here) for child in self.children ]
-        ns['items'] = submenus
+        print len(submenus) > 4
+        if len(submenus) > 4:
+            submenus[:5]
+            ns['items'] = submenus
+        else:
+            ns['items'] = submenus
         ns['open'] = bool(len(submenus))
         ns['src'] = '%s' % handler.get_path_to_icon(size=16)
         ns['class'] = 'nav_active'
         ns['class2'] = ''
         ns['active'] = handler.name in str(get_context().uri.path)
-        if isinstance(handler, Document):
-            ns['href'] = '%s.en/;view' % here.get_pathto(handler)
-        else:
-            ns['href'] = '%s/;view' % here.get_pathto(handler)
-
+        ns['href'] = '%s' % here.get_pathto(handler)
         return ns
 
 class FrontOffice(Skin):
@@ -217,9 +195,6 @@ class FrontOffice(Skin):
         append({'path': path, 'method': 'addresses',
                 'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
-        #append({'path': path, 'method': 'modules',
-        #        'title': u'Training Modules',
-        #        'icon': '/ui/abakuc/images/Resources16.png'})
         return options
 
     def get_context_menu(self, context):
@@ -227,17 +202,6 @@ class FrontOffice(Skin):
         Lists contents of objects menu.
         """
         here = context.handler
-        # FIXME Hard-Coded
-        #from jobs import Job
-        #from news import News
-        #from training import Module 
-        #while here is not None:
-        #    if isinstance(here, (Module)):
-        #        break
-        #    here = here.parent
-        #else:
-        #    return None
-
         base = context.handler.get_pathto(here)
 
         menu = []
@@ -310,38 +274,13 @@ class FrontOffice(Skin):
     #</dl>
     #""", namespaces))
 
-
-
-    #def build_training_menu(options):
-    #    """
-    #    The input (options) is a tree:
-
-    #      [{'href': ...,
-    #        'class': ...,
-    #        'src': ...,
-    #        'title': ...,
-    #        'items': [....]}
-    #       ...
-    #       ]
-    #       
-    #    """
-    #    for option in options:
-    #        if option['items']:
-    #            option['items'] = build_menu(option['items'])
-    #        else:
-    #            option['items'] = None
-
-    #    namespace = {'items': options}
-    #    return stl(events=menu_template, namespace=namespace)
-
-
     def get_modules_menu(self, context, depth=6):
         """Build the namespace for the navigation menu."""
         root = context.site_root
         options = []
         # Parent
         modules = root.get_modules()
-        allow = Module, Topic
+        allow = Module, Topic, Document
         from exam import Exam
         from marketing import Marketing
         deny = Exam, Marketing
@@ -425,7 +364,7 @@ class FrontOffice(Skin):
                     #                     'title': '...',
                     #                     'items': []})
 
-                items = children
+                items = children.sort()
                 options.append({'href': '/%s' % (node.name),
                                 'src': src,
                                 'title': node.get_title(),
@@ -442,7 +381,7 @@ class FrontOffice(Skin):
         menu = build_menu(options)
         #menu = tree(root, active_node=context.handler,
         #            allow=Training, user=context.user)
-        return {'title': self.gettext(u'Modules XXX'), 'content': menu}
+        return {'title': self.gettext(u'Modules'), 'content': menu}
 
 
     def get_left_menus(self, context):

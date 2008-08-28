@@ -6,14 +6,10 @@
 <div class="yui-ge">
     <div class="yui-u first">
        <h1>${dc:title}</h1>
-      <div>
-       ${dc:description}
-      </div>
-      <div>
-      ${abakuc:news_text}
-      </div>
+      <p>${dc:description}</p>
+      <span>${abakuc:news_text}</span>
       <div class="info">
-        Posted on: ${date}<strong>by <a href="${user_uri}" title="View
+        Posted on: ${date} <strong>by <a href="${user_uri}" title="View
                 ${user}'s profile">${user}</a></strong> Time: ${posted} ago
       </div>
     <div>

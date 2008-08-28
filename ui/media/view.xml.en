@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<div class="yui-ge">
+    <div class="yui-u first">
+      <h1>{dc:title}</h1>
+             <a href=";application_form"
+             class="action"><span>Apply Now</span></a>  
+         <dl>
+           <dd>Closing date: {abakuc:closing_date}</dd>
+         </dl>
+          <div class="job-details">
+              <h2>Description</h2>
+                <p>{dc:description}</p> 
+                <p>{abakuc:job_text}</p> 
+                <a href=";application_form" class="action"><span>Apply Now</span></a> 
+          </div>        
+              <h3>Additional Information</h3>
+          <div id="message">
+                <strong>Warning:</strong> There should be no need to provide your bank account details or to send any cash when applying for a job. We strongly advise that jobseekers should never supply bank account details or any other financial information. If you see a vacancy advertised on <u>Expert.Travel</u> which requests bank account details or money of if the advertiser subsequently asks for this information in a manner that concerns you, please <a href="/;contact_form">report this</a> with the advertiser's company name and the title of the job vacancy.
+          </div>        
+          <div class="info">
+                posted by <strong><a href="{user_uri}" title="View
+                ">{user}</a></strong>
+          </div>
+          <div>
+<script type="text/javascript"><!--
+google_ad_client = "pub-2050823514740471";
+/* 336x280_as_uktravellist */
+google_ad_slot = "4407370227";
+google_ad_width = 336;
+google_ad_height = 280;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+           </div>
+    </div> <!-- yui-u first -->
+    <div class="yui-u">
+          <div id="right-box">
+              <h2>Management</h2>
+               <ul>
+                 <li>
+                 <a href=";view">
+                 Job details. 
+                 </a>
+                 </li>
+                 <li>
+                 <a href=";edit_metadata_form">
+                 Modify job details. 
+                 </a>
+                 </li>
+                 <li>
+                 <a href=";add_job_form">
+                 Add new job. 
+                 </a>
+                 </li>
+               </ul>
+             <h2>Applications</h2>
+             <ul>
+               <li>
+                   No candidatures
+               </li>
+             </ul>
+            <h2>Recent similar jobs</h2>
+              <ul>
+                <li></li>
+              </ul>
+        </div><!-- right-box -->
+        <div align="right">
+            <script type="text/javascript"><!--
+            google_ad_client = "pub-2050823514740471";
+            /* 160x600, created 3/10/08 */
+            google_ad_slot = "4094087387";
+            google_ad_width = 160;
+            google_ad_height = 600;
+            //-->
+            </script>
+            <script type="text/javascript"
+            src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+            </script>
+        </div>    
+    </div> <!-- yui-u -->
+</div> <!-- yui-g -->
+
+</stl:block>

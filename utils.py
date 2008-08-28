@@ -28,6 +28,7 @@ def title_to_name(title):
 
 def get_new_id(self, prefix=''):
     ids = []
+    print prefix
     for name in self.get_handler_names():
         if name.endswith('.metadata'):
             continue
@@ -46,7 +47,7 @@ def get_new_id(self, prefix=''):
         return prefix + str(ids[-1] + 1)
 
     return prefix + '0'
-
+    
 class VersioningAware(object):
 
     def commit_revision(self):
