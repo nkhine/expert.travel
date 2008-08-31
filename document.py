@@ -323,6 +323,26 @@ class Document(XHTMLFile):
 
         return context.come_back(message=uri.query['message'])
 
+
+    addimage_form__access__ = 'is_allowed_to_edit'
+    def addimage_form(self, context):
+        from file import File
+        from binary import Image
+        from widgets import Breadcrumb
+        # Build the bc
+        if isinstance(self, File):
+            start = self.parent
+        else:
+            start = self
+        # Construct namespace
+        namespace = {}
+        namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
+        namespace['message'] = context.get_form_value('message')
+
+        prefix = Path(self.abspath).get_pathto('/ui/html/addimage.xml')
+        handler = self.get_handler('/ui/html/addimage.xml')
+        return stl(handler, namespace, prefix=prefix)
+
     #addimage_form__access__ = 'is_allowed_to_edit'
     #def addimage_form(self, context):
     #    from itools.cms.file import File

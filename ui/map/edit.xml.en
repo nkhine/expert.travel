@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+
+<form method="post" action=";edit">
+  <table class="form">
+    <tr>
+      <th valign="top"> Map </th>
+      <td>
+        <textarea cols="70" style="font-size: 10px" name="map" rows="8">${map/value}</textarea>
+      </td>
+    </tr>
+  </table>
+  <input type="submit" value="Save changes"/>
+</form>
+
+</stl:block>

@@ -29,6 +29,7 @@ from itools.cms.folder import Folder as iFolder
 
 # Import from abakuc
 from bookings import Bookings
+from image_map import ImageMap
 from companies import Company, Address
 from base import Handler, Folder
 from website import SiteRoot
@@ -185,7 +186,7 @@ class Training(SiteRoot, WorkflowAware):
 
 
     def get_document_types(self):
-        return [Module, Bookings, Media]
+        return [Bookings, ImageMap, Module]
 
     def get_level1_title(self, level1):
         return None
@@ -429,6 +430,23 @@ class Training(SiteRoot, WorkflowAware):
             return True
         # Is training manager
         return self.has_user_role(user.name, 'abakuc:training_manager')
+
+    # Map access control
+    def is_allowed_to_view_map(self, user, object):
+        if isinstance(object, ImageMap):
+            return True
+    
+    def is_allowed_to_edit_map(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is training manager
+        return self.has_user_role(user.name, 'abakuc:training_manager')
+
+
     ########################################################################
     # Media folder 
     media__access__ = True 

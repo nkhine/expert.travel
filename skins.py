@@ -189,6 +189,9 @@ class FrontOffice(Skin):
         append({'path': path, 'method': 'news',
                 'title': u'News',
                 'icon': '/ui/abakuc/images/News16.png'})
+        append({'path': path, 'method': 'media',
+                'title': u'Media',
+                'icon': '/ui/abakuc/images/Media16.png'})
         append({'path': path, 'method': 'jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})

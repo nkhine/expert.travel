@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+  <img usemap="#ImageMap" border="0" src=".image" />
+  ${map}
+</stl:block>
