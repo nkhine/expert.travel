@@ -105,7 +105,8 @@ class Companies(Folder):
         handler = self.get_handler('/ui/abakuc/companies/list.xml')
         return stl(handler, namespace)
 
-class Company(SiteRoot, VersioningAware):
+#class Company(SiteRoot, VersioningAware):
+class Company(SiteRoot):
 
     class_id = 'company'
     class_title = u'Company'
@@ -118,7 +119,7 @@ class Company(SiteRoot, VersioningAware):
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['permissions_form', 'new_user_form'],
-                   ['history_form'],
+                   #['history_form'],
                    ['edit_metadata_form']]
 
 
@@ -840,7 +841,7 @@ class Company(SiteRoot, VersioningAware):
         return context.come_back(message, goto=goto)
 
 
-class Address(RoleAware, WorkflowAware, VersioningAware,  Folder):
+class Address(RoleAware, WorkflowAware, Folder):
 
     class_id = 'address'
     class_title = u'Address'
