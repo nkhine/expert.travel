@@ -179,6 +179,10 @@ class Training(SiteRoot, WorkflowAware):
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = help.build_metadata(
             **{'dc:title': {'en': u'Help'}})
+        map = ImageMap()
+        cache['map'] = map
+        cache['map.metadata'] = map.build_metadata(
+            **{'dc:title': {'en': u'Interactive map'}})
         media = Media()
         cache['media'] = media
         cache['media.metadata'] = media.build_metadata(
@@ -204,6 +208,12 @@ class Training(SiteRoot, WorkflowAware):
     def get_vhosts(self):
         vhosts = self.get_property('ikaaro:vhosts')
         return vhosts
+
+    def get_image_map(self):
+        image_map = list(self.search_handlers(format=ImageMap.class_id))
+        image_map.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
+        return image_map
 
     def get_modules(self):
         modules = list(self.search_handlers(format=Module.class_id))
@@ -324,8 +334,6 @@ class Training(SiteRoot, WorkflowAware):
         root = object.get_root()
         if root.is_admin(user, self):
             return True
-        #return self.is_branch_manager(user, object)
-
 
     def is_training_manager(self, user, object):
         if not user:
@@ -433,8 +441,15 @@ class Training(SiteRoot, WorkflowAware):
 
     # Map access control
     def is_allowed_to_view_map(self, user, object):
-        if isinstance(object, ImageMap):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
             return True
+        # Is reviewer or member
+        return (self.has_user_role(user.name, 'abakuc:training_manager') or
+                self.has_user_role(user.name, 'abakuc:branch_member'))
     
     def is_allowed_to_edit_map(self, user, object):
         if not user:
@@ -446,19 +461,10 @@ class Training(SiteRoot, WorkflowAware):
         # Is training manager
         return self.has_user_role(user.name, 'abakuc:training_manager')
 
-
     ########################################################################
-    # Media folder 
-    media__access__ = True 
-    media__label__ = u'media'
-    media__sublabel__ = u'media'
-    def media(self, context):
-        def get_document_types(self):
-            return [File]
-
+    # Chart
     ########################################################################
-    # Statistics
-    statistics__access__ = 'is_allowed_to_view_statistics'
+    chart__access__ = 'is_allowed_to_view_statistics'
     chart__label__ = u'Statistics'
     chart__sublabel__ = u'Statistics'
     def chart(self, context):
@@ -476,6 +482,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # Statistics
+    ########################################################################
     statistics__access__ = 'is_allowed_to_view_statistics'
     statistics__label__ = u'Statistics'
     statistics__sublabel__ = u'Statistics'
@@ -716,6 +723,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # Show users  
+    ########################################################################
     show_users__access__ = 'is_allowed_to_view_statistics'
     show_users__label__ = u'Show training members'
     show_users__sublabel__ = u'Show members'
@@ -880,6 +888,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # Statistics CSV 
+    ########################################################################
     statistics_csv__access__ = 'is_allowed_to_view_statistics'
     def statistics_csv(self, context):
         # Geographic
@@ -1146,6 +1155,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # View
+    ########################################################################
     view__access__ = True
     #view__access__ = 'is_allowed_to_edit'
     view__label__ = u'View'
@@ -1153,7 +1163,6 @@ class Training(SiteRoot, WorkflowAware):
         root = context.root
         namespace = {}
         title = self.get_title()
-        print title
         items = self.get_modules()
         #namespace['user']= self.get_user_menu(context)
         #namespace['user']= 'user namespace' 
@@ -1245,6 +1254,7 @@ class Training(SiteRoot, WorkflowAware):
 
     ########################################################################
     # List modules
+    ########################################################################
     modules__access__ = True
     #view__access__ = 'is_allowed_to_edit'
     modules__label__ = u'Modules'
@@ -1620,8 +1630,6 @@ class Module(Folder):
 
         We have to ensure that this option is provided.
         '''
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         here = context.handler
         user = context.user
         # Build the namespace
@@ -1642,28 +1650,22 @@ class Module(Folder):
         marketing_form = self.get_marketing_form(user.name)
         # Do we have a previous module?
         prev_module = self.get_prev_module()
-        pp.pprint(prev_module)
+        print prev_module
         if prev_module is not None:
             # Check to see if there is a marketing form.
             prev_marketing = prev_module.get_marketing_form(user.name)
-            pp.pprint(prev_marketing)
             if prev_marketing is not None:
                 result = prev_marketing.get_result(user.name)
                 passed, n_attempts, time, mark, kk = result
-                pp.pprint(passed)
                 if passed is False:
                     namespace['prev_module'] = '/%s/;view' % (prev_module.name) 
                     namespace['marketing'] = '/%s/%s/;fill_form' % (prev_module.name,
                                                             prev_marketing.name)
-                    pp.pprint(namespace['prev_module'])
-                    pp.pprint(namespace['marketing'])
-
             else:
                 if marketing_form is not None:
                     namespace['marketing'] = '%s/;fill_form' % marketing_form.name
             # Do we have a previous exam? 
             prev_exam = prev_module.get_exam(user.name)
-            pp.pprint(prev_exam)
             if prev_exam is not None:
                 result = prev_exam.get_result(user.name)
                 passed, n_attempts, time, mark, kk = result
@@ -1672,8 +1674,6 @@ class Module(Folder):
                     namespace['prev_module'] = '/%s/;view' % (prev_module.name) 
                     namespace['exam'] = '/%s/%s/;take_exam_form' % (prev_module.name,
                                                             prev_exam.name)
-                    pp.pprint(namespace['prev_module'])
-                    pp.pprint(namespace['exam'])
                     print 'Boo, please go to the previous module and take exam'
                 # Take the exam
                 else:
@@ -1692,17 +1692,13 @@ class Module(Folder):
                         else:
                             exam_path = self.get_pathto(exam)
                             namespace['exam'] = '%s/;take_exam_form' % exam_path
-                            pp.pprint(namespace['exam'])
-            
         # First module in programme
         else:
             namespace['prev_module'] = None 
             # The marketing form
-            pp.pprint(marketing_form)
             if marketing_form is not None:
                 result = marketing_form.get_result(user.name)
                 passed, n_attempts, time, mark, kk = result
-                pp.pprint(passed)
                 if passed is False:
                     namespace['marketing'] = '%s/;fill_form' % marketing_form.name
             else:
@@ -1963,56 +1959,10 @@ class Topic(Folder):
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
 
+#######################################################################
+# Register the classes 
+#######################################################################
 
-    #######################################################################
-    # Security / Access Control
-    #######################################################################
-    #def is_training_manager_or_member(self, user, object):
-    #    if not user:
-    #        return False
-    #    # Is global admin
-    #    root = object.get_root()
-    #    if root.is_admin(user, self):
-    #        return True
-    #    # Is reviewer or member
-    #    return (self.has_user_role(user.name, 'abakuc:training_manager') or
-    #            self.has_user_role(user.name, 'abakuc:branch_member'))
-
-
-    #def is_admin(self, user, object):
-    #    return self.is_branch_manager(user, object)
-
-
-    #def is_training_manager(self, user, object):
-    #    if not user:
-    #        return False
-    #    # Is global admin
-    #    root = object.get_root()
-    #    if root.is_admin(user, self):
-    #        return True
-    #    # Is reviewer or member
-    #    return self.has_user_role(user.name, 'abakuc:training_manager')
-
-#class Media(Folder, RoleAware):
-#
-#    class_id = 'Media'
-#    class_title = u'Media'
-#    class_description = u'Media content folder'
-#    class_icon16 = 'abakuc/images/JobBoard16.png'
-#    class_icon48 = 'abakuc/images/JobBoard48.png'
-#    class_views = [
-#                ['view'],
-#                ['browse_content?mode=list',
-#                'browse_content?mode=thumbnails'],
-#                ['new_resource_form'],
-#                ['edit_metadata_form',
-#                ['edit_metadata_form']]
-#
-#    def get_document_types(self):
-#        return [File]
-
-
-#register_object_class(Media)
 register_object_class(Trainings)
 register_object_class(Training)
 register_object_class(Module)

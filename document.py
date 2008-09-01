@@ -180,6 +180,7 @@ class Document(XHTMLFile):
         namespace['title'] = self.get_property('dc:title')
         namespace['description'] = self.get_property('dc:description')
         namespace['image1'] = image1 = self.get_property('abakuc:image1')
+        print namespace['image1']
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
@@ -326,14 +327,12 @@ class Document(XHTMLFile):
 
     addimage_form__access__ = 'is_allowed_to_edit'
     def addimage_form(self, context):
-        from file import File
-        from binary import Image
-        from widgets import Breadcrumb
-        # Build the bc
-        if isinstance(self, File):
-            start = self.parent
-        else:
-            start = self
+        from itools.cms.file import File
+        from itools.cms.binary import Image
+        from itools.cms.widgets import Breadcrumb
+        here = context.handler
+        site_root = here.get_site_root()
+        start = site_root.get_handler('media')
         # Construct namespace
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
@@ -342,6 +341,31 @@ class Document(XHTMLFile):
         prefix = Path(self.abspath).get_pathto('/ui/html/addimage.xml')
         handler = self.get_handler('/ui/html/addimage.xml')
         return stl(handler, namespace, prefix=prefix)
+
+    addimage__access__ = 'is_allowed_to_edit'
+    def addimage(self, context):
+        """
+        Allow to upload and add an image to epoz
+        """
+        from itools.cms.binary import Image
+        #root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
+        # Get the container
+        container = site_root.get_handler('media')
+        #container = root.get_handler(context.get_form_value('target_path'))
+        # Add the image to the handler
+        uri = Image.new_instance(container, context)
+        if ';addimage_form' not in uri.path:
+            handler = container.get_handler(uri.path[0])
+            return """
+            <script type="text/javascript">
+                window.opener.CreateImage('%s');
+                window.close();
+            </script>
+                    """ % handler.abspath
+
+        return context.come_back(message=uri.query['message'])
 
     #addimage_form__access__ = 'is_allowed_to_edit'
     #def addimage_form(self, context):

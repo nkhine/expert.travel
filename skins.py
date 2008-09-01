@@ -15,6 +15,7 @@ from itools.handlers import Folder
 from itools.cms.base import Node
 from itools.xml import Parser
 # Import from abakuc
+from image_map import ImageMap
 from expert_travel import ExpertTravel
 from companies import Company, Address
 from training import Training, Module, Topic
@@ -189,15 +190,35 @@ class FrontOffice(Skin):
         append({'path': path, 'method': 'news',
                 'title': u'News',
                 'icon': '/ui/abakuc/images/News16.png'})
-        append({'path': path, 'method': 'media',
-                'title': u'Media',
-                'icon': '/ui/abakuc/images/Media16.png'})
         append({'path': path, 'method': 'jobs',
                 'title': u'Jobs',
                 'icon': '/ui/abakuc/images/JobBoard16.png'})
         append({'path': path, 'method': 'addresses',
                 'title': u'Contact us',
                 'icon': '/ui/images/UserFolder16.png'})
+        # Menu for Training site
+        office = context.site_root
+        is_office = office.is_training()
+        
+        if is_office and not isinstance(root, Company):
+           media_folder = office.get_handler('media')
+           title = getattr(media_folder, 'view__label__')
+           if callable(title):
+               title = title(**args)
+           src = media_folder.get_path_to_icon(size=16)
+           append({'path': media_folder.name, 'method': 'view',
+                   'title': self.gettext(title),
+                   'icon': src})
+           image_map = office.get_image_map()
+           for map in image_map:
+               title = getattr(map, 'class_title')
+               if callable(title):
+                    title = title(**args)
+               src = map.get_path_to_icon(size=16)
+               append({'path': map.name, 'method': 'view',
+                       'title': self.gettext(title),
+                       'icon': src })
+                    
         return options
 
     def get_context_menu(self, context):
@@ -347,25 +368,13 @@ class FrontOffice(Skin):
                     ac = child.get_access_control()
                     user = context.user
                     if ac.is_allowed_to_view(user, child):
-                        #ns, in_path = _tree(child, root, depth, active_node, allow, deny,
-                        #                    user, width)
-                        #if in_path:
-                        #    children.append(ns)
-                        #elif counter < width:
-                        #    children.append(ns)
                         counter += 1
-                #if counter > width:
                         children.append({'href': '/%s/%s' % (node.name, child.name),
-                                        'src': '/%s' % child.get_path_to_icon(size=16, from_handler=active_node),
+                                        'src': '/%s' % child.get_path_to_icon(size=16,
+                                                            from_handler=active_node),
                                         'title': child.get_title(),
                                         'class': node_class,
                                         'items': []})
-                    #else:
-                    #    children.append({'href': None,
-                    #                     'class': '',
-                    #                     'src': None, 
-                    #                     'title': '...',
-                    #                     'items': []})
 
                 items = children.sort()
                 options.append({'href': '/%s' % (node.name),
@@ -380,10 +389,7 @@ class FrontOffice(Skin):
                                 'class': '',
                                 'items': []})
 
-        #menu = build_training_menu(options)
         menu = build_menu(options)
-        #menu = tree(root, active_node=context.handler,
-        #            allow=Training, user=context.user)
         return {'title': self.gettext(u'Modules'), 'content': menu}
 
 
@@ -424,10 +430,17 @@ class FrontOffice(Skin):
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
-            # Modules
-            #menu = self.get_modules_menu(context)
-            #if menu is not None:
-            #    menus.append(menu)
+            # Get the Manager
+            user = context.user
+            if user is not None:
+                office = context.site_root
+                is_training_manager = office.is_training_manager(user.name, self)
+                # Object's Menu
+                if is_training_manager:
+                    menu = self.get_context_menu(context)
+                    if menu is not None:
+                        menus.append(menu)
+
         return menus
 
 

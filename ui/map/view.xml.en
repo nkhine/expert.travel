@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
-  <img usemap="#ImageMap" border="0" src=".image" />
+  <img usemap="#ImageMap" border="0" src=".image" stl:if="not is_flash">
   ${map}
+  </img>
+ <object stl:if="is_flash">
+  <param name="movie" value=".image" />
+  <embed src=".image" type="application/x-shockwave-flash"
+         width="500" height="400" />
+</object>
 </stl:block>

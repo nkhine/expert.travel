@@ -254,8 +254,8 @@ class User(iUser, WorkflowAware, Handler):
             indexes['registration_year'] = registration_date.year
             indexes['registration_month'] = registration_date.month
         # Other user fields
-        indexes['function'] = get_property('abakuc:functions')
         root = get_context().root
+        indexes['function'] = get_property('abakuc:functions')
         companies_handler = root.get_handler('companies')
         if companies_handler:
             companies = \
@@ -289,7 +289,6 @@ class User(iUser, WorkflowAware, Handler):
             trainings = \
             list(training_handler.search_handlers(handler_class=Training))
             for training in trainings:
-                #members = []
                 to = training.get_property('dc:title')
                 username = self.name
                 users = training.get_members()
