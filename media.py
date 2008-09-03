@@ -9,7 +9,9 @@ from itools.stl import stl
 from itools.cms.folder import Folder
 from itools.cms.access import RoleAware
 from itools.cms.file import File
+from itools.cms.utils import reduce_string
 from itools.cms.registry import register_object_class, get_object_class
+from itools.xhtml import Document as XHTMLDocument
 
 class Media(Folder, RoleAware):
     class_id = 'Media'
@@ -66,31 +68,63 @@ class Media(Folder, RoleAware):
     #######################################################################
 
     view__access__ = 'is_allowed_to_view' 
-    #view__access__ =  True 
     view__label__ = u'Media folder'
     def view(self, context):
+        # Set style
+        context.styles.append('/ui/abakuc/jquery/css/jqGalScroll.css')
         # Add the js scripts
         context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/addons/jqgalscroll.js')
         # Get all the images and flash objects
         handlers = self.search_handlers(handler_class=File)
         images = []
         flash = []
+        others = []
         for handler in handlers:
-            if handler.to_str()[:3] in ('FWS', 'CWS'):
+            handler_state = handler.get_property('state')
+            print handler_state
+            if handler_state == 'public':
+                type = handler.get_content_type()
                 url = '/media/%s' % handler.name
-                item = {'url': url,
-                         'title': handler.get_property('dc:title'),
-                         'description': handler.get_property('dc:description'),
-                         'keywords': handler.get_property('dc:subject')}
-                flash.append(item)
-            else:
-                url = '/media/%s' % handler.name
-                item = {'url': url,
-                         'title': handler.get_property('dc:title'),
-                         'description': handler.get_property('dc:description'),
-                         'keywords': handler.get_property('dc:subject')}
-                images.append(item)
+                if type == 'image':
+                    item = {'url': url,
+                            'title': handler.get_property('dc:title'),
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    images.append(item)
+                elif type == 'application/x-shockwave-flash':
+                    item = {'url': url,
+                            'title': handler.get_property('dc:title'),
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    flash.append(item)
+                else:
+                    title = handler.get_property('dc:title')
+                    if title == '':
+                        title = 'View document'
+                    else:
+                        title = reduce_string(title, 10, 20)
+                    item = {'url': url,
+                            'title': title,
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    others.append(item)
+                
+        print flash
+        print images
+        print others
+        # Namespace
         namespace = {}
+        namespace['images'] = images
+        namespace['flash'] = flash
+        namespace['others'] = others
+        namespace['title'] = self.get_property('dc:title')
         handler = self.get_handler('/ui/abakuc/media/view.xml')
         return stl(handler, namespace)
 

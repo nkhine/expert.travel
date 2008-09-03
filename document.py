@@ -304,7 +304,8 @@ class Document(XHTMLFile):
     document_image__access__ = 'is_allowed_to_edit'
     def document_image(self, context):
         """
-        Allow to upload and add an image to epoz
+        Allow to upload and add an image to the
+        media folder and link it to the document.
         """
         from itools.cms.binary import Image
         # Get the container
@@ -346,6 +347,7 @@ class Document(XHTMLFile):
     def addimage(self, context):
         """
         Allow to upload and add an image to epoz
+        and store it in the media folder.
         """
         from itools.cms.binary import Image
         #root = context.root
@@ -353,7 +355,6 @@ class Document(XHTMLFile):
         site_root = here.get_site_root()
         # Get the container
         container = site_root.get_handler('media')
-        #container = root.get_handler(context.get_form_value('target_path'))
         # Add the image to the handler
         uri = Image.new_instance(container, context)
         if ';addimage_form' not in uri.path:
@@ -366,25 +367,6 @@ class Document(XHTMLFile):
                     """ % handler.abspath
 
         return context.come_back(message=uri.query['message'])
-
-    #addimage_form__access__ = 'is_allowed_to_edit'
-    #def addimage_form(self, context):
-    #    from itools.cms.file import File
-    #    from itools.cms.binary import Image
-    #    from itools.cms.widgets import Breadcrumb
-    #    here = context.handler
-    #    site_root = here.get_site_root()
-    #    start = site_root.get_handler('media')
-    #    # Construct namespace
-    #    namespace = {}
-    #    namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
-    #    namespace['message'] = context.get_form_value('message')
-
-    #    prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/addimage.xml')
-    #    handler = self.get_handler('/ui/abakuc/training/document/addimage.xml')
-    #    return stl(handler, namespace, prefix=prefix)
-
-
 
 
     #######################################################################

@@ -102,6 +102,30 @@ class FrontOffice(Skin):
     i18n versions so that http://uk.expert.travel will list
     only companies that have UK addresses.
     '''
+    #######################################################################
+    # Styles and Scripts
+    #######################################################################
+    def get_styles(self, context):
+        styles = []
+        # YUI reset-fonts-grids
+        styles.append('/ui/abakuc/images/reset-fonts-grids.css')
+        # Epoz
+        styles.append('/ui/epoz/style.css')
+        # Calendar JavaScript Widget (http://dynarch.com/mishoo/calendar.epl)
+        styles.append('/ui/calendar/calendar-aruni.css')
+        # Aruni (default skin)
+        # Calendar
+        styles.append('/ui/ical/calendar.css')
+        # Table
+        styles.append('/ui/table/style.css')        
+        # This skin's style
+        if self.has_handler('style.css'):
+            styles.append('%s/style.css' % self.abspath)
+        # Dynamic styles
+        for style in context.styles:
+            styles.append(style)
+
+        return styles
 
     def build_namespace(self, context):
         root = context.root

@@ -10,8 +10,8 @@
     <meta stl:repeat="meta meta_tags" name="${meta/name}"
           content="${meta/content}" />
     <!-- CSS -->
-    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/zambia.expert.travel/style.css" />
+    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
+    href="${style}"/>
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" />
