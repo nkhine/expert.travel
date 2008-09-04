@@ -77,7 +77,7 @@
                         </span>
                     </div><!-- /breadcrumbs -->
                     <div id="message" stl:if="message">${message}</div>
-                    <div id="content">${body}</div>
+                    <div>${body}</div>
                 </div><!-- yui-b -->
             </div><!-- yui-main -->   
         </div><!-- bd -->
