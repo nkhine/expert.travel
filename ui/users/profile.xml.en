@@ -45,7 +45,7 @@
                 </div> <!-- / yui-g first-->
                 <div class="yui-u">
                     <!-- user's details -->
-                    <div class="yui-gc">
+                    <div class="yui-gc user">
                         <div class="yui-u first">
                             <stl:block if="not lastname">
                             <h2>Personnal Details</h2>
@@ -53,7 +53,6 @@
                             <stl:block if="lastname">
                             <h2>${firstname} ${lastname}</h2>
                             </stl:block>
-                            <dt>${points}</dt>
                             <dt>${email}</dt>
                             <ul>
                                 <li stl:if="is_admin">Admin</li>
@@ -76,14 +75,15 @@
                               </ul>  
                         </div><!-- / yui-u first-->
                         <div class="yui-u">
-                            <stl:block if="portrait" class="portrait">
-                              <img src="portrait" align="left" />
+                            <stl:block if="portrait">
+                              <img src="portrait" align="left" class="portrait"/>
                             </stl:block>
-                            <stl:block if="not portrait" class="portrait">
+                            <stl:block if="not portrait">
                               <a href=";portrait_form"><img name=""
                               src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
-                              /></a>
+                              class="portrait"/></a>
                             </stl:block>
+                            <dt class="points">${points}</dt>
                         </div><!-- / yui-u-->
                     </div><!-- / yui-gc-->
                     <!-- /user's details -->

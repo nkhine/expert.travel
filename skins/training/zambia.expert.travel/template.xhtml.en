@@ -57,13 +57,6 @@
           </div><!-- /bar -->
         </div><!-- hd -->
         <div id="bd">
-            <div id="left" class="yui-b">
-                <div stl:repeat="menu left_menus">
-                    <label>${menu/title}</label>
-                           ${menu/content}
-                </div>
-                <div stl:if="context_menu_html">${context_menu_html}</div>
-            </div><!-- left, yui-b -->
             <div id="yui-main">
                 <div class="yui-b">
                     <div id="bread"><!-- breadcrumbs -->
@@ -80,6 +73,13 @@
                     <div>${body}</div>
                 </div><!-- yui-b -->
             </div><!-- yui-main -->   
+            <div id="left" class="yui-b">
+                <div stl:repeat="menu left_menus">
+                    <label>${menu/title}</label>
+                           ${menu/content}
+                </div>
+                <div stl:if="context_menu_html">${context_menu_html}</div>
+            </div><!-- left, yui-b -->
         </div><!-- bd -->
         <div id="ft">
             <ul>
