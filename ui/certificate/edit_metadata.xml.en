@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl" xmlns="http://www.w3.org/1999/xhtml">
+
+<br/>
+<form method="post" action=";edit">
+  <table class="form">
+    <tr>
+      <th class="title" colspan="2">Metadata</th>
+    </tr>
+    <tr>
+      <th valign="top">Pattern</th>
+      <td>
+        <textarea name="data" cols="40" wrap="physical" rows="6">${data}</textarea>
+      </td>
+    </tr>
+    <tr>
+      <th valign="top">Business functions</th>
+      <td>
+        <select id="topics" name="topics" size="8"
+                    multiple="multiple" style="width: 90%">
+          <option stl:repeat="item topics" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option> 
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <td class="submit"><input type="submit" value="OK"/></td>
+    </tr>
+  </table>
+</form>
+
+</stl:block>

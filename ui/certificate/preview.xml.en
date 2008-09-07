@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<p>To preview the certificate click the button below:</p>
+<blockquote>
+  <form action=";topdf" method="get">
+    <input type="submit" value="Preview Certificate" />
+  </form>
+</blockquote>
+
+</stl:block>

@@ -376,7 +376,9 @@ class Job(Folder, RoleAware):
         salary = self.get_property('abakuc:salary')
         namespace['salary'] = SalaryRange.get_namespace(salary)
         function = self.get_property('abakuc:function')
+        print function
         namespace['function'] =  JobTitle.get_namespace(function)
+        print namespace['function']
         job_text = self.get_property('abakuc:job_text')
         namespace['abakuc:job_text'] = job_text
         # XXX Form

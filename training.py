@@ -42,6 +42,7 @@ from jobs import Job
 from metadata import JobTitle, SalaryRange
 from namespaces import Regions, BusinessProfile
 from marketing import Marketing
+from certificate import Certificate
 
 month_names = [
     u'January', u'February', u'March', u'April', u'May', u'June',
@@ -1383,7 +1384,7 @@ class Module(Folder):
                    ['edit_metadata_form']]
 
     def get_document_types(self):
-        return [Topic, Exam, Marketing]
+        return [Topic, Exam, Marketing, Certificate]
 
     browse_content__access__ = 'is_training_manager'
     edit_metadata_form__access__ = 'is_training_manager'

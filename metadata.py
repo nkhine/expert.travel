@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from itools
-from itools.datatypes import Integer, String, Unicode, Email, Tokens, Date
+from itools.datatypes import Boolean, Integer, String, Unicode, Email, Tokens, Date
 from itools.schemas import Schema as BaseSchema, register_schema
 from itools.datatypes import Enumerate
 
@@ -91,6 +91,9 @@ class Schema(BaseSchema):
         'functions': String,
         'registration_date': Date,
         'points': Integer(default=0),
+        'terms': Boolean(default=True,
+                                  title=u'Terms & Conditions',
+                                  is_mandatory= True),
         # Company
         'website': String,
         'topic': Tokens,
