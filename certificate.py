@@ -21,10 +21,10 @@ from reportlab.lib import pagesizes
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.utils import ImageReader
 
-pattern = ('This is to Certify\n'
-           '$user_title <b>$fullname</b>\n'
-           'Qualified\n'
-           'Successfully Completed "$TM"\n'
+pattern = ('This is to Certify that\n'
+           '<h1>$fullname</h1>\n'
+           'Successfully Completed\n'
+           '<h2>"$module"</h2>\n'
            '$date\n')
 
 class Certificate(Folder):
@@ -34,7 +34,7 @@ class Certificate(Folder):
         '.image.jpg': Image,
         '.text': Text}
     class_title = u'Certificate'
-    class_description = u'...'
+    class_description = u'Manage certification for current module'
     class_icon16 = 'abakuc/images/Certificate16.png'
     class_icon48 = 'abakuc/images/Certificate48.png'
     class_views = [['preview'],
@@ -99,7 +99,7 @@ class Certificate(Folder):
 
         info['date'] = date
         info['TP'] = 'Training Programme 1'
-        info['TM'] = mod.get_property('dc:title').encode('UTF-8')
+        info['module'] = mod.get_property('dc:title').encode('UTF-8')
         info['user_title'] = user.get_property('user:user_title')
 
         certificate = self.get_handler('.image.jpg')
@@ -192,7 +192,7 @@ class Certificate(Folder):
     ########################################################################
     # Text
     edit_metadata__access__ = 'is_training_manager'
-    edit_metadata__label__ = u'Edit'
+    edit_metadata__label__ = u'Manage'
     def edit_metadata(self, context):
         root = get_context().root
         namespace = {}

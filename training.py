@@ -378,6 +378,11 @@ class Training(SiteRoot, WorkflowAware):
 
     # Exam Access Control
     def is_allowed_to_take_exam(self, user, object):
+        '''
+        Who is not allowed to take the exam:
+        1) If the user has not passed the exam from previous module.
+        2) If there is a mkt form and has not been submitted.
+        '''
         if self.is_admin(user, object):
             return True
         if self.has_user_role(user.name, 'abakuc:training_manager'):
@@ -394,12 +399,20 @@ class Training(SiteRoot, WorkflowAware):
         prev_module = module.get_prev_module()
         if prev_module is None:
             return True
+        # Check if current module mkt form has been filled 
+        marketing = module.get_marketing_form()
+        if marketing is None:
+            return True
+        passed = marketing.get_result()[0]
+        return bool(passed)
         exam = prev_module.get_exam()
         # Previous module has no exam? (BahamaBay has just one exam at end)
         if exam is None:
             return True
         # Has the user passed the previous exam?
         passed = exam.get_result()[0]
+        #if passed:
+        #    return False
         return bool(passed)
 
     # Marketing Form Access Control
@@ -421,7 +434,6 @@ class Training(SiteRoot, WorkflowAware):
         if prev_module is None:
             return True
         marketing = prev_module.get_marketing_form()
-        #exam = prev_module.get_exam()
         # Previous module has no Marketing Form
         if marketing is None:
             return True
@@ -1651,7 +1663,6 @@ class Module(Folder):
         marketing_form = self.get_marketing_form(user.name)
         # Do we have a previous module?
         prev_module = self.get_prev_module()
-        print prev_module
         if prev_module is not None:
             # Check to see if there is a marketing form.
             prev_marketing = prev_module.get_marketing_form(user.name)

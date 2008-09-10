@@ -1572,8 +1572,13 @@ class User(iUser, WorkflowAware, Handler):
             xx = [
                 {'name': x.name, 'title': '%d - %s' % (i+1, x.title)}
                 for i, x in enumerate(modules)]
+            # Sort the modules
+            modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                            get_sort_name(y.name)))
             namespace['modules'] = []
+
             for module in modules:
+                # Get all of the modules' properties
                 get = module.get_property
                 url = '/%s/;view' %  module.name
                 description = reduce_string(get('dc:description'),
@@ -1583,127 +1588,296 @@ class User(iUser, WorkflowAware, Handler):
                           'description': description,
                           'title': module.title_or_name})
 
-                last_exam_passed = True
-                modules.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                                get_sort_name(y.name)))
-                #for index, module in enumerate(modules):
-                ns = {'title': module.title_or_name, 'url': None,
-                'add_exam': None, 'add_marketing': None, 'add_topic':
-                None}
-                path_to_module = '../../%s' % module.name
-                ns['url'] = '%s' % path_to_module
-                if is_training_manager:
-                    ns['add_topic'] = '/%s/;new_resource_form?type=topic' % path_to_module
-                    ns['add_marketing'] = '/%s/;new_resource_form?type=marketing'  % path_to_module
-                    ns['add_exam'] = '/%s/;new_resource_form?type=Exam'  % path_to_module
-                    if last_exam_passed is True:
-                        # Check for marketing form.
-                        marketing_form = module.get_marketing_form(self.name)
-                        ns['marketing'] = None
-                        if marketing_form is not None:
-                            url = '/%s/%s/;fill_form' % (module.name,
-                                                        marketing_form.name)
-                            marketing = {'url': url}
-                            ns['marketing'] = marketing
+                ns = {'title': module.title_or_name, 'url': url}
 
-                        else:
-                            ns['exam'] = None
-                            # Check for exam
-                            exam = None
-                            exams = list(module.search_handlers(format=Exam.class_id))
-                            if exams != []:
-                                exam = module.get_exam(self.name)
-                                last_exam_passed = False
-                                if exam is not None:
-                                    title = exam.title_or_name
-                                    result = exam.get_result(self.name)
-                                    passed, n_attempts, kk, mark, kk = result
-                                    url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                    exam.name)
-                                    exam = {'title': title,
-                                            'passed': passed,
-                                            'attempts': n_attempts,
-                                            'mark': str(round(mark, 2)),
-                                            'url': url}
-                                    last_exam_passed = passed
-                                    ns['exam'] = exam
-                        # Exams
-                        exams = list(module.search_handlers(format=Exam.class_id))
-                        if exams != []:
-                            exam = module.get_exam(self.name)
-                            last_exam_passed = False
-                            if exam is not None:
-                                title = exam.title_or_name
-                                result = exam.get_result(self.name)
-                                passed, n_attempts, kk, mark, kk = result
-                                url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                exam.name)
-                                exam = {'title': title,
+                # Get module objects, such as Exams and Marketing Forms
+                exams = list(module.search_handlers(format=Exam.class_id))
+                # If we have NO exams
+                ns['exam'] = None 
+                if exams !=[]:
+                    for item in exams: 
+                        title = item.title_or_name
+                        url = '/%s/%s/;take_exam_form' % (module.name, item.name)
+                        result = item.get_result(self.name)
+                        allowed_to_take_exam = root.is_allowed_to_take_exam(self.name, item)
+                        print allowed_to_take_exam
+                        if allowed_to_take_exam and result != []:
+                            print 'Can take exam'
+                            #if result != []:
+                            passed, n_attempts, time, mark, kk = result
+                            if passed is False:
+                                result = {
+                                        'title': title,
+                                        'allowed': allowed_to_take_exam, 
                                         'passed': passed,
-                                        'attempts': n_attempts,
+                                        'attempt': n_attempts,
+                                        'time': time,
                                         'mark': str(round(mark, 2)),
-                                        'url': url}
-                                last_exam_passed = passed
-                                ns['exam'] = exam
-
+                                        'url': url
+                                        }
+                                ns['exam'] = result
+                            #else:
+                            #    result = {
+                            #            'title': title,
+                            #            'passed': passed,
+                            #            'attempt': n_attempts,
+                            #            'time': time,
+                            #            'mark': str(round(mark, 2)),
+                            #            'url': url
+                            #            }
+                            #    ns['exam'] = result
+               #     
+                marketing_form = module.get_marketing_form(self.name)
+                if marketing_form is not None:
+                    feedback = marketing_form.get_result(self.name)
+                    print feedback
                 else:
-                    # Not training manager
-                    if last_exam_passed is True:
-                        # Check for marketing form.
-                        marketing_form = module.get_marketing_form(self.name)
-                        ns['marketing'] = None
-                        if marketing_form is not None:
-                            url = '/%s/%s/;fill_form' % (module.name,
-                                                        marketing_form.name)
-                            marketing = {'url': url}
-                            ns['marketing'] = marketing
+                    print 'No mkt form'
+                # First module
 
-                        else:
-                            ns['exam'] = None
-                            # Check for exam
-                            exam = None
-                            exams = list(module.search_handlers(format=Exam.class_id))
-                            if exams != []:
-                                exam = module.get_exam(self.name)
-                                last_exam_passed = False
-                                if exam is not None:
-                                    title = exam.title_or_name
-                                    result = exam.get_result(self.name)
-                                    passed, n_attempts, kk, mark, kk = result
-                                    url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                    exam.name)
-                                    exam = {'title': title,
-                                            'passed': passed,
-                                            'attempts': n_attempts,
-                                            'mark': str(round(mark, 2)),
-                                            'url': url}
-                                    last_exam_passed = passed
-                                    ns['exam'] = exam
-                        # Exams
-                        exams = list(module.search_handlers(format=Exam.class_id))
-                        if exams != []:
-                            exam = module.get_exam(self.name)
-                            last_exam_passed = False
-                            if exam is not None:
-                                title = exam.title_or_name
-                                result = exam.get_result(self.name)
-                                passed, n_attempts, kk, mark, kk = result
-                                url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                exam.name)
-                                exam = {'title': title,
-                                        'passed': passed,
-                                        'attempts': n_attempts,
-                                        'mark': str(round(mark, 2)),
-                                        'url': url}
-                                last_exam_passed = passed
-                                ns['exam'] = exam
-                module_ns.append(ns)
+                # XXX Profile Page Exams / Marketing v 0.1
+                # Is this the first module?
+                #prev_module = module.get_prev_module()
+                #if prev_module is not None:
+                #    prev_exam = prev_module.get_exam(self.name)
+                #    if prev_exam is not None:
+                #        passed = prev_exam.get_result(self.name)[0]
+                #        if passed is True:
+                #            if exam is not None:
+                #                result = exam.get_result(self.name)
+                #                passed, n_attempts, time, mark, kk = result
+                #                if passed is False:
+                #                    title = exam.title_or_name
+                #                    url = '/%s/%s/;take_exam_form' % (module.name, exam.name)
+                #                    exam = {'title': title,
+                #                            'passed': passed,
+                #                            'attempts': n_attempts,
+                #                            'mark': str(round(mark, 2)),
+                #                            'url': url}
+                #                    ns['exam'] = exam
+                #        else:
+                #            #First module if exam is passed
+                #            exam = {'title': None,
+                #                    'passed': True,
+                #                    'attempts': None,
+                #                    'mark': None,
+                #                    'url': None}
+                #            ns['exam'] = exam
+                #    else:
+                #        exam = {'title': None,
+                #                'passed': True,
+                #                'attempts': None,
+                #                'mark': None,
+                #                'url': None}
+                #        ns['exam'] = exam 
+                #        exams = module.get_exam(self.name)
+                #        if exams is not None:
+                #            result = exams.get_result(self.name)
+                #            passed, n_attempts, time, mark, kk = result
+                #            if passed is False:
+                #                title = exams.title_or_name
+                #                url = '/%s/%s/;take_exam_form' % (module.name, exams.name)
+                #                exam = {'title': title,
+                #                        'passed': passed,
+                #                        'attempts': n_attempts,
+                #                        'mark': str(round(mark, 2)),
+                #                        'url': url}
+                #                ns['exam'] = exam
+                #    # Check for previous exam
+                #    prev_marketing = prev_module.get_marketing_form(self.name)
+                #    if prev_marketing is not None:
+                #        marketing = {'title': None,
+                #                     'passed': True,
+                #                     'url': None}
+                #        ns['marketing'] = marketing
+                #    else:
+                #        # No marketing form in last module or it has been
+                #        # filled.
+                #        if marketing_form is not None:
+                #            # Check for previous exam
+                #            prev_exam = prev_module.get_exam(self.name)
+                #            if prev_exam is not None:
+                #                print 'We have an exam in the previous module'
+                #                passed = prev_exam.get_result(self.name)[0]
+                #                if passed is False:
+                #                    marketing = {'title': None,
+                #                                 'passed': True,
+                #                                 'url': None}
+                #                    ns['marketing'] = marketing
+                #            else:
+                #                print 'We may not have an exam or we may have\
+                #                passed it'
+                #                passed = marketing_form.get_result(self.name)[0]
+                #                if passed is False:
+                #                    title = marketing_form.title_or_name
+                #                    url = '/%s/%s/;fill_form' % (module.name, marketing_form.name)
+                #                    marketing = {'title': title,
+                #                                 'passed': passed,
+                #                                 'url': url}
+                #                    ns['marketing'] = marketing
+                #        else:
+                #            marketing = {'title': None,
+                #                         'passed': True,
+                #                         'url': None}
+                #            ns['marketing'] = marketing
+                #else:
+                #    print 'I am the first module XXX'
+                #    if marketing_form is not None:
+                #        passed = marketing_form.get_result(self.name)[0]
+                #        if passed is False:
+                #            title = marketing_form.title_or_name
+                #            url = '/%s/%s/;fill_form' % (module.name, marketing_form.name)
+                #            marketing = {'title': title,
+                #                         'passed': passed,
+                #                         'url': url}
+                #            ns['marketing'] = marketing
+
+                #    else:
+                #        marketing = {'title': None,
+                #                     'passed': True,
+                #                     'url': None}
+                #        ns['marketing'] = marketing
+                #        # Exam namespace
+                #        if exam is not None:
+                #            result = exam.get_result(self.name)
+                #            passed, n_attempts, kk, mark, kk = result
+                #            if passed is False:
+                #                title = exam.title_or_name
+                #                url = '/%s/%s/;take_exam_form' % (module.name, exam.name)
+                #                exam = {'title': title,
+                #                        'passed': passed,
+                #                        'attempts': n_attempts,
+                #                        'mark': None,
+                #                        'url': url}
+                #                ns['exam'] = exam
+                #        else:
+                #            exam = {'title': None,
+                #                    'passed': True,
+                #                    'attempts': None,
+                #                    'mark': None,
+                #                    'url': None}
+                #            ns['exam'] = exam 
+
+                ## XXX Profile Page Exams / Marketing v 0.1
+
+
+                #path_to_module = '../../%s' % module.name
+                #ns['url'] = '%s' % path_to_module
+                #if is_training_manager:
+                #    ns['add_topic'] = '/%s/;new_resource_form?type=topic' % path_to_module
+                #    ns['add_marketing'] = '/%s/;new_resource_form?type=marketing'  % path_to_module
+                #    ns['add_exam'] = '/%s/;new_resource_form?type=Exam'  % path_to_module
+                #    if last_exam_passed is True:
+                #        # Check for marketing form.
+                #        ns['marketing'] = None
+                #        if marketing_form is not None:
+                #            url = '/%s/%s/;fill_form' % (module.name,
+                #                                        marketing_form.name)
+                #            marketing = {'url': url}
+                #            ns['marketing'] = marketing
+
+                #        else:
+                #            ns['exam'] = None
+                #            # Check for exam
+                #            exam = None
+                #            exams = list(module.search_handlers(format=Exam.class_id))
+                #            if exams != []:
+                #                exam = module.get_exam(self.name)
+                #                last_exam_passed = False
+                #                if exam is not None:
+                #                    title = exam.title_or_name
+                #                    result = exam.get_result(self.name)
+                #                    passed, n_attempts, kk, mark, kk = result
+                #                    url = '/%s/%s/;take_exam_form' % (module.name,
+                #                                                    exam.name)
+                #                    exam = {'title': title,
+                #                            'passed': passed,
+                #                            'attempts': n_attempts,
+                #                            'mark': str(round(mark, 2)),
+                #                            'url': url}
+                #                    last_exam_passed = passed
+                #                    ns['exam'] = exam
+                #        # Exams
+                #        exams = list(module.search_handlers(format=Exam.class_id))
+                #        if exams != []:
+                #            exam = module.get_exam(self.name)
+                #            last_exam_passed = False
+                #            if exam is not None:
+                #                title = exam.title_or_name
+                #                result = exam.get_result(self.name)
+                #                passed, n_attempts, kk, mark, kk = result
+                #                url = '/%s/%s/;take_exam_form' % (module.name,
+                #                                                exam.name)
+                #                exam = {'title': title,
+                #                        'passed': passed,
+                #                        'attempts': n_attempts,
+                #                        'mark': str(round(mark, 2)),
+                #                        'url': url}
+                #                last_exam_passed = passed
+                #                ns['exam'] = exam
+
+                #else:
+                #    # Not training manager
+                #    if last_exam_passed is True:
+                #        # Check for marketing form.
+                #        marketing_form = module.get_marketing_form(self.name)
+                #        ns['marketing'] = None
+                #        if marketing_form is not None:
+                #            url = '/%s/%s/;fill_form' % (module.name,
+                #                                        marketing_form.name)
+                #            marketing = {'url': url}
+                #            ns['marketing'] = marketing
+
+                #        else:
+                #            ns['exam'] = None
+                #            # Check for exam
+                #            exam = None
+                #            exams = list(module.search_handlers(format=Exam.class_id))
+                #            if exams != []:
+                #                exam = module.get_exam(self.name)
+                #                last_exam_passed = False
+                #                if exam is not None:
+                #                    title = exam.title_or_name
+                #                    result = exam.get_result(self.name)
+                #                    passed, n_attempts, kk, mark, kk = result
+                #                    url = '/%s/%s/;take_exam_form' % (module.name,
+                #                                                    exam.name)
+                #                    exam = {'title': title,
+                #                            'passed': passed,
+                #                            'attempts': n_attempts,
+                #                            'mark': str(round(mark, 2)),
+                #                            'url': url}
+                #                    last_exam_passed = passed
+                #                    ns['exam'] = exam
+                #        # Exams
+                #        #exams = list(module.search_handlers(format=Exam.class_id))
+                #        if exams != []:
+                #            exam = module.get_exam(self.name)
+                #            last_exam_passed = False
+                #            if exam is not None:
+                #                title = exam.title_or_name
+                #                result = exam.get_result(self.name)
+                #                passed, n_attempts, kk, mark, kk = result
+                #                url = '/%s/%s/;take_exam_form' % (module.name,
+                #                                                exam.name)
+                #                exam = {'title': title,
+                #                        'passed': passed,
+                #                        'attempts': n_attempts,
+                #                        'mark': str(round(mark, 2)),
+                #                        'url': url}
+                #                last_exam_passed = passed
+                #                ns['exam'] = exam
+
+
+
+
                 # Add namespace
+                module_ns.append(ns)
                 namespace['programme'] = {'title': root.title_or_name,
                           'modules': module_ns,
                           'league': '../../;league_table'}
-                # Check namespace
 
+                print namespace['programme']
         # User Role
         # XXX Fix so that we have the permissions for TP
         is_self = user is not None and user.name == self.name
