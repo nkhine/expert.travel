@@ -1599,16 +1599,12 @@ class User(iUser, WorkflowAware, Handler):
                         title = item.title_or_name
                         url = '/%s/%s/;take_exam_form' % (module.name, item.name)
                         result = item.get_result(self.name)
-                        allowed_to_take_exam = root.is_allowed_to_take_exam(self.name, item)
-                        print allowed_to_take_exam
-                        if allowed_to_take_exam and result != []:
-                            print 'Can take exam'
-                            #if result != []:
+                        if result != []:
+                            allowed_to_take_exam = root.is_allowed_to_take_exam(self.name, item)
                             passed, n_attempts, time, mark, kk = result
-                            if passed is False:
+                            if allowed_to_take_exam and passed is False:
                                 result = {
                                         'title': title,
-                                        'allowed': allowed_to_take_exam, 
                                         'passed': passed,
                                         'attempt': n_attempts,
                                         'time': time,
@@ -1616,17 +1612,17 @@ class User(iUser, WorkflowAware, Handler):
                                         'url': url
                                         }
                                 ns['exam'] = result
-                            #else:
-                            #    result = {
-                            #            'title': title,
-                            #            'passed': passed,
-                            #            'attempt': n_attempts,
-                            #            'time': time,
-                            #            'mark': str(round(mark, 2)),
-                            #            'url': url
-                            #            }
-                            #    ns['exam'] = result
-               #     
+                            else:
+                                result = {
+                                        'title': title,
+                                        'passed': passed,
+                                        'attempt': n_attempts,
+                                        'time': time,
+                                        'mark': str(round(mark, 2)),
+                                        'url': url
+                                        }
+                                ns['exam'] = result
+
                 marketing_form = module.get_marketing_form(self.name)
                 if marketing_form is not None:
                     feedback = marketing_form.get_result(self.name)

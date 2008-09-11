@@ -399,20 +399,13 @@ class Training(SiteRoot, WorkflowAware):
         prev_module = module.get_prev_module()
         if prev_module is None:
             return True
-        # Check if current module mkt form has been filled 
-        marketing = module.get_marketing_form()
-        if marketing is None:
-            return True
-        passed = marketing.get_result()[0]
-        return bool(passed)
-        exam = prev_module.get_exam()
         # Previous module has no exam? (BahamaBay has just one exam at end)
+        # XXX What if we had an exam in module 2 and 4?
+        exam = prev_module.get_exam()
         if exam is None:
             return True
         # Has the user passed the previous exam?
         passed = exam.get_result()[0]
-        #if passed:
-        #    return False
         return bool(passed)
 
     # Marketing Form Access Control
