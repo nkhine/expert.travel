@@ -8,8 +8,14 @@
 <span stl:if="marketing"> before you
 proceed to the next step, please take the time to answer few questions,
 with this <a href="${marketing}">Talkback</a> form.</span> 
-<span stl:if="exam"> you can now proceed to take the <a href="${exam}">the
+<span stl:if="prev_module"> Please take the last <span stl:if="exam"><a href="${exam}">the
 exam.</a></span>
+</span>
+<span stl:if="not prev_module">
+<span stl:if="exam"> you can now proceed to take <a href="${exam}">the
+exam.</a></span>
+</span>
+
 <span stl:if="next">please go to the <a href="${next}">next
 module.</a></span>
 </p>

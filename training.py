@@ -395,6 +395,38 @@ class Training(SiteRoot, WorkflowAware):
         if passed:
             return False
         # Is this the first module?
+        # Index the modules by name
+        #modules = self.get_modules()
+        #for i, module in enumerate(modules):
+        #    previous_modules = modules[:i]
+        #    print previous_modules
+        #    if previous_modules is not None:
+        #        return False
+        #        for previous_module in previous_modules:
+        #            exam = previous_module.get_exam(user.name)
+        #            if exam is not None:
+        #                passed = exam.get_result(user.name)[0]
+        #                if passed:
+        #                    previous_exams.append(exam.name)
+        #                    return bool(passed)
+        #    else:
+        #        return True
+        ##exs = list(previous_modules.search_handlers(format=Exam.class_id))
+        #    exams = []
+        #    for module in modules[:index]:
+        #        exam = module.get_exam(user.name)
+        #        exams.append(exam)
+        #    for exam in exams:
+        #        not_passed = []
+        #        if exam is not None:
+        #            passed = exam.get_result(user.name)[0]
+        #            if passed:
+        #                print passed
+        #            else:
+        #                not_passed.append(exam.name)
+        #    print not_passed
+
+        #print 'there is an exam in the last module XXX exs'
         module = object.parent
         prev_module = module.get_prev_module()
         if prev_module is None:
@@ -1461,6 +1493,28 @@ class Module(Folder):
         if index == 0:
             return None
         return modules[index - 1]
+    
+    def get_previous_results(self, username=None):
+        """
+        Returns true if the user has passed all the previous exams 
+        """
+        programme = self.parent
+        modules = programme.get_modules()
+        index = modules.index(self)
+        if username is None:
+            username = get_context().user.name
+        exams = []
+        for module in modules[:index]:
+            exam = module.get_exam(username)
+            exams.append(exam)
+        for exam in exams:
+            not_passed = []
+            if exam is not None:
+                passed = exam.get_result(username)[0]
+                if passed:
+                    print passed
+                else:
+                    not_passed.append(exam.name)
 
     def get_topics(self):
         topics = list(self.search_handlers(format=Topic.class_id))
@@ -1636,17 +1690,30 @@ class Module(Folder):
 
         We have to ensure that this option is provided.
         '''
+        root = self.get_site_root()
         here = context.handler
         user = context.user
+        modules = root.get_modules()
+
         # Build the namespace
         namespace = {}
         title = here.get_title()
         namespace['title'] = title
         namespace['marketing'] = None
         namespace['exam'] = None
+        namespace['prev_module'] = None
         #namespace['game'] = None
         namespace['next'] = None
         namespace['finished'] = False
+       
+        #previous_exams = self.get_previous_results(user.name)
+        ## Index the modules by name
+        #for index, module in enumerate(modules):
+        #    module_index = modules.index(module)
+        #    is_first_module = module_index == 0
+        #    is_last_module = module_index == len(modules) - 1
+
+
         #game = self.get_game()
         #if game:
         #    popup = ("window.open('%s/;play',null,'scrollbars=no,"
@@ -1682,12 +1749,12 @@ class Module(Folder):
                     print 'Boo, please go to the previous module and take exam'
                 # Take the exam
                 else:
+                    modules = self.parent.get_modules()
+                    module_index = modules.index(self)
                     if exam is not None:
                         result = exam.get_result(user.name)
                         passed, n_attempts, time, mark, kk = result
                         if passed:
-                            modules = self.parent.get_modules()
-                            module_index = modules.index(self)
                             if module_index == len(modules) - 1:
                                 namespace['finished'] = True
                                 namespace['profile'] = user.get_profile_url(self)
@@ -1697,9 +1764,15 @@ class Module(Folder):
                         else:
                             exam_path = self.get_pathto(exam)
                             namespace['exam'] = '%s/;take_exam_form' % exam_path
+                    else:
+                        print 'we have passed the previous exam, but this module\
+                        does not have an exam'
+                        next = modules[module_index + 1]
+                        namespace['next'] = '../%s/;view' % next.name
+                        
         # First module in programme
         else:
-            namespace['prev_module'] = None 
+            #namespace['prev_module'] = None 
             # The marketing form
             if marketing_form is not None:
                 result = marketing_form.get_result(user.name)
