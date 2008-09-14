@@ -376,9 +376,7 @@ class Job(Folder, RoleAware):
         salary = self.get_property('abakuc:salary')
         namespace['salary'] = SalaryRange.get_namespace(salary)
         function = self.get_property('abakuc:function')
-        print function
         namespace['function'] =  JobTitle.get_namespace(function)
-        print namespace['function']
         job_text = self.get_property('abakuc:job_text')
         namespace['abakuc:job_text'] = job_text
         # XXX Form
@@ -534,7 +532,6 @@ class Candidature(RoleAware, Folder):
             # Check the user is not already there
             catalog = context.server.catalog
             results = catalog.search(username=email)
-            print email, results.get_n_documents()
             if results.get_n_documents() == 0:
                 firstname = context.get_form_value('ikaaro:firstname')
                 lastname = context.get_form_value('ikaaro:lastname')

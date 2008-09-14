@@ -498,8 +498,10 @@ class Marketing(Folder):
         rows = rows[start:start+20]
         # Actions
         message = self.gettext(MSG_DELETE_SELECTION)
-        actions = [('remove', u'Remove', 'button_delete',
-                 'return confirmation("%s");' % message.encode('utf_8'))]
+        actions = [('add_question_form', u'Add question', 'button_ok', None),
+                   ('remove', u'Remove', 'button_delete',
+                 'return confirmation("%s");' % message.encode('utf_8')),
+                 ('fill_form', u'Preview form', 'button_ok', None)]
 
         # Build the namespace
         namespace = {}
@@ -687,7 +689,6 @@ class Marketing(Folder):
                 response += 1
                 item_line = '%s : %s' % (question_title, answer_title)
                 main_body.append(item_line)
-            print main_body              
             # Redirect the user to the end of Module
             message = 'Thank you'
             return context.come_back(message, '../;end')

@@ -144,15 +144,13 @@ class Training(SiteRoot, WorkflowAware):
     __roles__ = [
         {'name': 'abakuc:training_manager', 'title': u"Training Manager",
          'unit': u"Training Manager"},
-        {'name': 'abakuc:branch_manager', 'title': u"Branch Manager",
-         'unit': u"Branch Manager"},
         {'name': 'abakuc:partner', 'title': u"Partner",
          'unit': u"Partner"},
-        {'name': 'abakuc:branch_member', 'title': u"Branch Member",
+        {'name': 'abakuc:branch_member', 'title': u"Member",
          'unit': u"Branch Member"},
     ]
 
-    browse_content__access__ = 'is_training_manager'
+    browse_content__access__ = 'is_admin'
     edit_metadata_form__access__ = 'is_training_manager'
     new_resource_form__access__ = 'is_admin'
     new_resource__access__ = 'is_admin'
@@ -399,7 +397,6 @@ class Training(SiteRoot, WorkflowAware):
         #modules = self.get_modules()
         #for i, module in enumerate(modules):
         #    previous_modules = modules[:i]
-        #    print previous_modules
         #    if previous_modules is not None:
         #        return False
         #        for previous_module in previous_modules:
@@ -424,9 +421,7 @@ class Training(SiteRoot, WorkflowAware):
         #                print passed
         #            else:
         #                not_passed.append(exam.name)
-        #    print not_passed
 
-        #print 'there is an exam in the last module XXX exs'
         module = object.parent
         prev_module = module.get_prev_module()
         if prev_module is None:
@@ -499,6 +494,26 @@ class Training(SiteRoot, WorkflowAware):
         # Is training manager
         return self.has_user_role(user.name, 'abakuc:training_manager')
 
+    def is_allowed_to_trans(self, user, object, name):
+        if user is None:
+            return False
+
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is training manager
+        return self.has_user_role(user.name, 'abakuc:training_manager')
+
+    def is_allowed_to_edit(self, user, object):
+        root = object.get_site_root()
+        return root.is_training_manager(user, object)
+
+    def is_allowed_to_view(self, user, object):
+        root = object.get_site_root()
+        # Protect the document
+        return root.is_training_manager_or_member(user, object)
+
     ########################################################################
     # Chart
     ########################################################################
@@ -568,8 +583,6 @@ class Training(SiteRoot, WorkflowAware):
         country = context.get_form_value('country')
         region = context.get_form_value('region')
 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         # Build the namespace
         namespace = {}
 
@@ -1218,7 +1231,6 @@ class Training(SiteRoot, WorkflowAware):
         namespace['title'] = title
         description = self.get_property('dc:description')
         namespace['description'] = description
-        print description
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
         for vhost in vhosts:
@@ -1494,27 +1506,27 @@ class Module(Folder):
             return None
         return modules[index - 1]
     
-    def get_previous_results(self, username=None):
-        """
-        Returns true if the user has passed all the previous exams 
-        """
-        programme = self.parent
-        modules = programme.get_modules()
-        index = modules.index(self)
-        if username is None:
-            username = get_context().user.name
-        exams = []
-        for module in modules[:index]:
-            exam = module.get_exam(username)
-            exams.append(exam)
-        for exam in exams:
-            not_passed = []
-            if exam is not None:
-                passed = exam.get_result(username)[0]
-                if passed:
-                    print passed
-                else:
-                    not_passed.append(exam.name)
+    #def get_previous_results(self, username=None):
+    #    """
+    #    Returns true if the user has passed all the previous exams 
+    #    """
+    #    programme = self.parent
+    #    modules = programme.get_modules()
+    #    index = modules.index(self)
+    #    if username is None:
+    #        username = get_context().user.name
+    #    exams = []
+    #    for module in modules[:index]:
+    #        exam = module.get_exam(username)
+    #        exams.append(exam)
+    #    for exam in exams:
+    #        not_passed = []
+    #        if exam is not None:
+    #            passed = exam.get_result(username)[0]
+    #            if passed:
+    #                print passed
+    #            else:
+    #                not_passed.append(exam.name)
 
     def get_topics(self):
         topics = list(self.search_handlers(format=Topic.class_id))
@@ -1746,7 +1758,6 @@ class Module(Folder):
                     namespace['prev_module'] = '/%s/;view' % (prev_module.name) 
                     namespace['exam'] = '/%s/%s/;take_exam_form' % (prev_module.name,
                                                             prev_exam.name)
-                    print 'Boo, please go to the previous module and take exam'
                 # Take the exam
                 else:
                     modules = self.parent.get_modules()
@@ -1765,8 +1776,6 @@ class Module(Folder):
                             exam_path = self.get_pathto(exam)
                             namespace['exam'] = '%s/;take_exam_form' % exam_path
                     else:
-                        print 'we have passed the previous exam, but this module\
-                        does not have an exam'
                         next = modules[module_index + 1]
                         namespace['next'] = '../%s/;view' % next.name
                         
@@ -1943,7 +1952,6 @@ class Topic(Folder):
             if image1:
                 try:
                     image1 = item.parent.get_handler(image1[3:])
-                    print image1
                 except:
                     pass
                 else:
@@ -1957,7 +1965,6 @@ class Topic(Folder):
             if image2:
                 try:
                     image2 = item.parent.get_handler(image2[3:])
-                    print image2
                 except:
                     pass
                 else:
@@ -1973,17 +1980,14 @@ class Topic(Folder):
                       'description': description,
                       'title': item.title_or_name})
 
-        print images
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
         batch_total = len(items)
-        print batch_total
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
         items = items[batch_start:batch_fin]
-        print items
         # Namespace
         if items:
             msgs = (u'There is one published document.',

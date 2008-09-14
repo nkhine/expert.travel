@@ -24,10 +24,19 @@ class Media(Folder, RoleAware):
                 ['browse_content?mode=list',
                 'browse_content?mode=thumbnails'],
                 ['new_resource_form'],
+               ['permissions_form',
+                    'new_user_form'],
                 ['edit_metadata_form']]
 
+    browse_content__access__ = 'is_training_manager'
+    new_resource_form__access__ = 'is_training_manager'
+    new_resource__access__ = 'is_training_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
+    permissions_form__access__ = 'is_admin'
+    new_user_form__access__ = 'is_admin'
+
     def get_document_types(self):
-        return [File, Folder]
+        return [File]
 
     def get_images(self):
         images = list(self.search_handlers(format=File.class_id))
@@ -37,6 +46,17 @@ class Media(Folder, RoleAware):
     #######################################################################
     # ACL 
     #######################################################################
+    def is_training_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        office = self.parent
+        # Is reviewer or member
+        return office.has_user_role(user.name, 'abakuc:training_manager')
+
     def is_training_manager_or_member(self, user, object):
         if not user:
             return False
@@ -49,16 +69,6 @@ class Media(Folder, RoleAware):
         return (office.has_user_role(user.name, 'abakuc:training_manager') or
                 office.has_user_role(user.name, 'abakuc:branch_member'))
     
-    def is_allowed_to_edit_map(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is training manager
-        return self.has_user_role(user.name, 'abakuc:training_manager')
-
     def is_allowed_to_view(self, user, object):
         # Protect the document
         return self.is_training_manager_or_member(user, object)
@@ -67,7 +77,7 @@ class Media(Folder, RoleAware):
     # View media folder 
     #######################################################################
 
-    view__access__ = 'is_allowed_to_view' 
+    view__access__ = 'is_training_manager_or_member' 
     view__label__ = u'Media folder'
     def view(self, context):
         # Set style
@@ -82,7 +92,6 @@ class Media(Folder, RoleAware):
         others = []
         for handler in handlers:
             handler_state = handler.get_property('state')
-            print handler_state
             if handler_state == 'public':
                 type = handler.get_content_type()
                 url = '/media/%s' % handler.name
@@ -116,9 +125,6 @@ class Media(Folder, RoleAware):
                             'keywords': handler.get_property('dc:subject')}
                     others.append(item)
                 
-        print flash
-        print images
-        print others
         # Namespace
         namespace = {}
         namespace['images'] = images

@@ -2,36 +2,58 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <stl:block stl:if="office">
-  <p>How am I doing?</p>
-  <dt class="profile_modules" stl:if="programme">
-    <dd stl:repeat="module programme/modules">
-      <stl:block stl:if="module/url">
-        <a href="${module/url}">${module/title}</a>
-        <dt>
-          <dd stl:if="module/marketing">
-            Fill <a href="${module/marketing/url}">marketing
-            form</a>
-          </dd>
-          <stl:block stl:if="module/exam">
-            <dd stl:if="not module/exam/attempts">
-              <a href="${module/exam/url}">Take exam</a>
-            </dd>
-            <stl:block stl:if="module/exam/attempts">
-              <stl:block stl:if="module/exam/passed">
-                <dd>
-                  Exam passed! (mark: <b>${module/exam/mark}</b>%)
-                </dd>
+      <stl:block stl:if="not is_training_manager">
+          <dt class="modules" stl:if="programme">
+            <dd stl:repeat="module programme/modules">
+              <stl:block stl:if="module/url">
+                <a href="${module/url}">${module/title}</a>
+                <dt>
+                  <dd stl:if="module/marketing">
+                    Fill <a href="${module/marketing/url}">marketing
+                    form</a>
+                  </dd>
+                  <stl:block stl:if="module/exam">
+                    <dd stl:if="not module/exam/attempts">
+                      <a href="${module/exam/url}">Take exam</a>
+                    </dd>
+                    <stl:block stl:if="module/exam/attempts">
+                      <stl:block stl:if="module/exam/passed">
+                        <dd>
+                          Exam passed! (mark: <b>${module/exam/mark}</b>%)
+                        </dd>
+                      </stl:block>
+                      <dd stl:if="not module/exam/passed">
+                        Exam attempts: <b>${module/exam/attempts}</b>.
+                        <a href="${module/exam/url}">Try again</a>
+                      </dd>
+                    </stl:block>
+                  </stl:block>
+                </dt>
               </stl:block>
-              <dd stl:if="not module/exam/passed">
-                Exam attempts: <b>${module/exam/attempts}</b>.
-                <a href="${module/exam/url}">Try again</a>
-              </dd>
-            </stl:block>
-          </stl:block>
-        </dt>
-      </stl:block>
 
-      <stl:block stl:if="not module/url">${module/title}</stl:block>
-    </dd>
-  </dt>
+              <stl:block stl:if="not module/url">${module/title}</stl:block>
+            </dd>
+          </dt>
+      </stl:block>
+      <stl:block stl:if="is_training_manager">
+          <dt class="modules" stl:if="programme">
+            <dd stl:repeat="module programme/modules">
+                <a href="${module/url}">${module/title}</a>
+                <dt>
+                  <dd stl:if="module/add_marketing">
+                    <a href="${module/add_marketing/url}">Add Marketing</a>
+                  </dd>
+                  <dd stl:if="module/manage_marketing">
+                    <a href="${module/manage_marketing/url}">Manage Marketing</a>
+                  </dd>
+                    <dd stl:if="module/add_exam">
+                      <a href="${module/add_exam/url}">Add Exam</a>
+                    </dd>
+                    <dd stl:if="module/manage_exam">
+                      <a href="${module/manage_exam/url}">Manage Exam</a>
+                    </dd>
+                </dt>
+            </dd>
+          </dt>
+      </stl:block>
   </stl:block>

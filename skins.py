@@ -70,7 +70,6 @@ class Node(object):
         ns['label'] = 'Modules'
         ns['title'] = name
         submenus = [ child.get_tree(here) for child in self.children ]
-        print len(submenus) > 4
         if len(submenus) > 4:
             submenus[:5]
             ns['items'] = submenus
@@ -139,7 +138,6 @@ class FrontOffice(Skin):
         if isinstance(site_root, ExpertTravel):
             # Navigation
             results = root.search(level0=level0, format=site_root.site_format)
-            print 'We are on an Expert Travel site' 
             # Flat
             ## XXX Here is a bug #133 if you re-start
             ## the server you no longer have a list
@@ -164,7 +162,6 @@ class FrontOffice(Skin):
         else:
             # Navigation
             namespace['level1'] = '' 
-            print 'We are either on a Company view or a TP' 
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
         if context_menu_html is None:
@@ -355,7 +352,6 @@ class FrontOffice(Skin):
 
             ## The CSS style
             node_class = ''
-            print node is active_node
             items = []
             if node is active_node:
                 node_class = 'nav_active'

@@ -425,7 +425,6 @@ class Root(Handler, BaseRoot):
         """
         root = context.handler.get_site_root()
         country_code = get_host_prefix(context)
-        print country_code
         if country_code is not None:
             if not isinstance(root, Company):
                 # Rule for address as: http://fr.expert.travel/

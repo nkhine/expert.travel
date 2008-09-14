@@ -772,7 +772,6 @@ class Company(SiteRoot):
     edit_metadata__access__ = 'is_branch_manager'
     def edit_metadata(self, context):
         username = get_context().user.name
-        print username
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
         website = context.get_form_value('abakuc:website')
@@ -1438,7 +1437,6 @@ class Address(RoleAware, WorkflowAware, Folder):
             # Check the user is not already there
             catalog = context.server.catalog
             results = catalog.search(username=email)
-            print email, results.get_n_documents()
             if results.get_n_documents() == 0:
                 firstname = context.get_form_value('ikaaro:firstname')
                 lastname = context.get_form_value('ikaaro:lastname')
@@ -1607,7 +1605,6 @@ class Address(RoleAware, WorkflowAware, Folder):
             results = csv.search(user_id=user.name)
             rows = []
             for line in results:
-                print line
                 rows.append(csv.get_row(line))
 
         for row in rows:

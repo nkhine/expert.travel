@@ -8,7 +8,9 @@
 
 <form name="edit" action=";edit" method="post">
   <input type="hidden" name="timestamp" value="${timestamp}" />
+  <div id="content">
   ${rte}
+  </div>
   <hr />
         <dl>
             <dt>

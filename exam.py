@@ -714,8 +714,6 @@ class Exam(Folder):
 
     take_exam__access__ = 'is_allowed_to_take_exam'
     def take_exam(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         user = context.user
         questions = context.get_form_values('questions')
         time_submit = context.get_cookie('exam_time')
@@ -755,8 +753,6 @@ class Exam(Folder):
 
     result__access__ = 'is_allowed_to_view'
     def result(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         user = context.user
 
         last_attempt = self.results.get_last_attempt(user.name)

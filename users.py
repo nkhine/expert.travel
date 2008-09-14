@@ -859,8 +859,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['jobs'] = jobs
 
         # Training programmes
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         items = trainings.search_handlers(handler_class=Training)
         
         # List all training programmes the user belongs to
@@ -880,10 +878,6 @@ class User(iUser, WorkflowAware, Handler):
                     programmes.append(ns)
             else:
                 other_programmes.append(ns)
-
-        pp.pprint(is_current_programme)
-        pp.pprint(programmes)
-        pp.pprint(other_programmes)
         # Tabs
         namespace['tabs'] = self.get_tabs_stl(context)
 
@@ -1594,100 +1588,125 @@ class User(iUser, WorkflowAware, Handler):
                 ns = {'title': module.title_or_name, 'url': None,
                         'description': description, 'index': index}
                 
-                if is_first_module:
-                    print 'hi, i am the first module'
-                    last_exam_passed = True
-                    ns['url'] = url 
-                    ns['exam'] = None
+                if is_training_manager:
+                    ns['url'] = url
+                    ns['manage_marketing'] = None
+                    ns['add_marketing'] = None
+                    ns['manage_exam'] = None
+                    ns['add_exam'] = None
                     ### Marketing
-                    marketing_form = module.get_marketing_form(self.name)
-                    ns['marketing'] = None
-                    if marketing_form is not None:
-                        passed = marketing_form.get_result(self.name)[0]
-                        if passed is False:
-                            print 'We have to fill the mkt form'
+                    marketing_forms = list(module.search_handlers(format=Marketing.class_id))
+                    for marketing_form in marketing_forms:
+                        if marketing_form is not None:
                             title = marketing_form.title_or_name
-                            url = '/%s/%s/;fill_form' % (module.name, marketing_form.name)
+                            url = '/%s/%s/;analyse' % (module.name, marketing_form.name)
                             marketing = {'title': title,
-                                         'passed': passed,
                                          'url': url}
-                            ns['marketing'] = marketing
-                            exam = None
-                    else:
-                        # Exams
-                        exam = None
-                        exs = list(module.search_handlers(format=Exam.class_id))
-                        if exs != []:
-                            exam = module.get_exam(self.name)
-                            last_exam_passed = False
-                            if exam is not None:
-                                result = exam.get_result(self.name)
-                                passed, n_attempts, kk, mark, kk = result
-                                url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                 exam.name)
-                                exam = {'passed': passed, 
-                                        'attempts': n_attempts,
-                                        'mark': str(round(mark, 1)), 
-                                        'url': url}
-                                last_exam_passed = passed
-                                ns['exam'] = exam
-
-                else:
-                #elif is_last_module:
-                    # We need to find out if the exam has been
-                    # passed in the previous modules
-                    print 'hello, i am the last module'
-                    ns['url'] = None
-                    ns['exam'] = None
-                    prev_module = module.get_prev_module()
-                    exs = list(prev_module.search_handlers(format=Exam.class_id))
-                    if exs != []:
-                        exam = prev_module.get_exam(self.name)
+                            ns['manage_marketing'] = marketing
+                        else:
+                            url = '/%s/;new_resource_form?type=marketing' % module.name
+                            marketing = {'title': None, 'url': url}
+                            ns['add_marketing'] = marketing
+                    ### Exam 
+                    exams = list(module.search_handlers(format=Exam.class_id))
+                    for exam in exams:
                         if exam is not None:
-                            passed = exam.get_result(self.name)[0]
-                            #passed, n_attempts, kk, mark, kk = result
-                            if passed:
-                                ns['url'] = url
-                                # we need to get the current marketing form
-                                ### Marketing
-                                marketing_form = module.get_marketing_form(self.name)
-                                ns['marketing'] = None
-                                if marketing_form is not None:
-                                    passed = marketing_form.get_result(self.name)[0]
-                                    if passed is False:
-                                        print 'We have to fill the mkt form'
-                                        title = marketing_form.title_or_name
-                                        url = '/%s/%s/;fill_form' % (module.name, marketing_form.name)
-                                        marketing = {'title': title,
-                                                     'passed': passed,
-                                                     'url': url}
-                                        ns['marketing'] = marketing
-                                        ns['exam'] = None
-                                else:
-                                    exs = list(module.search_handlers(format=Exam.class_id))
-                                    if exs != []:
-                                        exam = module.get_exam(self.name)
-                                        if exam is not None:
-                                            passed = exam.get_result(self.name)[0]
-                                            if passed:
-                                                result = exam.get_result(self.name)
-                                                passed, n_attempts, kk, mark, kk = result
-                                                exam = {'passed': passed, 
-                                                        'attempts': n_attempts,
-                                                        'mark': str(round(mark, 1)), 
-                                                        'url': None}
-                                                last_exam_passed = passed
-                                            else:
-                                                url = '/%s/%s/;take_exam_form' % (module.name,
-                                                                                 exam.name)
-                                                exam = {'passed': False, 
-                                                        'attempts': None,
-                                                        'mark': None, 
-                                                        'url': url}
-                                            ns['exam'] = exam
-                #else:
-                #    print 'hello, I am between'
-                #    ns['url'] = None
+                            title = exam.title_or_name
+                            url = '/%s/%s/;analyse' % (module.name, exam.name)
+                            exam = {'title': title,
+                                         'url': url}
+                            ns['manage_exam'] = exam
+                        else:
+                            url = '/%s/;new_resource_form?type=marketing' % module.name
+                            ns['add_exam'] = {'title': None, 'url': url}
+                else:
+                    if is_first_module:
+                        last_exam_passed = True
+                        ns['url'] = url 
+                        ns['exam'] = None
+                        ### Marketing
+                        marketing_form = module.get_marketing_form(self.name)
+                        ns['marketing'] = None
+                        if marketing_form is not None:
+                            passed = marketing_form.get_result(self.name)[0]
+                            if passed is False:
+                                title = marketing_form.title_or_name
+                                url = '/%s/%s/;fill_form' % (module.name, marketing_form.name)
+                                marketing = {'title': title,
+                                             'passed': passed,
+                                             'url': url}
+                                ns['marketing'] = marketing
+                                exam = None
+                        else:
+                            # Exams
+                            exam = None
+                            exs = list(module.search_handlers(format=Exam.class_id))
+                            if exs != []:
+                                exam = module.get_exam(self.name)
+                                last_exam_passed = False
+                                if exam is not None:
+                                    result = exam.get_result(self.name)
+                                    passed, n_attempts, kk, mark, kk = result
+                                    url = '/%s/%s/;take_exam_form' % (module.name,
+                                                                     exam.name)
+                                    exam = {'passed': passed, 
+                                            'attempts': n_attempts,
+                                            'mark': str(round(mark, 1)), 
+                                            'url': url}
+                                    last_exam_passed = passed
+                                    ns['exam'] = exam
+
+                    else:
+                    #elif is_last_module:
+                        # We need to find out if the exam has been
+                        # passed in the previous modules
+                        ns['url'] = None
+                        ns['exam'] = None
+                        prev_module = module.get_prev_module()
+                        exs = list(prev_module.search_handlers(format=Exam.class_id))
+                        if exs != []:
+                            exam = prev_module.get_exam(self.name)
+                            if exam is not None:
+                                passed = exam.get_result(self.name)[0]
+                                #passed, n_attempts, kk, mark, kk = result
+                                if passed:
+                                    ns['url'] = url
+                                    # we need to get the current marketing form
+                                    ### Marketing
+                                    marketing_form = module.get_marketing_form(self.name)
+                                    ns['marketing'] = None
+                                    if marketing_form is not None:
+                                        passed = marketing_form.get_result(self.name)[0]
+                                        if passed is False:
+                                            title = marketing_form.title_or_name
+                                            url = '/%s/%s/;fill_form' % (module.name, marketing_form.name)
+                                            marketing = {'title': title,
+                                                         'passed': passed,
+                                                         'url': url}
+                                            ns['marketing'] = marketing
+                                            ns['exam'] = None
+                                    else:
+                                        exs = list(module.search_handlers(format=Exam.class_id))
+                                        if exs != []:
+                                            exam = module.get_exam(self.name)
+                                            if exam is not None:
+                                                passed = exam.get_result(self.name)[0]
+                                                if passed:
+                                                    result = exam.get_result(self.name)
+                                                    passed, n_attempts, kk, mark, kk = result
+                                                    exam = {'passed': passed, 
+                                                            'attempts': n_attempts,
+                                                            'mark': str(round(mark, 1)), 
+                                                            'url': None}
+                                                    last_exam_passed = passed
+                                                else:
+                                                    url = '/%s/%s/;take_exam_form' % (module.name,
+                                                                                     exam.name)
+                                                    exam = {'passed': False, 
+                                                            'attempts': None,
+                                                            'mark': None, 
+                                                            'url': url}
+                                                ns['exam'] = exam
 
                 # Add namespace
                 #allowed_to_take_exam = root.is_allowed_to_take_exam(self.name, item)
@@ -1696,7 +1715,6 @@ class User(iUser, WorkflowAware, Handler):
                           'modules': module_ns,
                           'league': '../../;league_table'}
 
-                print namespace['programme']
         # User Role
         # XXX Fix so that we have the permissions for TP
         is_self = user is not None and user.name == self.name

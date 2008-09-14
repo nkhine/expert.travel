@@ -607,8 +607,6 @@ class Bookings(AccessControl, Folder):
 
     edit_booking__access__ = 'is_allowed_to_edit'
     def edit_booking(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         destinations = context.get_form_values('destination')
         if not destinations or len(destinations) > 5:
             message = (u'Please select a destination.')
@@ -1218,8 +1216,6 @@ class Bookings(AccessControl, Folder):
     statistics__access__ = 'is_training_manager'
     statistics__label__ = u'Statistics'
     def statistics(self, context):
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
         root = context.root
         booking_name = self.name
         column = context.get_form_value('column', 'holiday_type')
@@ -1291,7 +1287,6 @@ class Bookings(AccessControl, Folder):
             if column == 'user':
                 from users import User
                 namespace['users'] = (column == 'user')
-                pp.pprint(namespace['users'])
                 username = root.search(name=label, format=User.class_id)
                 username = username.get_documents()
                 if username:
@@ -1324,7 +1319,6 @@ class Bookings(AccessControl, Folder):
                 params['filter_duration'] = duration
                 params['filter_criteria'] = column
                 params['filter_value'] = value
-                pp.pprint(params['filter_criteria'])
                 href = "/%s/;manage_bookings?" % booking_name + urlencode(params)
                 count = len(bookings.search(query))
                 line[str(duration)] = {'href': href, 'size': count}

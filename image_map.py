@@ -70,14 +70,14 @@ class ImageMap(Folder):
     def is_flash(self):
         return self.get_handler('.image').to_str()[:3] in ('FWS', 'CWS')
 
-    upload_form__access__ = 'is_allowed_to_edit'
+    upload_form__access__ = 'is_training_manager'
     upload_form__label__ = u'Edit image'
     def upload_form(self, context):
         handler = self.get_handler('/ui/abakuc/map/upload.xml')
         return stl(handler)
 
 
-    upload__access__ = 'is_allowed_to_edit'
+    upload__access__ = 'is_training_manager'
     def upload(self, context):
         file = context.get_form_value('file')
         if not file:
@@ -128,14 +128,13 @@ class ImageMap(Folder):
         namespace = {}
         namespace['map'] = Parser(map.to_str())
         namespace['is_flash'] = self.is_flash()
-        print namespace['is_flash']
         handler = self.get_handler('/ui/abakuc/map/view.xml')
         return stl(handler, namespace)
 
 
     #######################################################################
     # Edit map
-    edit_form__access__ = 'is_allowed_to_edit_map'
+    edit_form__access__ = 'is_training_manager'
     edit_form__label__ = u'Edit image map'
     def edit_form(self, context):
         namespace = {}
@@ -146,7 +145,7 @@ class ImageMap(Folder):
         return stl(handler, namespace)
 
 
-    edit_map__access__ = 'is_allowed_to_edit_map'
+    edit_map__access__ = 'is_training_manager'
     def edit(self, context):
         map = context.get_form_value('map')
 

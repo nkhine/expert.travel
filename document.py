@@ -36,6 +36,13 @@ class Document(XHTMLFile):
                    ['edit_metadata_form'],
                    ['state_form']]
 
+    edit_form__access__ = 'is_training_manager'
+    edit__access__ = 'is_training_manager'
+    edit_metadata_form__access__ = 'is_training_manager'
+    state_form__access__ = 'is_training_manager'
+    state__access__ = 'is_training_manager'
+    edit_state__access__ = 'is_training_manager'
+
     @classmethod
     def new_instance_form(cls, context, name=''):
         root = context.root
@@ -99,11 +106,6 @@ class Document(XHTMLFile):
 
         goto = './%s/;%s' % (name, handler.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
-    #######################################################################
-    # ACL
-    def is_allowed_to_view(self, user, object):
-        # Protect the document
-        return self.is_branch_manager_or_member(user, object)
 
     #######################################################################
     # View
@@ -180,7 +182,6 @@ class Document(XHTMLFile):
         namespace['title'] = self.get_property('dc:title')
         namespace['description'] = self.get_property('dc:description')
         namespace['image1'] = image1 = self.get_property('abakuc:image1')
-        print namespace['image1']
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
@@ -269,7 +270,7 @@ class Document(XHTMLFile):
         return stl(handler, namespace)
 
 
-    edit_image__access__ = 'is_admin'
+    edit_image__access__ = 'is_allowed_to_edit'
     def edit_image(self, context):
         media_folder = '/media'
         namespace = {}

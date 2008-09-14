@@ -28,7 +28,6 @@ def title_to_name(title):
 
 def get_new_id(self, prefix=''):
     ids = []
-    print prefix
     for name in self.get_handler_names():
         if name.endswith('.metadata'):
             continue

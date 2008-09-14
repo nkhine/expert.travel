@@ -5,8 +5,5 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 ${batch}
-
-<form action=";remove" method="post">
   ${table}
-</form>
 </stl:block>
