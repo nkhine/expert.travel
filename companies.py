@@ -35,6 +35,7 @@ from jobs import Job
 from metadata import JobTitle, SalaryRange
 from product import Products
 from utils import get_sort_name
+from media import Media
 
 
 class Companies(Folder):
@@ -119,6 +120,7 @@ class Company(SiteRoot):
                    ['browse_content?mode=list',
                     'browse_content?mode=thumbnails'],
                    ['permissions_form', 'new_user_form'],
+                   ['new_resource_form'],
                    #['history_form'],
                    ['edit_metadata_form']]
 
@@ -126,8 +128,9 @@ class Company(SiteRoot):
     permissions_form__access__ = 'is_allowed_to_edit'
     new_user_form__access__ = 'is_allowed_to_edit'
     browse_content__access__ = 'is_allowed_to_edit'
+
     def get_document_types(self):
-        return []
+        return [Folder]
 
 
     def get_level1_title(self, level1):
@@ -140,6 +143,17 @@ class Company(SiteRoot):
         if name == 'companies':
             return self.get_handler('/companies')
         return SiteRoot._get_virtual_handler(self, segment)
+
+    #def new(self, **kw):
+    #    SiteRoot.new(self, **kw)
+    #    cache = self.cache
+    #    # Add extra handlers here
+
+    #    media = Media()
+    #    cache['media'] = media
+    #    cache['media.metadata'] = media.build_metadata(
+    #        **{'dc:title': {'en': u'Media folder'}})
+
     #######################################################################
     # API
     #######################################################################

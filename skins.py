@@ -33,7 +33,7 @@ class Node(object):
     def click(self, path):
         handler =  self.handler
         # fill children
-        allowed_instances = Module, Topic, Document
+        allowed_instances = Module, Topic
         handlers = [
             handler.get_handler(x) for x in handler.get_handler_names()
             if not x.startswith('.') ]

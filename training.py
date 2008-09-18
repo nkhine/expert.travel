@@ -4,8 +4,13 @@
 # Import from the Standard Library
 import datetime
 import string
+from StringIO import StringIO
+
+# Import from PIL
+from PIL import Image as PILImage
 
 # Import from itools
+from itools import vfs
 from itools.stl import stl
 from itools.cms import widgets
 from itools.cms.access import AccessControl, RoleAware
@@ -1367,11 +1372,16 @@ class Training(SiteRoot, WorkflowAware):
         for item in modules:
             get = item.get_property
             url = '%s/;view' %  item.name
+            page_picture = item.get_icon70_HTMLtag(20, 32)
+            print page_picture
+            picture_url = '%s/;icon70' % item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             items.append({'url': url,
                       'description': description,
+                      'picture_url': picture_url,
+                      'page_picture': page_picture,
                       'title': item.title_or_name})
 
         namespace['items'] = items
@@ -1387,8 +1397,8 @@ class Training(SiteRoot, WorkflowAware):
         items = items[batch_start:batch_fin]
         # Namespace
         if items:
-            msgs = (u'There is one job.',
-                    u'There are ${n} jobs.')
+            msgs = (u'There is one training module.',
+                    u'There are ${n} training modules.')
             item_batch = t2(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
@@ -1719,6 +1729,73 @@ class Module(Folder):
                 return marketing_form
         return None
 
+    # Icons and images for list views
+    icon220__access__ = True
+    def icon220(self, context):
+        return self.get_icon(id='220x355', width=220, height=355)
+
+
+    icon70__access__ = True
+    def icon70(self, context):
+        return self.get_icon(id='70x70', width=70, height=None)
+
+
+    def get_icon70_HTMLtag(self, width=70, height=70):
+        if not self.get_property('abakuc:image1'):
+            return None
+        path = self.get_property('abakuc:image1')
+        picture = self.get_handler(path)
+        #Get the actual picture object
+        handler = picture.get_content_type()
+        if not vfs.get_size(picture.uri):
+            return None
+        here = get_context().handler
+        print here
+        return "%s/;icon%s" % (here.get_pathto(self), width)
+
+
+    icon48__access__ = True
+    def icon48(self, context):
+        return self.get_icon(id='48x48', width=48, height=48)
+
+    # FIXME _icon
+    def get_icon(self, id, width, height):
+        response = get_context().response
+        #if self.has_handler('.picture'):
+        if not self.get_property('abakuc:image1'):
+            return None
+        path = self.get_property('abakuc:image1')
+        picture = self.get_handler(path)
+        if vfs.get_size(picture.uri):
+            width, height = int(width), height and int(height) or None
+            if not hasattr(picture, '_icon'):
+                picture._icon = {}
+            if id not in picture._icon:
+                data = picture.to_str()
+                im = PILImage.open(StringIO(data))
+                picture_width, picture_height = im.size
+                if picture_width > width or picture_height > height:
+                    if height == None:
+                        ratio = max(*im.size)*1./min(*im.size)
+                        height = int(ratio*width)
+
+                    im.thumbnail((width, height))
+                    s = StringIO()
+                    im.save(s, im.format)
+                    data = s.getvalue()
+                    s.close()
+
+                picture._icon[id] = data, im.format, im.size
+
+            data, format, size = picture._icon[id]
+            response.set_header('Content-Type', 'image/%s' % format)
+            return data
+
+        picture = self.get_handler('/ui/%s' % self.class_icon48)
+        format = self.class_icon48.split('.')[-1]
+        response.set_header('Content-Type', 'image/%s' % format)
+        return picture.to_str()
+
     #######################################################################
     # User Interface / View
     #######################################################################
@@ -1743,6 +1820,7 @@ class Module(Folder):
 
         namespace['title'] = title
         namespace['description'] = self.get_property('dc:description')
+        namespace['picture_url'] = '%s/;icon220' % self.name
         namespace['to_name'] = programme.get_vhosts()
         # Set batch informations
         #batch_start = int(context.get_form_value('batchstart', default=0))
@@ -1854,10 +1932,13 @@ class Module(Folder):
         from itools.cms.widgets import Breadcrumb
         here = context.handler
         site_root = here.get_site_root()
+        print site_root
         start = site_root.get_handler('media')
+        print start
         # Construct namespace
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
+        print namespace['bc']
         namespace['message'] = context.get_form_value('message')
 
         prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/epozimage.xml')

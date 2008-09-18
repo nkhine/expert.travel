@@ -15,6 +15,7 @@ from itools.stl import stl
 from itools.vfs import vfs
 from itools.web import get_context
 from itools.rest import rest, to_html_events
+#from itools.uri import Path, get_reference
 #from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 
 # Import from abakuc
@@ -230,6 +231,7 @@ class News(RoleAware, Folder):
         # Build namespace
         news_text = self.get_property('abakuc:news_text')
         namespace['abakuc:news_text'] = news_text
+
         # Return stl
         handler = self.get_handler('/ui/abakuc/news/news_edit_metadata.xml')
         return stl(handler, namespace)
@@ -240,10 +242,25 @@ class News(RoleAware, Folder):
         for key in self.edit_news_fields:
             self.set_property(key, context.get_form_value(key))
         news_text = context.get_form_value('abakuc:news_text')
+        #Image 1
+        image1_title = context.get_form_value('image1_title')
+        image1_credit = context.get_form_value('image1_credit')
+        image1_keywords = context.get_form_value('image1_keywords')
+        image1 = context.get_form_value('abakuc:image1')
+        self.set_property('abakuc:image1', image1)
+        if image1:
+            image1 = self.parent.get_handler(image1[3:])
+            image1_title = unicode(image1_title, 'utf8')
+            image1.set_property('dc:title', image1_title, language='en')
+            image1_keywords = unicode(image1_keywords, 'utf8')
+            image1.set_property('dc:subject', image1_keywords)
+            image1_credit = unicode(image1_credit, 'utf8')
+            image1.set_property('dc:description', image1_credit,
+                                language='en')
+
         self.set_property('abakuc:news_text', news_text)
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
-
 
     #######################################################################
     ## Indexes

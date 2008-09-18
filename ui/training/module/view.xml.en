@@ -7,6 +7,11 @@
     <div class="yui-u first">
     <h1>${title}</h1>
     <p stl:if="description">${description}</p>
+     <!-- The page picture -->
+       <dt>
+       <dd class="page_picture" stl:if="picture_url"><img
+          src="/${picture_url}"/></dd>
+          </dt> 
     <div id="List">
         <stl:block stl:repeat="item items">
               <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
