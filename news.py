@@ -156,15 +156,19 @@ class News(RoleAware, Folder):
         weeks, days = divmod(difference.days, 7)
         minutes, seconds = divmod(difference.seconds, 60)
         hours, minutes = divmod(minutes, 60)
-
-        time_posted = []
-        time_posted.append({'weeks': weeks,
-                            'days': days,
-                            'hours': hours,
-                            'minutes': minutes})
-
+        if weeks != 0:
+            time_posted = {'weeks': weeks,
+                                'days': None,
+                                'hours': None,
+                                'minutes': None }
+        else:
+            time_posted = {'weeks': None,
+                                'days': days,
+                                'hours': hours,
+                                'minutes': minutes }
         namespace['date'] = date
-        namespace['posted'] = difference
+        namespace['posted'] = time_posted
+
         # Person who added the job
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
@@ -206,7 +210,7 @@ class News(RoleAware, Folder):
         #            '../%s/;view' % document_names[doc_index + 1])
         #    # Previous document
 
-        handler = self.get_handler('/ui/abakuc/news/news_view.xml')
+        handler = self.get_handler('/ui/abakuc/news/view.xml')
         return stl(handler, namespace)
 
     ###########################################################

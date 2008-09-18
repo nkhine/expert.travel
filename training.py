@@ -34,7 +34,7 @@ from companies import Company, Address
 from base import Handler, Folder
 from website import SiteRoot
 from document import Document
-from utils import get_sort_name
+from utils import get_sort_name, t1, t2, t3, t4
 from exam import Exam
 from news import News
 from media import Media
@@ -378,7 +378,7 @@ class Training(SiteRoot, WorkflowAware):
     def is_allowed_to_take_exam(self, user, object):
         '''
         Who is not allowed to take the exam:
-        1) If the user has not passed the exam from previous module.
+        1) If the user has not passed the exam from previous modules.
         2) If there is a mkt form and has not been submitted.
         '''
         if self.is_admin(user, object):
@@ -392,48 +392,42 @@ class Training(SiteRoot, WorkflowAware):
         passed = object.get_result()[0]
         if passed:
             return False
-        # Is this the first module?
         # Index the modules by name
-        #modules = self.get_modules()
-        #for i, module in enumerate(modules):
-        #    previous_modules = modules[:i]
-        #    if previous_modules is not None:
-        #        return False
-        #        for previous_module in previous_modules:
-        #            exam = previous_module.get_exam(user.name)
-        #            if exam is not None:
-        #                passed = exam.get_result(user.name)[0]
-        #                if passed:
-        #                    previous_exams.append(exam.name)
-        #                    return bool(passed)
-        #    else:
-        #        return True
-        ##exs = list(previous_modules.search_handlers(format=Exam.class_id))
-        #    exams = []
-        #    for module in modules[:index]:
-        #        exam = module.get_exam(user.name)
-        #        exams.append(exam)
-        #    for exam in exams:
-        #        not_passed = []
-        #        if exam is not None:
-        #            passed = exam.get_result(user.name)[0]
-        #            if passed:
-        #                print passed
-        #            else:
-        #                not_passed.append(exam.name)
-
+        modules = self.get_modules()
         module = object.parent
-        prev_module = module.get_prev_module()
-        if prev_module is None:
-            return True
-        # Previous module has no exam? (BahamaBay has just one exam at end)
-        # XXX What if we had an exam in module 2 and 4?
-        exam = prev_module.get_exam()
-        if exam is None:
-            return True
-        # Has the user passed the previous exam?
-        passed = exam.get_result()[0]
-        return bool(passed)
+        index = modules.index(module)
+
+        previous_modules = modules[0:index]
+        if previous_modules: 
+            exams = []
+            for previous_module in previous_modules:
+                exam = previous_module.get_exam()
+                if exam is not None:
+                    passed = exam.get_result(user.name)[0]
+                    exams.append(passed)
+            if False in exams:
+                return False
+            else:
+                return True
+        else:
+            passed = object.get_result()[0]
+            if passed:
+                return False
+            else:
+                return True 
+
+        #module = object.parent
+        #prev_module = module.get_prev_module()
+        #if prev_module is None:
+        #    return True
+        ## Previous module has no exam? (BahamaBay has just one exam at end)
+        ## XXX What if we had an exam in module 2 and 4?
+        #exam = prev_module.get_exam()
+        #if exam is None:
+        #    return True
+        ## Has the user passed the previous exam?
+        #passed = exam.get_result()[0]
+        #return bool(passed)
 
     # Marketing Form Access Control
     def is_allowed_to_fill_marketing(self, user, object):
@@ -1203,6 +1197,64 @@ class Training(SiteRoot, WorkflowAware):
 
         return context.come_back(u'Attempts removed.')
 
+    #######################################################################
+    # jQuery TABS for home page 
+    #######################################################################
+    def get_tabs_stl(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        # Build stl
+        namespace = {}
+        namespace['news'] = self.list_news(context)
+        namespace['modules'] = self.list_modules(context)
+        template = """
+        <stl:block xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:stl="http://xml.itools.org/namespaces/stl">
+            <script type="text/javascript">
+                var TABS_COOKIE = 'company_cookie';
+                $(function() {
+                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+                    },
+                    fxFade: true,
+                    fxSpeed: 'fast',
+                    fxSpeed: "normal"
+                    });
+                });
+            </script>
+        <div id="container-1">
+            <ul>
+                <li><a href="#fragment-1"><span>News</span></a></li>
+                <li><a href="#fragment-2"><span>Modules</span></a></li>
+                <li><a href="#fragment-3"><span>Training</span></a></li>
+                <li><a href="#fragment-4"><span>Marketplace</span></a></li>
+                <li><a href="#fragment-5"><span>Forum</span></a></li>
+            </ul>
+            <div id="fragment-1">
+              ${news}
+            </div>
+            <div id="fragment-2">
+              ${modules}
+            </div>
+            <div id="fragment-3">
+              {training}
+            </div>
+            <div id="fragment-4">
+              {marketplace}
+            </div>
+            <div id="fragment-5">
+              {Your travel industry forum. Have your say!}
+            </div>
+        </div>
+        </stl:block>
+                  """
+        template = XHTMLDocument(string=template)
+        return stl(template, namespace)
 
     ########################################################################
     # View
@@ -1214,30 +1266,19 @@ class Training(SiteRoot, WorkflowAware):
         root = context.root
         namespace = {}
         title = self.get_title()
-        items = self.get_modules()
-        #namespace['user']= self.get_user_menu(context)
-        #namespace['user']= 'user namespace' 
-        namespace['items'] = []
-        for item in items:
-            get = item.get_property
-            url = '%s/;view' %  item.name
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            namespace['items'].append({'url': url,
-                      'description': description,
-                      'title': item.title_or_name})
-
         namespace['title'] = title
         description = self.get_property('dc:description')
         namespace['description'] = description
+
+        # Tabs
+        namespace['tabs'] = self.get_tabs_stl(context)
+
         namespace['vhosts'] = []
         vhosts = self.get_vhosts()
         for vhost in vhosts:
             url = '%s' % vhost
             namespace['vhosts'].append({'url': url})
 
-        #namespace['vhosts'] = self.get_vhosts()
         skin = root.get_skin()
         skin_path = skin.abspath
         if skin_path == '/ui/aruni':
@@ -1245,27 +1286,7 @@ class Training(SiteRoot, WorkflowAware):
         else:
             handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
-        # Set batch informations
-        #batch_start = int(context.get_form_value('batchstart', default=0))
-        #batch_size = 5
-        #batch_total = len(modules)
-        #batch_fin = batch_start + batch_size
-        #if batch_fin > batch_total:
-        #    batch_fin = batch_total
-        #modules = modules[batch_start:batch_fin]
-        ## Namespace
-        #if modules:
-        #    msgs = (u'There is one module.',
-        #            u'There are ${n} modules.')
-        #    batch = batch(context.uri, batch_start, batch_size,
-        #                  batch_total, msgs=msgs)
-        #    msg = None
-        #else:
-        #    batch = None
-        #    msg = u'Currently there no published training modules.'
-        #
-        #namespace['batch'] = batch
-        #namespace['msg'] = msg
+
 
     #######################################################################
     # User Interface / Edit
@@ -1329,14 +1350,57 @@ class Training(SiteRoot, WorkflowAware):
         namespace['items'] = items
         namespace['title'] = title
         namespace['description'] = self.get_property('dc:description')
-        #namespace['vhosts'] = []
-        #vhosts = self.get_vhosts()
-        #for vhost in vhosts:
-        #    url = '%s' % vhost
-        #    namespace['vhosts'].append({'url': url})
-
-        #namespace['vhosts'] = self.get_vhosts()
         handler = self.get_handler('/ui/abakuc/training/view.xml')
+        return stl(handler, namespace)
+
+    list_modules__access__ = True
+    #view__access__ = 'is_allowed_to_edit'
+    list_modules__label__ = u'Modules List for TABS'
+    def list_modules(self, context):
+        here = context.handler
+        namespace = {}
+        title = here.get_title()
+        modules = self.get_modules()
+        modules.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                get_sort_name(y.name)))
+        items = []
+        for item in modules:
+            get = item.get_property
+            url = '%s/;view' %  item.name
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            items.append({'url': url,
+                      'description': description,
+                      'title': item.title_or_name})
+
+        namespace['items'] = items
+        namespace['title'] = title
+        namespace['description'] = self.get_property('dc:description')
+        # Set batch informations
+        batch_start = int(context.get_form_value('t2', default=0))
+        batch_size = 5
+        batch_total = len(items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        items = items[batch_start:batch_fin]
+        # Namespace
+        if items:
+            msgs = (u'There is one job.',
+                    u'There are ${n} jobs.')
+            item_batch = t2(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            item_table = None
+            item_batch = None
+            msg = u'Sorry but there are no modules for this training programme.'
+
+        namespace['batch'] = item_batch
+        namespace['msg'] = msg
+
+        handler = self.get_handler('/ui/abakuc/training/list_module.xml')
         return stl(handler, namespace)
 
     #######################################################################
@@ -1416,7 +1480,79 @@ class Training(SiteRoot, WorkflowAware):
         handler = self.get_handler('/ui/abakuc/training/search.xhtml')
         return stl(handler, namespace)
 
+    list_news__access__ = True
+    list_news__label__ = u'Current news'
+    def list_news(self, context):
+        '''
+        Return all the news of the training manager's company
+        including the addresses.
+        '''
+        root = context.root
+        office = self.get_site_root()
+        users = self.get_handler('/users')
+        namespace = {}
+        namespace['office'] = office
+        namespace['contacts'] = []
+        all_news = []
+        for name in office.get_property('ikaaro:contacts'):
+            #XXX Bug, we always have to have one contact.
+            to_user = users.get_handler(name)
+            address = to_user.get_address()
+            address_news = list(address.search_handlers(handler_class=News))
+            all_news = all_news + address_news
+            news_ns = []
+            for news in all_news:
+                ns = {}
+                news = root.get_handler(news.abspath)
+                get = news.get_property
+                # Information about the news item
+                address = news.parent
+                company = address.parent
+                username = news.get_property('owner')
+                user_exist = users.has_handler(username)
+                usertitle = (user_exist and
+                             users.get_handler(username).get_title() or username)
+                url = '/companies/%s/%s/%s' % (company.name, address.name,
+                                               news.name)
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                news_item = {
+                    'url': url,
+                    'title': news.title,
+                    'closing_date': get('abakuc:closing_date'),
+                    'date_posted': get('dc:date'),
+                    'owner': usertitle,
+                    'description': description}
+                ns['news_item'] = news_item
 
+                news_ns.append(ns)
+
+        #namespace['all_news'] = {'news': news_ns}
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(news_ns)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        news_ns = news_ns[batch_start:batch_fin]
+        # Namespace
+        if news_ns:
+            news_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total,
+                              msgs=(u"There is 1 news item.",
+                                    u"There are ${n} news items."))
+            msg = None
+        else:
+            news_batch = None
+            msg = u"Appologies, currently we don't have any news announcements"
+        namespace['batch'] = news_batch
+        namespace['msg'] = msg
+        namespace['news_items'] = news_ns
+
+        # Return the page
+        handler = self.get_handler('/ui/abakuc/training/list_news.xml')
+        return stl(handler, namespace)
 #######################################################################
 # Training module
 #######################################################################
@@ -1648,6 +1784,22 @@ class Module(Folder):
         # Title
         title = self.get_property('dc:title')
         namespace['title'] = title
+        # Image
+        get_property = self.get_metadata().get_property
+        namespace['image1'] = image1 = get_property('abakuc:image1')
+        namespace['image1_title'] = ''
+        namespace['image1_credit'] = ''
+        namespace['image1_keywords'] = ''
+        if image1:
+            try:
+                image1 = self.parent.get_handler(image1[3:])
+            except:
+                pass
+            else:
+                namespace['image1_title'] = image1.get_property('dc:title')
+                namespace['image1_credit'] = image1.get_property('dc:description')
+                namespace['image1_keywords'] = image1.get_property('dc:subject')
+
         # Generate the module name
         #module_names = [ x for x in here.get_handler_names()
         #                   if x.startswith('module') ]
@@ -1673,10 +1825,68 @@ class Module(Folder):
 
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description, language='en')
+        #Image 1
+        image1_title = context.get_form_value('image1_title')
+        image1_credit = context.get_form_value('image1_credit')
+        image1_keywords = context.get_form_value('image1_keywords')
+        image1 = context.get_form_value('abakuc:image1')
+        self.set_property('abakuc:image1', image1)
+        if image1:
+            image1 = self.parent.get_handler(image1[3:])
+            image1_title = unicode(image1_title, 'utf8')
+            image1.set_property('dc:title', image1_title, language='en')
+            image1_keywords = unicode(image1_keywords, 'utf8')
+            image1.set_property('dc:subject', image1_keywords)
+            image1_credit = unicode(image1_credit, 'utf8')
+            image1.set_property('dc:description', image1_credit,
+                                language='en')
 
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
+
+    #######################################################################
+    # use epoz method to upload and link image
+    document_image_form__access__ = 'is_allowed_to_edit'
+    def document_image_form(self, context):
+        from itools.cms.file import File
+        from itools.cms.binary import Image
+        from itools.cms.widgets import Breadcrumb
+        here = context.handler
+        site_root = here.get_site_root()
+        start = site_root.get_handler('media')
+        # Construct namespace
+        namespace = {}
+        namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
+        namespace['message'] = context.get_form_value('message')
+
+        prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/epozimage.xml')
+        handler = self.get_handler('/ui/abakuc/training/document/epozimage.xml')
+        return stl(handler, namespace, prefix=prefix)
+
+    document_image__access__ = 'is_allowed_to_edit'
+    def document_image(self, context):
+        """
+        Allow to upload and add an image to the
+        media folder and link it to the document.
+        """
+        from itools.cms.binary import Image
+        # Get the container
+        here = context.handler
+        site_root = here.get_site_root()
+        container = site_root.get_handler('media')
+        #container = root.get_handler(context.get_form_value('target_path'))
+        # Add the image to the handler
+        uri = Image.new_instance(container, context)
+        if ';document_image_form' not in uri.path:
+            handler = container.get_handler(uri.path[0])
+            return """
+            <script type="text/javascript">
+                window.opener.CreateImage('%s');
+            </script>
+                    """ % handler.abspath
+
+        return context.come_back(message=uri.query['message'])
 
 
     #########################################################################

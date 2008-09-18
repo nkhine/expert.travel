@@ -6,11 +6,16 @@
 <div class="yui-ge">
     <div class="yui-u first">
        <h1>${dc:title}</h1>
+       <div id="training-doc">
       <p>${dc:description}</p>
       <span>${abakuc:news_text}</span>
+      </div>
       <div class="info">
         Posted on: ${date} <strong>by <a href="${user_uri}" title="View
-                ${user}'s profile">${user}</a></strong> Time: ${posted} ago
+                ${user}'s profile">${user}</a></strong> Time: <span
+                stl:if="posted/days">$over {posted/weeks} ago</span>
+                <span stl:if="not posted/days">${posted/days} days, ${posted/hours}
+                h:${posted/minutes}m ago</span>
       </div>
     <div>
     <script type="text/javascript"><!--

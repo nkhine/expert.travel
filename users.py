@@ -368,6 +368,7 @@ class User(iUser, WorkflowAware, Handler):
         office = self.is_training()
         namespace['office'] = office
         
+        #  Training Office TABS
         if office is True:
             root = self.get_site_root()
             bookings_module = list(root.search_handlers(handler_class=Bookings))
@@ -406,6 +407,7 @@ class User(iUser, WorkflowAware, Handler):
                     namespace['bookings'] = self.bookings(context)
                 else:
                     namespace['bookings'] = None 
+        # Other sites
         else:
             namespace['news'] = self.news_table(context)
         namespace['jobs'] = self.jobs_table(context)
@@ -466,7 +468,7 @@ class User(iUser, WorkflowAware, Handler):
                         </stl:block>
                     </stl:block>
                     <stl:block if="not is_training_manager">
-                        <li><a href="#fragment-1"><span>Current training</span></a></li>
+                        <li><a href="#fragment-1"><span>Modules</span></a></li>
                         <li><a href="#fragment-2"><span>News</span></a></li>
                         <stl:block if="bookings">
                             <li><a href="#fragment-3"><span>Bookings</span></a></li>
@@ -964,7 +966,15 @@ class User(iUser, WorkflowAware, Handler):
     # View user's public profile page
     view__access__ = 'is_allowed_to_view'
     def view(self, context):
-        return 'Hello'
+        namespace = {}
+        handler_state = self.get_property('state')
+        if handler_state == 'public':
+            namespace['dc:title'] = None
+            return 'Hello'
+        else:
+            namespace['dc:title'] = 'None'
+            handler = self.get_handler('/ui/abakuc/users/view.xml')
+            return stl(handler, namespace)
 
     ########################################################################
     # Statistics UI 
@@ -1450,15 +1460,28 @@ class User(iUser, WorkflowAware, Handler):
         is_admin = root.is_admin(user, self)
         namespace['is_admin'] = is_admin
         training = root.get_handler('training')
-        #namespace['tp'] = None
-        #tp = self.get_training()
         # Table
         columns = [('title', u'Title'),
                    ('function', u'Function'),
                    ('description', u'Short description')]
         # Get all Training programmes
         items = training.search_handlers(handler_class=Training)
-        # Construct the lines of the table
+        # List all training programmes the user belongs to
+        #is_current_programme = []
+        ## List all other training programmes
+        #other_programmes = []
+
+        #for item in items:
+        #    url = 'http://%s' % (item.get_vhosts())
+        #    ns = {'title': item.title_or_name,
+        #          'url': url}
+        #    if item.has_user_role(self.name, 'abakuc:branch_member'):
+        #        if item.name is office.name:
+        #            is_current_programme.append(ns)
+        #        else:
+        #            programmes.append(ns)
+        #    else:
+        #        other_programmes.append(ns)# Construct the lines of the table
         trainings = []
         for item in list(items):
             #job = root.get_handler(job.abspath)
@@ -1481,21 +1504,22 @@ class User(iUser, WorkflowAware, Handler):
                 is_branch_manager_or_member = False
                 is_member = False
             # from the tuple
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=50,
-                                        phrase_treshold=200)
-            training_to_add ={'id': item.name,
-                             'checkbox': is_branch_manager, # XXX fix this.
-                             'url': url,
-                             'login': url+'/;login_form',
-                             'is_training_manager': is_training_manager,
-                             'is_branch_manager_or_member': is_branch_manager_or_member,
-                             'is_guest': is_guest,
-                             'is_member': is_member,
-                             'img': '/ui/abakuc/images/Training16.png',
-                             'title': get('dc:title'),
-                             'description': description}
-            trainings.append(training_to_add)
+            if item.name is not office.name:
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=50,
+                                            phrase_treshold=200)
+                training_to_add ={'id': item.name,
+                                 'checkbox': is_branch_manager, # XXX fix this.
+                                 'url': url,
+                                 'login': url+'/;login_form',
+                                 'is_training_manager': is_training_manager,
+                                 'is_branch_manager_or_member': is_branch_manager_or_member,
+                                 'is_guest': is_guest,
+                                 'is_member': is_member,
+                                 'img': '/ui/abakuc/images/Training16.png',
+                                 'title': get('dc:title'),
+                                 'description': description}
+                trainings.append(training_to_add)
 
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
@@ -1535,6 +1559,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['training_table'] = training_table
         namespace['batch'] = training_batch
         namespace['items'] = trainings
+        print namespace['items']
         namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)

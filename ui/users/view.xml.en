@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<div class="yui-gc">
+    <div class="yui-u first">
+            <div class="yui-gc">
+                <div class="yui-u first">
+                </div> <!-- / yui-g first-->
+                <div class="yui-u">
+                    <div class="yui-gc user">
+                        <div class="yui-u first">
+                        </div><!-- / yui-u first-->
+                        <div class="yui-u">
+                        </div><!-- / yui-u-->
+                    </div><!-- / yui-gc-->
+                    <!-- /user's details -->
+                </div><!-- /yui-u-->
+            </div>
+            <!-- tabs div-->
+
+            <!-- /tabs div-->
+    </div><!-- /yui-u first-->
+    <div class="yui-u">
+           <h2>whatever</h2>
+    </div><!-- /yui-u-->
+</div><!-- /yui-gc-->
+  </stl:block>

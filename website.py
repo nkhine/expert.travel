@@ -169,7 +169,8 @@ class SiteRoot(Handler, BaseWebSite):
             from training import Training
             office = self.get_site_root()
             if isinstance(office, Training):
-                default_role = self.__roles__[3]['name']
+                # Sets the role of the user, from training.py
+                default_role = self.__roles__[2]['name']
                 self.set_user_role(user.name, default_role)
             else:
                 default_role = self.__roles__[0]['name']

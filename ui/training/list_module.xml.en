@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+   <h1>${title}</h1>
+    <div class="batch">
+      ${batch}
+    </div>
+    <div stl:if="msg">${msg}</div>
+    <div class="List">
+      <stl:block repeat="item items"> 
+        <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
+          onmouseout="this.className='ListItem';">  
+          <dt>
+            <a href="${item/url}">${item/title}</a>
+          </dt>
+          <dd>
+            ${item/description}
+          </dd>
+            <div class="info">
+              <span>
+                  <a href="{item/login}">Login to manage</a>
+                  <a href="{item/login}">No. of Members</a>
+                  <a href="{item/login}">Statistics</a>
+              </span>
+              <span>
+                  <a href="{item/login}">Manage my training</a>
+              </span>
+              <span>
+                  <a href="{item/login}">Login / Register</a> for FREE Access to
+                  {item/title} programme.
+              </span>
+              <span>
+                  <a href="{item/login}">Login / Register</a> for FREE Access to
+                  {item/title} programme.
+              </span>
+            </div>
+            <div>
+            </div>
+        </dl>       
+      </stl:block>
+              <span>
+                <a href=";setup_training_form">Create a new training programme</a>.
+              </span>
+
+    </div>
+</stl:block>

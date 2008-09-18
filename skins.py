@@ -5,6 +5,7 @@
 from string import Template
 
 # Import from itools
+from itools import get_abspath
 from itools.cms.skins import Skin
 from itools.stl import stl
 from itools.web import get_context
@@ -429,6 +430,10 @@ class FrontOffice(Skin):
             menu = self.get_main_menu(context)
             if menu is not None:
                 menus.append(menu)
+            # Object's Menu
+            menu = self.get_context_menu(context)
+            if menu is not None:
+                menus.append(menu)
             # Menu for Training site
             office = context.site_root
             is_office = office.is_training()
@@ -437,10 +442,6 @@ class FrontOffice(Skin):
                 menu = self.get_modules_menu(context)
                 if menu is not None:
                     menus.append(menu)
-            # Object's Menu
-            menu = self.get_context_menu(context)
-            if menu is not None:
-                menus.append(menu)
         elif isinstance(root, Training):
             # Navigation
             menu = self.get_navigation_menu(context)
@@ -563,4 +564,6 @@ trainings = {
     'tp1.training.expert.travel': FrontOffice,
     'uk.tp1.expert.travel': FrontOffice,
     'zambia.expert.travel': FrontOffice,
+    'kansas.us.expert.travel': FrontOffice,
+    'oklahoma.us.expert.travel': FrontOffice,
 }
