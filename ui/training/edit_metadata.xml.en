@@ -32,7 +32,7 @@
       </dd>
     </dl>
 
-  <p><input type="submit" value="Modify Company" class="button_ok" /></p>
+  <p><input type="submit" value="Modify Training" class="button_ok" /></p>
 
 </form>
 

@@ -15,7 +15,7 @@ from itools.stl import stl
 from itools.vfs import vfs
 from itools.web import get_context
 from itools.rest import rest, to_html_events
-#from itools.uri import Path, get_reference
+from itools.uri import Path, get_reference
 #from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 
 # Import from abakuc
@@ -30,6 +30,7 @@ class News(RoleAware, Folder):
     class_icon48 = 'abakuc/images/News48.png'
     class_views = [
         ['view'],
+        ['browse_content?mode=list'],
         ['edit_metadata_form'],
         ['add_news_form']]
 
@@ -232,6 +233,23 @@ class News(RoleAware, Folder):
         news_text = self.get_property('abakuc:news_text')
         namespace['abakuc:news_text'] = news_text
 
+        # Image
+        get_property = self.get_metadata().get_property
+        namespace['image1'] = image1 = get_property('abakuc:image1')
+        namespace['image1_title'] = ''
+        namespace['image1_credit'] = ''
+        namespace['image1_keywords'] = ''
+        if image1:
+            try:
+                image1 = self.parent.get_handler(image1[3:])
+            except:
+                pass
+            else:
+                namespace['image1_title'] = image1.get_property('dc:title')
+                namespace['image1_credit'] = image1.get_property('dc:description')
+                namespace['image1_keywords'] = image1.get_property('dc:subject')
+
+
         # Return stl
         handler = self.get_handler('/ui/abakuc/news/news_edit_metadata.xml')
         return stl(handler, namespace)
@@ -262,6 +280,49 @@ class News(RoleAware, Folder):
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
 
+    # Edit / Inline / toolbox: add images
+    document_image_form__access__ = 'is_allowed_to_edit'
+    def document_image_form(self, context):
+        from itools.cms.file import File
+        from itools.cms.binary import Image
+        from itools.cms.widgets import Breadcrumb
+        # Build the bc
+        if isinstance(self, File):
+            start = self.parent
+        else:
+            start = self
+        # Construct namespace
+        namespace = {}
+        namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
+        namespace['message'] = context.get_form_value('message')
+
+        prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/epozimage.xml')
+        handler = self.get_handler('/ui/abakuc/training/document/epozimage.xml')
+        return stl(handler, namespace, prefix=prefix)
+
+
+    document_image__access__ = 'is_allowed_to_edit'
+    def document_image(self, context):
+        """
+        Allow to upload and add an image to epoz
+        """
+        from itools.cms.binary import Image
+        root = context.root
+        # Get the container
+        container = root.get_handler(context.get_form_value('target_path'))
+        # Add the image to the handler
+        uri = Image.new_instance(container, context)
+        if ';document_image_form' not in uri.path:
+            handler = container.get_handler(uri.path[0])
+            return """
+            <script type="text/javascript">
+                window.opener.CreateImage('%s');
+                window.close();
+            </script>
+                    """ % handler.abspath
+
+        return context.come_back(message=uri.query['message'])
+
     #######################################################################
     ## Indexes
     #######################################################################
@@ -287,4 +348,12 @@ class News(RoleAware, Folder):
         address = self.parent
         return address.is_branch_manager_or_member(user, object)
 
+    def is_allowed_to_edit(self, user, object):
+        address = self.parent
+        print address
+        return address.is_branch_manager_or_member(user, object)
+
+    def is_allowed_to_view(self, user, object):
+        address = self.parent
+        return address.is_branch_manager_or_member(user, object)
 register_object_class(News)
