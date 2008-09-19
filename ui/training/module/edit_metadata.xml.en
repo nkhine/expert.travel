@@ -56,7 +56,8 @@
 
     </dl>
 
-  <p><input type="submit" value="Modify Company" class="button_ok" /></p>
+  <p><input type="submit" value="Modify Module " class="button_ok" /></p>
+
 
 </form>
 

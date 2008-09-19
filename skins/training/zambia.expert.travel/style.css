@@ -191,6 +191,7 @@ text-align: right; }
 #training-doc img.training-doc-image { margin: 5px; }
 #training-doc dt.training-doc-image { margin-bottom: 5px; }
 
+.vignette { float: left; margin: 2px 2px 2px 2px; }
 /**************************************************************************
  * Form   
  **************************************************************************/

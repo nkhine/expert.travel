@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <stl:block xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-   <h1>${title} XXX</h1>
+   <h1>${title}</h1>
     <div class="batch">
       ${batch}
     </div>
@@ -13,12 +13,10 @@
           <dt>
             <a href="${item/url}">${item/title}</a>
           </dt>
-              <!-- The page picture -->
-           <dd class="page_picture" stl:if="item/picture_url"><img
-              src="${item/picture_url}"/></dd>
-          <dd>
-            ${item/description}
-          </dd>
+           <dd>
+            ${item/description}<span class="vignette" stl:if="item/picture_url"><img
+              src="${item/picture_url}"/></span>
+            </dd>
             <div class="info">
               <span>
                   <a href="{item/login}">Login to manage</a>
