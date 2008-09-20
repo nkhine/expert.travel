@@ -121,6 +121,8 @@ class FrontOffice(Skin):
         # This skin's style
         if self.has_handler('style.css'):
             styles.append('%s/style.css' % self.abspath)
+        if self.has_handler('images/ui.tabs.css'):
+            styles.append('%s/images/ui.tabs.css' % self.abspath)
         # Dynamic styles
         for style in context.styles:
             styles.append(style)

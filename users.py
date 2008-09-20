@@ -350,7 +350,7 @@ class User(iUser, WorkflowAware, Handler):
         - Administrate
         """
         # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
         context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')

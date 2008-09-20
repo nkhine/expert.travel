@@ -1206,8 +1206,6 @@ class Training(SiteRoot, WorkflowAware):
     # jQuery TABS for home page 
     #######################################################################
     def get_tabs_stl(self, context):
-        # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
         context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
