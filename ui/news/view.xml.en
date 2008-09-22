@@ -7,7 +7,17 @@
     <div class="yui-u first">
        <h1>${dc:title}</h1>
        <div id="training-doc">
+      <span class="training-doc-image">
+        <stl:block stl:if="image1">
+        <img src="${picture_url}" alt="${image1_title}, credits to: ${image1_credit}" />
+        <dt>
+            <dd>${image1_title}</dd>
+            <dd>${image1_credit}</dd>
+        </dt>
+        </stl:block>
+        </span>
       <p>${dc:description}</p>
+
       <span>${abakuc:news_text}</span>
       </div>
       <div class="info">

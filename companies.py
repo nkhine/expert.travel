@@ -35,7 +35,6 @@ from jobs import Job
 from metadata import JobTitle, SalaryRange
 from product import Products
 from utils import get_sort_name
-from media import Media
 
 
 class Companies(Folder):
@@ -130,7 +129,7 @@ class Company(SiteRoot):
     browse_content__access__ = 'is_allowed_to_edit'
 
     def get_document_types(self):
-        return [Folder]
+        return []
 
 
     def get_level1_title(self, level1):
@@ -742,7 +741,8 @@ class Company(SiteRoot):
     # User Interface / Edit
     #######################################################################
     @staticmethod
-    def get_form(name=None, description=None, website=None, topics=None, types=None, logo=None):
+    def get_form(name=None, description=None, website=None, topics=None,\
+                types=None, logo=None, subject=None):
         root = get_context().root
 
         namespace = {}
@@ -758,6 +758,7 @@ class Company(SiteRoot):
         # etc....
         namespace['types'] = root.get_types_namespace(types)
         namespace['logo'] = logo
+        namespace['subject'] = subject
 
         handler = root.get_handler('ui/abakuc/companies/company/form.xml')
         return stl(handler, namespace)
@@ -777,7 +778,9 @@ class Company(SiteRoot):
         topics = self.get_property('abakuc:topic')
         types = self.get_property('abakuc:type')
         logo = self.has_handler('logo')
-        namespace['form'] = self.get_form(title, description, website, topics, types, logo)
+        subject = self.get_property('dc:subject')
+        namespace['form'] = self.get_form(title, description, website,\
+                                        topics, types, logo, subject)
 
         handler = self.get_handler('/ui/abakuc/companies/company/edit_metadata.xml')
         return stl(handler, namespace)
@@ -792,12 +795,15 @@ class Company(SiteRoot):
         topics = context.get_form_values('topic')
         types = context.get_form_values('type')
         logo = context.get_form_value('logo')
+        subject = context.get_form_value('subject')
+        print subject
 
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description)
         self.set_property('abakuc:website', website)
         self.set_property('abakuc:topic', tuple(topics))
         self.set_property('abakuc:type', types)
+        #self.set_property('dc:subject', subject)
 
         # The logo
         if context.has_form_value('remove_logo'):

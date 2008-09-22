@@ -6,77 +6,48 @@
 
   <form method="post" action=";new_resource">
   <h1>New news item</h1>
-  <table width="100%"  border="0">
-  <tr>
-    <td>
-      <label class="${dc:title/class}">Title</label>
-    </td>
-    <td>
-      <input type="text" name="dc:title" value="${dc:title/value}"/>
-    </td>
-    <td>
-      <label class="${abakuc:closing_date/class}">Closing Date</label>
-    </td>
-    <td><input id="abakuc:closing_date" name="abakuc:closing_date" 
-                    type="text" value="${abakuc:closing_date/value}"/>
+      <dl>  
+        <dt>
+          <label for="dc:title">Title</label>
+        </dt>
+        <dd>
+          <input type="text" name="dc:title" value="${dc:title}"/>
+        </dd>
+        <dt>
+          <label for="abakuc:closing_date">Closing Date</label>
+        </dt>
+        <dd>
+          <input id="abakuc:closing_date" name="abakuc:closing_date" 
+                  type="text" value="${abakuc:closing_date}"/>
           <input id="trigger_date" type="button" value="..."/>
-           <script language="javascript">
+          <script language="javascript">
           Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
           </script>
-          </td>
-  </tr>
-  <tr>
-    <td colspan="4">
-      <h5>
-        <label class="${dc:description/class}"> 
-        Summary
-        </label>
-      </h5>
-    </td>
-  </tr>
-  <tr>
-        <td colspan="4">
-          <textarea  rows="4" cols="80" id="dc:description" name="dc:description">${dc:description/value}</textarea>
-        </td>
-  </tr>
-  <tr>
-    <td colspan="4">
-      <h5>
-        <label class="${abakuc:news_text/class}"> 
-        News 
-        </label>
-      </h5>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="4">
-      <textarea rows="20" cols="80" id="abakuc:news_text"
-      name="abakuc:news_text">${abakuc:news_text/value}</textarea>
-    </td>
-  </tr>
-</table>
-      <!-- Message -->
-      <table border="0" cellspacing="0" cellpadding="0" class="W740">
-        <tr>
-          <td class="PRVWN">
-            <h5>You will get the right applicants if your ad contains the following:</h5>
-            <ul class="red"><li>a meaningful, accurate description of the role</li>
-              <li>the skills or qualifications required</li>
-              <li>where the news is based</li>
-              <li>what the salary is</li>
-              <li>what additional benefits there may be</li>
-              <li>a brief description of the company recruiting</li>
-              <li>paragraph and/or line breaks to make it easier to read</li></ul>
-            <h5>Your ad must not contain:</h5>
-            <ul class="red">
-              <li>profanities, e.g. swear words or slang</li>
-              <li>you should not declare a preferred age of the applicant</li>
-              <li>sex discrimination is illegal: you must not declare a preferred sex of the applicant</li>
-              <li>racial discrimination is illegal: you must not declare a preferred race of the applicant</li>
-            </ul>
-          </td>
-        </tr>
-      </table>
+        </dd>
+        <dt>
+          <label for="dc:description">Short Description</label>
+        </dt>
+        <dd>
+          <textarea  cols="100" id="dc:description" name="dc:description"
+          rows="8">${dc:description}</textarea>
+        </dd>
+        <dt>
+          <label for="abakuc:news_text">Text</label>
+        </dt>
+        <dd>
+          <textarea rows="20" cols="80" id="abakuc:news_text"
+          name="abakuc:news_text">${abakuc:news_text}</textarea>
+        </dd>
+        <dt>
+          <label for="abakuc:image1">News image</label>
+        </dt>
+        <dd>
+            You will be able to upload a news image once you create the news
+            item.
+        </dd>
+
+
+      </dl>
       <!-- End message -->
     <p>
       <input name="class_id" type="hidden" value="${class_id}"/>

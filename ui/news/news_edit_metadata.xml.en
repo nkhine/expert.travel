@@ -41,8 +41,8 @@
             <dt>
               <label for="abakuc:image1">Image 1</label>
             </dt>
-            <stl:block if="image1">
-            <img src="${image1}" />
+            <stl:block if="picture_url">
+            <img src="${picture_url}" />
             </stl:block>
             <dd>
               <input value="${image1}" name="abakuc:image1" size="50" 

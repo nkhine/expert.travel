@@ -55,6 +55,16 @@
           Check to remove the logo.
         </stl:block>
       </dd>
+      <dt>
+        <label for="subject">Keywords (Separated by comma)</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="dc:subject" id="subject"
+          value="${subject}" />
+      </dd>
+      <dd>
+        Used by search engines to index your entry.
+      </dd>
     </dl>
 
 </stl:block>

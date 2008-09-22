@@ -1559,7 +1559,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['training_table'] = training_table
         namespace['batch'] = training_batch
         namespace['items'] = trainings
-        print namespace['items']
         namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)

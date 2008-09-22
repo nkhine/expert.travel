@@ -6,6 +6,10 @@ import time
 import datetime
 from string import Template
 import mimetypes
+from StringIO import StringIO
+
+# Import from PIL
+from PIL import Image as PILImage
 
 # Import from itools
 from itools.cms.access import RoleAware
@@ -34,12 +38,113 @@ class News(RoleAware, Folder):
         ['edit_metadata_form'],
         ['add_news_form']]
 
+    browse_content__access__ = 'is_admin'
     new_resource_form__access__ = 'is_branch_manager_or_member'
     new_resource__access__ = 'is_branch_manager_or_member'
 
     ###################################################################
-    ## Create a new news item
-    ####
+    # API 
+    ###################################################################
+    def is_training(self):
+        """
+        Check to see if the user is on a training site.
+        Return a bool
+        """
+        training = self.get_site_root()
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False
+        return training
+
+    # Get news items
+    get_news__access__ = True
+    def get_news(self, context):
+        address = self.parent
+        company = address.parent
+        office = company.parent.parent
+        from training import Training
+        namespace = {}
+        namespace['office'] = office
+        if isinstance(office, Training):
+            response = Training.news(office, context)
+            print response
+            namespace['response'] = response
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/statistics/statistics.xml')
+            return stl(handler, namespace)
+        else:
+            return 'We are somewhere else'
+
+    # Icons and images for list views
+    icon220__access__ = True
+    def icon220(self, context):
+        return self.get_icon(id='220x355', width=220, height=355)
+
+
+    icon70__access__ = True
+    def icon70(self, context):
+        return self.get_icon(id='70x70', width=70, height=None)
+
+
+    def get_icon70_HTMLtag(self, width=70, height=70):
+        if not self.get_property('abakuc:image1'):
+            return None
+        path = self.get_property('abakuc:image1')
+        picture = self.get_handler(path)
+        #Get the actual picture object
+        handler = picture.get_content_type()
+        if not vfs.get_size(picture.uri):
+            return None
+        here = get_context().handler
+        return "%s/;icon%s" % (here.get_pathto(self), width)
+
+
+    icon48__access__ = True
+    def icon48(self, context):
+        return self.get_icon(id='48x48', width=48, height=48)
+
+    # FIXME _icon
+    def get_icon(self, id, width, height):
+        response = get_context().response
+        #if self.has_handler('.picture'):
+        if not self.get_property('abakuc:image1'):
+            return None
+        path = self.get_property('abakuc:image1')
+        picture = self.get_handler(path)
+        if vfs.get_size(picture.uri):
+            width, height = int(width), height and int(height) or None
+            if not hasattr(picture, '_icon'):
+                picture._icon = {}
+            if id not in picture._icon:
+                data = picture.to_str()
+                im = PILImage.open(StringIO(data))
+                picture_width, picture_height = im.size
+                if picture_width > width or picture_height > height:
+                    if height == None:
+                        ratio = max(*im.size)*1./min(*im.size)
+                        height = int(ratio*width)
+
+                    im.thumbnail((width, height))
+                    s = StringIO()
+                    im.save(s, im.format)
+                    data = s.getvalue()
+                    s.close()
+
+                picture._icon[id] = data, im.format, im.size
+
+            data, format, size = picture._icon[id]
+            response.set_header('Content-Type', 'image/%s' % format)
+            return data
+
+        picture = self.get_handler('/ui/%s' % self.class_icon48)
+        format = self.class_icon48.split('.')[-1]
+        response.set_header('Content-Type', 'image/%s' % format)
+        return picture.to_str()
+
+    ###################################################################
+    # Create a new news item
+    ###################################################################
 
     news_fields = [
         ('dc:title', True),
@@ -150,6 +255,21 @@ class News(RoleAware, Folder):
         #news_text = self.get_property('abakuc:news_text')
 
         namespace['abakuc:news_text'] = news_text
+        # Image
+        namespace['picture_url'] = ';icon220'
+        namespace['image1'] = image1 = self.get_property('abakuc:image1')
+        namespace['image1_title'] = ''
+        namespace['image1_credit'] = ''
+        namespace['image1_keywords'] = ''
+        if image1:
+            try:
+                image1 = self.get_handler(image1)
+            except:
+                pass
+            else:
+                namespace['image1_title'] = image1.get_property('dc:title')
+                namespace['image1_credit'] = image1.get_property('dc:description')
+                namespace['image1_keywords'] = image1.get_property('dc:subject')
 
         from datetime import datetime
         now = datetime.now()
@@ -235,13 +355,14 @@ class News(RoleAware, Folder):
 
         # Image
         get_property = self.get_metadata().get_property
+        namespace['picture_url'] = ';icon220'
         namespace['image1'] = image1 = get_property('abakuc:image1')
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
         if image1:
             try:
-                image1 = self.parent.get_handler(image1[3:])
+                image1 = self.get_handler(image1)
             except:
                 pass
             else:
@@ -267,7 +388,7 @@ class News(RoleAware, Folder):
         image1 = context.get_form_value('abakuc:image1')
         self.set_property('abakuc:image1', image1)
         if image1:
-            image1 = self.parent.get_handler(image1[3:])
+            image1 = self.get_handler(image1)
             image1_title = unicode(image1_title, 'utf8')
             image1.set_property('dc:title', image1_title, language='en')
             image1_keywords = unicode(image1_keywords, 'utf8')
@@ -277,6 +398,15 @@ class News(RoleAware, Folder):
                                 language='en')
 
         self.set_property('abakuc:news_text', news_text)
+        # News keywords
+        description = context.get_form_value('dc:description')
+        items = set(description.split())
+        keywords = []
+        for item in items:
+            if len(item) >= 5:
+                keywords.append(item)
+        subject = str(keywords[:20]).replace('[', '').replace(']', '').replace('u\'', '').replace('\'', '')
+        self.set_property('dc:subject', subject)
         message = u'Changes Saved.'
         return context.come_back(message, goto=';view')
 
@@ -350,7 +480,6 @@ class News(RoleAware, Folder):
 
     def is_allowed_to_edit(self, user, object):
         address = self.parent
-        print address
         return address.is_branch_manager_or_member(user, object)
 
     def is_allowed_to_view(self, user, object):

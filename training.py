@@ -1371,7 +1371,6 @@ class Training(SiteRoot, WorkflowAware):
             get = item.get_property
             url = '%s/;view' %  item.name
             page_picture = item.get_icon70_HTMLtag(20, 32)
-            print page_picture
             picture_url = '%s/;icon70' % item.name
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
@@ -1748,7 +1747,6 @@ class Module(Folder):
         if not vfs.get_size(picture.uri):
             return None
         here = get_context().handler
-        print here
         return "%s/;icon%s" % (here.get_pathto(self), width)
 
 
@@ -1821,26 +1819,27 @@ class Module(Folder):
         namespace['picture_url'] = '%s/;icon220' % self.name
         namespace['to_name'] = programme.get_vhosts()
         # Set batch informations
-        #batch_start = int(context.get_form_value('batchstart', default=0))
-        #batch_size = 5
-        #batch_total = len(modules)
-        #batch_fin = batch_start + batch_size
-        #if batch_fin > batch_total:
-        #    batch_fin = batch_total
-        #items = modules[batch_start:batch_fin]
-        ## Namespace
-        #if items:
-        #    msgs = (u'There is one topic.',
-        #            u'This module has ${n} topics.')
-        #    batch = batch(context.uri, batch_start, batch_size,
-        #                  batch_total, msgs=msgs)
-        #    msg = None
-        #else:
-        #    batch = None
-        #    msg = u'This module has no published topics.'
-        #
-        #namespace['batch'] = batch
-        #namespace['msg'] = msg
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 5
+        batch_total = len(namespace['items'])
+        print batch_total
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        namespace['items'] = namespace['items'][batch_start:batch_fin]
+        # Namespace
+        if namespace['items']:
+            msgs = (u'There is one topic.',
+                    u'This module has ${n} topics.')
+            items_batch = batch(context.uri, batch_start, batch_size,
+                          batch_total, msgs=msgs)
+            msg = None
+        else:
+            items_batch = None
+            msg = u'This module has no published topics.'
+        
+        namespace['batch'] = items_batch
+        namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/training/module/view.xml')
         return stl(handler, namespace)
 
@@ -1930,13 +1929,10 @@ class Module(Folder):
         from itools.cms.widgets import Breadcrumb
         here = context.handler
         site_root = here.get_site_root()
-        print site_root
         start = site_root.get_handler('media')
-        print start
         # Construct namespace
         namespace = {}
         namespace['bc'] = Breadcrumb(filter_type=Image, start=start)
-        print namespace['bc']
         namespace['message'] = context.get_form_value('message')
 
         prefix = Path(self.abspath).get_pathto('/ui/abakuc/training/document/epozimage.xml')
