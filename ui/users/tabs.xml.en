@@ -1,0 +1,32 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <script type="text/javascript">
+        var USER_TABS_COOKIE = 'user_profile_cookie';
+        $(function() {
+            $('#container-user-profile ul').tabs((parseInt($.cookie(USER_TABS_COOKIE))) || 1,{click: function(clicked) {
+                var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+               $.cookie(USER_TABS_COOKIE, lastTab, {path: '/'});
+            },
+            fxFade: true,
+            fxSpeed: 'fast',
+            fxSpeed: "normal"
+            });
+        });
+    </script>
+    <div id="container-user-profile">
+        <ul>
+            <li><a href="#fragment-21"><span>Profile</span></a></li>
+            <li><a href="#fragment-22"><span>Company</span></a></li>
+            <li><a href="#fragment-23"><span>Manage</span></a></li>
+        </ul>
+            <div id="fragment-21">
+              ${user}
+            </div>
+            <div id="fragment-22">
+              ${address}
+            </div>
+            <div id="fragment-23">
+              {manage}
+            </div>
+    </div>
+

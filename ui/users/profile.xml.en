@@ -3,118 +3,35 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-gc">
     <div class="yui-u first">
-            <div class="yui-gc">
-                <div class="yui-u first">
-                    <stl:block if="not address">
-                    <h2>Company Name/Address</h2>
-                        <em>You are not attached to any company</em>.
-                          Please <a href=";setup_company_form">set up your company</a>
-                          before proceeding.
-                    </stl:block>
-                    <stl:block if="address">
-                        <h2>${company/title}</h2>
-                          <dt><a href="${company/website}">${company/website}</a></dt>
-                          <dd>
-                            <address>${address/address}<br />
-                            ${address/town}<br />
-                            ${address/county}<br />
-                            ${address/postcode}
-                            </address>
-                          </dd>
-                          <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
-                          <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
-                        <ul stl:if="not office">
-                          <li>
-                            <a href="${company/path}/;view">
-                              View company details
-                            </a>
-                          </li>
-                          <li>
-                            <a href="${address/address_path}/;view">
-                              View address details
-                            </a>
-                          </li>
-                          <li>
-                            <a href=";setup_company_form">Switch to another company</a>.
-                          </li>
-                          <li stl:if="is_admin">
-                            <a href=";setup_training_form">Create a new training programme</a>.
-                          </li>
-                        </ul>
-                    </stl:block> <!--/If address-->
-                </div> <!-- / yui-g first-->
-                <div class="yui-u">
-                    <!-- user's details -->
-                    <div class="yui-gc user">
-                        <div class="yui-u first">
-                            <stl:block if="not lastname">
-                            <h2>Personnal Details</h2>
-                            </stl:block>
-                            <stl:block if="lastname">
-                            <h2>${firstname} ${lastname}</h2>
-                            </stl:block>
-                            <dt>${email}</dt>
-                            <ul>
-                                <li stl:if="is_admin">Admin</li>
-                                <li stl:if="is_branch_manager">Manager</li>
-                                <li stl:if="is_branch_member">Member</li>
-                                <li stl:if="is_guest">Guest</li>
-                                <li>
-                                    <a href=";state_form"><strong
-                                    class="wf_${statename}">${state}</strong></a>
-                                </li>
-                                <li>
-                                <a href=";portrait_form">Modify portrait.</a>
-                                </li>
-                                <li>
-                                <a href=";edit_account_form">Edit account details.</a>
-                                </li>
-                                <li>
-                                <a href=";edit_password_form">Change password.</a>
-                                </li>
-                              </ul>  
-                        </div><!-- / yui-u first-->
-                        <div class="yui-u">
-                            <stl:block if="portrait">
-                              <img src="portrait" align="left" class="portrait"/>
-                            </stl:block>
-                            <stl:block if="not portrait">
-                              <a href=";portrait_form"><img name=""
-                              src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
-                              class="portrait"/></a>
-                            </stl:block>
-                            <dt class="points">${points}</dt>
-                        </div><!-- / yui-u-->
-                    </div><!-- / yui-gc-->
-                    <!-- /user's details -->
-                </div><!-- /yui-u-->
-            </div>
-            <!-- tabs div-->
-            <stl:block if="address">
-                 <div stl:if="not is_branch_manager_or_member">
-                     <p stl:if="contact">
-                       To manage these records, please contact 
-                       <a href="mailto:${contact}">${contact}</a>
-                       who is the Manager for this record or contact
-                       the site administrator.
-                     </p>
-                     <p stl:if="not contact">
-                       This record has no manager, please contact the site administrator.
-                     </p>
-                 </div>
-                 <div stl:if="is_branch_manager_or_member">
+        <div id="tab1">
+        ${user_tabs}
+        </div>
+        <div id="tab2">
+        <stl:block if="address">
+             <stl:block stl:if="not is_branch_manager_or_member">
+                 <p stl:if="contact">
+                   To manage these records, please contact 
+                   <a href="mailto:${contact}">${contact}</a>
+                   who is the Manager for this record or contact
+                   the site administrator.
+                 </p>
+                 <p stl:if="not contact">
+                   This record has no manager, please contact the site administrator.
+                 </p>
+             </stl:block>
+             <stl:block stl:if="is_branch_manager_or_member">
+                 ${tabs}
+             </stl:block>
+             <stl:block stl:if="office">
+                 <stl:block stl:if="not is_branch_manager_or_member">
                      ${tabs}
-                 </div>
-                 <stl:block stl:if="office">
-                     <div stl:if="not is_branch_manager_or_member">
-                         ${tabs}
-                     </div>
                  </stl:block>
              </stl:block>
-            <!-- /tabs div-->
+         </stl:block>
+         </div>
     </div><!-- /yui-u first-->
     <div class="yui-u">
-           <h2>Latest news</h2>
+    ads
     </div><!-- /yui-u-->
 </div><!-- /yui-gc-->
                             <!-- <stl:block repeat="news_items news_items">

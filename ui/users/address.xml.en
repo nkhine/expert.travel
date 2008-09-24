@@ -1,0 +1,45 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <stl:block if="not address">
+        <h2>Company Name/Address</h2>
+            <em>You are not attached to any company</em>.
+              Please <a href=";setup_company_form">set up your company</a>
+              before proceeding.
+    </stl:block>
+    <stl:block if="address">
+        <h2>${company/title}</h2>
+          <dt><a href="${company/website}">${company/website}</a></dt>
+          <dd>
+            <address>${address/address}<br />
+            ${address/town}<br />
+            ${address/county}<br />
+            ${address/postcode}
+            </address>
+          </dd>
+          <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
+          <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
+    </stl:block>
+                    <!-- 
+                    <stl:block if="address">
+                        <ul stl:if="not office">
+                          <li>
+                            <a href="${company/path}/;view">
+                              View company details
+                            </a>
+                          </li>
+                          <li>
+                            <a href="${address/address_path}/;view">
+                              View address details
+                            </a>
+                          </li>
+                          <li>
+                            <a href=";setup_company_form">Switch to another company</a>.
+                          </li>
+                          <li stl:if="is_admin">
+                            <a href=";setup_training_form">Create a new training programme</a>.
+                          </li>
+                        </ul>
+                    </stl:block>
+                    -->
+    
+

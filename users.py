@@ -315,6 +315,25 @@ class User(iUser, WorkflowAware, Handler):
     # jQuery TABS 
     #######################################################################
 
+    def tabs(self, context):
+        """
+        User profile tabs:
+        We want to split the User details and Company details on two
+        different tabs, so that:
+        [Profile] [Company]
+        """
+        root = context.root
+
+        namespace = {}
+        namespace['user'] = self.user(context)
+        namespace['address'] = self.address(context)
+        namespace['manage'] = self.address(context)
+
+        template_path = 'ui/abakuc/users/tabs.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
+        # Set Style
     def get_tabs_stl(self, context):
         """
         These are dependant on the site type and user.
@@ -768,54 +787,24 @@ class User(iUser, WorkflowAware, Handler):
                 'address_path': self.get_pathto(address)}
 
         namespace['address'] = addr
-        # Bookings
-        #if office:
-        #    items = office_name.search_handlers(handler_class=Bookings)
-        #    if items is not None:
-        #        bookings = []
-        #        for item in list(items):
-        #            csv = item.get_handler('.bookings')
-        #            if csv:
-        #                namespace['csv'] = csv 
-        #                results = []
-        #                for row in csv.get_rows():
-        #                    keys = ["date_booking", "reference_number", "from_date", "to_date",
-        #                            "party_name",
-        #                            "user", "tour_operator", "holiday_type", "holiday_subtype",
-        #                            "number", "duration", "destination1", "destination2",
-        #                            "destination3", "destination4", "destination5", "comments",
-        #                            "hotel"]                    
-        #                    keys = row
-        #                    results.append({
-        #                           'index': row.number,
-        #                           'user': user})
-        #                namespace['howmany_bookings'] = len(results)
-        #                namespace['results'] = results
-        #                get = item.get_property
-        #                url = '/%s' % item.name
-        #                booking_to_add = { 'url': url,
-        #                                    'title': get('dc:title')}
-        #                bookings.append(booking_to_add)    
-        #        namespace['items'] = bookings
-        #    else: 
-        #        namespace['items'] = None 
                 
+
         # Enquiries
-        csv = address.get_handler('log_enquiry.csv')
-        results = []
-        for row in csv.get_rows():
-            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-            if resolved:
-                continue
-            user = users.get_handler(user_id)
-            if user.get_property('ikaaro:user_must_confirm') is None:
-               results.append({
-                   'index': row.number,
-                   'email': user.get_property('ikaaro:email'),
-                   'enquiry_subject': enquiry_subject})
-            results.reverse()
-        namespace['enquiries'] = results
-        namespace['howmany'] = len(results)
+        #csv = address.get_handler('log_enquiry.csv')
+        #results = []
+        #for row in csv.get_rows():
+        #    date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+        #    if resolved:
+        #        continue
+        #    user = users.get_handler(user_id)
+        #    if user.get_property('ikaaro:user_must_confirm') is None:
+        #       results.append({
+        #           'index': row.number,
+        #           'email': user.get_property('ikaaro:email'),
+        #           'enquiry_subject': enquiry_subject})
+        #    results.reverse()
+        #namespace['enquiries'] = results
+        #namespace['howmany'] = len(results)
 
         #XXX This does not work if there is no news/jobs
         #Search the catalogue, list 3 news items.
@@ -881,6 +870,7 @@ class User(iUser, WorkflowAware, Handler):
             else:
                 other_programmes.append(ns)
         # Tabs
+        namespace['user_tabs'] = self.tabs(context)
         namespace['tabs'] = self.get_tabs_stl(context)
 
         handler = self.get_handler('/ui/abakuc/users/profile.xml')
@@ -975,6 +965,96 @@ class User(iUser, WorkflowAware, Handler):
             namespace['dc:title'] = 'None'
             handler = self.get_handler('/ui/abakuc/users/view.xml')
             return stl(handler, namespace)
+
+    ########################################################################
+    # User's pages 
+    user__access__ = 'is_self_or_admin'
+    def user(self, context):
+        user = context.user
+        root = context.root
+        address = self.get_address()
+        portrait = self.has_handler('portrait')
+        namespace = {}
+        # User Role
+        is_self = user is not None and user.name == self.name
+        is_admin = root.is_admin(user, self)
+        namespace['is_self_or_admin'] = is_self or is_admin
+        namespace['is_admin'] = is_admin
+        if address:
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
+        else:
+            is_branch_manager = False
+            is_branch_member = False
+            is_guest = False
+            is_branch_manager_or_member = False
+
+        namespace['is_branch_manager'] = is_branch_manager
+        namespace['is_branch_member'] = is_branch_member
+        namespace['is_guest'] = is_guest
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
+
+        #User's state
+        namespace['statename'] = self.get_statename()
+        state = self.get_state()
+        namespace['state'] = self.gettext(state['title'])
+        # User Identity
+        namespace['firstname'] = self.get_property('ikaaro:firstname')
+        namespace['lastname'] = self.get_property('ikaaro:lastname')
+        namespace['email'] = self.get_property('ikaaro:email')
+        namespace['job_title'] = self.get_property('abakuc:job_title')
+        namespace['points'] = self.get_property('abakuc:points')
+        namespace['portrait'] = portrait
+
+        handler = self.get_handler('/ui/abakuc/users/user.xml')
+        return stl(handler, namespace)
+
+
+
+    ########################################################################
+    # User's company pages 
+    address__access__ = 'is_self_or_admin'
+    def address(self, context):
+        user = context.user
+        address = self.get_address()
+        company = address.parent
+        # Get Company and Address
+        namespace = {}
+        namespace['user'] = self.user(context)
+        namespace['address'] = None
+        namespace['contact'] = None
+        if user is None:
+            return u'You need to be registered!'
+        if address is not None:
+            if address.has_user_role(user.name, 'abakuc:guest'):
+                contacts = address.get_property('abakuc:branch_manager')
+                if contacts:
+                    contact = users.get_handler(contacts[0])
+                    namespace['contact'] = contact.get_property('ikaaro:email')
+                else:
+                    contact = '<span style="color:red;">The administrator</span>'
+                    namespace['contact'] = Parser(contact)
+        # Company
+        namespace['company'] = {'name': company.name,
+                                'title': company.get_property('dc:title'),
+                                'website': company.get_website(),
+                                'path': self.get_pathto(company)}
+        # Address
+        addr = {'name': address.name,
+                'address': address.get_property('abakuc:address'),
+                'town': address.get_property('abakuc:town'),
+                'county': address.get_property('abakuc:county'),
+                'postcode':address.get_property('abakuc:postcode'),
+                'phone': address.get_property('abakuc:phone'),
+                'fax': address.get_property('abakuc:fax'),
+                'address_path': self.get_pathto(address)}
+
+        namespace['address'] = addr
+
+        handler = self.get_handler('/ui/abakuc/users/address.xml')
+        return stl(handler, namespace)
 
     ########################################################################
     # Statistics UI 

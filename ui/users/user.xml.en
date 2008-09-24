@@ -1,0 +1,48 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<!-- user's details -->
+<div class="yui-gc user">
+    <div class="yui-u first">
+        <stl:block if="not lastname">
+        <h2>Personnal Details</h2>
+        </stl:block>
+        <stl:block if="lastname">
+        <h2>${firstname} ${lastname}</h2>
+        </stl:block>
+        <dt>${email}</dt>
+        <!-- 
+        <ul>
+            <li stl:if="is_admin">Admin</li>
+            <li stl:if="is_branch_manager">Manager</li>
+            <li stl:if="is_branch_member">Member</li>
+            <li stl:if="is_guest">Guest</li>
+            <li>
+                <a href=";state_form"><strong
+                class="wf_${statename}">${state}</strong></a>
+            </li>
+            <li>
+            <a href=";portrait_form">Modify portrait.</a>
+            </li>
+            <li>
+            <a href=";edit_account_form">Edit account details.</a>
+            </li>
+            <li>
+            <a href=";edit_password_form">Change password.</a>
+            </li>
+          </ul>  
+          -->
+    </div><!-- / yui-u first-->
+    <div class="yui-u">
+        <stl:block if="portrait">
+          <img src="portrait" align="left" class="portrait"/>
+        </stl:block>
+        <stl:block if="not portrait">
+          <a href=";portrait_form"><img name=""
+          src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
+          class="portrait"/></a>
+        </stl:block>
+        <dt class="points">${points}</dt>
+    </div><!-- / yui-u-->
+</div><!-- / yui-gc-->
+<!-- /user's details -->
+
