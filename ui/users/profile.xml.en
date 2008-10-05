@@ -3,32 +3,33 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-gc">
     <div class="yui-u first">
-        <div id="tab1">
-        ${user_tabs}
-        </div>
-        <div id="tab2">
         <stl:block if="address">
-             <stl:block stl:if="not is_branch_manager_or_member">
-                 <p stl:if="contact">
-                   To manage these records, please contact 
-                   <a href="mailto:${contact}">${contact}</a>
-                   who is the Manager for this record or contact
-                   the site administrator.
-                 </p>
-                 <p stl:if="not contact">
-                   This record has no manager, please contact the site administrator.
-                 </p>
-             </stl:block>
-             <stl:block stl:if="is_branch_manager_or_member">
-                 ${tabs}
-             </stl:block>
-             <stl:block stl:if="office">
+            <div id="tab1">
+                user tabs
+                ${user_tabs}
+            </div>
+            <div id="tab2">
                  <stl:block stl:if="not is_branch_manager_or_member">
+                     <p stl:if="contact">
+                       To manage these records, please contact 
+                       <a href="mailto:${contact}">${contact}</a>
+                       who is the Manager for this record or contact
+                       the site administrator.
+                     </p>
+                     <p stl:if="not contact">
+                       This record has no manager, please contact the site administrator.
+                     </p>
+                 </stl:block>
+                 <stl:block stl:if="is_branch_manager_or_member">
                      ${tabs}
                  </stl:block>
-             </stl:block>
+                 <stl:block stl:if="office">
+                     <stl:block stl:if="not is_branch_manager_or_member">
+                         ${tabs}
+                     </stl:block>
+                 </stl:block>
+             </div>
          </stl:block>
-         </div>
     </div><!-- /yui-u first-->
     <div class="yui-u">
     ads

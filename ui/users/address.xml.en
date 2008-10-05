@@ -3,7 +3,7 @@
     <stl:block if="not address">
         <h2>Company Name/Address</h2>
             <em>You are not attached to any company</em>.
-              Please <a href=";setup_company_form">set up your company</a>
+              Please <a href="${setup_company_form}">set up your company</a>
               before proceeding.
     </stl:block>
     <stl:block if="address">

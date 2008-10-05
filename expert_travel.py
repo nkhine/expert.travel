@@ -22,6 +22,8 @@ from itools.xhtml import Document as XHTMLDocument
 from metadata import JobTitle, SalaryRange
 from training import Training
 from website import SiteRoot
+from users import User
+from news import News
 from utils import t1, t2, t3, t4
 
 class ExpertTravel(SiteRoot):
@@ -102,6 +104,7 @@ class ExpertTravel(SiteRoot):
     #    get_training = {'name': training.name, 'title': training.get_title(),
     #            'home': home}
     #    return {'info': get_training}
+
 
     def get_tabs_stl(self, context):
         # Set Style
@@ -188,66 +191,25 @@ class ExpertTravel(SiteRoot):
         from root import world
         root = context.root
         here = context.handler
-        site_root = here.get_site_root()
+        user = context.user
+        #site_root = here.get_site_root()
         namespace = {}
         namespace['user']= self.get_user_menu(context)
         # Get Company and Address
         namespace['address'] = None
         address = self.get_address()
-        # Get the 5 last Jobs
-        # XXX Fix so that it lists only jobs specific for the Country
-        catalog = context.server.catalog
-        query = []
-        query.append(EqQuery('format', 'Job'))
-        today = date.today().strftime('%Y-%m-%d')
-        query.append(RangeQuery('closing_date', today, None))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        documents = results.get_documents()
-        namespace['nb_jobs'] = len(documents)
-        documents = documents[0:4]
-        jobs = []
-        for job in documents:
-            job = root.get_handler(job.abspath)
-            address = job.parent
-            company = address.parent
-            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
-            jobs.append({'url': url,
-                         'title': job.title})
-        namespace['jobs'] = jobs
-        # Construct the lines of the table
-        #catalog = context.server.catalog
-        query = []
-        query.append(EqQuery('format', 'news'))
-        today = date.today().strftime('%Y-%m-%d')
-        query.append(RangeQuery('closing_date', today, None))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        documents = results.get_documents()
-        namespace['nb_news'] = len(documents)
-        documents = documents[0:3]
-        news_items = []
-        for news in documents:
-            news = root.get_handler(news.abspath)
-            get = news.get_property
-            address = news.parent
-            company = address.parent
-            url = '/companies/%s/%s/%s' % (company.name, address.name, news.name)
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            news_items.append({'url': url,
-                               'title': news.title,
-                               'closing_date': get('abakuc:closing_date'),
-                               'description': description})
-        namespace['news'] = news_items
-        namespace['news_url'] = ';news'
-
-        # Login Form
-        namespace['action'] = '%s/;login' % here.get_pathto(site_root)
-        namespace['username'] = context.get_form_value('username')
 
         namespace['tabs'] = self.get_tabs_stl(context)
+        namespace['login'] = self.login_form(context)
+        namespace['register'] = self.register_form(context)
+        #namespace['profile'] = None
+        #namespace['company'] = None
+        if user is not None:
+            namespace['profile'] = User.user(user, context)
+
+            namespace['company'] = User.address(user, context)
+
+
         if address is None:
             skin = root.get_skin()
             skin_path = skin.abspath
@@ -261,22 +223,22 @@ class ExpertTravel(SiteRoot):
 
 
         # Company
-        namespace['company'] = {'name': company.name,
-                                #'website': company.get_website(),
-                                'path': self.get_pathto(company)}
-        # Add news
-        add_news = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,
-                                                                address.name)
-        add_jobs = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
-                                                                address.name)
-        # Address
-        county = address.get_property('abakuc:county')
-        addr = {'name': address.name,
-                'add_news': add_news,
-                'add_jobs': add_jobs,
-                'address_path': self.get_pathto(address)}
+        #namespace['company'] = {'name': company.name,
+        #                        #'website': company.get_website(),
+        #                        'path': self.get_pathto(company)}
+        ## Add news
+        #add_news = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,
+        #                                                        address.name)
+        #add_jobs = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
+        #                                                        address.name)
+        ## Address
+        #county = address.get_property('abakuc:county')
+        #addr = {'name': address.name,
+        #        'add_news': add_news,
+        #        'add_jobs': add_jobs,
+        #        'address_path': self.get_pathto(address)}
 
-        namespace['address'] = addr
+        #namespace['address'] = addr
         #XXX Fix as this does not work when viewing from Back-Office
         #XXX See [#119] http://bugs.abakuc.com/show_bug.cgi?id=119
         # Return the page

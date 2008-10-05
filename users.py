@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
-
 # Import from the standard library
 import mimetypes
 from datetime import datetime, date
@@ -43,7 +42,6 @@ from utils import title_to_name, get_sort_name
 from metadata import JobTitle, SalaryRange
 
 class UserFolder(iUserFolder):
-
     class_id = 'users'
     class_version = '20040625'
     class_icon16 = 'images/UserFolder16.png'
@@ -108,11 +106,11 @@ class UserFolder(iUserFolder):
     def get_document_types(self):
             return [User]
 
-
 register_object_class(UserFolder)
 
-
-
+########################################################################
+# User
+########################################################################
 class User(iUser, WorkflowAware, Handler):
 
     class_id = 'user'
@@ -134,7 +132,6 @@ class User(iUser, WorkflowAware, Handler):
         keep = ['key']
         register_fields = [('newpass', True),
                            ('newpass2', True)]
-
         # Check register key
         must_confirm = self.get_property('ikaaro:user_must_confirm')
         if context.get_form_value('key') != must_confirm:
@@ -165,17 +162,17 @@ class User(iUser, WorkflowAware, Handler):
         return context.come_back(message, goto=goto)
 
     # Return the profile url relative to the given handler
-    def get_profile_url(self, where_from):
-        views = self.get_views()
-        if 'to_home' in views:
-            home = '/;profile'
-        elif 'bmi_home' in views:
-            home = '/;profile'
-        else:
-            home = '/;profile'
+    #def get_profile_url(self, where_from):
+    #    views = self.get_views()
+    #    if 'to_home' in views:
+    #        home = '/;profile'
+    #    elif 'bmi_home' in views:
+    #        home = '/;profile'
+    #    else:
+    #        home = '/;profile'
 
-        url = str(where_from.get_pathto(self)) + home
-        return url
+    #    url = str(where_from.get_pathto(self)) + home
+    #    return url
 
 
     # FIXME 015 Check usage of this method and clean up
@@ -193,15 +190,6 @@ class User(iUser, WorkflowAware, Handler):
             return False
         return True
 
-    #def is_travel_agent(self):
-    #    """
-    #    Check to see if the user is on a training site.
-    #    Return a bool
-    #    """
-    #    root = self.get_site_root()
-    #    is_travel_agent = root.has_user_role(self.name, 'abakuc:branch_member')
-    #    return is_travel_agent
-
     def is_training(self):
         """
         Check to see if the user is on a training site.
@@ -213,13 +201,6 @@ class User(iUser, WorkflowAware, Handler):
         else:
             training = False
         return training
-
-    #def get_training(self):
-    #    root = self.get_root()
-    #    results = root.search(format='training', members=self.name)
-    #    for training in results.get_documents():
-    #        return root.get_handler(training.abspath)
-    #    return None
 
     def get_company(self):
         root = self.get_root()
@@ -241,6 +222,17 @@ class User(iUser, WorkflowAware, Handler):
         for job in results.get_documents():
             return root.get_handler(job.abspath)
         return None
+
+    #######################################################################
+    # Manage bookings
+    def search_bookings(self, query=None, **kw):
+
+        bookings = self.get_handler('.bookings')
+        if query or kw:
+            ids = bookings.search(query, **kw)
+            return bookings.get_rows(ids)
+        return bookings.get_rows()
+
     ########################################################################
     # Indexing
     ########################################################################
@@ -298,18 +290,6 @@ class User(iUser, WorkflowAware, Handler):
         indexes['training_programmes'] = training_programmes
     
         return indexes
-        
-
-    #######################################################################
-    # Manage bookings
-    #######################################################################
-    def search_bookings(self, query=None, **kw):
-
-        bookings = self.get_handler('.bookings')
-        if query or kw:
-            ids = bookings.search(query, **kw)
-            return bookings.get_rows(ids)
-        return bookings.get_rows()
 
     #######################################################################
     # jQuery TABS 
@@ -333,7 +313,6 @@ class User(iUser, WorkflowAware, Handler):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
-        # Set Style
     def get_tabs_stl(self, context):
         """
         These are dependant on the site type and user.
@@ -368,8 +347,6 @@ class User(iUser, WorkflowAware, Handler):
         - Training (list all training programmes)
         - Administrate
         """
-        # Set Style
-        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
         context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
@@ -378,9 +355,9 @@ class User(iUser, WorkflowAware, Handler):
         root = context.root
         users = root.get_handler('users')
         address = self.get_address()
-        company = address.parent
-
-        is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+        #company = address.parent
+        if address:
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
 
         namespace = {}
 
@@ -433,28 +410,32 @@ class User(iUser, WorkflowAware, Handler):
         namespace['enquiries'] = self.enquiries_list(context)
         namespace['current_training'] = self.training(context)
         namespace['training'] = self.training_table(context)
-        csv = address.get_handler('log_enquiry.csv')
-        results = []
-        for row in csv.get_rows():
-            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-            if resolved:
-                continue
-            user = users.get_handler(user_id)
-            if user.get_property('ikaaro:user_must_confirm') is None:
-               results.append({'index': row.number})
-        namespace['howmany'] = len(results)
-        #namespace['branches'] = self.list_addresses(context)
-        namespace['is_branch_manager'] = is_branch_manager
-        # Company
-        namespace['company'] = {'name': company.name,
-                                'title': company.get_property('dc:title'),
-                                'website': company.get_website(),
-                                'path': self.get_pathto(company)}
-        # Address
-        addr = {'name': address.name,
-                'address_path': self.get_pathto(address)}
+        print address
+        if address:
+            company = address.parent
+            csv = address.get_handler('log_enquiry.csv')
+            results = []
+            for row in csv.get_rows():
+                date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+                if resolved:
+                    continue
+                user = users.get_handler(user_id)
+                if user.get_property('ikaaro:user_must_confirm') is None:
+                   results.append({'index': row.number})
+            namespace['howmany'] = len(results)
+            #namespace['branches'] = self.list_addresses(context)
+            namespace['is_branch_manager'] = is_branch_manager
+            # Company
+            namespace['company'] = {'name': company.name,
+                                    'title': company.get_property('dc:title'),
+                                    'website': company.get_website(),
+                                    'path': self.get_pathto(company)}
+            # Address
+            addr = {'name': address.name,
+                    'address_path': self.get_pathto(address)}
 
-        namespace['address'] = addr
+            namespace['address'] = addr
+
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -668,23 +649,35 @@ class User(iUser, WorkflowAware, Handler):
             self.set_property(key, value)
         self.set_property('abakuc:functions', functions)
 
-
         url = ';profile'
         goto = context.uri.resolve(url)
         message = u'Account changed.'
         return context.come_back(message, goto=goto)
 
     #######################################################################
-    # Profile
+    # Profile page
+    #######################################################################
     profile__access__ = 'is_allowed_to_view'
     profile__label__ = u'Profile'
     def profile(self, context):
+        '''
+        The user's profile page, is the first point where the user can access
+        the rest of the system. Here we want to verify that they belong to a
+        company and address, so that the page checks:
+        1) Does the user belong to an address
+            if not, show the news, jobs and training tabs, but for the profile,
+            ask the user to complete profile.
+        We have (3) ACL:
+            a) Guest
+            b) Branch member
+            c) Branch manager
+        '''
         from root import world
         from datetime import datetime, date
 
         namespace = {}
-        user = context.user
         root = context.root
+        user = context.user
         users = root.get_handler('users')
         trainings = root.get_handler('training')
         portrait = self.has_handler('portrait')
@@ -692,6 +685,7 @@ class User(iUser, WorkflowAware, Handler):
         # Get Company and Address
         namespace['address'] = None
         address = self.get_address()
+        print address
 
         namespace['contact'] = None
         if user is None:
@@ -748,63 +742,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['is_branch_member'] = is_branch_member
         namespace['is_guest'] = is_guest
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
-
-
-        #User's state
-        namespace['statename'] = self.get_statename()
-        state = self.get_state()
-        namespace['state'] = self.gettext(state['title'])
-        # User Identity
-        namespace['firstname'] = self.get_property('ikaaro:firstname')
-        namespace['lastname'] = self.get_property('ikaaro:lastname')
-        namespace['email'] = self.get_property('ikaaro:email')
-        namespace['job_title'] = self.get_property('abakuc:job_title')
-        namespace['points'] = self.get_property('abakuc:points')
-        namespace['portrait'] = portrait
-        if address is None:
-            handler = self.get_handler('/ui/abakuc/users/profile.xml')
-            return stl(handler, namespace)
-        company = address.parent
-
-        # XXX Test
-        # This returns None
-        my_company = self.get_company()
-        namespace['my_company'] = my_company
-
-        # Company
-        namespace['company'] = {'name': company.name,
-                                'title': company.get_property('dc:title'),
-                                'website': company.get_website(),
-                                'path': self.get_pathto(company)}
-        # Address
-        addr = {'name': address.name,
-                'address': address.get_property('abakuc:address'),
-                'town': address.get_property('abakuc:town'),
-                'county': address.get_property('abakuc:county'),
-                'postcode':address.get_property('abakuc:postcode'),
-                'phone': address.get_property('abakuc:phone'),
-                'fax': address.get_property('abakuc:fax'),
-                'address_path': self.get_pathto(address)}
-
-        namespace['address'] = addr
-                
-
-        # Enquiries
-        #csv = address.get_handler('log_enquiry.csv')
-        #results = []
-        #for row in csv.get_rows():
-        #    date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-        #    if resolved:
-        #        continue
-        #    user = users.get_handler(user_id)
-        #    if user.get_property('ikaaro:user_must_confirm') is None:
-        #       results.append({
-        #           'index': row.number,
-        #           'email': user.get_property('ikaaro:email'),
-        #           'enquiry_subject': enquiry_subject})
-        #    results.reverse()
-        #namespace['enquiries'] = results
-        #namespace['howmany'] = len(results)
 
         #XXX This does not work if there is no news/jobs
         #Search the catalogue, list 3 news items.
@@ -1011,15 +948,14 @@ class User(iUser, WorkflowAware, Handler):
         handler = self.get_handler('/ui/abakuc/users/user.xml')
         return stl(handler, namespace)
 
-
-
     ########################################################################
     # User's company pages 
+    ########################################################################
     address__access__ = 'is_self_or_admin'
     def address(self, context):
+        users = self.get_handler('/users')
         user = context.user
         address = self.get_address()
-        company = address.parent
         # Get Company and Address
         namespace = {}
         namespace['user'] = self.user(context)
@@ -1036,23 +972,26 @@ class User(iUser, WorkflowAware, Handler):
                 else:
                     contact = '<span style="color:red;">The administrator</span>'
                     namespace['contact'] = Parser(contact)
-        # Company
-        namespace['company'] = {'name': company.name,
-                                'title': company.get_property('dc:title'),
-                                'website': company.get_website(),
-                                'path': self.get_pathto(company)}
-        # Address
-        addr = {'name': address.name,
-                'address': address.get_property('abakuc:address'),
-                'town': address.get_property('abakuc:town'),
-                'county': address.get_property('abakuc:county'),
-                'postcode':address.get_property('abakuc:postcode'),
-                'phone': address.get_property('abakuc:phone'),
-                'fax': address.get_property('abakuc:fax'),
-                'address_path': self.get_pathto(address)}
+            # Company
+            company = address.parent
+            namespace['company'] = {'name': company.name,
+                                    'title': company.get_property('dc:title'),
+                                    'website': company.get_website(),
+                                    'path': self.get_pathto(company)}
+            # Address
+            addr = {'name': address.name,
+                    'address': address.get_property('abakuc:address'),
+                    'town': address.get_property('abakuc:town'),
+                    'county': address.get_property('abakuc:county'),
+                    'postcode':address.get_property('abakuc:postcode'),
+                    'phone': address.get_property('abakuc:phone'),
+                    'fax': address.get_property('abakuc:fax'),
+                    'address_path': self.get_pathto(address)}
 
-        namespace['address'] = addr
+            namespace['address'] = addr
 
+        namespace['setup_company_form'] = '/users/%s/;setup_company_form' % (user.name)
+        print namespace['setup_company_form']
         handler = self.get_handler('/ui/abakuc/users/address.xml')
         return stl(handler, namespace)
 
@@ -1317,41 +1256,43 @@ class User(iUser, WorkflowAware, Handler):
     def news_table(self, context):
         namespace = {}
         address = self.get_address()
-        company = address.parent
+        #company = address.parent
         if address:
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
             is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
             is_guest = address.has_user_role(self.name, 'abakuc:guest')
             is_branch_manager_or_member = is_branch_manager or is_branch_member
+            # Table with News
+            columns = [('c1', u'Title'),
+                       ('c2', u'To be archived on'),
+                       ('c3', u'Short description')]
+            # Get all News
+            address_news = address.search_handlers(handler_class=News)
+            # Construct the lines of the table
+            news_items = []
+            for news in list(address_news):
+                #job = root.get_handler(job.abspath)
+                get = news.get_property
+                # Information about the news
+                url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                                                     news.name)
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=10,
+                                            phrase_treshold=40)
+                news_to_add ={'id': news.name,
+                             'checkbox': is_branch_manager,
+                             'img': '/ui/abakuc/images/News16.png',
+                             'c1': (get('dc:title'),url),
+                             'c2': get('abakuc:closing_date'),
+                             'c3': description}
+                news_items.append(news_to_add)
         else:
+            news_items = []
+            columns = []
             is_branch_manager = False
             is_branch_member = False
             is_guest = False
             is_branch_manager_or_member = False
-        # Table with News
-        columns = [('c1', u'Title'),
-                   ('c2', u'To be archived on'),
-                   ('c3', u'Short description')]
-        # Get all News
-        address_news = address.search_handlers(handler_class=News)
-        # Construct the lines of the table
-        news_items = []
-        for news in list(address_news):
-            #job = root.get_handler(job.abspath)
-            get = news.get_property
-            # Information about the news
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
-                                                 news.name)
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=10,
-                                        phrase_treshold=40)
-            news_to_add ={'id': news.name,
-                         'checkbox': is_branch_manager,
-                         'img': '/ui/abakuc/images/News16.png',
-                         'c1': (get('dc:title'),url),
-                         'c2': get('abakuc:closing_date'),
-                         'c3': description}
-            news_items.append(news_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
@@ -1401,89 +1342,91 @@ class User(iUser, WorkflowAware, Handler):
         root = context.root
         namespace = {}
         address = self.get_address()
-        company = address.parent
         if address:
+            company = address.parent
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
             is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
             is_guest = address.has_user_role(self.name, 'abakuc:guest')
             is_branch_manager_or_member = is_branch_manager or is_branch_member
+            columns = [('c1', u'Title'),
+                       ('c2', u'To be archived on'),
+                       ('c3', u'Applications'),
+                       ('c4', u'Short description')]
+            # Get all Jobs
+            address_jobs = address.search_handlers(handler_class=Job)
+            # Construct the lines of the table
+            jobs = []
+            for job in list(address_jobs):
+                get = job.get_property
+                # Information about the job
+                url = '/companies/%s/%s/%s/' % (company.name, address.name,
+                                                     job.name)
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=10,
+                                            phrase_treshold=40)
+                #Get no of applicants
+                users = root.get_handler('users')
+                nb_candidatures = 0
+                y = root.get_handler(url)
+                candidatures = y.search_handlers(handler_class=Candidature)
+                for x in candidatures:
+                    user_id = x.get_property('user_id')
+                    user = users.get_handler(user_id)
+                    if user.has_property('ikaaro:user_must_confirm') is False:
+                            nb_candidatures += 1
+                job_to_add ={'id': job.name,
+                             'checkbox': is_branch_manager,
+                             'img': '/ui/abakuc/images/JobBoard16.png',
+                             'c1': (get('dc:title'),url+';view'),
+                             'c2': get('abakuc:closing_date'),
+                             'c4': description}
+                if nb_candidatures > 0:
+                    job_to_add['c3'] = nb_candidatures,url+';view_candidatures'
+                else:
+                    job_to_add['c3'] = None
+                jobs.append(job_to_add)
+            # Set batch informations
+            batch_start = int(context.get_form_value('batchstart', default=0))
+            batch_size = 5
+            batch_total = len(jobs)
+            batch_fin = batch_start + batch_size
+            if batch_fin > batch_total:
+                batch_fin = batch_total
+            jobs = jobs[batch_start:batch_fin]
+            # Order
+            sortby = context.get_form_value('sortby', 'c2')
+            sortorder = context.get_form_value('sortorder', 'up')
+            reverse = (sortorder == 'down')
+            jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+            if reverse:
+                jobs.reverse()
+            # Set batch informations
+            # Namespace
+            if jobs:
+                actions = [('select', u'Select All', 'button_select_all',
+                            "return select_checkboxes('browse_list', true);"),
+                           ('select', u'Select None', 'button_select_none',
+                            "return select_checkboxes('browse_list', false);"),
+                           ('create_job', u'Add new job', 'button_ok',
+                            None),
+                           ('remove_job', 'Delete Job/s', 'button_delete', None)]
+                job_table = table(columns, jobs, [sortby], sortorder, actions)
+                msgs = (u'There is one job.', u'There are ${n} jobs.')
+                job_batch = batch(context.uri, batch_start, batch_size,
+                                  batch_total, msgs=msgs)
+                msg = None
+            else:
+                jobs_actions = [('create_job', u'Add new job', 'button_ok',
+                            None)]
+                job_table = table(columns, jobs, [sortby], sortorder, jobs_actions)
+                job_batch = None
+                msg = None
         else:
             is_branch_manager = False
             is_branch_member = False
             is_guest = False
             is_branch_manager_or_member = False
-            # Table with Jobs
-        columns = [('c1', u'Title'),
-                   ('c2', u'To be archived on'),
-                   ('c3', u'Applications'),
-                   ('c4', u'Short description')]
-        # Get all Jobs
-        address_jobs = address.search_handlers(handler_class=Job)
-        # Construct the lines of the table
-        jobs = []
-        for job in list(address_jobs):
-            get = job.get_property
-            # Information about the job
-            url = '/companies/%s/%s/%s/' % (company.name, address.name,
-                                                 job.name)
-            description = reduce_string(get('dc:description'),
-                                        word_treshold=10,
-                                        phrase_treshold=40)
-            #Get no of applicants
-            users = root.get_handler('users')
-            nb_candidatures = 0
-            y = root.get_handler(url)
-            candidatures = y.search_handlers(handler_class=Candidature)
-            for x in candidatures:
-                user_id = x.get_property('user_id')
-                user = users.get_handler(user_id)
-                if user.has_property('ikaaro:user_must_confirm') is False:
-                        nb_candidatures += 1
-            job_to_add ={'id': job.name,
-                         'checkbox': is_branch_manager,
-                         'img': '/ui/abakuc/images/JobBoard16.png',
-                         'c1': (get('dc:title'),url+';view'),
-                         'c2': get('abakuc:closing_date'),
-                         'c4': description}
-            if nb_candidatures > 0:
-                job_to_add['c3'] = nb_candidatures,url+';view_candidatures'
-            else:
-                job_to_add['c3'] = None
-            jobs.append(job_to_add)
-        # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5
-        batch_total = len(jobs)
-        batch_fin = batch_start + batch_size
-        if batch_fin > batch_total:
-            batch_fin = batch_total
-        jobs = jobs[batch_start:batch_fin]
-        # Order
-        sortby = context.get_form_value('sortby', 'c2')
-        sortorder = context.get_form_value('sortorder', 'up')
-        reverse = (sortorder == 'down')
-        jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
-        if reverse:
-            jobs.reverse()
-        # Set batch informations
-        # Namespace
-        if jobs:
-            actions = [('select', u'Select All', 'button_select_all',
-                        "return select_checkboxes('browse_list', true);"),
-                       ('select', u'Select None', 'button_select_none',
-                        "return select_checkboxes('browse_list', false);"),
-                       ('create_job', u'Add new job', 'button_ok',
-                        None),
-                       ('remove_job', 'Delete Job/s', 'button_delete', None)]
-            job_table = table(columns, jobs, [sortby], sortorder, actions)
-            msgs = (u'There is one job.', u'There are ${n} jobs.')
-            job_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, msgs=msgs)
-            msg = None
-        else:
-            jobs_actions = [('create_job', u'Add new job', 'button_ok',
-                        None)]
-            job_table = table(columns, jobs, [sortby], sortorder, jobs_actions)
+            job_table = None
             job_batch = None
             msg = None
 
@@ -1502,25 +1445,30 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace = {}
         address = self.get_address()
-        company = address.parent
+        if address:
+            company = address.parent
 
-        csv = address.get_handler('log_enquiry.csv')
-        url = '/companies/%s/%s/' % (company.name, address.name)
-        results = []
-        for row in csv.get_rows():
-            date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
-            if resolved:
-                continue
-            user = users.get_handler(user_id)
-            if user.get_property('ikaaro:user_must_confirm') is None:
-               results.append({
-                   'index': row.number,
-                   'email': user.get_property('ikaaro:email'),
-                   'enquiry_subject': enquiry_subject})
-            results.reverse()
-        namespace['enquiries'] = results
-        namespace['howmany'] = len(results)
-        namespace['url'] = url
+            csv = address.get_handler('log_enquiry.csv')
+            url = '/companies/%s/%s/' % (company.name, address.name)
+            results = []
+            for row in csv.get_rows():
+                date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
+                if resolved:
+                    continue
+                user = users.get_handler(user_id)
+                if user.get_property('ikaaro:user_must_confirm') is None:
+                   results.append({
+                       'index': row.number,
+                       'email': user.get_property('ikaaro:email'),
+                       'enquiry_subject': enquiry_subject})
+                results.reverse()
+            namespace['enquiries'] = results
+            namespace['howmany'] = len(results)
+            namespace['url'] = url
+        else:
+            namespace['enquiries'] = None 
+            namespace['howmany'] = None
+            namespace['url'] = None
 
         handler = self.get_handler('/ui/abakuc/enquiries/enquiries_list.xml')
         return stl(handler, namespace)
@@ -1844,14 +1792,15 @@ class User(iUser, WorkflowAware, Handler):
         namespace['contact'] = None
         if user is None:
             return u'You need to be registered!'
-        if address.has_user_role(user.name, 'abakuc:guest'):
-            contacts = address.get_property('abakuc:branch_manager')
-            if contacts:
-                contact = users.get_handler(contacts[0])
-                namespace['contact'] = contact.get_property('ikaaro:email')
-            else:
-                contact = '<span style="color:red;">The administrator</span>'
-                namespace['contact'] = Parser(contact)
+        if address:
+            if address.has_user_role(user.name, 'abakuc:guest'):
+                contacts = address.get_property('abakuc:branch_manager')
+                if contacts:
+                    contact = users.get_handler(contacts[0])
+                    namespace['contact'] = contact.get_property('ikaaro:email')
+                else:
+                    contact = '<span style="color:red;">The administrator</span>'
+                    namespace['contact'] = Parser(contact)
 
         handler = self.get_handler('/ui/abakuc/training/profile.xml')
         return stl(handler, namespace)
