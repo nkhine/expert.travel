@@ -200,12 +200,12 @@ class SiteRoot(Handler, BaseWebSite):
         return context.uri.resolve2(';view')
 
 
-    view__access__ = True
-    def view(self, context):
-        root = context.root
+    #view__access__ = True
+    #def view(self, context):
+    #    root = context.root
 
-        handler = root.get_skin().get_handler('home.xhtml')
-        return stl(handler)
+    #    handler = root.get_skin().get_handler('home.xhtml')
+    #    return stl(handler)
 
 
     #######################################################################

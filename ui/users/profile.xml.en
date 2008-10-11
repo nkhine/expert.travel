@@ -3,56 +3,21 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-gc">
     <div class="yui-u first">
-        <stl:block if="address">
             <div id="tab1">
-                user tabs
                 ${user_tabs}
             </div>
-            <div id="tab2">
-                 <stl:block stl:if="not is_branch_manager_or_member">
-                     <p stl:if="contact">
-                       To manage these records, please contact 
-                       <a href="mailto:${contact}">${contact}</a>
-                       who is the Manager for this record or contact
-                       the site administrator.
-                     </p>
-                     <p stl:if="not contact">
-                       This record has no manager, please contact the site administrator.
-                     </p>
-                 </stl:block>
-                 <stl:block stl:if="is_branch_manager_or_member">
+                 <stl:block stl:if="not office">
+                    <div id="tab2">
                      ${tabs}
+                     </div>
                  </stl:block>
                  <stl:block stl:if="office">
-                     <stl:block stl:if="not is_branch_manager_or_member">
+                        <div id="tab2">
                          ${tabs}
-                     </stl:block>
+                         </div>
                  </stl:block>
-             </div>
-         </stl:block>
     </div><!-- /yui-u first-->
     <div class="yui-u">
-    ads
+        ads
     </div><!-- /yui-u-->
 </div><!-- /yui-gc-->
-                            <!-- <stl:block repeat="news_items news_items">
-                            <ul>  
-                              <li>
-                                <a href="${news_items/url}">${news_items/title}</a>
-                              </li>
-                            </ul>       
-                            </stl:block>
-                        <div class="info"><a href="/;news">
-                            (view&nbsp;all&nbsp;${nb_news}&nbsp;news&nbsp;items&nbsp;»)</a></div>
-                            <h2>Latest jobs</h2>
-                            <stl:block repeat="jobs jobs">
-                            <ul>  
-                              <li>
-                                <a href="${jobs/url}">${jobs/title}</a>
-                              </li>
-                            </ul>       
-                            </stl:block>
-                        <div class="info"><a href="/;jobs">
-                            (view&nbsp;all&nbsp;${nb_jobs}&nbsp;jobs&nbsp;items&nbsp;»)</a></div>
-                            -->
-  </stl:block>

@@ -17,16 +17,20 @@
         <ul>
             <li><a href="#fragment-21"><span>Profile</span></a></li>
             <li><a href="#fragment-22"><span>Company</span></a></li>
-            <li><a href="#fragment-23"><span>Manage</span></a></li>
+            <li><a href="#fragment-23"><span>Branches</span></a></li>
+            <li stl:if="is_branch_manager"><a href="#fragment-24"><span>Administrate</span></a></li>
         </ul>
             <div id="fragment-21">
               ${user}
             </div>
             <div id="fragment-22">
-              ${address}
+              ${company}
             </div>
             <div id="fragment-23">
-              {manage}
+              ${addresses}
+            </div>
+            <div stl:if="is_branch_manager" id="fragment-24">
+                ${manage}
             </div>
     </div>
 

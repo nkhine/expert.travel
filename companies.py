@@ -102,10 +102,9 @@ class Companies(Folder):
         namespace['title'] = title
         namespace['items'] = items
 
-        handler = self.get_handler('/ui/abakuc/companies/list.xml')
+        handler = self.get_handler('/ui/abakuc/companies/view.xml')
         return stl(handler, namespace)
 
-#class Company(SiteRoot, VersioningAware):
 class Company(SiteRoot):
 
     class_id = 'company'
@@ -156,13 +155,16 @@ class Company(SiteRoot):
     #######################################################################
     # API
     #######################################################################
+    def is_training(self):
+        return None
+
     def get_website(self):
         website = self.get_property('abakuc:website')
         if website.startswith('http://'):
             return website
         return 'http://' + website
 
-    def get_tabs_stl(self, context):
+    def tabs(self, context):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
@@ -170,47 +172,15 @@ class Company(SiteRoot):
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
+        root = context.root
         namespace = {}
         namespace['news'] = self.list_news(context)
         namespace['jobs'] = self.list_jobs(context)
         namespace['branches'] = self.list_addresses(context)
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <script type="text/javascript">
-                var TABS_COOKIE = 'company_cookie';
-                $(function() {
-                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal"
-                    });
-                });
-            </script>
-        <div id="container-1">
-            <ul>
-                <li><a href="#fragment-1"><span>News</span></a></li>
-                <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Branches</span></a></li>
-            </ul>
-            <div id="fragment-1">
-              ${news}
-            </div>
-            <div id="fragment-2">
-              ${jobs}
-            </div>
-            <div id="fragment-3">
-              ${branches}
-            </div>
-        </div>
-        </stl:block>
-                  """
-        template = XHTMLDocument(string=template)
-        return stl(template, namespace)
 
+        template_path = 'ui/abakuc/companies/company/tabs.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
 
     #######################################################################
     # Security / Access Control
@@ -242,7 +212,7 @@ class Company(SiteRoot):
         namespace['description'] = description
         namespace['website'] = self.get_website()
         namespace['logo'] = self.has_handler('logo')
-        namespace['tabs'] = self.get_tabs_stl(context)
+        namespace['tabs'] = self.tabs(context)
 
         handler = self.get_handler('/ui/abakuc/companies/company/view.xml')
         return stl(handler, namespace)
@@ -281,6 +251,8 @@ class Company(SiteRoot):
     addresses__label__ = u'Branches'
     addresses__access__ = True
     def addresses(self, context):
+        here = context.handler
+        title = here.get_title()
         namespace = {}
         addresses = self.search_handlers(handler_class=Address)
         items = []
@@ -299,47 +271,32 @@ class Company(SiteRoot):
 
             items.append(address_to_add)
 
-            members = []
-            branch_members = address.get_members()
-            for username in branch_members:
-                users = self.get_handler('/users')
-                user_exist = users.has_handler(username)
-                usertitle = (user_exist and
-                             users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username
-                members.append({'id': username,
-                                'title': usertitle,
-                                'url': url})
-
-                namespace['members'] = members
-            namespace['users'] = self.get_members_namespace(address)
-            #namespace['users'] = self.get_members_namespace(address)
-
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5
+        batch_size = 2
         batch_total = len(items)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        addresses = items[batch_start:batch_fin]
+        items = items[batch_start:batch_fin]
         # Namespace
-        if addresses:
+        if items:
             msgs = (u'There is one addresse.',
                     u'There are ${n} addresses.')
-            address_batch = batch(context.uri, batch_start, batch_size,
+            items_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
-            address_table = None
-            address_batch = None
+            items_table = None
+            items_batch = None
             msg = u'Sorry but there is no address associated with this company.'
 
-        namespace['addresses'] = items
         namespace['msg'] = msg
-        namespace['batch'] = address_batch
+        namespace['batch'] = items_batch
+        namespace['title'] = title
+        namespace['items'] = items
+        #handler = self.get_handler('/ui/abakuc/companies/list.xml')
         handler = self.get_handler('/ui/abakuc/companies/company/addresses.xml')
-
         return stl(handler, namespace)
 
     ####################################################################
@@ -348,12 +305,12 @@ class Company(SiteRoot):
     list_addresses__access__ = True
     def list_addresses(self, context):
         namespace = {}
+        #namespace['title'] = company.title_or_name
         addresses = self.search_handlers(handler_class=Address)
         items = []
         for address in addresses:
-            company = address.parent
-            url = '/companies/%s/%s/;view' % (company.name, address.name)
-            enquire = '/companies/%s/%s/;enquiry_form' % (company.name, address.name)
+            url = '/companies/%s/%s/' % (self.name, address.name)
+            enquire = '/companies/%s/%s/;enquiry_form' % (self.name, address.name)
             address_to_add = {'url': url,
                                'enquire': enquire,
                                'address': address.get_property('abakuc:address'),
@@ -365,45 +322,29 @@ class Company(SiteRoot):
 
             items.append(address_to_add)
 
-            members = []
-            branch_members = address.get_members()
-            for username in branch_members:
-                users = self.get_handler('/users')
-                user_exist = users.has_handler(username)
-                usertitle = (user_exist and
-                             users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username
-                members.append({'id': username,
-                                'title': usertitle,
-                                'url': url})
-
-                namespace['members'] = members
-            namespace['users'] = self.get_members_namespace(address)
-            #namespace['users'] = self.get_members_namespace(address)
-
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5
+        batch_size = 2
         batch_total = len(items)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        addresses = items[batch_start:batch_fin]
+        items = items[batch_start:batch_fin]
         # Namespace
-        if addresses:
+        if items:
             msgs = (u'There is one addresse.',
                     u'There are ${n} addresses.')
-            address_batch = batch(context.uri, batch_start, batch_size,
+            items_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
-            address_table = None
-            address_batch = None
+            items_table = None
+            items_batch = None
             msg = u'Sorry but there is no address associated with this company.'
 
-        namespace['addresses'] = items
         namespace['msg'] = msg
-        namespace['batch'] = address_batch
+        namespace['batch'] = items_batch
+        namespace['items'] = items
         handler = self.get_handler('/ui/abakuc/companies/company/list_addresses.xml')
 
         return stl(handler, namespace)
@@ -995,7 +936,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return members
 
 
-    def get_tabs_stl(self, context):
+    def tabs(self, context):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
@@ -1003,45 +944,14 @@ class Address(RoleAware, WorkflowAware, Folder):
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
+        root = context.root
         namespace = {}
         namespace['news'] = self.news(context)
         namespace['jobs'] = self.jobs(context)
         namespace['branches'] = self.addresses(context)
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <script type="text/javascript">
-                var TABS_COOKIE = 'address_cookie';
-                $(function() {
-                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal"
-                    });
-                });
-            </script>
-        <div id="container-1">
-            <ul>
-                <li><a href="#fragment-1"><span>News</span></a></li>
-                <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                <li><a href="#fragment-3"><span>Branches</span></a></li>
-            </ul>
-            <div id="fragment-1">
-              ${news}
-            </div>
-            <div id="fragment-2">
-              ${jobs}
-            </div>
-            <div id="fragment-3">
-              ${branches}
-            </div>
-        </div>
-        </stl:block>
-                  """
-        template = XHTMLDocument(string=template)
+
+        template_path = 'ui/abakuc/companies/company/tabs.xml'
+        template = root.get_handler(template_path)
         return stl(template, namespace)
 
 
@@ -1052,7 +962,6 @@ class Address(RoleAware, WorkflowAware, Folder):
     view__access__ = True
     def view(self, context):
         from root import world
-
         county = self.get_property('abakuc:county')
         if county is None:
             # XXX Every address should have a county
@@ -1075,24 +984,10 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['region'] = region
         namespace['county'] = self.get_property('abakuc:county')
 
-        addresses = []
-        for address in self.parent.search_handlers(handler_class=Address):
-            company = address.parent
-            current_address = self.get_property('abakuc:address')
-            url = '/companies/%s/%s/;view' % (company.name, address.name)
-            addresses.append({
-                'name': address.name,
-                'is_current': address.name == current_address,
-                'url': url,
-                'address': address.get_property('abakuc:address'),
-                'phone': address.get_property('abakuc:phone'),
-                'fax': address.get_property('abakuc:fax')})
-        namespace['addresses'] = addresses
 
-        namespace['tabs'] = self.get_tabs_stl(context)
         ################
-        # Branch Members
-        namespace['users'] = self.get_members_namespace(address)
+        # Tabs 
+        namespace['tabs'] = self.tabs(context)
 
         handler = self.get_handler('/ui/abakuc/companies/company/address/view.xml')
         return stl(handler, namespace)
@@ -1243,67 +1138,14 @@ class Address(RoleAware, WorkflowAware, Folder):
 
     ####################################################################
     # View branches
-    addresses__label__ = u'Our branches'
-    addresses__access__ = True
+    addresses__access__ = 'is_self_or_admin'
     def addresses(self, context):
         namespace = {}
-        addresses = self.parent.search_handlers(handler_class=Address)
-        items = []
-        for address in addresses:
-            company = address.parent
-            url = '/companies/%s/%s/;view' % (company.name, address.name)
-            enquire = '/companies/%s/%s/;enquiry_form' % (company.name, address.name)
-            address_to_add = {'url': url,
-                               'enquire': enquire,
-                               'address': address.get_property('abakuc:address'),
-                               'town': address.get_property('abakuc:town'),
-                               'postcode': address.get_property('abakuc:postcode'),
-                               'phone': address.get_property('abakuc:phone'),
-                               'fax': address.get_property('abakuc:fax'),
-                               'title': address.title_or_name}
-
-            items.append(address_to_add)
-
-            members = []
-            branch_members = address.get_members()
-            for username in branch_members:
-                users = self.get_handler('/users')
-                user_exist = users.has_handler(username)
-                usertitle = (user_exist and
-                             users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username
-                members.append({'id': username,
-                                'title': usertitle,
-                                'url': url})
-
-                namespace['members'] = members
-            namespace['users'] = self.get_members_namespace(address)
-
-        # Set batch informations
-        batch_start = int(context.get_form_value('batchstart', default=0))
-        batch_size = 5
-        batch_total = len(items)
-        batch_fin = batch_start + batch_size
-        if batch_fin > batch_total:
-            batch_fin = batch_total
-        addresses = items[batch_start:batch_fin]
-        # Namespace
-        if addresses:
-            msgs = (u'There is one addresse.',
-                    u'There are ${n} addresses.')
-            address_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, msgs=msgs)
-            msg = None
-        else:
-            address_table = None
-            address_batch = None
-            msg = u'Sorry but there is no address associated with this company.'
-
-        namespace['addresses'] = items
-        namespace['msg'] = msg
-        namespace['batch'] = address_batch
-        handler = self.get_handler('/ui/abakuc/companies/company/list_addresses.xml')
-
+        company = self.parent
+        response = Company.list_addresses(company, context)
+        namespace['response'] = response
+        # Return the page
+        handler = self.get_handler('/ui/abakuc/response.xml')
         return stl(handler, namespace)
 
     #######################################################################
@@ -1393,8 +1235,8 @@ class Address(RoleAware, WorkflowAware, Folder):
             self.set_property(key, value)
 
         message = u'Changes Saved.'
-        #goto = context.get_form_value('referrer') or None
-        goto = context.uri.resolve(';edit_account_form')
+        goto = context.get_form_value('referrer') or None
+        #goto = context.uri.resolve(';edit_account_form')
         return context.come_back(message, goto=goto)
 
 
@@ -1714,7 +1556,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         # Is reviewer or member
         return (self.has_user_role(user.name, 'abakuc:branch_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
-
 
     def is_admin(self, user, object):
         return self.is_branch_manager(user, object)

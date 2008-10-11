@@ -11,8 +11,7 @@
           content="${meta/content}" />
 
     <!-- CSS -->
-    <link href="http://developer.yahoo.com/yui/build/reset-fonts-grids/reset-fonts-grids.css"
-    rel="stylesheet" type="text/css" />
+    <link href="/ui/abakuc/images/reset-fonts-grids.css" rel="stylesheet" type="text/css" />
     <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <!-- JavaScript -->

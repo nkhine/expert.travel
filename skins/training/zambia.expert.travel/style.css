@@ -47,6 +47,12 @@ no-repeat;width:400px;height:62px;}
 #hd #bar a{display:block;color:#FFCD01;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#D72D23;margin:0 1px 0 0;padding:1px 8px;}
 #hd #bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
 
+#message {
+  margin: 0.3em;
+  padding: 0.3em 0 0.3em 24px;
+  border: 2px solid #000;
+  background: #fcaf3e url(/ui/abakuc/images/message.png) left center no-repeat;
+}
 /**************************************************************************
  * Left menu style 
  **************************************************************************/

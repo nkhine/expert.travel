@@ -1,0 +1,36 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <stl:block if="not address">
+        <h2>Company Name/Address</h2>
+            <em>You are not attached to any company</em>.
+              Please <a href="${setup_company_form}">set up your company</a>
+              before proceeding.
+    </stl:block>
+    <stl:block if="address">
+        <h2><a href="${company/path}">${company/title}</a></h2>
+          <dt><a href="${company/website}">${company/website}</a></dt>
+          <dd>
+            <address>${address/address}<span><a
+            href="${address/address_path}/;view">Preview</a></span><br />
+            ${address/town}<br />
+            ${address/county}<br />
+            ${address/postcode}
+            </address>
+          </dd>
+          <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
+          <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
+          <dd>
+            <a href=";setup_company_form">Switch to another company</a>.
+          </dd>
+          <div stl:if="is_guest">
+              <div stl:if="contact">
+                To manage these records, please contact 
+                <a href="mailto:${contact}">${contact}</a>
+                who is the Manager for this record or contact
+                the site administrator.
+              </div>
+              <div stl:if="not contact">
+                This record has no manager, please contact the site administrator.
+              </div>
+          </div>                   
+    </stl:block>

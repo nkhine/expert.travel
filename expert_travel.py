@@ -37,7 +37,7 @@ class ExpertTravel(SiteRoot):
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
                    ['permissions_form', 'new_user_form'],
-                   ['edit_metadata_form']]
+                   ['edit_metadata_form', 'contact_options_form']]
 
 
     def new(self, **kw):
@@ -96,15 +96,6 @@ class ExpertTravel(SiteRoot):
         info = {'name': user.name, 'title': user.get_title(),
                 'home': home}
         return {'info': info, 'joinisopen': False}
-
-    #def get_training_uri(self, context):
-    #    """Return a dict {training_icon, training}."""
-    #    root = context.site_root
-    #    home = '/training/%s/;%s' % (training.name, training.get_firstview())
-    #    get_training = {'name': training.name, 'title': training.get_title(),
-    #            'home': home}
-    #    return {'info': get_training}
-
 
     def get_tabs_stl(self, context):
         # Set Style
@@ -188,67 +179,36 @@ class ExpertTravel(SiteRoot):
     view__access__ = True
     view__label__ = u'View'
     def view(self, context):
-        from root import world
         root = context.root
-        here = context.handler
         user = context.user
-        #site_root = here.get_site_root()
         namespace = {}
         namespace['user']= self.get_user_menu(context)
-        # Get Company and Address
-        namespace['address'] = None
-        address = self.get_address()
-
         namespace['tabs'] = self.get_tabs_stl(context)
         namespace['login'] = self.login_form(context)
         namespace['register'] = self.register_form(context)
-        #namespace['profile'] = None
-        #namespace['company'] = None
         if user is not None:
             namespace['profile'] = User.user(user, context)
-
-            namespace['company'] = User.address(user, context)
-
-
-        if address is None:
-            skin = root.get_skin()
-            skin_path = skin.abspath
-            if skin_path == '/ui/aruni':
-                handler = self.get_handler('/ui/abakuc/home.xml')
-            else:
-                handler = root.get_skin().get_handler('home.xhtml')
-            #handler = root.get_skin().get_handler('home.xhtml')
-            return stl(handler, namespace)
-        company = address.parent
-
-
-        # Company
-        #namespace['company'] = {'name': company.name,
-        #                        #'website': company.get_website(),
-        #                        'path': self.get_pathto(company)}
-        ## Add news
-        #add_news = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,
-        #                                                        address.name)
-        #add_jobs = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
-        #                                                        address.name)
-        ## Address
-        #county = address.get_property('abakuc:county')
-        #addr = {'name': address.name,
-        #        'add_news': add_news,
-        #        'add_jobs': add_jobs,
-        #        'address_path': self.get_pathto(address)}
-
-        #namespace['address'] = addr
-        #XXX Fix as this does not work when viewing from Back-Office
-        #XXX See [#119] http://bugs.abakuc.com/show_bug.cgi?id=119
-        # Return the page
+            namespace['company'] = User.company(user, context)
         skin = root.get_skin()
         skin_path = skin.abspath
         if skin_path == '/ui/aruni':
             handler = self.get_handler('/ui/abakuc/home.xml')
         else:
-            handler = root.get_skin().get_handler('home.xhtml')
+            handler = root.get_skin().get_handler('home.xml')
         return stl(handler, namespace)
+
+    terms__access__ = True
+    def terms(self, context):
+        root = context.root
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        namespace = {}
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/terms.xml')
+        else:
+            handler = root.get_skin().get_handler('terms.xml')
+        return stl(handler, namespace) 
+
 
     ####################################################################
     # News - List

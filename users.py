@@ -162,17 +162,18 @@ class User(iUser, WorkflowAware, Handler):
         return context.come_back(message, goto=goto)
 
     # Return the profile url relative to the given handler
-    #def get_profile_url(self, where_from):
-    #    views = self.get_views()
-    #    if 'to_home' in views:
-    #        home = '/;profile'
-    #    elif 'bmi_home' in views:
-    #        home = '/;profile'
-    #    else:
-    #        home = '/;profile'
+    def get_profile_url(self, where_from):
+        views = self.get_views()
+        print views
+        if 'to_home' in views:
+            home = '/;profile'
+        elif 'bmi_home' in views:
+            home = '/;profile'
+        else:
+            home = '/;profile'
 
-    #    url = str(where_from.get_pathto(self)) + home
-    #    return url
+        url = str(where_from.get_pathto(self)) + home
+        return url
 
 
     # FIXME 015 Check usage of this method and clean up
@@ -306,8 +307,14 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace = {}
         namespace['user'] = self.user(context)
-        namespace['address'] = self.address(context)
-        namespace['manage'] = self.address(context)
+        company = self.company(context)
+        if company:
+            address = self.get_address()
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            namespace['is_branch_manager'] = is_branch_manager
+            namespace['company'] = company
+            namespace['addresses'] = self.addresses(context)
+            namespace['manage'] = self.manage(context)
 
         template_path = 'ui/abakuc/users/tabs.xml'
         template = root.get_handler(template_path)
@@ -358,13 +365,19 @@ class User(iUser, WorkflowAware, Handler):
         #company = address.parent
         if address:
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
+        else:
+            is_branch_manager = False
+            is_branch_member = False
+            is_guest = False
+            is_branch_manager_or_member = False
         namespace = {}
-
+        namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
+        #  Training Office TABS
         office = self.is_training()
         namespace['office'] = office
-        
-        #  Training Office TABS
         if office is True:
             root = self.get_site_root()
             bookings_module = list(root.search_handlers(handler_class=Bookings))
@@ -406,11 +419,10 @@ class User(iUser, WorkflowAware, Handler):
         # Other sites
         else:
             namespace['news'] = self.news_table(context)
-        namespace['jobs'] = self.jobs_table(context)
-        namespace['enquiries'] = self.enquiries_list(context)
+            namespace['jobs'] = self.jobs_table(context)
+            namespace['enquiries'] = self.enquiries_list(context)
         namespace['current_training'] = self.training(context)
         namespace['training'] = self.training_table(context)
-        print address
         if address:
             company = address.parent
             csv = address.get_handler('log_enquiry.csv')
@@ -423,174 +435,10 @@ class User(iUser, WorkflowAware, Handler):
                 if user.get_property('ikaaro:user_must_confirm') is None:
                    results.append({'index': row.number})
             namespace['howmany'] = len(results)
-            #namespace['branches'] = self.list_addresses(context)
-            namespace['is_branch_manager'] = is_branch_manager
-            # Company
-            namespace['company'] = {'name': company.name,
-                                    'title': company.get_property('dc:title'),
-                                    'website': company.get_website(),
-                                    'path': self.get_pathto(company)}
-            # Address
-            addr = {'name': address.name,
-                    'address_path': self.get_pathto(address)}
 
-            namespace['address'] = addr
-
-        template = """
-        <stl:block xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:stl="http://xml.itools.org/namespaces/stl">
-            <script type="text/javascript">
-                var TABS_COOKIE = 'profile_cookie';
-                $(function() {
-                    $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal"
-                    });
-                });
-            </script>
-            <div id="container-user">
-                <ul>
-                <stl:block if="office">
-                    <stl:block if="is_training_manager">
-                        <li><a href="#fragment-1"><span>Manage training</span></a></li>
-                        <li><a href="#fragment-2"><span>News</span></a></li>
-                        <stl:block if="bookings">
-                            <li><a href="#fragment-3"><span>Bookings
-                                (${howmany_bookings})</span></a></li>
-                        </stl:block>
-                        <li><a href="#fragment-5"><span>Statistics</span></a></li>
-                        <stl:block if="is_branch_manager">
-                            <li><a href="#fragment-6"><span>Administrate</span></a></li>
-                        </stl:block>
-                    </stl:block>
-                    <stl:block if="not is_training_manager">
-                        <li><a href="#fragment-1"><span>Modules</span></a></li>
-                        <li><a href="#fragment-2"><span>News</span></a></li>
-                        <stl:block if="bookings">
-                            <li><a href="#fragment-3"><span>Bookings</span></a></li>
-                        </stl:block>
-                        <li><a href="#fragment-4"><span>Other training</span></a></li>
-                        <stl:block if="is_branch_manager">
-                            <li><a href="#fragment-6"><span>Administrate</span></a></li>
-                        </stl:block>
-                    </stl:block>
-                </stl:block>
-                <stl:block if="not office">
-                    <li><a href="#fragment-1"><span>News</span></a></li>
-                    <li><a href="#fragment-2"><span>Jobs</span></a></li>
-                    <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
-                    <li><a href="#fragment-4"><span>Training</span></a></li>
-                    <li><a href="#fragment-5"><span>Branches</span></a></li>
-                    <li stl:if="is_branch_manager"><a href="#fragment-6"><span>Administrate</span></a></li>
-                </stl:block>
-                </ul>
-                <stl:block if="office">
-                    <stl:block if="is_training_manager">
-                        <div id="fragment-1">
-                            ${current_training}
-                        </div>
-                        <div id="fragment-2">
-                            ${news}
-                        </div>
-                        <stl:block if="bookings">
-                            <div id="fragment-3">${bookings}</div>
-                        </stl:block>
-                        <div id="fragment-5">
-                          ${statistics}
-                        </div>
-                    </stl:block>
-                    <stl:block if="not is_training_manager">
-                        <div id="fragment-1">
-                            ${current_training}
-                        </div>
-                        <div id="fragment-2">
-                            ${news}
-                        </div>
-                        <stl:block if="bookings">
-                            <div id="fragment-3">${bookings}</div>
-                        </stl:block>
-                        <div id="fragment-4">
-                          ${training} 
-                        </div>
-                    </stl:block>
-                    <stl:block if="is_branch_manager">
-                      <div id="fragment-6">
-                         <h2>Administrative actions</h2>
-                           <p>
-                           <a href="${company/path}/;edit_metadata_form?referrer=1">
-                             Modify company details
-                           </a>
-                           </p>
-                           <p>
-                           <a href="${address/address_path}/;edit_metadata_form?referrer=1">
-                             Modify address details
-                           </a>
-                           </p>
-                           <p>
-                            <a href="${address/address_path}/;permissions_form">
-                              Users associate to the address
-                            </a>
-                           </p>
-                           <p>
-                             <a href="${address/address_path}/;new_user_form">
-                               Associate a new user to the address
-                             </a>
-                           </p>
-                      </div>
-                    </stl:block>
-                </stl:block>
-                <stl:block if="not office">
-                    <div id="fragment-1">
-                      ${news}
-                    </div>
-                    <div id="fragment-2">
-                      ${jobs}
-                    </div>
-                    <div stl:if="howmany" id="fragment-3">
-                      ${enquiries}
-                    </div>
-                    <div id="fragment-4">
-                      ${training}
-                    </div>
-                    <div id="fragment-5">
-                      {branches}
-                    </div>
-                    <stl:block if="is_branch_manager">
-                      <div id="fragment-6">
-                        <h2>Administrative actions</h2>
-                          <p>
-                          <a href="${company/path}/;edit_metadata_form?referrer=1">
-                            Modify company details
-                          </a>
-                          </p>
-                          <p>
-                          <a href="${address/address_path}/;edit_metadata_form?referrer=1">
-                            Modify address details
-                          </a>
-                          </p>
-                          <p>
-                           <a href="${address/address_path}/;permissions_form">
-                             Users associate to the address
-                           </a>
-                          </p>
-                          <p>
-                            <a href="${address/address_path}/;new_user_form">
-                              Associate a new user to the address
-                            </a>
-                          </p>
-                      </div>
-                    </stl:block>
-                </stl:block> <!-- Not office TAB content -->
-            </div>
-        </stl:block>
-                  """
-        template = XHTMLDocument(string=template)
+        template_path = 'ui/abakuc/users/tabs_stl.xml'
+        template = root.get_handler(template_path)
         return stl(template, namespace)
-
 
     #######################################################################
     # Edit Account
@@ -685,7 +533,6 @@ class User(iUser, WorkflowAware, Handler):
         # Get Company and Address
         namespace['address'] = None
         address = self.get_address()
-        print address
 
         namespace['contact'] = None
         if user is None:
@@ -951,8 +798,8 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # User's company pages 
     ########################################################################
-    address__access__ = 'is_self_or_admin'
-    def address(self, context):
+    company__access__ = 'is_self_or_admin'
+    def company(self, context):
         users = self.get_handler('/users')
         user = context.user
         address = self.get_address()
@@ -964,14 +811,16 @@ class User(iUser, WorkflowAware, Handler):
         if user is None:
             return u'You need to be registered!'
         if address is not None:
+            is_guest = address.has_user_role(user.name, 'abakuc:guest')
+            namespace['is_guest'] = is_guest
             if address.has_user_role(user.name, 'abakuc:guest'):
                 contacts = address.get_property('abakuc:branch_manager')
                 if contacts:
                     contact = users.get_handler(contacts[0])
                     namespace['contact'] = contact.get_property('ikaaro:email')
-                else:
-                    contact = '<span style="color:red;">The administrator</span>'
-                    namespace['contact'] = Parser(contact)
+                #else:
+                #    contact = '<span style="color:red;">the administrator</span>'
+                #    namespace['contact'] = Parser(contact)
             # Company
             company = address.parent
             namespace['company'] = {'name': company.name,
@@ -991,8 +840,47 @@ class User(iUser, WorkflowAware, Handler):
             namespace['address'] = addr
 
         namespace['setup_company_form'] = '/users/%s/;setup_company_form' % (user.name)
-        print namespace['setup_company_form']
-        handler = self.get_handler('/ui/abakuc/users/address.xml')
+        handler = self.get_handler('/ui/abakuc/users/company.xml')
+        return stl(handler, namespace)
+
+
+    ########################################################################
+    # List all addresses for user's company 
+    ########################################################################
+    addresses__access__ = 'is_self_or_admin'
+    def addresses(self, context):
+        namespace = {}
+        address = self.get_address()
+        company = address.parent
+        response = Company.list_addresses(company, context)
+        namespace['response'] = response
+        # Return the page
+        handler = self.get_handler('/ui/abakuc/response.xml')
+        return stl(handler, namespace)
+    ########################################################################
+    # Manage tab 
+    ########################################################################
+    manage__access__ = 'is_self_or_admin'
+    def manage(self, context):
+        address = self.get_address()
+        # Get Company and Address
+        namespace = {}
+        if address:
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            namespace['is_branch_manager'] = is_branch_manager
+            # Manage branch members
+            addr = {'name': address.name,
+                    'address_path': self.get_pathto(address)}
+            namespace['address'] = addr
+            # Company
+            company = address.parent
+            namespace['company'] = {'name':company.name,
+                                    'title': company.get_property('dc:title'),
+                                    'website': company.get_website(),
+                                    'path': self.get_pathto(company)}
+
+
+        handler = self.get_handler('/ui/abakuc/users/manage.xml')
         return stl(handler, namespace)
 
     ########################################################################
@@ -1256,8 +1144,8 @@ class User(iUser, WorkflowAware, Handler):
     def news_table(self, context):
         namespace = {}
         address = self.get_address()
-        #company = address.parent
         if address:
+            company = address.parent
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
             is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
             is_guest = address.has_user_role(self.name, 'abakuc:guest')

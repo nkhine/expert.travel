@@ -1,0 +1,105 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <script type="text/javascript">
+        var TABS_COOKIE = 'profile_cookie';
+        $(function() {
+            $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+               $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+            },
+            fxFade: true,
+            fxSpeed: 'fast',
+            fxSpeed: "normal"
+            });
+        });
+    </script>
+    <div id="container-user">
+        <ul>
+        <stl:block if="office">
+            <stl:block if="is_training_manager">
+                <li><a href="#fragment-1"><span>Training</span></a></li>
+                <li><a href="#fragment-2"><span>News</span></a></li>
+                <stl:block if="bookings">
+                    <li><a href="#fragment-3"><span>Bookings
+                        (${howmany_bookings})</span></a></li>
+                </stl:block>
+                <li><a href="#fragment-5"><span>Statistics</span></a></li>
+            </stl:block>
+            <stl:block if="not is_training_manager">
+                <li><a href="#fragment-1"><span>Modules</span></a></li>
+                <li><a href="#fragment-2"><span>News</span></a></li>
+                <stl:block if="bookings">
+                    <li><a href="#fragment-3"><span>Bookings</span></a></li>
+                </stl:block>
+                <li><a href="#fragment-4"><span>Other training</span></a></li>
+            </stl:block>
+        </stl:block>
+        <stl:block if="not office">
+            <stl:block if="is_branch_manager_or_member">
+                <li><a href="#fragment-1"><span>News</span></a></li>
+                <li><a href="#fragment-2"><span>Jobs</span></a></li>
+                <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
+                <li><a href="#fragment-4"><span>Training</span></a></li>
+                <li><a href="#fragment-5"><span>Marketplace</span></a></li>
+                <li><a href="#fragment-6"><span>Forum</span></a></li>
+            </stl:block>
+            <stl:block if="not is_branch_manager_or_member">
+            </stl:block>
+        </stl:block>
+        </ul>
+        <stl:block if="office">
+            <stl:block if="is_training_manager">
+                <div id="fragment-1">
+                    ${current_training}
+                </div>
+                <div id="fragment-2">
+                    ${news}
+                </div>
+                <stl:block if="bookings">
+                    <div id="fragment-3">${bookings}</div>
+                </stl:block>
+                <div id="fragment-5">
+                  ${statistics}
+                </div>
+            </stl:block>
+            <stl:block if="not is_training_manager">
+                <div id="fragment-1">
+                    ${current_training}
+                </div>
+                <div id="fragment-2">
+                    ${news}
+                </div>
+                <stl:block if="bookings">
+                    <div id="fragment-3">${bookings}</div>
+                </stl:block>
+                <div id="fragment-4">
+                  ${training} 
+                </div>
+            </stl:block>
+        </stl:block>
+        <stl:block if="not office">
+                <stl:block if="is_branch_manager_or_member">
+                <div id="fragment-1">
+                  ${news}
+                </div>
+                <div id="fragment-2">
+                  ${jobs}
+                </div>
+                <div stl:if="howmany" id="fragment-3">
+                  ${enquiries}
+                </div>
+                <div id="fragment-4">
+                  ${training}
+                </div>
+                <div id="fragment-5">
+                  {marketplace}
+                </div>
+                <div id="fragment-6">
+                  {forum}
+                </div>
+                </stl:block>
+                <stl:block if="not is_branch_manager_or_member">
+                </stl:block>
+        </stl:block> <!-- Not office TAB content -->
+    </div>
+</stl:block>
