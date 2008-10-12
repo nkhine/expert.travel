@@ -225,6 +225,14 @@ class FrontOffice(Skin):
         is_office = office.is_training()
         
         if is_office and not isinstance(root, Company):
+           forum_folder = office.get_handler('forum')
+           title = getattr(forum_folder, 'view__label__')
+           if callable(title):
+               title = title(**args)
+           src = forum_folder.get_path_to_icon(size=16)
+           append({'path': forum_folder.name, 'method': 'view',
+                   'title': self.gettext(title),
+                   'icon': src})
            media_folder = office.get_handler('media')
            title = getattr(media_folder, 'view__label__')
            if callable(title):

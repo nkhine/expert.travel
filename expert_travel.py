@@ -25,6 +25,7 @@ from website import SiteRoot
 from users import User
 from news import News
 from utils import t1, t2, t3, t4
+from forum import Forum
 
 class ExpertTravel(SiteRoot):
 
@@ -44,6 +45,10 @@ class ExpertTravel(SiteRoot):
         SiteRoot.new(self, **kw)
         cache = self.cache
         # Add extra handlers here
+        forum = Forum()
+        cache['forum'] = forum
+        cache['forum.metadata'] = forum.build_metadata(
+            **{'dc:title': {'en': u'Forum'}})
         terms = XHTMLFile()
         cache['terms.xhtml'] = terms
         cache['terms.xhtml.metadata'] = terms.build_metadata(
@@ -74,6 +79,33 @@ class ExpertTravel(SiteRoot):
     # User Interface / Navigation
     #######################################################################
     site_format = 'address'
+
+    def is_branch_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is reviewer or member
+        address = user.get_address()
+        if address:
+            print address.has_user_role(user.name, 'abakuc:branch_manager',
+            'abakuc:branch_member')
+            return address.has_user_role(user.name, 'abakuc:branch_manager',
+            'abakuc:branch_member')
+
+
+    def is_travel_agent(self, user, object):
+        if user is None:
+            return False
+
+        # TEST 015
+        return self.has_user_role(user.name, 'abakuc:branch_member')
+
+    def is_allowed_to_edit(self, user, object):
+        root = object.get_site_root()
+        return root.is_branch_manager(user, object)
 
     def get_level1_title(self, level1):
        #return level1

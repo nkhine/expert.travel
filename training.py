@@ -48,6 +48,7 @@ from metadata import JobTitle, SalaryRange
 from namespaces import Regions, BusinessProfile
 from marketing import Marketing
 from certificate import Certificate
+from forum import Forum
 
 month_names = [
     u'January', u'February', u'March', u'April', u'May', u'June',
@@ -191,10 +192,13 @@ class Training(SiteRoot, WorkflowAware):
         cache['media'] = media
         cache['media.metadata'] = media.build_metadata(
             **{'dc:title': {'en': u'Media folder'}})
-
+        forum = Forum()
+        cache['forum'] = forum
+        cache['forum.metadata'] = forum.build_metadata(
+            **{'dc:title': {'en': u'Forum'}})
 
     def get_document_types(self):
-        return [Bookings, ImageMap, Module]
+        return [Bookings, ImageMap, Module, Forum]
 
     def get_level1_title(self, level1):
         return None
@@ -480,8 +484,7 @@ class Training(SiteRoot, WorkflowAware):
         if root.is_admin(user, self):
             return True
         # Is reviewer or member
-        return (self.has_user_role(user.name, 'abakuc:training_manager') or
-                self.has_user_role(user.name, 'abakuc:branch_member'))
+        return self.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
     
     def is_allowed_to_edit_map(self, user, object):
         if not user:
