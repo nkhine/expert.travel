@@ -110,7 +110,7 @@
     <stl:block stl:if="not results">
     <tr>
         <td colspan="5">To add new sub holiday categories, please visit the<a
-        href="./;manage_holiday_types">
+        href="/${booking_name}/;manage_holiday_types">
         Manage ${holiday_type_value}</a> interface</td>
     </tr>
     </stl:block>
@@ -120,10 +120,10 @@
     <p>
     Use these links to add or edit any of the settings.
     </p>
-    <span>» <a href="./;manage_holiday_types">Holiday Types</a></span>
-    <span>» <a href="./;manage_destinations">Destinations</a></span>
-    <span>» <a href="./;manage_hotels">Hotels</a></span>
-    <span>» <a href="./;manage_tour_operators">Tour Operators</a></span>
+    <span>» <a href="/${booking_name}/;manage_holiday_types">Holiday Types</a></span>
+    <span>» <a href="/${booking_name}/;manage_destinations">Destinations</a></span>
+    <span>» <a href="/${booking_name}/;manage_hotels">Hotels</a></span>
+    <span>» <a href="/${booking_name}/;manage_tour_operators">Tour Operators</a></span>
     <p>» Download bookings made as CSV file.
     <a href="/${booking_name}/;csv?">bookings.csv</a></p>
 </stl:block>
