@@ -95,7 +95,7 @@
                   {marketplace}
                 </div>
                 <div id="fragment-6">
-                  {forum}
+                  ${forum}
                 </div>
                 </stl:block>
                 <stl:block if="not is_branch_manager_or_member">

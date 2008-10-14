@@ -6,7 +6,8 @@
 
   <h2>${title}</h2>
   <p><em>${description}</em></p>
-
+${batch}
+${msg}
   <table id="forum_message_list" width="100%">
     <colgroup>
       <col width="20%" />

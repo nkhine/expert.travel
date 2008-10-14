@@ -38,8 +38,9 @@ from exam import Exam
 from marketing import Marketing
 from news import News
 from jobs import Job, Candidature
-from utils import title_to_name, get_sort_name
+from utils import title_to_name, get_sort_name, t1, t2, t3, t4, t5
 from metadata import JobTitle, SalaryRange
+from forum import Forum
 
 class UserFolder(iUserFolder):
     class_id = 'users'
@@ -423,6 +424,7 @@ class User(iUser, WorkflowAware, Handler):
             namespace['enquiries'] = self.enquiries_list(context)
         namespace['current_training'] = self.training(context)
         namespace['training'] = self.training_table(context)
+        namespace['forum'] = self.forum(context)
         if address:
             company = address.parent
             csv = address.get_handler('log_enquiry.csv')
@@ -1954,5 +1956,76 @@ class User(iUser, WorkflowAware, Handler):
         goto = context.uri.resolve(';profile')
         return context.come_back(message, goto=goto)
 
+    forum__access__ = True
+    def forum(self, context):
+        site_root = self.get_site_root()
+        namespace = {}
+        forums = []
+        # Get the expert.travel forum
+        forum = list(site_root.search_handlers(format=Forum.class_id))
+        for item in forum:
+            forums.append(item)
+        # Get all Training programmes forums
+        root = context.root
+        training = root.get_handler('training')
+        items = training.search_handlers(handler_class=Training)
+        for item in items:
+            tp_forum = list(item.search_handlers(format=Forum.class_id))
+            for item in tp_forum:
+                item != []
+                forums.append(item)
+
+        # Build the select list of forums and their URLs
+        current_forums = []
+        forum_links = []
+        for item in forums:
+            ns = {}
+            root = item.get_site_root()
+            title = item.title_or_name
+            description = reduce_string(item.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            if isinstance(root, Training):
+                url = 'http://%s/%s' % ((str(root.get_vhosts()[0])), item.name)
+            else:
+                url = '/%s' % (item.name)
+            # List the last 5 threads for each forum
+            threads = item.get_thread_namespace(context)[:5]
+
+            forum_to_add = {'title': title,
+                            'description': description,
+                            'url': url,
+                            'threads': threads}
+
+            ns['forum'] = forum_to_add
+            current_forums.append(ns)
+            forum_links.append({'title': title,
+                            'url': url,
+                            'is_selected': None})
+
+        # Set batch informations
+        batch_start = int(context.get_form_value('t5', default=0))
+        batch_size = 2
+        batch_total = len(current_forums)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        current_forums = current_forums[batch_start:batch_fin]
+         # Namespace
+        if current_forums:
+            forums_batch = t5(context.uri, batch_start, batch_size,
+                              batch_total, msgs=(u"There is 1 forum.",
+                                    u"There are ${n} forums."))
+            msg = None
+        else:
+            forums_batch = None
+            msg = u"Appologies, currently we don't have any forums"
+        namespace['batch'] = forums_batch
+        namespace['msg'] = msg
+       
+        namespace['forum_links'] = forum_links
+        namespace['forum'] = current_forums
+        handler = self.get_handler('/ui/abakuc/forum/list.xml')
+        return stl(handler, namespace)  
 
 register_object_class(User)

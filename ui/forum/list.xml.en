@@ -4,12 +4,17 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>${title} Abakuc</h2>
-  <p><em>${description}</em></p>
-
-  <a href=";new_thread_form">New Thread</a>
-
-  <table width="100%" id="forum_thread_list">
+<h2>Forum Lists</h2>
+<dt>
+<label for="batch">${batch}</label>
+</dt>
+<dd>
+<select id="forum_links" name="forum_links">
+  <option stl:repeat="item forum_links" value="{topic/id}"
+    selected="{batch/is_selected}">${item/title}</option> 
+</select>
+</dd>
+  <table width="100%" id="forum_thread_list" stl:repeat="item forum">
     <colgroup>
       <col width="50%" />
       <col width="10%" />
@@ -19,6 +24,12 @@
     </colgroup>
     <thead>
       <tr>
+        <th colspan="5">${item/forum/title}</th>
+      </tr>  
+      <tr>
+        <th colspan="5">${item/forum/description}</th>
+      </tr>  
+      <tr>
         <th>Title</th>
         <th>Author</th>
         <th>Replies</th>
@@ -27,9 +38,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr stl:repeat="thread threads" class="${repeat/thread/even}">
+      <tr stl:repeat="thread item/forum/threads" class="{repeat/thread/even}">
         <td>
-          <a class="forum_thread_title" href="/forum/${thread/name}"
+          <a class="forum_thread_title" href="${item/forum/url}/${thread/name}"
             >${thread/title}</a>
           <br />
           <em>${thread/description}</em>
@@ -49,7 +60,5 @@
       </tr>
     </tbody>
   </table>
-
-  <a href=";new_thread_form">New Thread</a>
 
 </stl:block>

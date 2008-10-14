@@ -1,21 +1,4 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2005 Luis Arturo Belmar-Letelier <luis@itaapy.com>
-# Copyright (C) 2006-2007 Hervé Cauwelier <herve@itaapy.com>
-# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
 from operator import itemgetter
@@ -34,7 +17,7 @@ from itools.cms.messages import *
 from itools.cms.registry import register_object_class
 from itools.cms.html import XHTMLFile
 from itools.cms.text import Text
-
+from itools.cms.widgets import batch
 
 def add_forum_style(context):
     style = context.root.get_handler('ui/forum/forum.css')
@@ -162,14 +145,18 @@ class Thread(Folder):
         users = self.get_handler('/users')
         ac = self.get_access_control()
         accept_language = context.get_accept_language()
+        forum = self.parent
         for i, id in enumerate([0] + self.get_replies()):
             message = get_forum_handler(self, id)
             author_id = message.get_property('owner')
             metadata = users.get_handler('%s.metadata' % author_id)
             namespace.append({
-                'author': (metadata.get_property('dc:title') or
+                'author': (users.get_handler(author_id).get_title() or
+                    metadata.get_property('dc:title') or
                     metadata.get_property('ikaaro:email')),
+                'registered': metadata.get_property('abakuc:registration_date'),
                 'mtime': format_datetime(message.get_mtime(), accept_language),
+                'url': '/%s/%s/' % (forum.name, message),
                 'body': message.events,
                 'editable': ac.is_admin(user, message),
                 'edit_form': '%s/;edit_form' % message.name,
@@ -185,7 +172,28 @@ class Thread(Folder):
 
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
-        namespace['messages'] = self.get_message_namespace(context)
+        messages = self.get_message_namespace(context)
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 8
+        batch_total = len(messages)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        messages = messages[batch_start:batch_fin]
+         # Namespace
+        if messages:
+            messages_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=(u"There is 1 message.",
+                                    u"There are ${n} messages."))
+            msg = None
+        else:
+            messages_batch = None
+            msg = u"Appologies, currently we don't have any messages in this forum"
+        namespace['batch'] = messages_batch
+        namespace['msg'] = msg
+
+        namespace['messages'] = messages
         namespace['rte'] = self.get_rte(context, 'data', None)
         add_forum_style(context)
 
@@ -234,6 +242,7 @@ class Forum(Folder):
     def get_thread_namespace(self, context):
         accept_language = context.get_accept_language()
         namespace = []
+        forum_name = self.name
         users = self.get_handler('/users')
         # XXX Retrocompatibility (For 0.17 -> only search xhtml Documents)
         from itools.cms.text import Text
@@ -252,40 +261,19 @@ class Forum(Folder):
                 'name': thread.name,
                 'title': thread.get_title(),
                 'description': thread.get_property('dc:description'),
-                'author': (first_metadata.get_property('dc:title') or
+                'author': (users.get_handler(first_author_id).get_title() or
+                    first_metadata.get_property('dc:title') or
                     first_metadata.get_property('ikaaro:email')),
                 'replies': len(thread.get_replies()),
                 'last_date': format_datetime(last.get_mtime(), accept_language),
-                'last_author': (last_metadata.get_property('dc:title') or
+                'last_author': (users.get_handler(last_author_id).get_title() or
+                    last_metadata.get_property('dc:title') or
                     last_metadata.get_property('ikaaro:email')),
             })
 
         namespace.sort(key=itemgetter('last_date'), reverse=True)
 
         return namespace
-
-    #def is_branch_manager(self, user, object):
-    #    if not user:
-    #        return False
-    #    # Is global admin
-    #    root = object.get_root()
-    #    if root.is_admin(user, self):
-    #        return True
-    #    # Is reviewer or member
-    #    return self.has_user_role(user.name, 'abakuc:branch_manager')
-
-
-    #def is_travel_agent(self, user, object):
-    #    if user is None:
-    #        return False
-
-    #    # TEST 015
-    #    return self.has_user_role(user.name, 'abakuc:branch_member')
-
-    #def is_allowed_to_edit(self, user, object):
-    #    root = object.get_site_root()
-    #    return root.is_branch_manager(user, object)
-
 
     view__access__ = True 
     view__label__ = u"Forum"
@@ -296,7 +284,6 @@ class Forum(Folder):
         namespace['description'] = self.get_property('dc:description')
         namespace['threads'] = self.get_thread_namespace(context)
         #namespace['is_allowed_to_edit'] = self.is_allowed_to_edit(context)
-        #print namespace['is_allowed_to_edit'] 
 
         add_forum_style(context)
 

@@ -85,6 +85,12 @@ class SiteRoot(Handler, BaseWebSite):
         # Set cookie
         user.set_auth_cookie(context, password)
 
+        # Update last login date
+        last_login_date = user.get_property('abakuc:last_login_date')
+        if last_login_date:
+            user.set_property('abakuc:previous_login_dates', last_login_date)
+        # Add login date
+        user.set_property('abakuc:last_login_date', datetime.date.today())
         # Set context
         context.user = user
 

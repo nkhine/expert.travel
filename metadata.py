@@ -90,6 +90,8 @@ class Schema(BaseSchema):
         'job_title': String,
         'functions': String,
         'registration_date': Date,
+        'last_login_date': Date,
+        'previous_login_dates': Date,
         'points': Integer(default=0),
         'terms': Boolean(default=True,
                                   title=u'Terms & Conditions',

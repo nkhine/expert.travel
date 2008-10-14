@@ -1563,6 +1563,38 @@ class Training(SiteRoot, WorkflowAware):
         # Return the page
         handler = self.get_handler('/ui/abakuc/training/list_news.xml')
         return stl(handler, namespace)
+
+
+    #######################################################################
+    # New instance form 
+    #######################################################################
+    forum__access__ = True
+    def forum(self, context):
+        namespace = {}
+        forums = []
+        # Get the expert.travel forum
+        forum = list(self.search_handlers(format=Forum.class_id))
+        for item in forum:
+        # Get all Training programmes forums
+        #root = context.root
+        #training = root.get_handler('training')
+        #items = training.search_handlers(handler_class=Training)
+        #for item in items:
+        #    tp_forum = list(item.search_handlers(format=Forum.class_id))
+        #    for item in tp_forum:
+        #        item != []
+        #        forums.append(item)
+
+            # List the last 5 threads for each forum
+            #print item.title_or_name
+            #print len(namespace['threads'])
+            #print namespace['threads']
+            response = Forum.view(item, context)
+            namespace['response'] = response
+            # Return the page
+            handler = self.get_handler('/ui/abakuc/response.xml')
+            return stl(handler, namespace)
+
 #######################################################################
 # Training module
 #######################################################################
