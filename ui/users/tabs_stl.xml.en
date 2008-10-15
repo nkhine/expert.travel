@@ -32,6 +32,7 @@
                     <li><a href="#fragment-3"><span>Bookings</span></a></li>
                 </stl:block>
                 <li><a href="#fragment-4"><span>Other training</span></a></li>
+                <li><a href="#fragment-6"><span>Forum</span></a></li>
             </stl:block>
         </stl:block>
         <stl:block if="not office">
@@ -74,6 +75,9 @@
                 </stl:block>
                 <div id="fragment-4">
                   ${training} 
+                </div>
+                <div id="fragment-6">
+                  ${forum} 
                 </div>
             </stl:block>
         </stl:block>

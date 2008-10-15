@@ -24,7 +24,9 @@
     </colgroup>
     <thead>
       <tr>
-        <th colspan="5">${item/forum/title}</th>
+        <th colspan="4">${item/forum/title}</th>
+        <th><a class="forum_thread_title" href="${item/forum/url}/;new_thread_form"
+            >Post a new thread</a></th>
       </tr>  
       <tr>
         <th colspan="5">${item/forum/description}</th>

@@ -59,6 +59,7 @@ class Message(XHTMLFile):
         return u''
 
 
+    edit_form__access__ = 'is_admin'
     def edit_form(self, context):
         """WYSIWYG editor for HTML documents."""
         # Edit with a rich text editor
@@ -194,7 +195,15 @@ class Thread(Folder):
         namespace['msg'] = msg
 
         namespace['messages'] = messages
+
+        #user = context.user
+        #username = user and user.name
+        #if username:
+        #    namespace['rte'] = self.get_rte(context, 'data', None)
+        #else:
+        #    namespace['rte'] = None
         namespace['rte'] = self.get_rte(context, 'data', None)
+
         add_forum_style(context)
 
         handler = self.get_handler('/ui/abakuc/forum/thread/view.xml')
@@ -311,8 +320,26 @@ class Forum(Folder):
         if name is None:
             return context.come_back(u"Invalid title.")
 
-        if self.has_handler(name):
-            return context.come_back(u"This thread already exists.")
+        #if self.has_handler(name):
+        #    return context.come_back(u"This thread already exists.")
+        # Generate the name(id)
+        x = self.search_handlers(handler_class=Thread)
+        print x
+        y =  str(len(list(x))+1)
+        name = 'thread%s' % y
+        print name
+        while self.has_handler(name):
+              try:
+                  names = name.split('-')
+                  if len(names) > 1:
+                      name = '-'.join(names[:-1])
+                      number = str(int(names[-1]) + 1)
+                      name = [name, number]
+                      name = '-'.join(name)
+                  else:
+                      name = '-'.join(names) + '-1'
+              except:
+                  name = '-'.join(names) + '-1'
 
         root = context.root
         website_languages = root.get_property('ikaaro:website_languages')

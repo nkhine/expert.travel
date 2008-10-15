@@ -79,6 +79,10 @@
     </div> <!-- yui-u first -->
     <!-- 1/3 column -->
     <div class="yui-u">
+               <dt>
+               <dd class="page_picture" stl:if="picture_url"><img
+                  src="/${picture_url}"/></dd>
+              </dt> 
         <script type="text/javascript"><!--
             google_ad_client = "pub-2050823514740471";
             google_ad_width = 160;
