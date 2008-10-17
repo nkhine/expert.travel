@@ -238,60 +238,60 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # Indexing
     ########################################################################
-    #def get_catalog_indexes(self):
-    #    from root import world
-    #    indexes = iUser.get_catalog_indexes(self)
-    #    get_property = self.get_metadata().get_property
-    #    # The registration date
-    #    registration_date = get_property('abakuc:registration_date')
-    #    if registration_date is not None:
-    #        indexes['registration_date'] = registration_date
-    #        indexes['registration_year'] = registration_date.year
-    #        indexes['registration_month'] = registration_date.month
-    #    # Other user fields
-    #    root = get_context().root
-    #    indexes['function'] = get_property('abakuc:functions')
-    #    companies_handler = root.get_handler('companies')
-    #    if companies_handler:
-    #        companies = \
-    #        list(companies_handler.search_handlers(handler_class=Company))
-    #        for company in companies:
-    #            company_title = company.get_handler(company.abspath)
-    #            addresses = \
-    #                list(company.search_handlers(handler_class=Address))
-    #            for address in addresses:
-    #                username = self.name
-    #                users = address.get_members()
-    #                if username in users:
-    #                    indexes['address'] = address.get_property('abakuc:address')
-    #                    county = address.get_property('abakuc:county')
-    #                    indexes['abakuc:county'] = county
-    #                    if county is not None:
-    #                        for row_number in world.search(county=county):
-    #                            row = world.get_row(row_number)
-    #                            country = row[5]
-    #                            region = row[7]
-    #                            indexes['country'] = country
-    #                            indexes['region'] = region
-    #                    indexes['company'] = company.get_property('dc:title')
-    #                    indexes['type'] = company.get_property('abakuc:type')
-    #                    topics = company.get_property('abakuc:topic')
-    #                    indexes['topic'] = tuple(topics)
-    #    # Index the user's training programmes
-    #    training_programmes = []
-    #    training_handler = root.get_handler('training')
-    #    if training_handler:
-    #        trainings = \
-    #        list(training_handler.search_handlers(handler_class=Training))
-    #        for training in trainings:
-    #            to = training.get_property('dc:title')
-    #            username = self.name
-    #            users = training.get_members()
-    #            if username in users:
-    #                training_programmes.append(to)
-    #    indexes['training_programmes'] = training_programmes
-    #
-    #    return indexes
+    def get_catalog_indexes(self):
+        from root import world
+        indexes = iUser.get_catalog_indexes(self)
+        get_property = self.get_metadata().get_property
+        # The registration date
+        registration_date = get_property('abakuc:registration_date')
+        if registration_date is not None:
+            indexes['registration_date'] = registration_date
+            indexes['registration_year'] = registration_date.year
+            indexes['registration_month'] = registration_date.month
+        # Other user fields
+        root = get_context().root
+        indexes['function'] = get_property('abakuc:functions')
+        companies_handler = root.get_handler('companies')
+        if companies_handler:
+            companies = \
+            list(companies_handler.search_handlers(handler_class=Company))
+            for company in companies:
+                company_title = company.get_handler(company.abspath)
+                addresses = \
+                    list(company.search_handlers(handler_class=Address))
+                for address in addresses:
+                    username = self.name
+                    users = address.get_members()
+                    if username in users:
+                        indexes['address'] = address.get_property('abakuc:address')
+                        county = address.get_property('abakuc:county')
+                        indexes['abakuc:county'] = county
+                        if county is not None:
+                            for row_number in world.search(county=county):
+                                row = world.get_row(row_number)
+                                country = row[5]
+                                region = row[7]
+                                indexes['country'] = country
+                                indexes['region'] = region
+                        indexes['company'] = company.get_property('dc:title')
+                        indexes['type'] = company.get_property('abakuc:type')
+                        topics = company.get_property('abakuc:topic')
+                        indexes['topic'] = tuple(topics)
+        # Index the user's training programmes
+        training_programmes = []
+        training_handler = root.get_handler('training')
+        if training_handler:
+            trainings = \
+            list(training_handler.search_handlers(handler_class=Training))
+            for training in trainings:
+                to = training.get_property('dc:title')
+                username = self.name
+                users = training.get_members()
+                if username in users:
+                    training_programmes.append(to)
+        indexes['training_programmes'] = training_programmes
+    
+        return indexes
 
     #######################################################################
     # jQuery TABS 
