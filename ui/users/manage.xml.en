@@ -4,26 +4,28 @@
 <div class="yui-gc user">
     <div class="yui-u first">
         <h2>Administrate</h2>
-          <p>
+          <ul>
+          <li>
           <a href="${company/path}/;edit_metadata_form?referrer=1">
             Modify company details
           </a>
-          </p>
-          <p>
+          </li>
+          <li>
           <a href="${address/address_path}/;edit_metadata_form?referrer=1">
             Modify address details
           </a>
-          </p>
-          <p>
+          </li>
+          <li>
            <a href="${address/address_path}/;permissions_form">
              Users associate to the address
            </a>
-          </p>
-          <p>
+          </li>
+          <li>
             <a href="${address/address_path}/;new_user_form">
               Associate a new user to the address
             </a>
-          </p>
+          </li>
+        </ul>
     </div><!-- / yui-u first-->
     <div class="yui-u">
         right

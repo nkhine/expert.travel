@@ -3,7 +3,7 @@
     <script type="text/javascript">
         var TABS_COOKIE = 'profile_cookie';
         $(function() {
-            $('#container-user ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+            $('#container-user > ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                 var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
                $.cookie(TABS_COOKIE, lastTab, {path: '/'});
             },

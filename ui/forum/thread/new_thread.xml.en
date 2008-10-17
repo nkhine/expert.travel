@@ -12,6 +12,15 @@
       <dd>
         <input type="text" id="dc:title" name="dc:title" size="40" />
       </dd>
+      <dd stl:if="is_admin">
+        Hello I am admin
+      </dd>
+    <!--  <dd>
+        <select id="forum_links" name="forum_links">
+  <option stl:repeat="item types" value="{topic/id}"
+    selected="{batch/is_selected}">${item/types}</option> 
+</select>
+      </dd> -->
       <dt>Message:</dt>
       <dd>
         ${rte}

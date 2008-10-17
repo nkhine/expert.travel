@@ -304,6 +304,20 @@ class Forum(Folder):
     new_thread_form__label__ = u"New Thread"
     def new_thread_form(self, context):
         namespace = {}
+        user = context.user
+        #types = ['question', 'announcment']
+        #print types
+        #namespace['types'] = types
+        #print namespace['types']
+        # Is global admin
+        ac = self.get_access_control()
+        print ac
+        from training import Training
+        if isinstance(ac, Training):
+            namespace['is_admin'] = ac.is_training_manager(user, self)
+        else:
+            namespace['is_admin'] = ac.is_admin(user, self)
+        print namespace['is_admin'] 
         namespace['rte'] =  self.get_rte(context, 'data', None)
         add_forum_style(context)
         handler = self.get_handler('/ui/abakuc/forum/thread/new_thread.xml')
