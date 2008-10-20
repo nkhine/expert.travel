@@ -847,11 +847,11 @@ class Address(RoleAware, WorkflowAware, Folder):
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
 
         # Jobs folder
-        title = u'Products folder'
-        kw = {'dc:title': {'en': title}}
-        products = Products()
-        cache['products'] = products
-        cache['products.metadata'] = products.build_metadata(**kw)
+        #title = u'Products folder'
+        #kw = {'dc:title': {'en': title}}
+        #products = Products()
+        #cache['products'] = products
+        #cache['products.metadata'] = products.build_metadata(**kw)
 
     def get_document_types(self):
         return [News, Job]
