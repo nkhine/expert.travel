@@ -357,10 +357,11 @@ class Root(Handler, BaseRoot):
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)
+            print count
             if not address_name:
                 continue
             if company.has_handler(address_name):
-                print 'Warning'
+                print address_name 
             else:
                 address, metadata = company.set_object(address_name, Address())
                 address.set_property('abakuc:address', address_title)
