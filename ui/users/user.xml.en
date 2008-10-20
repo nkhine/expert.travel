@@ -9,8 +9,7 @@
         <stl:block if="lastname">
         <h2>${firstname} ${lastname}</h2>
         </stl:block>
-        <dt>${email}</dt>
-        <!-- 
+        <p>${email}</p>
         <ul>
             <li stl:if="is_admin">Admin</li>
             <li stl:if="is_branch_manager">Manager</li>
@@ -30,7 +29,6 @@
             <a href=";edit_password_form">Change password.</a>
             </li>
           </ul>  
-          -->
     </div><!-- / yui-u first-->
     <div class="yui-u">
         <stl:block if="portrait">

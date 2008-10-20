@@ -152,7 +152,7 @@ class ExpertTravel(SiteRoot):
             <script type="text/javascript">
                 var TABS_COOKIE = 'company_cookie';
                 $(function() {
-                    $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                    $('#container-1 > ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                         var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
                        $.cookie(TABS_COOKIE, lastTab, {path: '/'});
                     },

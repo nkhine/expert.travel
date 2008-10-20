@@ -2061,6 +2061,7 @@ class User(iUser, WorkflowAware, Handler):
         namespace['msg'] = msg
        
         namespace['forum_links'] = forum_links
+        print namespace['forum_links']
         namespace['forum'] = current_forums
         handler = self.get_handler('/ui/abakuc/forum/list.xml')
         return stl(handler, namespace)  

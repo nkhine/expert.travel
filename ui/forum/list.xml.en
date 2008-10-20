@@ -5,16 +5,15 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h2>Forum Lists</h2>
-<dt>
-<label for="batch">${batch}</label>
-</dt>
-<dd>
-<select id="forum_links" name="forum_links">
-  <option stl:repeat="item forum_links" value="{topic/id}"
-    selected="{batch/is_selected}">${item/title}</option> 
+<div>${batch}</div>
+<form name="links">
+<select id="forum_links" name="forum_links" OnChange="location.href=links.forum_links.options[selectedIndex].value">
+  <option stl:repeat="item forum_links" value="${item/url}">
+    ${item/title}
+  </option> 
 </select>
-</dd>
-  <table width="100%" id="forum_thread_list" stl:repeat="item forum">
+</form>
+  <table width="100%" class="forum_thread_list" stl:repeat="item forum">
     <colgroup>
       <col width="50%" />
       <col width="10%" />
