@@ -17,10 +17,8 @@
               <dt>
                 <a href="${news/news_item/url}">${news/news_item/title}</a>
               </dt>
-              <dd>
                 <dd>${news/news_item/description}</dd>
-                <div class="info">Posted by ${news/news_item/owner} on ${news/news_item/date_posted}</div>
-              </dd>
+                <dd class="info">Posted by ${news/news_item/owner} on ${news/news_item/date_posted}</dd>
             </dl>       
           </stl:block>
       </div>

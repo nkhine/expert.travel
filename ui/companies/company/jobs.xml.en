@@ -15,10 +15,10 @@
               </dt>
               <dd>
                 ${job/description}
-                  <div class="info">
-                    ${job/function} - ${job/region} - ${job/salary} - <a href="${job/apply}"
-                    title="Apply for ${job/title}, by ${job/closing_date}">${job/closing_date}</a>
-                  </div>
+              </dd>
+              <dd class="info">
+                ${job/function} - ${job/region} - ${job/salary} - <a href="${job/apply}"
+                title="Apply for ${job/title}, by ${job/closing_date}">${job/closing_date}</a>
               </dd>
             </dl>       
           </stl:block>

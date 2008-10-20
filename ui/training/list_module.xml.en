@@ -17,7 +17,7 @@
             ${item/description}<span class="vignette" stl:if="item/picture_url"><img
               src="${item/picture_url}"/></span>
             </dd>
-            <div class="info">
+            <dd class="info">
               <span>
                   <a href="{item/login}">Login to manage</a>
                   <a href="{item/login}">No. of Members</a>
@@ -34,9 +34,7 @@
                   <a href="{item/login}">Login / Register</a> for FREE Access to
                   {item/title} programme.
               </span>
-            </div>
-            <div>
-            </div>
+            </dd>
         </dl>       
       </stl:block>
               <span>

@@ -40,16 +40,14 @@
           <stl:block repeat="job jobs"> 
             <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
               onmouseout="this.className='ListItem';">  
-              <dt>
-                <a href="${job/url}">${job/title}</a>
-              </dt>
-              <dd>
+                <dt>
+                    <a href="${job/url}">${job/title}</a>
+                </dt>
                 <dd>${job/description}</dd>
-                  <div class="info">
+                <dd class="info">
                     ${job/function} - ${job/region} - ${job/salary} - <a href="${job/apply}"
                     title="Apply for ${job/title}, by ${job/closing_date}">${job/closing_date}</a>
-                  </div>
-              </dd>
+                </dd>
             </dl>       
           </stl:block>
       </div>

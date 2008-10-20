@@ -16,9 +16,9 @@
           <dd>
             ${news_items/description}
           </dd>
-            <div class="info">
+          <dd class="info">
             Posted on ${news_items/date_posted} by ${news_items/owner}
-            </div>
+          </dd>
         </dl>       
       </stl:block>
     </div>

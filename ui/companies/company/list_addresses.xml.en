@@ -18,9 +18,9 @@
               ${item/town}, ${item/postcode}, 
               </address>
             </dd>
-            <div class="info">
+            <dd class="info">
                 Phone: ${item/phone}, Fax: ${item/fax}
-            </div>
+            </dd>
         </dl>       
       </stl:block>
     </div>

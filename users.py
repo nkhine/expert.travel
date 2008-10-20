@@ -311,11 +311,16 @@ class User(iUser, WorkflowAware, Handler):
         company = self.company(context)
         if company:
             address = self.get_address()
-            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-            namespace['is_branch_manager'] = is_branch_manager
-            namespace['company'] = company
-            namespace['addresses'] = self.addresses(context)
-            namespace['manage'] = self.manage(context)
+            if address:
+                namespace['company'] = company
+                namespace['addresses'] = self.addresses(context)
+                namespace['manage'] = self.manage(context)
+                is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+                if is_branch_manager:
+                    namespace['is_branch_manager'] = is_branch_manager
+                else:
+                    namespace['is_branch_manager'] = None 
+                    
 
         template_path = 'ui/abakuc/users/tabs.xml'
         template = root.get_handler(template_path)

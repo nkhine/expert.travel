@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" 
-  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
     <title>${title}</title>
     <!-- Meta -->
@@ -11,8 +9,6 @@
           content="${meta/content}" />
 
     <!-- CSS -->
-    <!--<link href="http://developer.yahoo.com/yui/build/reset-fonts-grids/reset-fonts-grids.css"
-    rel="stylesheet" type="text/css" /> -->
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
     <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
@@ -38,9 +34,11 @@
               </div><!-- /navbar -->
               <div id="search"><!-- search -->
                   <form action="/;search" method="get">
+                      <div>
                       <input name="search_text" type="text" class="searchinput" 
                           value="" size="20" />
                       <input type="submit" value="Search"/>
+                      </div>
                   </form>
               </div><!-- /search -->
               <div id="bar"><!-- bar -->
@@ -66,7 +64,7 @@
                 <div id="left" class="yui-b">
                     <div stl:repeat="menu left_menus">
                             <stl:block if="level1">
-                                <ul if="level1" stl:repeat="option level1">
+                                <ul stl:repeat="option level1">
                                     <li>
                                         <a href="/;search?level1=${option/name}">
                                         ${option/title}</a>

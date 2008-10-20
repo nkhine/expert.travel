@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<stl:block xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml" xmlns:stl="http://xml.itools.org/namespaces/stl">
     <h1>Welcome <stl:block if="user/info">
             ${user/info/title} </stl:block> to the UK.Expert.Travel on-line portal!</h1>
     <p>
@@ -68,80 +66,6 @@
             </div>
         </stl:block>
     </div>
-<!-- 
-    <div class="login-box">
-      <stl:block if="not user/info">
-          <div class="general-box">
-            <div class="title">
-              <h3>Sign in to Expert Travel</h3>
-            </div>
-            <div class="content">
-                    <form id="loginform" name="loginform" method="post" action="${action}">
-                        <dl>
-                          <dt><label for="username">Email address</label></dt>
-                          <dd>
-                            <input type="text" id="username" name="username" value="${username}" />
-                          </dd>
-                          <dt><label for="password">Password</label></dt>
-                          <dd>
-                            <input type="password" id="password" name="password" />
-                          </dd>
-                        </dl>
-                        <p>
-                          <input type="submit" value="Sign in" class="button_ok"/>
-                        </p>
-                      </form>
-
-                      <script type="text/javascript">
-                        <stl:inline if="not username">focus("username");</stl:inline>
-                        <stl:inline if="username">focus("password");</stl:inline>
-                      </script>
-               <ul>
-                  <li><a href=";forgotten_password_form">I cannot access my account</a></li>
-               </ul>
-            </div>
-          </div>
-      </stl:block>
-      <stl:block if="user/info">
-          <div class="general-box">
-            <div class="title">
-            <h3>${user/info/title} Resources</h3>
-            </div>
-            <div class="content">
-               <ul>
-                    <li>
-                      <a href="${user/info/home}">
-                         Manage my profile
-                      </a>
-                     </li>
-                        <stl:block if="address">
-                          <li>
-                            <a href="${company/path}/;view">
-                               View company profile 
-                            </a>
-                          </li>
-                          <li>
-                            <a href="${address/address_path}/;view">
-                               View address profile
-                            </a>
-                          </li>
-                          <li>
-                            <a href="${address/add_news}">
-                               Add news item
-                            </a>
-                          </li>
-                          <li>
-                            <a href="${address/add_jobs}">
-                               Add job item
-                            </a>
-                          </li>
-                         </stl:block>
-                </ul>
-            </div>
-          </div>
-      </stl:block>
-      </div> 
-      -->
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->
 

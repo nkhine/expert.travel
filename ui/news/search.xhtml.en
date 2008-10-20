@@ -29,10 +29,8 @@
               <dt>
                 <a href="${news/url}">${news/title}</a>
               </dt>
-              <dd>
                 <dd>${news/description}</dd>
-                <div class="info">Posted by ${news/owner} on ${news/date_posted}</div>
-              </dd>
+                <dd class="info">Posted by ${news/owner} on ${news/date_posted}</dd>
             </dl>       
           </stl:block>
       </div>

@@ -21,9 +21,9 @@
                       </address>
                       Phone: ${item/phone}, Fax: ${item/fax}
                     </dd>
-                    <div class="info">
+                    <dd class="info">
                         <a href="${item/enquire}">Send Enquiry</a>
-                    </div>
+                    </dd>
                 </dl>       
               </stl:block>
             </div>

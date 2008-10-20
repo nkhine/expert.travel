@@ -10,13 +10,13 @@
       <stl:block repeat="item items"> 
         <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
           onmouseout="this.className='ListItem';">  
-          <dt>
-            <a href="${item/url}">${item/title}</a>
-          </dt>
-          <dd>
-            ${item/description}
-          </dd>
-            <div class="info">
+            <dt>
+                <a href="${item/url}">${item/title}</a>
+            </dt>
+            <dd>
+                ${item/description}
+            </dd>
+            <dd class="info">
               <span stl:if="item/is_training_manager">
                   <a href="${item/login}">Login to manage</a>
                   <a href="${item/login}">No. of Members</a>
@@ -33,9 +33,7 @@
                   <a href="${item/login}">Login / Register</a> for FREE Access to
                   ${item/title} programme.
               </span>
-            </div>
-            <div>
-            </div>
+            </dd>
         </dl>       
       </stl:block>
               <span stl:if="is_admin">
