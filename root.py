@@ -232,7 +232,7 @@ class Root(Handler, BaseRoot):
 
     def send_email(self, from_addr, to_addr, subject, body, **kw):
         # XXX While testing, uncomment the right line
-        to_addr = 'norman@khine.net'
+        #to_addr = 'norman@khine.net'
         BaseRoot.send_email(self, from_addr, to_addr, subject, body, **kw)
 
 

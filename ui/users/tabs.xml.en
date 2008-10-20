@@ -17,7 +17,7 @@
         <ul>
             <li><a href="#fragment-21"><span>Profile</span></a></li>
             <li><a href="#fragment-22"><span>Company</span></a></li>
-            <li><a href="#fragment-23"><span>Branches</span></a></li>
+            <li stl:if="has_address"><a href="#fragment-23"><span>Branches</span></a></li>
             <li stl:if="is_branch_manager"><a href="#fragment-24"><span>Administrate</span></a></li>
         </ul>
             <div id="fragment-21">
@@ -26,7 +26,7 @@
             <div id="fragment-22">
               ${company}
             </div>
-            <div id="fragment-23">
+            <div stl:if="has_address" id="fragment-23">
               ${addresses}
             </div>
             <div stl:if="is_branch_manager" id="fragment-24">
