@@ -18,6 +18,16 @@
                  </stl:block>
     </div><!-- /yui-u first-->
     <div class="yui-u">
-        ads
+        <script type="text/javascript"><!--
+            google_ad_client = "pub-2050823514740471";
+            /* Profile, 200x200 image */
+            google_ad_slot = "5034718047";
+            google_ad_width = 200;
+            google_ad_height = 200;
+            //-->
+            </script>
+            <script type="text/javascript"
+            src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+        </script>
     </div><!-- /yui-u-->
 </div><!-- /yui-gc-->
