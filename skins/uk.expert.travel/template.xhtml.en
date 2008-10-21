@@ -12,6 +12,7 @@
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
     <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
     <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
+    <link type="text/css" rel="stylesheet" href="/ui/abakuc/jquery/css/jquery.tablesorter.css" />
     <link rel="SHORTCUT ICON" href="/ui/abakuc/images/favicon.ico" />
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" />

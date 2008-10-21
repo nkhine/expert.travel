@@ -226,6 +226,8 @@ th a.sort_none {
   text-decoration: none;
 }
 
+.nowrap * { white-space: nowrap; }
+
 /* Workflow */
 .workflow { text-decoration: none; }
 .wf_private { color: #c00; }

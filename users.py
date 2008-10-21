@@ -7,7 +7,7 @@ from datetime import datetime, date
 
 # Import from itools
 from itools import uri
-from itools import i18n
+from itools.i18n import format_datetime
 from itools import handlers
 from itools.stl import stl
 from itools.uri import Path, get_reference
@@ -54,7 +54,7 @@ class UserFolder(iUserFolder):
                    ['view']]
 
 
-    view__access__ = 'is_allowed_to_edit'
+    view__access__ = 'is_admin'
     view__label__ = u'View'
     def view(self, context):
         namespace = {}
@@ -165,7 +165,6 @@ class User(iUser, WorkflowAware, Handler):
     # Return the profile url relative to the given handler
     def get_profile_url(self, where_from):
         views = self.get_views()
-        print views
         if 'to_home' in views:
             home = '/;profile'
         elif 'bmi_home' in views:
@@ -311,7 +310,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['user'] = self.user(context)
         company = self.company(context)
         namespace['company'] = self.company(context)
-        print company
         address = self.get_address()
         namespace['has_address'] = address
         namespace['is_branch_manager'] = None
@@ -787,6 +785,8 @@ class User(iUser, WorkflowAware, Handler):
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
 
         #User's state
+        url = '/users/%s/' % user.name
+        namespace['url'] = url
         namespace['statename'] = self.get_statename()
         state = self.get_state()
         namespace['state'] = self.gettext(state['title'])
@@ -1982,23 +1982,31 @@ class User(iUser, WorkflowAware, Handler):
 
     forum__access__ = True
     def forum(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
         site_root = self.get_site_root()
         namespace = {}
         forums = []
-        # Get the expert.travel forum
-        forum = list(site_root.search_handlers(format=Forum.class_id))
-        for item in forum:
-            forums.append(item)
-        # Get all Training programmes forums
-        root = context.root
-        training = root.get_handler('training')
-        items = training.search_handlers(handler_class=Training)
-        for item in items:
-            tp_forum = list(item.search_handlers(format=Forum.class_id))
-            for item in tp_forum:
-                item != []
+        if isinstance(site_root, Training):
+            namespace['office'] = True
+            forum = list(site_root.search_handlers(format=Forum.class_id))
+            for item in forum:
                 forums.append(item)
-
+        else:
+            namespace['office'] = False 
+            # Get the expert.travel forum
+            forum = list(site_root.search_handlers(format=Forum.class_id))
+            for item in forum:
+                forums.append(item)
+            # Get all Training programmes forums
+            root = context.root
+            training = root.get_handler('training')
+            items = training.search_handlers(handler_class=Training)
+            for item in items:
+                tp_forum = list(item.search_handlers(format=Forum.class_id))
+                for item in tp_forum:
+                    item != []
+                    forums.append(item)
         # Build the select list of forums and their URLs
         current_forums = []
         forum_links = []
@@ -2016,7 +2024,6 @@ class User(iUser, WorkflowAware, Handler):
                 url = '/%s' % (item.name)
             # List the last 5 threads for each forum
             threads = item.get_thread_namespace(context)[:5]
-
             forum_to_add = {'title': title,
                             'description': description,
                             'url': url,
@@ -2034,12 +2041,9 @@ class User(iUser, WorkflowAware, Handler):
                 if my_posts:
                     title = thread.title
                     thread_url = '%s/%s' % (url, thread.name)
-                    print url
                     add_my_posts = {'title': title,
                                     'url': thread_url}
                     my_threads.append(add_my_posts)
-        print len(my_threads)
-        print my_threads
 
         # Set batch informations
         batch_start = int(context.get_form_value('t5', default=0))
@@ -2062,9 +2066,98 @@ class User(iUser, WorkflowAware, Handler):
         namespace['msg'] = msg
        
         namespace['forum_links'] = forum_links
-        print namespace['forum_links']
         namespace['forum'] = current_forums
+        namespace['my_threads'] = my_threads
         handler = self.get_handler('/ui/abakuc/forum/list.xml')
+        return stl(handler, namespace)  
+
+    my_threads__access__ = 'is_self_or_admin'
+    def my_threads(self, context):
+        root = context.root
+        users = root.get_handler('users')
+        # Set Style
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
+        site_root = self.get_site_root()
+        namespace = {}
+        forums = []
+        if isinstance(site_root, Training):
+            namespace['office'] = True
+            forum = list(site_root.search_handlers(format=Forum.class_id))
+            for item in forum:
+                forums.append(item)
+        else:
+            namespace['office'] = False 
+            # Get the expert.travel forum
+            forum = list(site_root.search_handlers(format=Forum.class_id))
+            for item in forum:
+                forums.append(item)
+            # Get all Training programmes forums
+            training = root.get_handler('training')
+            items = training.search_handlers(handler_class=Training)
+            for item in items:
+                tp_forum = list(item.search_handlers(format=Forum.class_id))
+                for item in tp_forum:
+                    item != []
+                    forums.append(item)
+        # Build the select list of forums and their URLs
+        my_threads = []
+        for item in forums:
+            ns = {}
+            root = item.get_site_root()
+            title = item.title_or_name
+            description = reduce_string(item.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            if isinstance(root, Training):
+                url = 'http://%s/%s' % ((str(root.get_vhosts()[0])), item.name)
+            else:
+                url = '/%s' % (item.name)
+            # Locate all my threads
+            threads = list(item.search_handlers(handler_class=item.thread_class))
+            for thread in threads:
+                my_posts = self.name == thread.get_property('owner')
+                accept_language = context.get_accept_language()
+                if my_posts:
+                    title = thread.title
+                    thread_url = '%s/%s' % (url, thread.name)
+                    last = thread.get_last_post()
+                    last_author_id = last.get_property('owner')
+                    last_metadata = users.get_handler('%s.metadata' % last_author_id)
+                    add_my_posts = {'name': thread.name,
+                                    'title': title,
+                                    'author': (self.get_title() or
+                                        self.get_property('dc:title') or
+                                        self.get_property('ikaaro:email')),
+                                    'replies': len(thread.get_replies()),
+                                    'last_date': format_datetime(last.get_mtime(), accept_language),
+                                    'last_author': (users.get_handler(last_author_id).get_title() or
+                                        last_metadata.get_property('dc:title') or
+                                        last_metadata.get_property('ikaaro:email')),
+                                    'url': thread_url}
+                    my_threads.append(add_my_posts)
+
+        # Set batch informations
+        batch_start = int(context.get_form_value('t5', default=0))
+        batch_size = 16
+        batch_total = len(my_threads)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        my_threads = my_threads[batch_start:batch_fin]
+         # Namespace
+        if my_threads:
+            my_threads_batch = t5(context.uri, batch_start, batch_size,
+                              batch_total, msgs=(u"There is 1 forum.",
+                                    u"There are ${n} forums."))
+            msg = None
+        else:
+            forums_batch = None
+            msg = u"Appologies, currently we don't have any forums"
+        namespace['batch'] = my_threads_batch
+        namespace['msg'] = msg
+       
+        namespace['my_threads'] = my_threads
+        handler = self.get_handler('/ui/abakuc/forum/user.xml')
         return stl(handler, namespace)  
 
 register_object_class(User)

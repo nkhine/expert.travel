@@ -9,7 +9,7 @@
 
   <a href="/forum/;new_thread_form">New Thread</a>
 
-  <table width="100%" id="forum_thread_list">
+  <table width="100%" class="tablesorter">
     <colgroup>
       <col width="50%" />
       <col width="10%" />
@@ -51,5 +51,14 @@
   </table>
 
   <a href=";new_thread_form">New Thread</a>
-
+<stl:block if="most_popular">
+    <table>
+        <tr>
+            <td stl:repeat="item most_popular">
+                ${item/name}
+            </td>
+        </tr>
+    </table>
+hello we  have more than 4
+</stl:block>
 </stl:block>

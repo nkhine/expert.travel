@@ -16,17 +16,17 @@
             <li stl:if="is_branch_member">Member</li>
             <li stl:if="is_guest">Guest</li>
             <li>
-                <a href=";state_form"><strong
+                <a href="${url};state_form"><strong
                 class="wf_${statename}">${state}</strong></a>
             </li>
             <li>
-            <a href=";portrait_form">Modify portrait.</a>
+            <a href="${url};portrait_form">Modify portrait.</a>
             </li>
             <li>
-            <a href=";edit_account_form">Edit account details.</a>
+            <a href="${url};edit_account_form">Edit account details.</a>
             </li>
             <li>
-            <a href=";edit_password_form">Change password.</a>
+            <a href="${url};edit_password_form">Change password.</a>
             </li>
           </ul>  
     </div><!-- / yui-u first-->
@@ -35,7 +35,7 @@
           <img src="portrait" align="left" class="portrait"/>
         </stl:block>
         <stl:block if="not portrait">
-          <a href=";portrait_form"><img name=""
+          <a href="${url};portrait_form"><img name=""
           src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
           class="portrait"/></a>
         </stl:block>

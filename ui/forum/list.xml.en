@@ -4,42 +4,70 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-<h2>Forum Lists</h2>
-<div>${batch}</div>
-<form name="links">
-<select id="forum_links" name="forum_links" OnChange="location.href=links.forum_links.options[selectedIndex].value">
-  <option stl:repeat="item forum_links" value="${item/url}">
-    ${item/title}
-  </option> 
-</select>
-</form>
-  <table width="100%" class="forum_thread_list" stl:repeat="item forum">
+<table width="100%">
     <colgroup>
       <col width="50%" />
-      <col width="10%" />
-      <col width="10%" />
-      <col width="20%" />
-      <col width="10%" />
+      <col width="50%" />
     </colgroup>
     <thead>
       <tr>
-        <th colspan="4">${item/forum/title}</th>
-        <th><a class="forum_thread_title" href="${item/forum/url}/;new_thread_form"
-            >Post a new thread</a></th>
+        <th>
+        <h2>Forum Lists</h2>
+        </th>
+        <th align="right"><a class="action" href="{item/forum/url}/;new_thread_form"
+            >my threads »</a></th>
+      </tr>  
+    </thead>
+    <tr stl:if="not office">
+        <td>${batch}</td>
+        <td align="right">
+            <form name="links">
+            <select id="forum_links" name="forum_links" OnChange="location.href=links.forum_links.options[selectedIndex].value">
+              <option stl:repeat="item forum_links" value="${item/url}">
+                ${item/title}
+              </option> 
+            </select>
+            </form>
+        </td>
+    </tr>
+</table>
+  <table width="100%" class="tablesorter" stl:repeat="item forum">
+    <colgroup>
+      <col width="1%" />
+      <col width="29%" />
+      <col width="20%" />
+      <col width="10%" />
+      <col width="20%" />
+      <col width="20%" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th colspan="4"><h2>${item/forum/title}</h2></th>
+        <th colspan="2"><a class="action" href="${item/forum/url}/;new_thread_form"
+            >New thread »</a></th>
       </tr>  
       <tr>
-        <th colspan="5">${item/forum/description}</th>
+        <th colspan="6">${item/forum/description}</th>
       </tr>  
       <tr>
-        <th>Title</th>
+        <th colspan="2">Title</th>
         <th>Author</th>
         <th>Replies</th>
         <th>Last Post</th>
         <th>By</th>
       </tr>
     </thead>
+    <tfoot>
+      <tr>
+        <th colspan="6" align="right">
+          <a class="action" href="${item/forum/url}/;view">More »</a>
+        </th>
+      </tr>
+    </tfoot>
     <tbody>
       <tr stl:repeat="thread item/forum/threads" class="{repeat/thread/even}">
+        <td><img alt="" src="../../../ui/images/Forum16.png" height="16"
+        width="16" /></td>
         <td>
           <a class="forum_thread_title" href="${item/forum/url}/${thread/name}"
             >${thread/title}</a>

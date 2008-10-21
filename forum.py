@@ -248,6 +248,7 @@ class Forum(Folder):
         return [self.thread_class]
 
 
+
     def get_thread_namespace(self, context):
         accept_language = context.get_accept_language()
         namespace = []
@@ -288,14 +289,21 @@ class Forum(Folder):
     view__label__ = u"Forum"
     def view(self, context):
         namespace = {}
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
 
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
-        namespace['threads'] = self.get_thread_namespace(context)
-        #namespace['is_allowed_to_edit'] = self.is_allowed_to_edit(context)
+        threads = self.get_thread_namespace(context)
+        namespace['threads'] = threads
+        # Get the top 5 most replied to threads
+        most_popular = []
+        for item in threads:
+            if item['replies'] >= 4:
+                most_popular.append(item)
+        result = sorted(most_popular, key=itemgetter('replies'), reverse=True)
+        namespace['most_popular'] = result[:5]
 
         add_forum_style(context)
-
         handler = self.get_handler('/ui/abakuc/forum/view.xml')
         return stl(handler, namespace)
 
@@ -311,13 +319,11 @@ class Forum(Folder):
         #print namespace['types']
         # Is global admin
         ac = self.get_access_control()
-        print ac
         from training import Training
         if isinstance(ac, Training):
             namespace['is_admin'] = ac.is_training_manager(user, self)
         else:
             namespace['is_admin'] = ac.is_admin(user, self)
-        print namespace['is_admin'] 
         namespace['rte'] =  self.get_rte(context, 'data', None)
         add_forum_style(context)
         handler = self.get_handler('/ui/abakuc/forum/thread/new_thread.xml')
@@ -338,10 +344,8 @@ class Forum(Folder):
         #    return context.come_back(u"This thread already exists.")
         # Generate the name(id)
         x = self.search_handlers(handler_class=Thread)
-        print x
         y =  str(len(list(x))+1)
         name = 'thread%s' % y
-        print name
         while self.has_handler(name):
               try:
                   names = name.split('-')

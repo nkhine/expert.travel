@@ -6,16 +6,14 @@
             <div id="tab1">
                 ${user_tabs}
             </div>
+            <div id="tab2">
                  <stl:block stl:if="not office">
-                    <div id="tab2">
                      ${tabs}
-                     </div>
                  </stl:block>
                  <stl:block stl:if="office">
-                        <div id="tab2">
-                         ${tabs}
-                         </div>
+                     ${tabs}
                  </stl:block>
+             </div>
     </div><!-- /yui-u first-->
     <div class="yui-u">
         <script type="text/javascript"><!--

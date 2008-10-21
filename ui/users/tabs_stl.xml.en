@@ -3,7 +3,7 @@
     <script type="text/javascript">
         var TABS_COOKIE = 'profile_cookie';
         $(function() {
-            $('#container-user > ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+            $('#container-user  ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
                 var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
                $.cookie(TABS_COOKIE, lastTab, {path: '/'});
             },
@@ -32,7 +32,6 @@
                     <li><a href="#fragment-3"><span>Bookings</span></a></li>
                 </stl:block>
                 <li><a href="#fragment-4"><span>Other training</span></a></li>
-                <li><a href="#fragment-6"><span>Forum</span></a></li>
             </stl:block>
         </stl:block>
         <stl:block if="not office">
@@ -42,11 +41,11 @@
                 <li stl:if="howmany"><a href="#fragment-3"><span>Enquiries (${howmany})</span></a></li>
                 <li><a href="#fragment-4"><span>Training</span></a></li>
                 <li><a href="#fragment-5"><span>Marketplace</span></a></li>
-                <li><a href="#fragment-6"><span>Forum</span></a></li>
             </stl:block>
             <stl:block if="not is_branch_manager_or_member">
             </stl:block>
         </stl:block>
+                <li><a href="#fragment-6"><span>Forum</span></a></li>
         </ul>
         <stl:block if="office">
             <stl:block if="is_training_manager">
@@ -76,9 +75,6 @@
                 <div id="fragment-4">
                   ${training} 
                 </div>
-                <div id="fragment-6">
-                  ${forum} 
-                </div>
             </stl:block>
         </stl:block>
         <stl:block if="not office">
@@ -98,12 +94,12 @@
                 <div id="fragment-5">
                   {marketplace}
                 </div>
-                <div id="fragment-6">
-                  ${forum}
-                </div>
                 </stl:block>
                 <stl:block if="not is_branch_manager_or_member">
                 </stl:block>
         </stl:block> <!-- Not office TAB content -->
+                <div id="fragment-6">
+                  ${forum}
+                </div>
     </div>
 </stl:block>

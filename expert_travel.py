@@ -282,8 +282,6 @@ class ExpertTravel(SiteRoot):
 
             to_url = str(self.get_pathto(root))
 
-        print len(current_forums)
-        print current_forums
         # Set batch informations
         batch_start = int(context.get_form_value('t5', default=0))
         batch_size = 2
@@ -304,6 +302,7 @@ class ExpertTravel(SiteRoot):
         namespace['batch'] = forums_batch
         namespace['msg'] = msg
        
+        namespace['office'] = None
         namespace['forum_links'] = forum_links
         namespace['forum'] = current_forums
         handler = self.get_handler('/ui/abakuc/forum/list.xml')
