@@ -134,4 +134,41 @@ class Media(Folder, RoleAware):
         handler = self.get_handler('/ui/abakuc/media/view.xml')
         return stl(handler, namespace)
 
+    list__access__ = True 
+    list__label__ = u'Media folder'
+    def list(self, context):
+        namespace = {}
+        # Set style
+        context.styles.append('http://yui.yahooapis.com/2.6.0/build/carousel/assets/skins/sam/carousel.css')
+        # Add the js scripts
+        context.scripts.append('http://yui.yahooapis.com/2.6.0/build/yahoo-dom-event/yahoo-dom-event.js')
+        context.scripts.append('http://yui.yahooapis.com/2.6.0/build/connection/connection-min.js')
+        context.scripts.append('http://yui.yahooapis.com/2.6.0/build/element/element-beta-min.js')
+        context.scripts.append('http://yui.yahooapis.com/2.6.0/build/carousel/carousel-beta-min.js')
+
+        handler = self.get_handler('/ui/abakuc/media/list.xml')
+        return stl(handler, namespace)
+
+    images__access__ = True 
+    images__label__ = u'Media folder'
+    def images(self, context):
+        # Get all the images and flash objects
+        handlers = self.search_handlers(handler_class=File)
+        images = []
+        for handler in handlers:
+            handler_state = handler.get_property('state')
+            if handler_state == 'public':
+                type = handler.get_content_type()
+                url = '/media/%s' % handler.name
+                if type == 'image':
+                    item = {'url': url,
+                            'title': handler.get_property('dc:title'),
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    images.append(item)
+        # Namespace
+        return images
+
 register_object_class(Media)

@@ -236,6 +236,7 @@ class ExpertTravel(SiteRoot):
 
     forum__access__ = True
     def forum(self, context):
+        user = context.user
         namespace = {}
         forums = []
         # Get the expert.travel forum
@@ -301,6 +302,11 @@ class ExpertTravel(SiteRoot):
             msg = u"Appologies, currently we don't have any forums"
         namespace['batch'] = forums_batch
         namespace['msg'] = msg
+        if user is not None:
+            namespace['my_threads'] = 'users/%s/;my_threads' % user.name
+        else:
+            namespace['my_threads'] = False 
+            
        
         namespace['office'] = None
         namespace['forum_links'] = forum_links

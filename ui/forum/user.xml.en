@@ -4,37 +4,29 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-        <h2>My threads</h2>
   <table width="100%"  class="tablesorter">
     <colgroup>
       <col width="1%" />
-      <col width="29%" />
+      <col width="39%" />
       <col width="20%" />
       <col width="10%" />
-      <col width="20%" />
+      <col width="10%" />
       <col width="20%" />
     </colgroup>
     <thead>
       <tr>
-        <th colspan="4"><h2>{item/forum/title}</h2></th>
-        <th colspan="2"><a class="action" href="{item/forum/url}/;new_thread_form"
-            >New thread »</a></th>
-      </tr>  
-      <tr>
-        <th colspan="6">{item/forum/description}</th>
-      </tr>  
-      <tr>
-        <th colspan="2">Title</th>
+        <th></th>
+        <th>Title</th>
+        <th>Forum</th>
         <th>Author</th>
         <th>Replies</th>
         <th>Last Post</th>
-        <th>By</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
         <th colspan="6" align="right">
-          <a class="action" href="{item/url}/;view">More »</a>
+          ${batch} ${msg} 
         </th>
       </tr>
     </tfoot>
@@ -43,10 +35,13 @@
         <td><img alt="" src="../../../ui/images/Forum16.png" height="16"
         width="16" /></td>
         <td>
-          <a class="forum_thread_title" href="${item/url}/${item/name}"
+          <a class="forum_thread_title" href="${item/url}"
             >${item/title}</a>
           <br />
           <em>{item/description}</em>
+        </td>
+        <td>
+          <span class="forum_thread_date"><a href="${item/forum_url}">${item/forum_title}</a></span>
         </td>
         <td>
           <span class="forum_thread_author">${item/author}</span>
@@ -55,10 +50,8 @@
           <span class="forum_thread_replies">${item/replies}</span>
         </td>
         <td>
-          <span class="forum_thread_date">${item/last_date}</span>
-        </td>
-        <td>
-          <span class="forum_thread_by">${item/last_author}</span>
+            ${item/last_date}<br />
+            by: ${item/last_author}
         </td>
       </tr>
     </tbody>

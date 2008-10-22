@@ -2010,7 +2010,6 @@ class User(iUser, WorkflowAware, Handler):
         # Build the select list of forums and their URLs
         current_forums = []
         forum_links = []
-        my_threads = []
         for item in forums:
             ns = {}
             root = item.get_site_root()
@@ -2034,16 +2033,6 @@ class User(iUser, WorkflowAware, Handler):
             forum_links.append({'title': title,
                             'url': url,
                             'is_selected': None})
-            # Locate all my threads
-            threads = list(item.search_handlers(handler_class=item.thread_class))
-            for thread in threads:
-                my_posts = self.name == thread.get_property('owner')
-                if my_posts:
-                    title = thread.title
-                    thread_url = '%s/%s' % (url, thread.name)
-                    add_my_posts = {'title': title,
-                                    'url': thread_url}
-                    my_threads.append(add_my_posts)
 
         # Set batch informations
         batch_start = int(context.get_form_value('t5', default=0))
@@ -2067,7 +2056,7 @@ class User(iUser, WorkflowAware, Handler):
        
         namespace['forum_links'] = forum_links
         namespace['forum'] = current_forums
-        namespace['my_threads'] = my_threads
+        namespace['my_threads'] = '/users/%s/;my_threads' % self.name 
         handler = self.get_handler('/ui/abakuc/forum/list.xml')
         return stl(handler, namespace)  
 
@@ -2124,6 +2113,8 @@ class User(iUser, WorkflowAware, Handler):
                     last_author_id = last.get_property('owner')
                     last_metadata = users.get_handler('%s.metadata' % last_author_id)
                     add_my_posts = {'name': thread.name,
+                                    'forum_title': item.title,
+                                    'forum_url': url,
                                     'title': title,
                                     'author': (self.get_title() or
                                         self.get_property('dc:title') or
@@ -2133,6 +2124,7 @@ class User(iUser, WorkflowAware, Handler):
                                     'last_author': (users.get_handler(last_author_id).get_title() or
                                         last_metadata.get_property('dc:title') or
                                         last_metadata.get_property('ikaaro:email')),
+                                    'last_post': last.name,
                                     'url': thread_url}
                     my_threads.append(add_my_posts)
 
@@ -2147,16 +2139,18 @@ class User(iUser, WorkflowAware, Handler):
          # Namespace
         if my_threads:
             my_threads_batch = t5(context.uri, batch_start, batch_size,
-                              batch_total, msgs=(u"There is 1 forum.",
-                                    u"There are ${n} forums."))
+                              batch_total, msgs=(u"There is 1 thread.",
+                                    u"There are ${n} threads, that you have \
+                                    posted."))
             msg = None
         else:
             forums_batch = None
-            msg = u"Appologies, currently we don't have any forums"
+            msg = u"You currently don't have any threads posted."
         namespace['batch'] = my_threads_batch
         namespace['msg'] = msg
        
         namespace['my_threads'] = my_threads
+        print namespace['my_threads']
         handler = self.get_handler('/ui/abakuc/forum/user.xml')
         return stl(handler, namespace)  
 

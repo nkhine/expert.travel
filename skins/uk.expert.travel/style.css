@@ -301,7 +301,7 @@ th a.sort_none {
 /* LINKS */
 a img { border: 0; }
 a.action { display: block; float: right; margin: 0 10px 0 0; background: #ffcc00 url(images/bg_action_primary_right.gif) no-repeat 100% 0; text-decoration: none; color: #000 !important; cursor: pointer; text-align: center; font-size: 13px;}
-a.action span { display: block; padding: 4px 20px 0 20px; _padding-bottom: 3px !important; min-height: 19px; background: url(images/bg_action_primary_left.gif) no-repeat 0 0; }
+a.action span { display: block; padding: 4px 10px 0 10px; _padding-bottom: 3px !important; min-height: 19px; background: url(images/bg_action_primary_left.gif) no-repeat 0 0; }
 a.action.secondary { background: #dcdcdc url(images/bg_action_secondary_right.gif) no-repeat 100% 0; }
 a.action.secondary span { background: url(images/bg_action_secondary_left.gif) no-repeat 0 0; }
 a.action:hover { background: #c8e7fa url(images/bg_action_hover_right.gif) no-repeat 100% 0; }
