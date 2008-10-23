@@ -305,7 +305,7 @@ class ExpertTravel(SiteRoot):
         if user is not None:
             namespace['my_threads'] = 'users/%s/;my_threads' % user.name
         else:
-            namespace['my_threads'] = False 
+            namespace['my_threads'] = None 
             
        
         namespace['office'] = None
