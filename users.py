@@ -2144,7 +2144,7 @@ class User(iUser, WorkflowAware, Handler):
                                     posted."))
             msg = None
         else:
-            forums_batch = None
+            my_threads_batch = None
             msg = u"You currently don't have any threads posted."
         namespace['batch'] = my_threads_batch
         namespace['msg'] = msg
