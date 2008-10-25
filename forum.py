@@ -294,7 +294,6 @@ class Forum(Folder):
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
         threads = self.get_thread_namespace(context)
-        namespace['threads'] = threads
         # Get the top 5 most replied to threads
         most_popular = []
         for item in threads:
@@ -302,6 +301,26 @@ class Forum(Folder):
                 most_popular.append(item)
         result = sorted(most_popular, key=itemgetter('replies'), reverse=True)
         namespace['most_popular'] = result[:5]
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 8
+        batch_total = len(threads)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        threads = threads[batch_start:batch_fin]
+         # Namespace
+        if threads:
+            threads_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=(u"There is 1 thread.",
+                                    u"There are ${n} threads."))
+            msg = None
+        else:
+            forums_batch = None
+            msg = u"Appologies, currently there are no threads."
+        namespace['batch'] = threads_batch
+        namespace['msg'] = msg
+        namespace['threads'] = threads
 
         add_forum_style(context)
         handler = self.get_handler('/ui/abakuc/forum/view.xml')

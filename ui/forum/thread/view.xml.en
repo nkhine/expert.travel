@@ -6,13 +6,22 @@
 
   <h2>${title}</h2>
   <p><em>${description}</em></p>
-${batch}
-${msg}
-  <table id="forum_message_list" width="100%">
+  <table class="tablesorter">
     <colgroup>
       <col width="20%" />
       <col width="80%" />
     </colgroup>
+    <thead>
+      <tr>
+        <th>
+         <a href="/forum/;view">« Back to forum.</a>
+        </th>
+        <th>
+          ${batch} ${msg}
+        </th>
+      </tr>
+    </thead>
+
     <tbody>
       <tr stl:repeat="message messages" class="${repeat/message/even}">
         <td valign="top" class="forum_message_info">

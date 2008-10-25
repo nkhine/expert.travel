@@ -30,6 +30,18 @@ class SiteRoot(Handler, BaseWebSite):
         {'name': 'abakuc:guest', 'title': u"Guest",
          'unit': u"Guest"},
     ]
+    ########################################################################
+    # Logout
+    logout__access__ = True
+    def logout(self, context):
+        """Logs out of the application."""
+        # Remove the cookie
+        context.del_cookie('__ac')
+        # Remove the user from the context
+        context.user = None
+        # Say goodbye
+        handler = self.get_handler('/ui/abakuc/logout.xml')
+        return stl(handler)
 
     ########################################################################
     # Login

@@ -3,31 +3,34 @@
   "-//W3C//DTD XHTML 1.0 Strict//EN">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-  <h2>${title} Abakuc</h2>
+  <h2>${title}</h2>
   <p><em>${description}</em></p>
-
-  <a href="/forum/;new_thread_form">New Thread</a>
-
-  <table width="100%" class="tablesorter">
+  <table class="tablesorter">
     <colgroup>
-      <col width="50%" />
-      <col width="10%" />
-      <col width="10%" />
+      <col width="1%" />
+      <col width="49%" />
       <col width="20%" />
       <col width="10%" />
+      <col width="20%" />
     </colgroup>
     <thead>
       <tr>
+        <th colspan="5" align="right">
+          ${batch}
+        </th>
+      </tr>
+      <tr>
+        <th></th>
         <th>Title</th>
         <th>Author</th>
         <th>Replies</th>
         <th>Last Post</th>
-        <th>By</th>
       </tr>
     </thead>
     <tbody>
       <tr stl:repeat="thread threads" class="${repeat/thread/even}">
+        <td><img alt="" src="../../../ui/images/Forum16.png" height="16"
+        width="16" /></td>
         <td>
           <a class="forum_thread_title" href="/forum/${thread/name}"
             >${thread/title}</a>
@@ -41,24 +44,44 @@
           <span class="forum_thread_replies">${thread/replies}</span>
         </td>
         <td>
-          <span class="forum_thread_date">${thread/last_date}</span>
-        </td>
-        <td>
-          <span class="forum_thread_by">${thread/last_author}</span>
+          <span class="forum_thread_by">${thread/last_date} <br />by: ${thread/last_author}</span>
         </td>
       </tr>
     </tbody>
   </table>
-
-  <a href=";new_thread_form">New Thread</a>
-<stl:block if="most_popular">
-    <table>
-        <tr>
-            <td stl:repeat="item most_popular">
-                ${item/name}
-            </td>
-        </tr>
-    </table>
-hello we  have more than 4
-</stl:block>
+<div>
+  <a class="action" href="/forum/;new_thread_form"><span>New Thread</span></a>
+</div>
+    <stl:block if="most_popular">
+      
+        <table width="40%" class="forum">
+        <colgroup>
+          <col width="1%" />
+          <col width="94%" />
+          <col width="5%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th colspan="3"><h2>Most popular</h2></th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>Title</th>
+            <th>Replies</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr stl:repeat="item most_popular">
+            <td><img alt="" src="../../../ui/images/Forum16.png" height="16"
+            width="16" /></td>
+                <td>
+                    <a  href="/forum/${item/name}">${item/title}</a>
+                </td>
+                <td>
+                  <span class="forum_thread_replies">${item/replies}</span>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </stl:block>
 </stl:block>
