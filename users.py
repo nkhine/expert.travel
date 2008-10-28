@@ -1145,6 +1145,8 @@ class User(iUser, WorkflowAware, Handler):
         for job_id in ids:
             address.del_object(job_id)
         return context.come_back(u'Job(s) delete')
+
+
     ########################################################################
     # News table used in the 'tabs' method
     def news_table(self, context):
@@ -1761,6 +1763,7 @@ class User(iUser, WorkflowAware, Handler):
 
         # Description
         description = context.get_form_value('dc:description')
+        subject = context.get_form_value('dc:subject')
         # Check the Logo
         logo_form = context.get_form_value('logo')
         if logo_form:
@@ -1800,6 +1803,7 @@ class User(iUser, WorkflowAware, Handler):
 
         metadata.set_property('dc:title', title, language='en')
         metadata.set_property('dc:description', description)
+        metadata.set_property('dc:subject', subject)
         metadata.set_property('abakuc:website', website)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('abakuc:type', types)

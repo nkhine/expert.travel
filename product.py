@@ -3,503 +3,349 @@
 
 # Import from the Standard Library
 from datetime import datetime
-import mimetypes
-from operator import itemgetter
-from string import Template
-from re import sub
 
 # Import from itools
-from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
 from itools.cms.versioning import VersioningAware
-from itools.i18n import format_datetime
-from itools.rest import checkid
-from itools.handlers import Config
-from itools.csv import IntegerKey, CSV as BaseCSV
-from itools.xml import Parser
 from itools.stl import stl
-from itools.uri import encode_query, Reference
-from itools.cms.csv import CSV
 from itools.cms.file import File
 from itools.cms.folder import Folder
 from itools.cms.messages import *
-from itools.cms.text import Text
-from itools.cms.utils import generate_name
 from itools.cms.registry import register_object_class, get_object_class
-from itools.cms import widgets
+from itools.web import get_context
 # Import from abakuc
-from jobs import Candidature
+from utils import title_to_name
 
-# Definition of the fields of the forms to add and edit an issue
-issue_fields = [('title', True), ('assigned_to', False),
-                ('comment', False), ('file', False)]
-
-
-class Products(Folder):
-
-    class_id = 'products'
-    class_title = u'Member products'
-    class_description = u'Manage products'
-    class_icon16 = 'images/tracker16.png'
-    class_icon48 = 'images/tracker48.png'
-    class_views = [
-        ['view'],
-        ['add_form'],
-        ['browse_content?mode=list'],
-        ['edit_metadata_form']]
-
-    def new(self, **kw):
-        Folder.new(self, **kw)
-        cache = self.cache
-
-    def get_document_types(self):
-        return []
-
-
-    #######################################################################
-    # API
-    #######################################################################
-    def get_new_id(self, prefix=''):
-        ids = []
-        for name in self.get_handler_names():
-            if name.endswith('.metadata'):
-                continue
-            if prefix:
-                if not name.startswith(prefix):
-                    continue
-                name = name[len(prefix):]
-            try:
-                id = int(name)
-            except ValueError:
-                continue
-            ids.append(id)
-
-        if ids:
-            ids.sort()
-            return prefix + str(ids[-1] + 1)
-
-        return prefix + '0'
-
-
-    def get_members_namespace(self, value, not_assigned=False):
-        """
-        Returns a namespace (list of dictionaries) to be used for the
-        selection box of users (the 'assigned to' field).
-        """
-        users = self.get_handler('/users')
-        members = []
-        if not_assigned is True:
-            members.append({'id': 'nobody', 'title': 'NOT ASSIGNED'})
-        for username in self.get_site_root().get_members():
-            user = users.get_handler(username)
-            members.append({'id': username, 'title': user.get_title()})
-        # Select
-        if isinstance(value, str):
-            value = [value]
-        for member in members:
-            member['is_selected'] = (member['id'] in value)
-
-        return members
-
-    view__access__ = True
-    view__label__ = u'View'
-    def view(self, context):
-        return '0'
-    #######################################################################
-    # User Interface / Add Issue
-    add_form__access__ = 'is_allowed_to_edit'
-    add_form__label__ = u'Add'
-    def add_form(self, context):
-        # Set Style
-        css = self.get_handler('/ui/abakuc/product/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
-
-        # Build the namespace
-        namespace = {}
-        namespace['title'] = context.get_form_value('title', type=Unicode)
-        # Others
-        users = self.get_handler('/users')
-        assigned_to = context.get_form_values('assigned_to', type=String)
-        namespace['users'] = self.get_members_namespace(assigned_to)
-
-        handler = self.get_handler('/ui/abakuc/product/add_issue.xml')
-        return stl(handler, namespace)
-
-
-    add_issue__access__ = 'is_allowed_to_edit'
-    def add_issue(self, context):
-        keep = ['title']
-        # Check input data
-        error = context.check_form_input(issue_fields)
-        if error is not None:
-            return context.come_back(error, keep=keep)
-
-        # Add
-        id = self.get_new_id()
-        issue, metadata = self.set_object(id, Product())
-        issue._add_row(context)
-
-        goto = context.uri.resolve2('../%s/;edit_form' % issue.name)
-        return context.come_back(u'New issue addded.', goto=goto)
-
-
-    go_to_issue__access__ = 'is_allowed_to_view'
-    def go_to_issue(self, context):
-        issue_name = context.get_form_value('issue_name')
-        if not issue_name in self.get_handler_names():
-            return context.come_back(u'Issue not found.')
-        issue = self.get_handler(issue_name)
-        if not isinstance(issue, Product):
-            return context.come_back(u'Issue not found.')
-        return context.uri.resolve2('../%s/;edit_form' % issue_name)
-
-
-
-###########################################################################
-# Tables
-###########################################################################
-class SelectTable(CSV):
-
-    class_id = 'tracker_select_table'
-
-    columns = ['id', 'title']
-    schema = {'id': IntegerKey, 'title': Unicode}
-
-
-    def get_options(self, value=None, sort=True):
-        options = [ {'id': x[0], 'title': x[1]} for x in self.get_rows() ]
-        if sort is True:
-            options.sort(key=lambda x: x['title'])
-        # Set 'is_selected'
-        if value is None:
-            for option in options:
-                option['is_selected'] = False
-        elif isinstance(value, list):
-            for option in options:
-                option['is_selected'] = (option['id'] in value)
-        else:
-            for option in options:
-                option['is_selected'] = (option['id'] == value)
-
-        return options
-
-
-    def get_row_by_id(self, id):
-        for x in self.search(id=id):
-            return self.get_row(x)
-        return None
-
-
-    def view(self, context):
-        namespace = {}
-
-        # The input parameters
-        start = context.get_form_value('batchstart', type=Integer, default=0)
-        size = 30
-
-        # The batch
-        total = len(self.lines)
-        namespace['batch'] = widgets.batch(context.uri, start, size, total,
-                                           self.gettext)
-
-        # The table
-        actions = []
-        if total:
-            ac = self.get_access_control()
-            if ac.is_allowed_to_edit(context.user, self):
-                actions = [('del_row_action', u'Remove', 'button_delete',None)]
-
-        columns = self.get_columns()
-        columns.insert(0, ('index', u''))
-        columns.append(('issues', u'Issues'))
-        rows = []
-        index = start
-        getter = lambda x, y: x.get_value(y)
-
-        filter = self.name[:-5]
-        if self.name.startswith('priorit'):
-            filter = 'priority'
-
-        for row in self.lines[start:start+size]:
-            rows.append({})
-            rows[-1]['id'] = str(index)
-            rows[-1]['checkbox'] = True
-            # Columns
-            rows[-1]['index'] = index, ';edit_row_form?index=%s' % index
-            for column, column_title in columns[1:-1]:
-                value = getter(row, column)
-                datatype = self.get_datatype(column)
-                is_enumerate = getattr(datatype, 'is_enumerate', False)
-                rows[-1][column] = value
-            count = 0
-            for handler in self.parent.search_handlers(handler_class=Product):
-                if handler.get_value(filter) == index:
-                    count += 1
-            value = '0'
-            if count != 0:
-                value = '<a href="../;view?%s=%s">%s issues</a>'
-                if count == 1:
-                    value = '<a href="../;view?%s=%s">%s issue</a>'
-                value = Parser(value % (filter, index, count))
-            rows[-1]['issues'] = value
-            index += 1
-
-        # Sorting
-        sortby = context.get_form_value('sortby')
-        sortorder = context.get_form_value('sortorder', 'up')
-        if sortby:
-            rows.sort(key=itemgetter(sortby), reverse=(sortorder=='down'))
-
-        namespace['table'] = widgets.table(columns, rows, [sortby], sortorder,
-                                           actions)
-
-        handler = self.get_handler('/ui/csv/view.xml')
-        return stl(handler, namespace)
-
-
-###########################################################################
-# Issues
-###########################################################################
-class History(BaseCSV):
-
-    columns = ['datetime', 'username', 'title', 'assigned_to',
-               'comment', 'file']
-    schema = {'datetime': DateTime,
-              'username': String,
-              'title': Unicode,
-              'assigned_to': String,
-              'comment': Unicode,
-              'file': String}
-
-
-
-class Product(Folder, VersioningAware):
+class Product(Folder):
 
     class_id = 'product'
-    class_layout = {
-        '.history': History}
     class_title = u'Product'
     class_description = u'Product'
     class_views = [
+        ['view'],
         ['edit_form'],
         ['browse_content?mode=list'],
         ['new_resource_form'],
-        ['history']]
+        ['setup_hotel_form']]
+
+
+    edit_fields = ['dc:title' , 'dc:description', 'dc:subject',
+                       'dc:subject', 'abakuc:closing_date',
+                       'abakuc:departure_date', 'abakuc:return_date',
+                       'abakuc:price']
 
 
     def new(self, **kw):
         Folder.new(self, **kw)
         cache = self.cache
-        cache['.history'] = History()
-
 
     def get_document_types(self):
-        return [Candidature, File]
-
+        return [File]
 
     #######################################################################
-    # API
+    ## Indexes
     #######################################################################
-    def get_title(self):
-        return '#%s %s' % (self.name, self.get_value('title'))
 
+    def get_catalog_indexes(self):
+        indexes = Folder.get_catalog_indexes(self)
+        #indexes['function'] = self.get_property('abakuc:function')
+        #indexes['salary'] = self.get_property('abakuc:salary')
+        indexes['closing_date'] = self.get_property('abakuc:closing_date')
+        address = self.parent
+        company = address.parent
+        indexes['company'] = company.name
+        indexes['address'] = address.name
+        return indexes
 
-    def get_rows(self):
-        return self.get_handler('.history').get_rows()
+    @staticmethod
+    def get_form(name=None, description=None, website=None, subject=None):
+        root = get_context().root
 
+        namespace = {}
+        namespace['title'] = name
+        namespace['description'] = description
+        namespace['website'] = website
+        namespace['subject'] = subject
 
-    def _add_row(self, context):
-        user = context.user
-        root = context.root
-        parent = self.parent
-        users = root.get_handler('users')
+        handler = root.get_handler('ui/abakuc/product/form.xml')
+        return stl(handler, namespace)
 
-        # Datetime
-        row = [datetime.now()]
-        # User
-        if user is None:
-            row.append('')
-        else:
-            row.append(user.name)
-        # Title
-        title = context.get_form_value('title', type=Unicode).strip()
-        row.append(title)
-        # Version, Priority, etc.
-        for name in ['assigned_to', 'comment']:
-            type = History.schema[name]
-            value = context.get_form_value(name, type=type)
-            if type == Unicode:
-                value = value.strip()
-            row.append(value)
-        # Files
-        file = context.get_form_value('file')
-        if file is None:
-            row.append('')
-        else:
-            filename, mimetype, body = file
-            # Upload
-            # The mimetype sent by the browser can be minimalistic
-            guessed = mimetypes.guess_type(filename)[0]
-            if guessed is not None:
-                mimetype = guessed
-            # Set the handler
-            cls = get_object_class(mimetype)
-            handler = cls(string=body)
-
-            # Find a non used name
-            filename = checkid(filename)
-            filename = generate_name(filename, self.get_handler_names())
-            row.append(filename)
-
-            handler, metadata = self.set_object(filename, handler)
-            metadata.set_property('format', mimetype)
-        # Update
-        #modifications = self.get_diff_with(row, context)
-        history = self.get_handler('.history')
-        history.add_row(row)
-
-
-    def get_reported_by(self):
-        history = self.get_handler('.history')
-        return history.get_row(0).get_value('username')
-
-
-    def get_value(self, name):
-        rows = self.get_handler('.history').lines
-        if rows:
-            return rows[-1].get_value(name)
+    def get_address(self, addr=None):
+        from companies import Company, Address
+        root = self.get_root()
+        companies = root.get_handler('companies')
+        items = companies.search_handlers(handler_class=Company)
+        for item in items:
+            if item.has_handler(addr):
+                return item.get_handler(addr)
         return None
+
+    ########################################################################
+    # Setup Hotel/Address
+    setup_hotel_form__access__ = 'is_branch_manager'
+    setup_hotel_form__label__ = u'Setup hotel'
+    def setup_hotel_form(self, context):
+        namespace = {}
+        hotel = self.get_address(self.get_property('abakuc:address'))
+        if hotel is not None:
+            namespace['hotel'] = hotel.parent.name
+        else:
+            namespace['hotel'] = None
+        name = context.get_form_value('dc:title')
+        name = name.strip()
+
+        namespace['name'] = name
+
+        if name:
+            name = name.lower()
+            found = []
+            companies = self.get_handler('/companies')
+            for company in companies.search_handlers():
+                title = company.get_property('dc:title')
+                topic = company.get_property('abakuc:topic')
+                if name not in title.lower():
+                    continue
+                if 'hotel' not in topic:
+                    continue
+                found.append({'name': company.name, 'title': title})
+            found.sort()
+            namespace['n_found'] = len(found)
+            namespace['found'] = found
+            namespace['form'] = self.get_form()
+        else:
+            namespace['found'] = None
+            namespace['form'] = None
+
+        handler = self.get_handler('/ui/abakuc/product/setup_hotel.xml')
+        return stl(handler, namespace)
+
+    setup_hotel__access__ = 'is_branch_manager'
+    def setup_hotel(self, context):
+        from companies import Company
+        # Add Company
+        title = context.get_form_value('dc:title')
+
+        if not title:
+            message = u'Please give a Name to the hotel'
+            return context.come_back(message)
+
+        # Description
+        description = context.get_form_value('dc:description')
+        subject = context.get_form_value('dc:subject')
+
+        # Add the company
+        root = context.root
+        companies = root.get_handler('/companies')
+        name = title_to_name(title)
+        if companies.has_handler(name):
+            message = u'The hotel already exist'
+            return context.come_back(message)
+
+        company, metadata = self.set_object('/companies/%s' % name, Company())
+
+        # Set Properties
+        website = context.get_form_value('abakuc:website')
+        topics = ['hotel']
+        types = 'other'
+
+        metadata.set_property('dc:title', title, language='en')
+        metadata.set_property('dc:description', description)
+        metadata.set_property('dc:subject', subject)
+        metadata.set_property('abakuc:website', website)
+        metadata.set_property('abakuc:topic', tuple(topics))
+        metadata.set_property('abakuc:type', types)
+        metadata.set_property('ikaaro:website_is_open', False)
+
+        # Set the Address..
+        name = name.encode('utf_8').replace('&', '%26')
+        return context.uri.resolve(';setup_address_form?company=%s' % name)
+
+    #######################################################################
+    # User Interface / Edit
+    #######################################################################
+    @staticmethod
+    def get_address_form(address=None, postcode=None, town=None, phone=None, fax=None,
+                 address_country=None, address_region=None,
+                 address_county=None):
+        context = get_context()
+        root = context.root
+        # List authorized countries
+        countries = [
+            {'name': y, 'title': x, 'selected': y == address_country}
+            for x, y in root.get_active_countries(context) ]
+        nb_countries = len(countries)
+        if nb_countries < 1:
+            raise ValueError, 'Number of countries is invalid'
+        # Show a list with all authorized countries
+        countries.sort(key=lambda y: y['name'])
+        regions = root.get_regions_stl(country_code=address_country,
+                                       selected_region=address_region)
+        county = root.get_counties_stl(region=address_region,
+                                       selected_county=address_county)
+        namespace = {}
+        namespace['address'] = address
+        namespace['postcode'] = postcode
+        namespace['town'] = town
+        namespace['phone'] = phone
+        namespace['fax'] = fax
+        namespace['countries'] = countries
+        namespace['regions'] = regions
+        namespace['counties'] = county
+        handler = root.get_handler('ui/abakuc/companies/company/address/form.xml')
+        return stl(handler, namespace)
+
+    setup_address_form__access__ = 'is_branch_manager'
+    def setup_address_form(self, context):
+        from companies import Address
+        company_name = context.get_form_value('company')
+        companies = self.get_handler('/companies')
+        company = companies.get_handler(company_name)
+
+        namespace = {}
+        namespace['company_name'] = company_name
+        namespace['company_title'] = company.get_title()
+        #XXX If there is a logo, it lists this as well.
+        namespace['addresses'] = [
+            {'name': x.name, 'title': x.get_title(),
+             'postcode': x.get_property('abakuc:postcode')}
+            for x in company.search_handlers(handler_class=Address) ]
+        namespace['addresses'].sort(key=lambda x: x['postcode'])
+        namespace['form'] = self.get_address_form()
+
+        handler = self.get_handler('/ui/abakuc/users/setup_address.xml')
+        return stl(handler, namespace)
+
+
+    setup_address_select__access__ = 'is_branch_manager'
+    def setup_address_select(self, context):
+        user = context.user
+        company_name = context.get_form_value('company_name')
+        address_name = context.get_form_value('address_name')
+
+        # Add to new address
+        companies = self.get_handler('/companies')
+        company = companies.get_handler(company_name)
+        address = company.get_handler(address_name)
+        reviewers = address.get_property('abakuc:branch_manager')
+        if not reviewers:
+            address.set_user_role(self.name, 'abakuc:branch_manager')
+        else:
+            address.set_user_role(self.name, 'abakuc:guest')
+        self.set_property('abakuc:address', address_name)
+        message = u'Hotel/Address selected.'
+        # Take user back to the product
+        home = ';view'
+        goto = context.uri.resolve(home)
+        return context.come_back(message, goto=goto)
+
+
+    setup_address__access__ = 'is_branch_manager'
+    def setup_address(self, context):
+        from companies import Address
+        user = context.user
+        name = context.get_form_value('company_name')
+        company = self.get_handler('/companies/%s' % name)
+
+        # Add Address
+        address = context.get_form_value('abakuc:address')
+        if not address:
+            message = u'Please give an Address'
+            return context.come_back(message)
+
+        name = title_to_name(address)
+        if company.has_handler(name):
+            message = u'The address already exist'
+            return context.come_back(message)
+
+
+        if not context.get_form_value('abakuc:county'):
+            message = u'Please choose a county'
+            return context.come_back(message)
+
+        address, metadata = company.set_object(name, Address())
+        # Set Properties
+        # Link the hotel's address to the product
+        self.set_property('abakuc:hotel', name)
+
+        for name in ['address', 'county', 'town', 'postcode',
+                     'phone', 'fax']:
+            name = 'abakuc:%s' % name
+            value = context.get_form_value(name)
+            address.set_property(name, value)
+
+        message = u'Company/Address setup done.'
+        home = ';view'
+        goto = context.uri.resolve(home)
+        return context.come_back(message, goto=goto)
 
     #######################################################################
     # User Interface
     #######################################################################
+    view__access__ = True
+    view__label__ = u'View'
+    def view(self, context):
+        # Build the namespace
+        namespace = {}
+        # Get the country, the region and the county
+        from root import world
+        address = self.get_property('abakuc:hotel')
+        hotel_address = self.get_address(address)
+        hotel = hotel_address.parent
+        if hotel_address is not None: 
+            county = hotel_address.get_property('abakuc:county')
+        else:
+            county = None
+        if county is None:
+            continent = None
+            country = None
+            region = None
+        else:
+            for row_number in world.search(county=county):
+                row = world.get_row(row_number)
+                continent = row[1]
+                country = row[6]
+                region = row[7]
+                county = row[8]
+        namespace['continent'] = continent
+        namespace['country'] = country
+        namespace['region'] = region
+        namespace['county'] = county
+        namespace['hotel'] = hotel.get_property('dc:title')
+        for key in ['dc:title' , 'dc:description', 'dc:subject']:
+            namespace[key] = self.get_property(key)
+
+        handler = self.get_handler('/ui/abakuc/product/view.xml')
+        return stl(handler, namespace)
+
     edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self, context):
-        # Set Style
-        css = self.get_handler('/ui/abakuc/product/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
-        # Set JS
-        js = self.get_handler('/ui/abakuc/product/tracker.js')
-        context.scripts.append(str(self.get_pathto(js)))
-
-        # Local variables
-        users = self.get_handler('/users')
-        (kk, kk, title, assigned_to, comment, file) = self.get_handler('.history').lines[-1]
-
         # Build the namespace
         namespace = {}
-        namespace['number'] = self.name
-        namespace['title'] = title
-        # Reported by
-        reported_by = self.get_reported_by()
-        reported_by = self.get_handler('/users/%s' % reported_by)
-        namespace['reported_by'] = reported_by.get_title()
+        for key in self.edit_fields:
+            namespace[key] = self.get_property(key)
+            print namespace[key]
 
-        # Assign To
-        namespace['users'] = self.parent.get_members_namespace(assigned_to)
-        # Comments
-        #users = self.get_handler('/users')
-        #comments = []
-        #i = 0
-        #for row in self.get_rows():
-        #    comment = row.get_value('comment')
-        #    file = row.get_value('file')
-        #    if not comment and not file:
-        #        continue
-        #    datetime = row.get_value('datetime')
-        #    # solid in case the user has been removed
-        #    username = row.get_value('username')
-        #    user_title = username
-        #    if users.has_handler(username):
-        #        user_title = users.get_handler(username).get_title()
-        #    i += 1
-        #    comments.append({
-        #        'number': i,
-        #        'user': user_title,
-        #        'datetime': format_datetime(datetime),
-        #        'comment': self.indent(comment),
-        #        'file': file})
-        #comments.reverse()
 
-        namespace['comment'] = comment
-
-        handler = self.get_handler('/ui/abakuc/product/edit_issue.xml')
+        handler = self.get_handler('/ui/abakuc/product/edit.xml')
         return stl(handler, namespace)
 
 
     edit__access__ = 'is_allowed_to_edit'
-    def edit(self, context):
+    def edit_metadata(self, context):
+        from datetime import datetime
+        verify = [('dc:title', True), ('dc:description', True),
+                        ('dc:subject', True),
+                        ('abakuc:closing_date', True)]
+
         # Check input data
-        error = context.check_form_input(issue_fields)
+        error = context.check_form_input(verify)
         if error is not None:
             return context.come_back(error)
-        # Edit
-        self._add_row(context)
-
+        for key in self.edit_fields:
+            self.set_property(key, context.get_form_value(key))
         return context.come_back(MSG_CHANGES_SAVED)
-
-
-    #######################################################################
-    # User Interface / History
-    history__access__ = 'is_allowed_to_view'
-    history__label__ = u'History'
-    def history(self, context):
-        # Set Style
-        css = self.get_handler('/ui/abakuc/product/tracker.css')
-        context.styles.append(str(self.get_pathto(css)))
-
-        # Local variables
-        users = self.get_handler('/users')
-        # Initial values
-        previous_title = None
-        previous_version = None
-        previous_type = None
-        previous_state = None
-        previous_module = None
-        previous_priority = None
-        previous_assigned_to = None
-
-        # Build the namespace
-        namespace = {}
-        namespace['number'] = self.name
-        rows = []
-        i = 0
-        for row in self.get_rows():
-            (datetime, username, title, assigned_to, comment, file) = row
-            # solid in case the user has been removed
-            user_exist = users.has_handler(username)
-            usertitle = (user_exist and
-                         users.get_handler(username).get_title() or username)
-            i += 1
-            row_ns = {'number': i,
-                      'user': usertitle,
-                      'datetime': format_datetime(datetime),
-                      'title': None,
-                      'assigned_to': None,
-                      'comment': None,
-                      'file': file}
-
-            if title != previous_title:
-                previous_title = title
-                row_ns['title'] = title
-
-            rows.append(row_ns)
-
-        rows.reverse()
-        namespace['rows'] = rows
-
-        handler = self.get_handler('/ui/abakuc/product/issue_history.xml')
-        return stl(handler, namespace)
-
-
-    def to_str(self):
-        # XXX Used by VersioningAware to define the size of the document
-        return ''
-
-
 
 ###########################################################################
 # Register
 ###########################################################################
-register_object_class(Products)
 register_object_class(Product)

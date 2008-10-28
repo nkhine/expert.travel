@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+<h1>Edit product</h1>
+<form action=";edit_metadata" method="post" enctype="multipart/form-data">
+      <dl>  
+        <dt>
+          <label for="dc:title">Title</label>
+        </dt>
+        <dd>
+          <input type="text" name="dc:title" value="${dc:title}"/>
+        </dd>
+        <dt>
+          <label for="abakuc:closing_date">Closing Date</label>
+        </dt>
+        <dd>
+          <input id="abakuc:closing_date" name="abakuc:closing_date" 
+                  type="text" value="${abakuc:closing_date}"/>
+          <input id="trigger_date" type="button" value="..."/>
+          <script language="javascript">
+          Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
+          </script>
+        </dd>
+        <dt>
+          <label for="dc:description">Short Description</label>
+        </dt>
+        <dd>
+          <textarea  cols="100" id="dc:description" name="dc:description"
+          rows="8">${dc:description}</textarea>
+        </dd>
+        <dt>
+          <label for="abakuc:text">Text</label>
+        </dt>
+        <dd>
+          <textarea rows="20" cols="80" id="abakuc:text"
+          name="abakuc:text">{abakuc:news_text}</textarea>
+        </dd>
+        <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
+      <dd>
+        <input id="dc:subject" name="dc:subject" size="40" type="text"
+        value="${dc:subject}" />
+      </dd>
+
+      </dl>
+    <p>
+      <input type="submit" value="Modify product" class="button_ok" />
+    </p>
+    </form>
+</stl:block>
+

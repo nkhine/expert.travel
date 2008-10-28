@@ -121,6 +121,12 @@ class Schema(BaseSchema):
         'exam_time': Integer(default=20),
         'questions_nums': Integer(default=20),
         'pass_marks_percentage': Integer(default=70),
+        # Product 
+        'hotel': Unicode,
+        'airline': Unicode,
+        'price': Unicode,
+        'departure_date': Date,
+        'return_date': Date,
         # News
         'news_text': Unicode,
         # Job

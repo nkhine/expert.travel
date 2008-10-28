@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+    <dl>
+      <dt>
+        <label for="title">Hotel Name</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="dc:title" id="title"
+          value="${title}" />
+      </dd>    
+      <dt>
+        <label for="dc:description">Short Description</label>
+      </dt>
+      <dd>
+        <textarea  cols="100" id="description" name="dc:description"
+        rows="8">${description}</textarea>
+      </dd>
+      <dt>
+        <label for="website">Hotel Website</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="abakuc:website" id="website"
+          value="${website}" />
+      </dd>
+      <dt>
+        <label for="subject">Keywords (Separated by comma)</label>
+      </dt>
+      <dd>
+        <input type="text" size="48" name="dc:subject" id="subject"
+          value="${subject}" />
+      </dd>
+      <dd>
+        Used by search engines to index your entry.
+      </dd>
+    </dl>
+
+</stl:block>

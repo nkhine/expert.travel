@@ -158,6 +158,8 @@ class FrontOffice(Skin):
             # Unique
             # Only works on Expert.Travel and Company objects
             level1 = set(level1)
+            # We don't want to list hotels
+            level1.discard('hotel')
             level1 = [ {'name': x, 'title': site_root.get_level1_title(x)}
                        for x in level1 ]
             level1.sort(key=lambda x: x['title'])

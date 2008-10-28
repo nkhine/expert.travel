@@ -33,7 +33,7 @@ from website import SiteRoot
 from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange
-from product import Products
+from product import Product
 from utils import get_sort_name
 
 
@@ -349,6 +349,28 @@ class Company(SiteRoot):
 
         return stl(handler, namespace)
 
+    ####################################################################
+    # List all products 
+    products__label__ = u'List jobs'
+    products__access__ = True
+    def products(self, context):
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'product'))
+        # We only need this objects items
+        query.append(EqQuery('company', self.name))
+        #today = (date.today()).strftime('%Y-%m-%d')
+        #query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        print results
+        documents = results.get_documents()
+        print documents
+        products = []
+        for item in list(documents):
+            product = root.get_handler(item.abspath)
+            print product.name
 
     ####################################################################
     # List jobs
@@ -800,6 +822,13 @@ class Company(SiteRoot):
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
 
+    ####################################################################
+    # List company products 
+    list_products__label__ = u'List jobs'
+    list_products__access__ = True
+    def list_products(self, context):
+        pass
+
 
 class Address(RoleAware, WorkflowAware, Folder):
 
@@ -854,7 +883,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         #cache['products.metadata'] = products.build_metadata(**kw)
 
     def get_document_types(self):
-        return [News, Job]
+        return [News, Job, Product]
 
 
     get_epoz_data__access__ = 'is_branch_manager_or_member'
@@ -883,6 +912,29 @@ class Address(RoleAware, WorkflowAware, Folder):
         indexes['level4'] = self.get_property('abakuc:town')
         indexes['title'] = company.get_property('dc:title')
         return indexes
+
+    ####################################################################
+    # List all products 
+    products__label__ = u'List jobs'
+    products__access__ = True
+    def products(self, context):
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'product'))
+        print self.name
+        query.append(EqQuery('address', self.name))
+        #today = (date.today()).strftime('%Y-%m-%d')
+        #query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        print results
+        documents = results.get_documents()
+        print documents
+        products = []
+        for item in list(documents):
+            product = root.get_handler(item.abspath)
+            print product.name
 
 
     #######################################################################
@@ -993,7 +1045,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
     ####################################################################
-    # View news
+    # list news items in tabs 
     news__label__ = u'News'
     news__access__ = True
     def news(self, context):
@@ -1058,7 +1110,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         return stl(handler, namespace)
 
     ####################################################################
-    # View jobs
+    # list jobs for tabs on address view 
     jobs__label__ = u'Our jobs'
     jobs__access__ = True
     def jobs(self, context):
@@ -1071,6 +1123,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         query = []
         query.append(EqQuery('format', 'Job'))
         query.append(EqQuery('address', self.name))
+        print self.name
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
@@ -1449,7 +1502,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         to_addrs = [ users.get_handler(x).get_property('ikaaro:email')
                      for x in self.get_members() ]
         # FIXME UK Travel is hardcoded
-        subject_template = u'[UK Travel] New Enquiry (%s)'
+        subject_template = u'[UK.Expert.Travel] New Enquiry (%s)'
         body_template = ('Subject : %s\n'
                          'From : %s %s\n'
                          'Phone: %s\n'

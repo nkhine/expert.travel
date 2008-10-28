@@ -144,6 +144,7 @@ class ExpertTravel(SiteRoot):
         namespace = {}
         namespace['news'] = self.list_news(context)
         namespace['jobs'] = self.list_jobs(context)
+        namespace['products'] = self.list_products(context)
         namespace['training'] = self.training_table(context)
         namespace['forum'] = self.forum(context)
         template = """
@@ -180,7 +181,7 @@ class ExpertTravel(SiteRoot):
               ${training}
             </div>
             <div id="fragment-4">
-              {marketplace}
+              ${products}
             </div>
             <div id="fragment-5">
               ${forum}
@@ -764,5 +765,86 @@ class ExpertTravel(SiteRoot):
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)
 
+    ####################################################################
+    # List all products for the tabs method on the home page
+    list_products__label__ = u'List products'
+    list_products__access__ = True
+    def list_products(self, context):
+        from root import world
+        namespace = {}
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'product'))
+        #today = (date.today()).strftime('%Y-%m-%d')
+        #query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        products = []
+        for item in list(documents):
+            product = root.get_handler(item.abspath)
+            get = product.get_property
+            # Information about the item
+            address = product.parent
+            company = address.parent
+            # Hotel information
+            hotel_location = product.get_property('abakuc:address')
+            hotel_address = product.get_address(hotel_location)
+            county = hotel_address.get_property('abakuc:county')
+            hotel = hotel_address.parent
+            #county = get('abakuc:county')
+            if county is None:
+                # XXX Every job should have a county
+                region = ''
+                county = ''
+            else:
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    country = row[6]
+                    region = row[7]
+                    county = row[8]
+            url = '/companies/%s/%s/%s' % (company.name, address.name, item.name)
+            #apply = '/companies/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
+            description = reduce_string(product.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                         'url': url,
+                         'title': product.get_property('dc:title'),
+                         'hotel': hotel.get_property('dc:title'),
+                         'region': region,
+                         'country': country,
+            #             'closing_date': get('abakuc:closing_date'),
+            #             'address': address.get_title_or_name(),
+                         'description': description}
+            #trainings.append(training_to_add)
+            products.append(item_to_add)
+        print products
+        # Set batch informations
+        batch_start = int(context.get_form_value('t4', default=0))
+        batch_size = 5
+        batch_total = len(products)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        products = products[batch_start:batch_fin]
+        # Namespace
+        if products:
+            msgs = (u'There is one product.',
+                    u'There are ${n} products.')
+            products_batch = t4(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            products_table = None
+            products_batch = None
+            msg = u'Sorry but there are no products'
+
+        namespace['products'] = products
+        namespace['batch'] = products_batch
+        namespace['msg'] = msg
+        handler = self.get_handler('/ui/abakuc/companies/company/products.xml')
+        return stl(handler, namespace)
 
 register_object_class(ExpertTravel)
