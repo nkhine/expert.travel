@@ -60,7 +60,7 @@ class World(BaseCSV):
               'county': Unicode(index='keyword')}
 
 
-path = get_abspath(globals(), 'data/countries_full.csv')
+path = get_abspath(globals(), 'data/countries_austria_full.csv')
 world = World(path)
 
 class Root(Handler, BaseRoot):
