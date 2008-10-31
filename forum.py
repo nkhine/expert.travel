@@ -308,15 +308,15 @@ class Forum(Folder):
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        threads = threads[batch_start:batch_fin]
+        threads_batch = threads_batch[batch_start:batch_fin]
          # Namespace
-        if threads:
+        if threads_batch:
             threads_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=(u"There is 1 thread.",
                                     u"There are ${n} threads."))
             msg = None
         else:
-            forums_batch = None
+            threads_batch = None
             msg = u"Appologies, currently there are no threads."
         namespace['batch'] = threads_batch
         namespace['msg'] = msg
