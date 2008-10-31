@@ -304,21 +304,21 @@ class Forum(Folder):
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 8
-        batch_total = len(threads)
+        batch_total = len(most_popular)
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        threads_batch = threads_batch[batch_start:batch_fin]
+        most_popular = most_popular[batch_start:batch_fin]
          # Namespace
-        if threads_batch:
-            threads_batch = batch(context.uri, batch_start, batch_size,
+        if most_popular:
+            most_popular = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=(u"There is 1 thread.",
                                     u"There are ${n} threads."))
             msg = None
         else:
-            threads_batch = None
+            most_popular = None
             msg = u"Appologies, currently there are no threads."
-        namespace['batch'] = threads_batch
+        namespace['batch'] = most_popular
         namespace['msg'] = msg
         namespace['threads'] = threads
 
