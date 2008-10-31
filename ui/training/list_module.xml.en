@@ -37,9 +37,5 @@
             </dd>
         </dl>       
       </stl:block>
-              <span>
-                <a href=";setup_training_form">Create a new training programme</a>.
-              </span>
-
     </div>
 </stl:block>
