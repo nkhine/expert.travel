@@ -1218,7 +1218,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         if nb_countries < 1:
             raise ValueError, 'Number of countries is invalid'
         # Show a list with all authorized countries
-        countries.sort(key=lambda y: y['name'])
+        countries.sort(key=lambda x: x['title'])
         regions = root.get_regions_stl(country_code=address_country,
                                        selected_region=address_region)
         county = root.get_counties_stl(region=address_region,

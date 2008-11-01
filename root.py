@@ -449,7 +449,9 @@ class Root(Handler, BaseRoot):
             if region and (region!=u'none'):
                 list_countries.add((country, iana_root_zone))
         # Return the list of iana_root_zone
-        return list_countries
+        sorted_countries = sorted(list_countries)
+        print sorted_countries
+        return sorted_countries
 
     def get_regions(self, country=None, selected_region=None):
         """
