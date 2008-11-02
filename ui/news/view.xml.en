@@ -6,8 +6,8 @@
 <div class="yui-ge">
     <div class="yui-u first">
        <h1>${dc:title}</h1>
-       <div id="training-doc">
-      <span class="training-doc-image">
+       <div id="news-doc-image">
+      <span class="news-doc-image">
         <stl:block stl:if="image1">
         <img src="${picture_url}" alt="${image1_title}, credits to: ${image1_credit}" />
         <dt>

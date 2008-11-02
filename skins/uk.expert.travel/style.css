@@ -395,5 +395,29 @@ background-color: #8dbdd8;
 .job-details li span, .viewjob .job-details li span a:link, .viewjob .job-details li span a:visited { color: #666; }
 .job-details .jobid { font-size: 85%; color: #666; }
 
+/**************************************************************************
+ * Content box   
+ **************************************************************************/
+#news-doc { margin-top: 5px; }
+#news-doc h1, #news-doc h2, #news-doc h3, #news-doc h4, #news-doc h5, #news-doc h6
+{ border-bottom: 1px solid #d3d7cf; }
+#news-doc ol li { list-style-type: decimal; margin: 5px 5px 5px 10px; }
+#news-doc ul { margin-left: 20px; }
+#news-doc ul li { list-style-type: square; }
+#news-doc span { text-align: justify; }
+#news-doc table { margin: 15px; }
+#news-doc p, #news-doc div { margin: 5px; }
+#news-doc form fieldset { border-bottom: 1px solid #d3d7cf; }
+#news-doc form legend { font-size: 0.9em; }
+#news-doc form dd { padding-bottom: 0.5em; }
+#news-doc form p { clear: both; }
+#news-doc form .form_mandatory { color: red; font-weight: bold; }
+#news-doc .field_required { font-style: italic; }
+#news-doc form .missing { color: #ff0000; }
+/* IMAGE WITH TEXT WRAPPED AROUND IT */
+#news-doc span.news-doc-image { float: right; margin: 5px 5px 0 5px; }
+#news-doc img.news-doc-image { margin: 5px; }
+#news-doc dt.news-doc-image { margin-bottom: 5px; }
+
 /* IMAGE WITH TEXT WRAPPED AROUND IT */
 span.image { float: right; }
