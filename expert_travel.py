@@ -328,6 +328,18 @@ class ExpertTravel(SiteRoot):
             handler = root.get_skin().get_handler('terms.xml')
         return stl(handler, namespace) 
 
+    about__access__ = True
+    def about(self, context):
+        root = context.root
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        namespace = {}
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/about.xml')
+        else:
+            handler = root.get_skin().get_handler('about.xml')
+        return stl(handler, namespace) 
+
 
     ####################################################################
     # News - List

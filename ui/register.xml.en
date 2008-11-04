@@ -35,7 +35,7 @@
         <input type="text" id="ikaaro:email" name="ikaaro:email"
           value="${ikaaro:email/value}" />
       </dd>
-            <dt>
+      <dt>
         <label for="functions">Job Function</label>
       </dt>
       <dd style="width: 90%">
@@ -43,6 +43,17 @@
           <option stl:repeat="item functions" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option> 
         </select>
+      </dd>
+      <dt>
+        <label for="terms">Terms &amp; Conditions</label>
+      </dt>
+      <dd>
+      I confirm that I have read and accepted the
+        <a style="text-decoration: underline"
+        onclick="popup(';terms_conditions', 400, 400); return false;"
+        href="#">Terms &amp; Conditions</a> <span>*</span>
+      <input name="abakuc:terms" type="checkbox" value="1"
+      checked="${abakuc:terms}"/>
       </dd>
     </dl>
     <p>

