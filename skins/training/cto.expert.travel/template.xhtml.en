@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>${title}</title>
+    <!-- Meta -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta stl:repeat="meta meta_tags" name="${meta/name}"
+          content="${meta/content}" />
+    <!-- CSS -->
+    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
+    href="${style}"/>
+    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
+    <!-- JavaScript -->
+    <script type="text/javascript" stl:repeat="script scripts" src="${script}" />
+    <script type="text/javascript" src="/ui/abakuc/office.js" />
+  </head>
+  <body>
+    <div id="doc3" class="yui-t2">
+        <div id="hd">
+          <h1 title="Abakuc Expert.Travel">
+            <a href="/" title="Abakuc Expert.Travel">Abakuc Expert.Travel</a>
+          </h1>
+          <div id="navbar">
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/;news">News</a></li>
+              <li><a href="/;modules">Modules</a></li>
+              <li><a href="/;forum">Forum</a></li>
+              <li><a href="/;more">More&nbsp;»</a></li>
+            </ul>
+          </div><!-- /navbar -->
+          <div id="search"><!-- search -->
+              <form action="/;search" method="get">
+                  <input name="search_text" type="text" class="searchinput" 
+                      value="" size="20" />
+                  <input type="submit" value="Search"/>
+              </form>
+          </div><!-- /search -->
+          <div id="bar"><!-- bar -->
+            <ul>
+              <stl:block if="not user/info">
+                <li><a href="/;login_form">Log in</a></li>
+                <li>
+                  <a href="/;register_form" stl:if="user/joinisopen">Register</a>
+                </li>
+              </stl:block>
+              <stl:block if="user/info">
+                <li><a href="${user/info/home}">My profile</a></li>
+                <li><a href="/;logout">Log out</a></li>
+              </stl:block>
+              <li><a href="/;contact_form">Help</a></li>
+              <li><a href="/;contact_form">Contact</a></li>
+            </ul>
+          </div><!-- /bar -->
+        </div><!-- hd -->
+        <div id="bd">
+            <div id="yui-main">
+                <div class="yui-b">
+                    <div id="bread"><!-- breadcrumbs -->
+                        <label>Location:</label>
+                        <span stl:repeat="item breadcrumb">
+                            <a stl:if="item/url" href="${item/url}"
+                            title="${item/name}">${item/short_name}</a>
+                        <span stl:if="not item/url"
+                        title="${item/name}">${item/short_name}</span>
+                        <stl:inline if="not repeat/item/end">/</stl:inline> 
+                        </span>
+                    </div><!-- /breadcrumbs -->
+                    <div id="message" stl:if="message">${message}</div>
+                    <div>${body}</div>
+                </div><!-- yui-b -->
+            </div><!-- yui-main -->   
+            <div id="left" class="yui-b">
+                <div stl:repeat="menu left_menus">
+                    <label>${menu/title}</label>
+                           ${menu/content}
+                </div>
+                <div stl:if="context_menu_html">${context_menu_html}</div>
+            </div><!-- left, yui-b -->
+        </div><!-- bd -->
+        <div id="ft">
+            <ul>
+                <li class="affiliation">
+                    <h1 title=".travel member since 2005">
+                        <a href="/" title="Abakuc Expert.Travel">
+                            .travel member since 2005</a>
+                    </h1>
+                </li>
+                <li><a href="/;about">About</a></li>
+                <li><a href="/;credits">Credits</a></li>
+                <li><a href="/;license">License</a></li>
+                 <stl:block if="not user/info">
+                    <li><a href="/;login_form">(not logged in)</a></li>
+                  </stl:block>
+                  <stl:block if="user/info">
+                      <li><a href="${user/info/home}">
+                      ${user/info/title}</a></li>
+                  </stl:block>
+            </ul>
+        </div><!-- ft -->
+    </div><!-- doc -->
+  </body>
+</html>

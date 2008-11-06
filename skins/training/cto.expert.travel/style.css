@@ -1,0 +1,64 @@
+/*Copyright 2007 Abakuc Limited */
+/* info: #F5A400 - brown background color */
+h1, h2 {
+font-size:116%;
+font-weight:bold;
+}
+
+/**************************************************************************
+ * YUI patches 
+ **************************************************************************/
+ .yui-gf div.first {width:23.8%;}
+ .yui-gc div.user {background:#ffffff;}
+
+ /**************************************************************************
+ * Header 
+ **************************************************************************/
+#hd{ background:#ffffff;}
+#hd h1 { background:url(images/logo.png) top left
+no-repeat;width:400px;height:62px;}
+#hd h1 a{width:400px;line-height:48px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
+#hd h1 a:hover {background:none;border:none;text-decoration: none;}
+
+/**************************************************************************
+ * Navigation Bar 
+ **************************************************************************/
+#hd #navbar{position:absolute;top:0;right:15px;text-align:right;}
+#hd #navbar ul{float:right;list-style:none;}
+#hd #navbar li{float:left;color:white;}
+#hd #navbar a{float:left;display:block;color:#333;border:1px solid;border-color:#F5A400;background:#F5A400;margin:0 1px 0 0;padding:1px 8px;}
+#hd #navbar a:hover {color:#333;padding-bottom:1px;background:#fff;border:1px solid;border-color:#000;}
+
+/**************************************************************************
+ * Search 
+ **************************************************************************/
+#hd #search {position:absolute;top:26px;right:15px;text-align:right;}
+
+#hd .searchinput {
+    margin:0px 8px 0px 0px;
+    background:#fff url(images/mag_glass.gif) no-repeat;
+    padding:2px 2px 2px 17px
+}
+/**************************************************************************
+ * Bar 
+ **************************************************************************/
+
+#hd #bar{position:absolute;top:62px;right:15px;text-align:right;}
+#hd #bar ul{float:right;list-style:none;margin:0;padding:0;}
+#hd #bar li{float:left;margin:0;padding:0;}
+#hd #bar a{display:block;color:#FFCD01;text-decoration:none;border:1px solid #9B8748;border-top:none;background:#EC0052;margin:0 1px 0 0;padding:1px 8px;}
+#hd #bar a:hover {color:#333;padding-bottom:1px;background:#fff;}
+
+
+/**************************************************************************
+ * Footer
+ **************************************************************************/
+#ft { border-top: 1px solid #F5A400;margin-top:15px;font-size: 85%;} 
+#ft .affiliation li { width:95px; }
+#ft .affiliation h1 {position:relative;top:-15px;background:url(images/travel-registry.png) top left no-repeat;width:100px;height:37px; }
+#ft .affiliation h1 a { width:100px;line-height:37px;display:block;text-indent:-5000px;text-decoration:none;border:none;background:none;}
+#ft ul {list-style:none;margin:0;padding:0;}
+#ft li {float:left;margin-top:5px;padding:0;}
+#ft a {margin-left: 1em; margin-right: 1em; margin-right: 1em;text-decoration: none;}
+#ft a:hover {text-decoration: underline;}
+

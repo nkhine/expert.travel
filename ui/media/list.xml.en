@@ -58,45 +58,8 @@
                 <img src="http://farm1.static.flickr.com/69/213130158_0d1aa23576_d.jpg"
                  height="180" width="240" />
             </li>
-            <li>
-                <img src="http://farm1.static.flickr.com/72/213128367_74b0a657c3_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-
-                <img src="http://farm1.static.flickr.com/98/213129707_1f40c509fa_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-                <img src="http://farm1.static.flickr.com/59/213129191_b958880a96_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-                <img src="http://farm1.static.flickr.com/92/214077367_77ae970965_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-
-                <img src="http://farm1.static.flickr.com/81/214076446_18fe6a6c91_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-                <img src="http://farm1.static.flickr.com/93/214075781_0604edb894_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-                <img src="http://farm1.static.flickr.com/40/214075243_ea66c4cb31_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-
-                <img src="http://farm1.static.flickr.com/67/214074120_33933bf232_d.jpg"
-                 height="180" width="240" />
-            </li>
-            <li>
-                <img src="http://farm1.static.flickr.com/79/214073568_f16d1ffce7_d.jpg"
-                 height="180" width="240" />
-            </li>
+                <li stl:repeat="item images"><img src="${item/url}" border="0"
+                name="${item/description}" keywords="${item/keywords}" alt="${item/title}"/></li>
         </ol>
     </div>
             <script type="text/javascript" src="/ui/abakuc/media/carousel.js"></script>

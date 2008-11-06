@@ -14,26 +14,25 @@
             <a href="${item/url}">${item/title}</a>
           </dt>
            <dd>
-            ${item/description}<span class="vignette" stl:if="item/picture_url"><img
-              src="${item/picture_url}"/></span>
-            </dd>
-            <dd class="info">
-              <span>
-                  <a href="{item/login}">Login to manage</a>
-                  <a href="{item/login}">No. of Members</a>
-                  <a href="{item/login}">Statistics</a>
-              </span>
-              <span>
-                  <a href="{item/login}">Manage my training</a>
-              </span>
-              <span>
-                  <a href="{item/login}">Login / Register</a> for FREE Access to
-                  {item/title} programme.
-              </span>
-              <span>
-                  <a href="{item/login}">Login / Register</a> for FREE Access to
-                  {item/title} programme.
-              </span>
+               <table>
+                    <tr>
+                        <td stl:if="item/picture_url">
+                            <img src="${item/picture_url}"/>
+                        </td>
+                        <td>
+                            ${item/description}
+                        </td>
+                    </tr>
+                    <tr class="info">
+                        <td>
+                          <span>
+                              <a href="{item/login}">Login to manage</a>
+                              <a href="{item/login}">No. of Members</a>
+                              <a href="{item/login}">Statistics</a>
+                          </span>
+                        </td>
+                    </tr>
+               </table>
             </dd>
         </dl>       
       </stl:block>

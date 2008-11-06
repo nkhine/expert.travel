@@ -578,4 +578,5 @@ trainings = {
     'zambia.expert.travel': FrontOffice,
     'kansas.us.expert.travel': FrontOffice,
     'oklahoma.us.expert.travel': FrontOffice,
+    'cto.expert.travel': FrontOffice,
 }
