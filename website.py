@@ -97,6 +97,11 @@ class SiteRoot(Handler, BaseWebSite):
         # Set cookie
         user.set_auth_cookie(context, password)
 
+        # Update registration date 
+        registration_date = user.get_property('abakuc:registration_date')
+        if registration_date is None:
+            print 'no registration date'
+            user.set_property('abakuc:registration_date', datetime.date.today())
         # Update last login date
         last_login_date = user.get_property('abakuc:last_login_date')
         if last_login_date:
