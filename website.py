@@ -125,8 +125,8 @@ class SiteRoot(Handler, BaseWebSite):
         # folders that have membership.
         #training = root.get_handler('training')
         #if training == training:
-        if not self.has_user_role(user.name, 'abakuc:branch_manager') and \
-           not self.has_user_role(user.name, 'abakuc:branch_member') and \
+        if not self.has_user_role(user.name, 'abakuc:training_manager') and \
+           not self.has_user_role(user.name, 'abakuc:branch_manager') and \
            not self.has_user_role(user.name, 'abakuc:branch_member'):
             self.set_user_role(user.name, 'abakuc:branch_member')
             schedule_to_reindex(user)

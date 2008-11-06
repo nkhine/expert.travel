@@ -243,7 +243,6 @@ class Training(SiteRoot, WorkflowAware):
         if str(response.path[-1]) == ';login_form':
             return response
         user = context.user
-        print self.has_user_role(user.name, 'abakuc:training_manager')
         if not self.has_user_role(user.name, 'abakuc:training_manager') and \
            not self.has_user_role(user.name, 'abakuc:partner') and \
            not self.has_user_role(user.name, 'abakuc:branch_member'):
