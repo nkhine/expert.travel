@@ -1806,11 +1806,12 @@ class Module(Folder):
                 site_root = self.get_site_root()
                 user = site_root.get_handler('users/%s' % username)
                 address = user.get_address()
-                company = address.parent
-                business_function = company.get_property('abakuc:topic')
-                for x in business_function:
-                    if x in business_functions:
-                        return exam
+                if address:
+                    company = address.parent
+                    business_function = company.get_property('abakuc:topic')
+                    for x in business_function:
+                        if x in business_functions:
+                            return exam
         return None
 
     def get_marketing_form(self, username=None):
