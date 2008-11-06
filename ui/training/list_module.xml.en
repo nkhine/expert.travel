@@ -23,15 +23,6 @@
                             ${item/description}
                         </td>
                     </tr>
-                    <tr class="info">
-                        <td>
-                          <span>
-                              <a href="{item/login}">Login to manage</a>
-                              <a href="{item/login}">No. of Members</a>
-                              <a href="{item/login}">Statistics</a>
-                          </span>
-                        </td>
-                    </tr>
                </table>
             </dd>
         </dl>       
