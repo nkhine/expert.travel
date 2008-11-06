@@ -21,12 +21,9 @@
       <span>{abakuc:news_text}</span>
       </div>
       <div class="info">
-        Posted on: {date} <strong>by <a href="{user_uri}" title="View
-                {user}'s profile">{user}</a></strong> Time: <span
-                >over {posted/weeks} ago</span>
-                <span>{posted/days} days, {posted/hours}
-                h:{posted/minutes}m ago</span>
-      </div>
+        Offer expires on: ${abakuc:closing_date} <strong>earliest departure by
+        ${abakuc:departure_date}</strong> earliest return date by: ${abakuc:return_date}
+        Price per person: ${abakuc:price}</div>
     <div>
     <script type="text/javascript"><!--
 			google_ad_client = "pub-2050823514740471";
@@ -48,7 +45,7 @@
     </div>
     </div> <!-- yui-u first -->
     <div class="yui-u">
-        <ul>
+        <ul stl:if="address">
             <li>${hotel}</li>
             <li>${continent}</li>
             <li>${country}</li>

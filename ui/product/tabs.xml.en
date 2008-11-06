@@ -1,0 +1,33 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <script type="text/javascript">
+        var TABS_COOKIE = 'product_cookie';
+        $(function() {
+            $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
+                var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
+               $.cookie(TABS_COOKIE, lastTab, {path: '/'});
+            },
+            fxFade: true,
+            fxSpeed: 'fast',
+            fxSpeed: "normal"
+            });
+        });
+    </script>
+<div id="container-1">
+    <ul>
+        <li><a href="#fragment-1"><span>Manage</span></a></li>
+        <li><a href="#fragment-2"><span>Hotel</span></a></li>
+        <li><a href="#fragment-3"><span>Airline</span></a></li>
+    </ul>
+    <div id="fragment-1">
+      ${view}
+    </div>
+    <div id="fragment-2">
+      ${hotel}
+    </div>
+    <div id="fragment-3">
+      ${airline}
+    </div>
+</div>
+</stl:block>
+

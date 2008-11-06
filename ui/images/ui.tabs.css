@@ -73,7 +73,7 @@
 .ui-tabs-nav li {
     float: left;
     margin: 0 0 0 -1px;
-    min-width: 84px; /* be nice to Opera */
+    min-width: 74px; /* be nice to Opera */
 }
 .ui-tabs-nav a, .ui-tabs-nav a span {
     display: block;
@@ -86,7 +86,7 @@
     z-index: 2;
     padding-left: 0;
     color: #27537a;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     line-height: 1.2;
     text-align: center;

@@ -802,37 +802,39 @@ class ExpertTravel(SiteRoot):
             company = address.parent
             # Hotel information
             hotel_location = product.get_property('abakuc:address')
-            hotel_address = product.get_address(hotel_location)
-            county = hotel_address.get_property('abakuc:county')
-            hotel = hotel_address.parent
-            #county = get('abakuc:county')
-            if county is None:
-                # XXX Every job should have a county
-                region = ''
-                county = ''
-            else:
-                for row_number in world.search(county=county):
-                    row = world.get_row(row_number)
-                    country = row[6]
-                    region = row[7]
-                    county = row[8]
-            url = '/companies/%s/%s/%s' % (company.name, address.name, item.name)
-            #apply = '/companies/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
-            description = reduce_string(product.get_property('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                         'url': url,
-                         'title': product.get_property('dc:title'),
-                         'hotel': hotel.get_property('dc:title'),
-                         'region': region,
-                         'country': country,
-            #             'closing_date': get('abakuc:closing_date'),
-            #             'address': address.get_title_or_name(),
-                         'description': description}
-            #trainings.append(training_to_add)
-            products.append(item_to_add)
-        print products
+            if hotel_location:
+                hotel_address = product.get_address(hotel_location)
+                county = hotel_address.get_property('abakuc:county')
+                hotel = hotel_address.parent
+                #county = get('abakuc:county')
+                if county is not None:
+                    for row_number in world.search(county=county):
+                        row = world.get_row(row_number)
+                        country = row[6]
+                        region = row[7]
+                        county = row[8]
+                else:
+                    country = ''
+                    region = ''
+                    county = ''
+
+                print region
+                url = '/companies/%s/%s/%s' % (company.name, address.name, item.name)
+                #apply = '/companies/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
+                description = reduce_string(product.get_property('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                             'url': url,
+                             'title': product.get_property('dc:title'),
+                             'hotel': hotel.get_property('dc:title'),
+                             'region': region,
+                             'country': country,
+                #             'closing_date': get('abakuc:closing_date'),
+                #             'address': address.get_title_or_name(),
+                             'description': description}
+                #trainings.append(training_to_add)
+                products.append(item_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('t4', default=0))
         batch_size = 5

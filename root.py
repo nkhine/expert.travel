@@ -152,6 +152,20 @@ class Root(Handler, BaseRoot):
         cache['functions.csv'] = functions
         cache['functions.csv.metadata'] = functions.build_metadata()
 
+        # Holiday Types
+        holiday_types = CSV()
+        path = get_abspath(globals(), 'data/holiday_types.csv')
+        holiday_types.load_state_from(path)
+        cache['holiday_types.csv'] = holiday_types
+        cache['holiday_types.csv.metadata'] = holiday_types.build_metadata()
+
+        # Holiday Types
+        holiday_activities = CSV()
+        path = get_abspath(globals(), 'data/holiday_activities.csv')
+        holiday_activities.load_state_from(path)
+        cache['holiday_activities.csv'] = holiday_activities
+        cache['holiday_activities.csv.metadata'] = holiday_activities.build_metadata()
+        
         # Expert Travel
         title = u'Expert Travel Website'
         expert_travel = ExpertTravel()
@@ -277,6 +291,38 @@ class Root(Handler, BaseRoot):
 
         return namespace
 
+    def get_airlines(self, ids=None):
+        companies_handler = self.get_handler('companies')
+        companies = companies_handler.search_handlers(handler_class=Company)
+        airlines = []
+        for item in companies:
+            if item.has_property('abakuc:topic', 'airlines-scheduled'):
+                airlines.append({
+                    'id': item.name,
+                    'title': item.get_title(),
+                    'is_selected': (ids is not None) })
+        
+        return airlines
+
+    def get_holiday_activities(self, ids=None):
+        handler = self.get_handler('holiday_activities.csv')
+        namespace = []
+        for row in handler.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
+
+    def get_holiday_types(self, ids=None):
+        handler = self.get_handler('holiday_types.csv')
+        namespace = []
+        for row in handler.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
     #######################################################################
     # User Interface / Import
     #######################################################################

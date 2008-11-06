@@ -18,6 +18,7 @@ namespaces = {
     None: 'http://www.w3.org/1999/xhtml',
     'stl': 'http://xml.itools.org/namespaces/stl'}
 
+
 def title_to_name(title):
     title = title.encode('ascii', 'replace')
     title = title.lower()

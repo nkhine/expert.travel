@@ -3,8 +3,10 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from urllib import urlencode
 
 # Import from itools
+from itools.datatypes import Decimal
 from itools.cms.versioning import VersioningAware
 from itools.stl import stl
 from itools.cms.file import File
@@ -22,16 +24,15 @@ class Product(Folder):
     class_description = u'Product'
     class_views = [
         ['view'],
-        ['edit_form'],
+        ['manage'],
         ['browse_content?mode=list'],
         ['new_resource_form'],
         ['setup_hotel_form']]
 
 
     edit_fields = ['dc:title' , 'dc:description', 'dc:subject',
-                       'dc:subject', 'abakuc:closing_date',
-                       'abakuc:departure_date', 'abakuc:return_date',
-                       'abakuc:price']
+                       'abakuc:closing_date', 'abakuc:departure_date',
+                       'abakuc:return_date', 'abakuc:price']
 
 
     def new(self, **kw):
@@ -44,7 +45,6 @@ class Product(Folder):
     #######################################################################
     ## Indexes
     #######################################################################
-
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         #indexes['function'] = self.get_property('abakuc:function')
@@ -55,6 +55,26 @@ class Product(Folder):
         indexes['company'] = company.name
         indexes['address'] = address.name
         return indexes
+
+
+    def tabs(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        # Build stl
+        root = context.root
+        namespace = {}
+        namespace['view'] = self.edit_form(context)
+        namespace['hotel'] = self.setup_hotel_form(context)
+        namespace['airline'] = self.setup_airline_form(context)
+
+        template_path = 'ui/abakuc/product/tabs.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
 
     @staticmethod
     def get_form(name=None, description=None, website=None, subject=None):
@@ -277,6 +297,30 @@ class Product(Folder):
         goto = context.uri.resolve(home)
         return context.come_back(message, goto=goto)
 
+    ########################################################################
+    # Setup airline 
+    setup_airline_form__access__ = 'is_branch_manager'
+    setup_airline_form__label__ = u'Setup hotel'
+    def setup_airline_form(self, airline=None):
+        root = get_context().root
+        namespace = {}
+        # List all airline companies
+        namespace['airlines'] = root.get_airlines(airline)
+        handler = root.get_handler('ui/abakuc/product/setup_airline.xml')
+        return stl(handler, namespace)
+
+    setup_airline__access__ = 'is_branch_manager'
+    setup_airline__label__ = u'Setup hotel'
+    def setup_airline(self, context):
+        root = get_context().root
+        name = context.get_form_value('airline')
+        # Link the hotel's address to the product
+        self.set_property('abakuc:airline', name)
+        message = u'Airline linked to product.'
+        home = ';view'
+        goto = context.uri.resolve(home)
+        return context.come_back(message, goto=goto)
+
     #######################################################################
     # User Interface
     #######################################################################
@@ -288,59 +332,100 @@ class Product(Folder):
         # Get the country, the region and the county
         from root import world
         address = self.get_property('abakuc:hotel')
-        hotel_address = self.get_address(address)
-        hotel = hotel_address.parent
-        if hotel_address is not None: 
-            county = hotel_address.get_property('abakuc:county')
-        else:
-            county = None
-        if county is None:
-            continent = None
-            country = None
-            region = None
-        else:
-            for row_number in world.search(county=county):
-                row = world.get_row(row_number)
-                continent = row[1]
-                country = row[6]
-                region = row[7]
-                county = row[8]
-        namespace['continent'] = continent
-        namespace['country'] = country
-        namespace['region'] = region
-        namespace['county'] = county
-        namespace['hotel'] = hotel.get_property('dc:title')
-        for key in ['dc:title' , 'dc:description', 'dc:subject']:
+        namespace['address'] = address
+        if address is not None:
+            hotel_address = self.get_address(address)
+            hotel = hotel_address.parent
+            namespace['hotel'] = hotel.get_property('dc:title')
+            if hotel_address is not None: 
+                county = hotel_address.get_property('abakuc:county')
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    continent = row[1]
+                    country = row[6]
+                    region = row[7]
+                    county = row[8]
+                    namespace['continent'] = continent
+                    namespace['country'] = country
+                    namespace['region'] = region
+                    namespace['county'] = county
+            else:
+                continent = None
+                country = None
+                region = None
+                county = None
+
+        for key in self.edit_fields:
             namespace[key] = self.get_property(key)
 
         handler = self.get_handler('/ui/abakuc/product/view.xml')
         return stl(handler, namespace)
 
+    manage__access__ = 'is_allowed_to_edit'
+    manage__label__ = u'Manage'
+    def manage(self, context):
+        namespace = {}
+        namespace['tabs'] = self.tabs(context)
+        handler = self.get_handler('/ui/abakuc/product/manage.xml')
+        return stl(handler, namespace)
+
+
     edit_form__access__ = 'is_allowed_to_edit'
     edit_form__label__ = u'Edit'
     def edit_form(self, context):
+        root = get_context().root
+        types = self.get_property('abakuc:holiday_type')
+        activities = self.get_property('abakuc:holiday_activity')
         # Build the namespace
         namespace = {}
+        namespace['types'] = root.get_holiday_types(types)
+        namespace['activities'] = root.get_holiday_activities(activities)
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
-            print namespace[key]
-
-
         handler = self.get_handler('/ui/abakuc/product/edit.xml')
         return stl(handler, namespace)
 
 
     edit__access__ = 'is_allowed_to_edit'
     def edit_metadata(self, context):
-        from datetime import datetime
         verify = [('dc:title', True), ('dc:description', True),
-                        ('dc:subject', True),
-                        ('abakuc:closing_date', True)]
+                        ('abakuc:closing_date', True),
+                        ('abakuc:departure_date', True),
+                        ('abakuc:return_date', True),
+                        ('abakuc:price', True),
+                        ('abakuc:holiday_type', True)]
 
         # Check input data
         error = context.check_form_input(verify)
         if error is not None:
             return context.come_back(error)
+        
+        # Check dates are correct
+        closing_date = context.get_form_value('abakuc:closing_date')
+        departure_date = context.get_form_value('abakuc:departure_date')
+        return_date = context.get_form_value('abakuc:return_date')
+        difference = return_date - departure_date
+        if return_date <= departure_date:
+            params = {}
+            message = (u": Return date is beforee the departure date."
+                         u"Please correct!")
+            goto = './;edit_form?%s' % urlencode(params)
+            return context.come_back(message, goto=goto)
+
+        #price = context.get_form_value('abakuc:price')
+        #print type(price)
+        #if not type(price) is type(decimal.Decimal(0)):
+        #    params = {}
+        #    message = (u"Use decimal format 0.00 for price."
+        #                 u"Please correct!")
+        #    goto = './;edit_form?%s' % urlencode(params)
+        #    return context.come_back(message, goto=goto)
+            
+        topics = context.get_form_values('topic')
+        self.set_property('abakuc:holiday_activity', tuple(topics))
+        self.set_property('abakuc:departure_date', departure_date)
+        self.set_property('abakuc:return_date', return_date)
+
         for key in self.edit_fields:
             self.set_property(key, context.get_form_value(key))
         return context.come_back(MSG_CHANGES_SAVED)

@@ -2,7 +2,8 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from itools
-from itools.datatypes import Boolean, Integer, String, Unicode, Email, Tokens, Date
+from itools.datatypes import Boolean, Integer, String, Unicode,\
+                            Email, Tokens, Date, Decimal
 from itools.schemas import Schema as BaseSchema, register_schema
 from itools.datatypes import Enumerate
 
@@ -124,9 +125,11 @@ class Schema(BaseSchema):
         # Product 
         'hotel': Unicode,
         'airline': Unicode,
-        'price': Unicode,
+        'price': Decimal(default=0.00),
         'departure_date': Date,
         'return_date': Date,
+        'holiday_type': Unicode,
+        'holiday_activity': Tokens,
         # News
         'news_text': Unicode,
         # Job

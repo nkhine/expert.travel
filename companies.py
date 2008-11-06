@@ -759,7 +759,6 @@ class Company(SiteRoot):
         types = context.get_form_values('type')
         logo = context.get_form_value('logo')
         subject = context.get_form_value('subject')
-        print subject
 
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description)

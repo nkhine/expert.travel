@@ -14,14 +14,62 @@
           <input type="text" name="dc:title" value="${dc:title}"/>
         </dd>
         <dt>
+          <label for="abakuc:price">Price</label>
+        </dt>
+        <dd>
+          <input type="text" name="abakuc:price" value="${abakuc:price}"/>
+        </dd>
+       <dt>
+        <label for="topic">Holiday Type</label>
+      </dt>
+      <dd>
+        <select id="abakuc:holiday_type" name="abakuc:holiday_type" style="width: 90%">
+          <option stl:repeat="type types" value="${type/id}"
+            selected="${type/is_selected}">${type/title}</option> 
+        </select>
+      </dd>
+      <dt>
+        <label for="activities">Holiday Activity</label>
+      </dt>
+      <dd>
+        <select id="topic" name="topic" 
+            size="8" multiple="multiple" style="width: 90%">
+          <option stl:repeat="activity activities" value="${activity/id}"
+            selected="${activity/is_selected}">${activity/title}</option> 
+        </select>
+      </dd>
+
+        <dt>
           <label for="abakuc:closing_date">Closing Date</label>
         </dt>
         <dd>
           <input id="abakuc:closing_date" name="abakuc:closing_date" 
                   type="text" value="${abakuc:closing_date}"/>
-          <input id="trigger_date" type="button" value="..."/>
+          <input id="closing_date" type="button" value="..."/>
           <script language="javascript">
-          Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
+          Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "closing_date"});
+          </script>
+        </dd>
+        <dt>
+          <label for="abakuc:closing_date">Erliest Departure Date</label>
+        </dt>
+        <dd>
+          <input id="abakuc:departure_date" name="abakuc:departure_date" 
+                  type="text" value="${abakuc:departure_date}"/>
+          <input id="departure_date" type="button" value="..."/>
+          <script language="javascript">
+          Calendar.setup({inputField: "abakuc:departure_date", ifFormat: "%Y-%m-%d", button: "departure_date"});
+          </script>
+        </dd>
+        <dt>
+          <label for="abakuc:return_date">Earliest Return Date</label>
+        </dt>
+        <dd>
+          <input id="abakuc:return_date" name="abakuc:return_date" 
+                  type="text" value="${abakuc:return_date}"/>
+          <input id="return_date" type="button" value="..."/>
+          <script language="javascript">
+          Calendar.setup({inputField: "abakuc:return_date", ifFormat: "%Y-%m-%d", button: "return_date"});
           </script>
         </dd>
         <dt>
