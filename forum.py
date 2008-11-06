@@ -333,9 +333,7 @@ class Forum(Folder):
         namespace = {}
         user = context.user
         #types = ['question', 'announcment']
-        #print types
         #namespace['types'] = types
-        #print namespace['types']
         # Is global admin
         ac = self.get_access_control()
         from training import Training

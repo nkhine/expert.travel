@@ -371,14 +371,12 @@ class Root(Handler, BaseRoot):
             if n_results == 0:
                 county = None
                 msg = 'No county found for "%s", "%s"'
-                print count, msg % (row[2], row[3])
             elif n_results == 1:
                 county = results[0]
                 good += 1
             else:
                 county = None
                 msg = 'Several counties found for "%s", "%s" '
-                print count, msg % (row[2], row[3])
 
             # Add Company
             topic_id = str(row[0])
@@ -403,11 +401,10 @@ class Root(Handler, BaseRoot):
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)
-            print count
             if not address_name:
                 continue
             if company.has_handler(address_name):
-                print address_name 
+                print address_name
             else:
                 address, metadata = company.set_object(address_name, Address())
                 address.set_property('abakuc:address', address_title)
@@ -423,7 +420,6 @@ class Root(Handler, BaseRoot):
                 if user is not None:
                     address.set_user_role(user.name, 'abakuc:branch_manager')
 
-        print '%s/%s' % (good, count)
         message = ('Remember to reindex the database now:'
                    ' <a href=";catalog_form">reindex</a>.')
         return message
@@ -496,7 +492,6 @@ class Root(Handler, BaseRoot):
                 list_countries.add((country, iana_root_zone))
         # Return the list of iana_root_zone
         sorted_countries = sorted(list_countries)
-        print sorted_countries
         return sorted_countries
 
     def get_regions(self, country=None, selected_region=None):

@@ -243,7 +243,7 @@ class Training(SiteRoot, WorkflowAware):
         if str(response.path[-1]) == ';login_form':
             return response
         user = context.user
-        if not self.has_user_role(user.name, 'abakuc:branch_manager') and \
+        if not self.has_user_role(user.name, 'abakuc:training_manager') and \
            not self.has_user_role(user.name, 'abakuc:partner') and \
            not self.has_user_role(user.name, 'abakuc:branch_member'):
             self.set_user_role(user.name, 'abakuc:branch_member')
@@ -1659,9 +1659,6 @@ class Training(SiteRoot, WorkflowAware):
         #        forums.append(item)
 
             # List the last 5 threads for each forum
-            #print item.title_or_name
-            #print len(namespace['threads'])
-            #print namespace['threads']
             response = Forum.view(item, context)
             namespace['response'] = response
             # Return the page
@@ -1930,7 +1927,6 @@ class Module(Folder):
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
         batch_total = len(namespace['items'])
-        print batch_total
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total

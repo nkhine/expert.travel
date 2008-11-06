@@ -2154,7 +2154,6 @@ class User(iUser, WorkflowAware, Handler):
         namespace['msg'] = msg
        
         namespace['my_threads'] = my_threads
-        print namespace['my_threads']
         handler = self.get_handler('/ui/abakuc/forum/user.xml')
         return stl(handler, namespace)  
 

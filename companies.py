@@ -364,13 +364,10 @@ class Company(SiteRoot):
         #query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
-        print results
         documents = results.get_documents()
-        print documents
         products = []
         for item in list(documents):
             product = root.get_handler(item.abspath)
-            print product.name
 
     ####################################################################
     # List jobs
@@ -921,19 +918,15 @@ class Address(RoleAware, WorkflowAware, Folder):
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'product'))
-        print self.name
         query.append(EqQuery('address', self.name))
         #today = (date.today()).strftime('%Y-%m-%d')
         #query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
-        print results
         documents = results.get_documents()
-        print documents
         products = []
         for item in list(documents):
             product = root.get_handler(item.abspath)
-            print product.name
 
 
     #######################################################################
@@ -1122,7 +1115,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         query = []
         query.append(EqQuery('format', 'Job'))
         query.append(EqQuery('address', self.name))
-        print self.name
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)

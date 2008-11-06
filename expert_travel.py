@@ -90,8 +90,6 @@ class ExpertTravel(SiteRoot):
         # Is reviewer or member
         address = user.get_address()
         if address:
-            print address.has_user_role(user.name, 'abakuc:branch_manager',
-            'abakuc:branch_member')
             return address.has_user_role(user.name, 'abakuc:branch_manager',
             'abakuc:branch_member')
 
@@ -818,7 +816,6 @@ class ExpertTravel(SiteRoot):
                     region = ''
                     county = ''
 
-                print region
                 url = '/companies/%s/%s/%s' % (company.name, address.name, item.name)
                 #apply = '/companies/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
                 description = reduce_string(product.get_property('dc:description'),
