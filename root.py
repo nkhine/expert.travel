@@ -343,7 +343,7 @@ class Root(Handler, BaseRoot):
         handler = get_handler(path)
         rows = handler.get_rows()
         rows = list(rows)
-        rows = rows[10000:]
+        rows = rows[2:]
 
         # Load handlers
         users = self.get_handler('users')
