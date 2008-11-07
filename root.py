@@ -3,7 +3,7 @@
 
 # Import from the future
 from __future__ import with_statement
-
+import datetime
 # Import from the Standard Library
 from random import choice
 from string import ascii_letters
@@ -360,6 +360,7 @@ class Root(Handler, BaseRoot):
                 user = users.set_user(email)
                 key = ''.join([ choice(ascii_letters) for x in range(30) ])
                 user.set_property('ikaaro:user_must_confirm', key)
+                user.set_property('abakuc:registration_date', datetime.date.today())
             else:
                 user = None
 
@@ -398,6 +399,7 @@ class Root(Handler, BaseRoot):
                 metadata.set_property('abakuc:website', str(row[11]))
                 metadata.set_property('abakuc:topic', (topic_id,))
                 metadata.set_property('ikaaro:website_is_open', True)
+                metadata.set_property('abakuc:license', row[12])
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)
@@ -416,7 +418,6 @@ class Root(Handler, BaseRoot):
                     address.set_property('abakuc:town', row[4])
                 address.set_property('abakuc:phone', str(row[8]))
                 address.set_property('abakuc:fax', str(row[9]))
-                ##address.set_property('abakuc:license', row[])
                 if user is not None:
                     address.set_user_role(user.name, 'abakuc:branch_manager')
 

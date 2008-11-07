@@ -239,6 +239,9 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     def get_catalog_indexes(self):
         from root import world
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+
         indexes = iUser.get_catalog_indexes(self)
         get_property = self.get_metadata().get_property
         # The registration date
@@ -291,6 +294,7 @@ class User(iUser, WorkflowAware, Handler):
                         training_programmes.append(to)
             indexes['training_programmes'] = training_programmes
     
+        pp.pprint(indexes)
         return indexes
 
     #######################################################################
