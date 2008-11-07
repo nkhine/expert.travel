@@ -79,7 +79,7 @@
                             </stl:block>   
                     </div>
                     </div>
-                    <stl:block stl:block="not office" id="left_menu">
+                    <stl:block stl:block="not office">
                         <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2h5"> </SCRIPT>
                     </stl:block>
                 </div><!-- yui-b -->
