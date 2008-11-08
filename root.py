@@ -343,7 +343,7 @@ class Root(Handler, BaseRoot):
         handler = get_handler(path)
         rows = handler.get_rows()
         rows = list(rows)
-        rows = rows[2:]
+        rows = rows[2:1000]
 
         # Load handlers
         users = self.get_handler('users')
@@ -353,6 +353,7 @@ class Root(Handler, BaseRoot):
         # Import from the CSV file
         good = 0
         for count, row in enumerate(rows):
+            print count
             # User
             email = row[10]
             email = str(email).strip()

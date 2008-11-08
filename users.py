@@ -280,6 +280,26 @@ class User(iUser, WorkflowAware, Handler):
             #                indexes['type'] = company.get_property('abakuc:type')
             #                topics = company.get_property('abakuc:topic')
             #                indexes['topic'] = tuple(topics)
+            # Optimise the company/address indexing
+            address = self.get_address()
+            print address
+            if address:
+                company = address.parent
+                indexes['address'] = address.get_property('abakuc:address')
+                county = address.get_property('abakuc:county')
+                indexes['abakuc:county'] = county
+                if county is not None:
+                    for row_number in world.search(county=county):
+                        row = world.get_row(row_number)
+                        country = row[5]
+                        region = row[7]
+                        indexes['country'] = country
+                        indexes['region'] = region
+                indexes['company'] = company.get_property('dc:title')
+                indexes['type'] = company.get_property('abakuc:type')
+                topics = company.get_property('abakuc:topic')
+                indexes['topic'] = tuple(topics)
+
             # Index the user's training programmes
             training_programmes = []
             training_handler = root.get_handler('training')
