@@ -398,6 +398,7 @@ class Root(Handler, BaseRoot):
                 metadata.set_property('dc:title', company_title, language='en')
                 metadata.set_property('abakuc:website', str(row[11]))
                 metadata.set_property('abakuc:topic', (topic_id,))
+                metadata.set_property('abakuc:topic', (topic_id,))
                 metadata.set_property('ikaaro:website_is_open', True)
                 metadata.set_property('abakuc:license', row[12])
             # Add Address
@@ -418,6 +419,7 @@ class Root(Handler, BaseRoot):
                     address.set_property('abakuc:town', row[4])
                 address.set_property('abakuc:phone', str(row[8]))
                 address.set_property('abakuc:fax', str(row[9]))
+                print address_title
                 if user is not None:
                     address.set_user_role(user.name, 'abakuc:branch_manager')
 
