@@ -337,14 +337,20 @@ class Root(Handler, BaseRoot):
     def import_data(self, context):
         ###################################################################
         # Import Companies
+        multiple = ['uk-holiday-operators', 'flight-only-and-airline-consolidators',\
+                    'on-line-bookable-tour-operators', 'tour-operators']
+        independent = ['travel-agents', 'irish-travel-agents-and-organisers', \
+                        'incoming-tour-operators', 'uk-holiday-operators', \
+                        'on-line-bookable-travel-agents']
+        call_center = ['reservation-offices', 'flight-only-and-airline-consolidators']
 
         # Read the input CSV file
         path = get_abspath(globals(), 'data/abakuc_import_companies.csv')
         handler = get_handler(path)
         rows = handler.get_rows()
         rows = list(rows)
-        rows = rows[2:1000]
-
+        # We don't want the header
+        rows = rows[1:]
         # Load handlers
         users = self.get_handler('users')
         companies = self.get_handler('companies')
@@ -399,28 +405,36 @@ class Root(Handler, BaseRoot):
                 metadata.set_property('dc:title', company_title, language='en')
                 metadata.set_property('abakuc:website', str(row[11]))
                 metadata.set_property('abakuc:topic', (topic_id,))
-                metadata.set_property('abakuc:topic', (topic_id,))
+                if topic_id in independent:
+                    type = 'independent'
+                elif topic_id in multiple:
+                    type = 'multiple' 
+                elif topic_id in call_center:
+                    type = 'call-center'
+                else:
+                    type = 'other'
+                metadata.set_property('abakuc:type', 'other')
                 metadata.set_property('ikaaro:website_is_open', True)
                 metadata.set_property('abakuc:license', row[12])
+                metadata.set_property('abakuc:type', type)
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)
             if not address_name:
                 continue
-            if company.has_handler(address_name):
-                print address_name
+            #if company.has_handler(address_name):
+            #    print address_name
             else:
                 address, metadata = company.set_object(address_name, Address())
                 address.set_property('abakuc:address', address_title)
                 postcode = row[7]
                 if postcode:
-                    address.set_property('abakuc:postcode', str(postcode))
+                    address.set_property('abakuc:postcode', str(postcode.upper()))
                 if county:
                     address.set_property('abakuc:county', row[3])
                     address.set_property('abakuc:town', row[4])
                 address.set_property('abakuc:phone', str(row[8]))
                 address.set_property('abakuc:fax', str(row[9]))
-                print address_title
                 if user is not None:
                     address.set_user_role(user.name, 'abakuc:branch_manager')
 
