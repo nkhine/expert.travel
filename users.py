@@ -254,51 +254,51 @@ class User(iUser, WorkflowAware, Handler):
             root = get_context().root
             #root = context.root
             indexes['function'] = get_property('abakuc:functions')
-            #companies_handler = root.get_handler('companies')
-            #if companies_handler:
-            #    companies = \
-            #    list(companies_handler.search_handlers(handler_class=Company))
-            #    for company in companies:
-            #        company_title = company.get_handler(company.abspath)
-            #        addresses = \
-            #            list(company.search_handlers(handler_class=Address))
-            #        for address in addresses:
-            #            username = self.name
-            #            users = address.get_members()
-            #            if username in users:
-            #                indexes['address'] = address.get_property('abakuc:address')
-            #                county = address.get_property('abakuc:county')
-            #                indexes['abakuc:county'] = county
-            #                if county is not None:
-            #                    for row_number in world.search(county=county):
-            #                        row = world.get_row(row_number)
-            #                        country = row[5]
-            #                        region = row[7]
-            #                        indexes['country'] = country
-            #                        indexes['region'] = region
-            #                indexes['company'] = company.get_property('dc:title')
-            #                indexes['type'] = company.get_property('abakuc:type')
-            #                topics = company.get_property('abakuc:topic')
-            #                indexes['topic'] = tuple(topics)
-            # Optimise the company/address indexing
             address = self.get_address()
             print address
-            if address:
-                company = address.parent
-                indexes['address'] = address.get_property('abakuc:address')
-                county = address.get_property('abakuc:county')
-                indexes['abakuc:county'] = county
-                if county is not None:
-                    for row_number in world.search(county=county):
-                        row = world.get_row(row_number)
-                        country = row[5]
-                        region = row[7]
-                        indexes['country'] = country
-                        indexes['region'] = region
-                indexes['company'] = company.get_property('dc:title')
-                indexes['type'] = company.get_property('abakuc:type')
-                topics = company.get_property('abakuc:topic')
-                indexes['topic'] = tuple(topics)
+            companies_handler = root.get_handler('companies')
+            if companies_handler:
+                companies = \
+                list(companies_handler.search_handlers(handler_class=Company))
+                for company in companies:
+                    company_title = company.get_handler(company.abspath)
+                    addresses = \
+                        list(company.search_handlers(handler_class=Address))
+                    for address in addresses:
+                        username = self.name
+                        users = address.get_members()
+                        if username in users:
+                            indexes['address'] = address.get_property('abakuc:address')
+                            county = address.get_property('abakuc:county')
+                            indexes['abakuc:county'] = county
+                            if county is not None:
+                                for row_number in world.search(county=county):
+                                    row = world.get_row(row_number)
+                                    country = row[5]
+                                    region = row[7]
+                                    indexes['country'] = country
+                                    indexes['region'] = region
+                            indexes['company'] = company.get_property('dc:title')
+                            indexes['type'] = company.get_property('abakuc:type')
+                            topics = company.get_property('abakuc:topic')
+                            indexes['topic'] = tuple(topics)
+            # Optimise the company/address indexing
+            #if address:
+            #    company = address.parent
+            #    indexes['address'] = address.get_property('abakuc:address')
+            #    county = address.get_property('abakuc:county')
+            #    indexes['abakuc:county'] = county
+            #    if county is not None:
+            #        for row_number in world.search(county=county):
+            #            row = world.get_row(row_number)
+            #            country = row[5]
+            #            region = row[7]
+            #            indexes['country'] = country
+            #            indexes['region'] = region
+            #    indexes['company'] = company.get_property('dc:title')
+            #    indexes['type'] = company.get_property('abakuc:type')
+            #    topics = company.get_property('abakuc:topic')
+            #    indexes['topic'] = tuple(topics)
 
             # Index the user's training programmes
             training_programmes = []
