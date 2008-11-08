@@ -422,8 +422,8 @@ class Root(Handler, BaseRoot):
             address_name = title_to_name(address_title)
             if not address_name:
                 continue
-            #if company.has_handler(address_name):
-            #    print address_name
+            if company.has_handler(address_name):
+                print address_name
             else:
                 address, metadata = company.set_object(address_name, Address())
                 address.set_property('abakuc:address', address_title)
