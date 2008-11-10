@@ -255,50 +255,49 @@ class User(iUser, WorkflowAware, Handler):
             #root = context.root
             indexes['function'] = get_property('abakuc:functions')
             address = self.get_address()
-            print address
-            companies_handler = root.get_handler('companies')
-            if companies_handler:
-                companies = \
-                list(companies_handler.search_handlers(handler_class=Company))
-                for company in companies:
-                    company_title = company.get_handler(company.abspath)
-                    addresses = \
-                        list(company.search_handlers(handler_class=Address))
-                    for address in addresses:
-                        username = self.name
-                        users = address.get_members()
-                        if username in users:
-                            indexes['address'] = address.get_property('abakuc:address')
-                            county = address.get_property('abakuc:county')
-                            indexes['abakuc:county'] = county
-                            if county is not None:
-                                for row_number in world.search(county=county):
-                                    row = world.get_row(row_number)
-                                    country = row[5]
-                                    region = row[7]
-                                    indexes['country'] = country
-                                    indexes['region'] = region
-                            indexes['company'] = company.get_property('dc:title')
-                            indexes['type'] = company.get_property('abakuc:type')
-                            topics = company.get_property('abakuc:topic')
-                            indexes['topic'] = tuple(topics)
+            #companies_handler = root.get_handler('companies')
+            #if companies_handler:
+            #    companies = \
+            #    list(companies_handler.search_handlers(handler_class=Company))
+            #    for company in companies:
+            #        company_title = company.get_handler(company.abspath)
+            #        addresses = \
+            #            list(company.search_handlers(handler_class=Address))
+            #        for address in addresses:
+            #            username = self.name
+            #            users = address.get_members()
+            #            if username in users:
+            #                indexes['address'] = address.get_property('abakuc:address')
+            #                county = address.get_property('abakuc:county')
+            #                indexes['abakuc:county'] = county
+            #                if county is not None:
+            #                    for row_number in world.search(county=county):
+            #                        row = world.get_row(row_number)
+            #                        country = row[5]
+            #                        region = row[7]
+            #                        indexes['country'] = country
+            #                        indexes['region'] = region
+            #                indexes['company'] = company.get_property('dc:title')
+            #                indexes['type'] = company.get_property('abakuc:type')
+            #                topics = company.get_property('abakuc:topic')
+            #                indexes['topic'] = tuple(topics)
             # Optimise the company/address indexing
-            #if address:
-            #    company = address.parent
-            #    indexes['address'] = address.get_property('abakuc:address')
-            #    county = address.get_property('abakuc:county')
-            #    indexes['abakuc:county'] = county
-            #    if county is not None:
-            #        for row_number in world.search(county=county):
-            #            row = world.get_row(row_number)
-            #            country = row[5]
-            #            region = row[7]
-            #            indexes['country'] = country
-            #            indexes['region'] = region
-            #    indexes['company'] = company.get_property('dc:title')
-            #    indexes['type'] = company.get_property('abakuc:type')
-            #    topics = company.get_property('abakuc:topic')
-            #    indexes['topic'] = tuple(topics)
+            if address:
+                company = address.parent
+                indexes['address'] = address.get_property('abakuc:address')
+                county = address.get_property('abakuc:county')
+                indexes['abakuc:county'] = county
+                if county is not None:
+                    for row_number in world.search(county=county):
+                        row = world.get_row(row_number)
+                        country = row[5]
+                        region = row[7]
+                        indexes['country'] = country
+                        indexes['region'] = region
+                indexes['company'] = company.get_property('dc:title')
+                indexes['type'] = company.get_property('abakuc:type')
+                topics = company.get_property('abakuc:topic')
+                indexes['topic'] = tuple(topics)
 
             # Index the user's training programmes
             training_programmes = []
@@ -1452,42 +1451,43 @@ class User(iUser, WorkflowAware, Handler):
         #        other_programmes.append(ns)# Construct the lines of the table
         trainings = []
         for item in list(items):
-            #job = root.get_handler(job.abspath)
-            get = item.get_property
-            # Information about the training
-            url = 'http://%s' % (item.get_vhosts())
-            # XXX fix so that we can extract the first uri
-            if item:
-                is_training_manager = item.has_user_role(self.name, 'abakuc:training_manager')
-                is_branch_manager = item.has_user_role(self.name, 'abakuc:branch_manager')
-                is_branch_member =item.has_user_role(self.name, 'abakuc:branch_member')
-                is_guest = item.has_user_role(self.name, 'abakuc:guest')
-                is_branch_manager_or_member = is_branch_manager or is_branch_member
-                is_member = is_branch_manager_or_member or is_guest or is_training_manager
-            else:
-                is_training_manager = False
-                is_branch_manager = False
-                is_branch_member = False
-                is_guest = False
-                is_branch_manager_or_member = False
-                is_member = False
-            # from the tuple
-            if item.name is not office.name:
-                description = reduce_string(get('dc:description'),
-                                            word_treshold=50,
-                                            phrase_treshold=200)
-                training_to_add ={'id': item.name,
-                                 'checkbox': is_branch_manager, # XXX fix this.
-                                 'url': url,
-                                 'login': url+'/;login_form',
-                                 'is_training_manager': is_training_manager,
-                                 'is_branch_manager_or_member': is_branch_manager_or_member,
-                                 'is_guest': is_guest,
-                                 'is_member': is_member,
-                                 'img': '/ui/abakuc/images/Training16.png',
-                                 'title': get('dc:title'),
-                                 'description': description}
-                trainings.append(training_to_add)
+            is_open = item.get_property('ikaaro:website_is_open')
+            if is_open is True:
+                get = item.get_property
+                # Information about the training
+                url = 'http://%s' % (item.get_vhosts())
+                # XXX fix so that we can extract the first uri
+                if item:
+                    is_training_manager = item.has_user_role(self.name, 'abakuc:training_manager')
+                    is_branch_manager = item.has_user_role(self.name, 'abakuc:branch_manager')
+                    is_branch_member =item.has_user_role(self.name, 'abakuc:branch_member')
+                    is_guest = item.has_user_role(self.name, 'abakuc:guest')
+                    is_branch_manager_or_member = is_branch_manager or is_branch_member
+                    is_member = is_branch_manager_or_member or is_guest or is_training_manager
+                else:
+                    is_training_manager = False
+                    is_branch_manager = False
+                    is_branch_member = False
+                    is_guest = False
+                    is_branch_manager_or_member = False
+                    is_member = False
+                # from the tuple
+                if item.name is not office.name:
+                    description = reduce_string(get('dc:description'),
+                                                word_treshold=50,
+                                                phrase_treshold=200)
+                    training_to_add ={'id': item.name,
+                                     'checkbox': is_branch_manager, # XXX fix this.
+                                     'url': url,
+                                     'login': url+'/;login_form',
+                                     'is_training_manager': is_training_manager,
+                                     'is_branch_manager_or_member': is_branch_manager_or_member,
+                                     'is_guest': is_guest,
+                                     'is_member': is_member,
+                                     'img': '/ui/abakuc/images/Training16.png',
+                                     'title': get('dc:title'),
+                                     'description': description}
+                    trainings.append(training_to_add)
 
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))

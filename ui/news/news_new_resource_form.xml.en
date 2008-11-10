@@ -11,14 +11,14 @@
           <label for="dc:title">Title</label>
         </dt>
         <dd>
-          <input type="text" name="dc:title" value="${dc:title}"/>
+          <input type="text" name="dc:title" value=""/>
         </dd>
         <dt>
           <label for="abakuc:closing_date">Closing Date</label>
         </dt>
         <dd>
           <input id="abakuc:closing_date" name="abakuc:closing_date" 
-                  type="text" value="${abakuc:closing_date}"/>
+                  type="text" value=""/>
           <input id="trigger_date" type="button" value="..."/>
           <script language="javascript">
           Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
@@ -29,14 +29,14 @@
         </dt>
         <dd>
           <textarea  cols="100" id="dc:description" name="dc:description"
-          rows="8">${dc:description}</textarea>
+          rows="8"></textarea>
         </dd>
         <dt>
           <label for="abakuc:news_text">Text</label>
         </dt>
         <dd>
           <textarea rows="20" cols="80" id="abakuc:news_text"
-          name="abakuc:news_text">${abakuc:news_text}</textarea>
+          name="abakuc:news_text"></textarea>
         </dd>
         <dt>
           <label for="abakuc:image1">News image</label>

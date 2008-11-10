@@ -404,7 +404,7 @@ class Company(SiteRoot):
                     row = world.get_row(row_number)
                     region = row[7]
                     county = get('abakuc:county')
-            url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
+            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
             apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
@@ -555,10 +555,13 @@ class Company(SiteRoot):
         root = context.root
         catalog = context.server.catalog
         query = []
-        query.append(EqQuery('format', 'news'))
-        query.append(EqQuery('company', self.name))
         today = (date.today()).strftime('%Y-%m-%d')
-        query.append(RangeQuery('closing_date', today, None))
+        #query.append(EqQuery('format', 'news'))
+        #query.append(EqQuery('company', self.name))
+        #query.append(RangeQuery('closing_date', today, None))
+        query = [EqQuery('format', 'news'),
+                 EqQuery('company', self.name),
+                 RangeQuery('closing_date', today, None)]
         query = AndQuery(*query)
         results = catalog.search(query)
         documents = results.get_documents()
@@ -623,20 +626,9 @@ class Company(SiteRoot):
                  EqQuery('company', self.name),
                  RangeQuery('closing_date', today, None)]
 
-        # Search fields
-        #function = context.get_form_value('function') or None
-        #salary = context.get_form_value('salary') or None
-        #county = context.get_form_value('county') or None
         news_title = context.get_form_value('news_title') or None
         if news_title:
             news_title = news_title.lower()
-        # Get Jobs (construct the query for the search)
-        #if function:
-        #    query.append(EqQuery('function', function))
-        #if salary:
-        #    query.append(EqQuery('salary', salary))
-        #if county:
-        #    query.append(EqQuery('county', county))
         results = root.search(AndQuery(*query))
         namespace['nb_news'] = results.get_n_documents()
 
@@ -1043,22 +1035,31 @@ class Address(RoleAware, WorkflowAware, Folder):
     def news(self, context):
         namespace = {}
         namespace['batch'] = ''
+        print self.name
         #Search the catalogue, list all news items in address
         root = context.root
         catalog = context.server.catalog
+        company = self.parent
         query = []
-        query.append(EqQuery('format', 'news'))
-        query.append(EqQuery('address', self.name))
+        handlers = self.search_handlers(handler_class=News)
         today = (date.today()).strftime('%Y-%m-%d')
-        query.append(RangeQuery('closing_date', today, None))
+        #query.append(EqQuery('format', 'news'))
+        #query.append(EqQuery('address', self.name))
+        #query.append(RangeQuery('closing_date', today, None))
+        query = [EqQuery('format', 'news'),
+                 EqQuery('address', company.name),
+                 RangeQuery('closing_date', today, None)]
         query = AndQuery(*query)
         results = catalog.search(query)
         documents = results.get_documents()
+        print documents
         news_items = []
-        for news in list(documents):
+        #for news in list(documents):
+        for news in handlers:
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
             get = news.get_property
+            closing_date = get('abakuc:closing_date')
             # Information about the news item
             username = news.get_property('owner')
             user_exist = users.has_handler(username)
@@ -1111,10 +1112,11 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['batch'] = ''
         # Construct the lines of the table
         root = context.root
+        company = self.parent
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'Job'))
-        query.append(EqQuery('address', self.name))
+        query.append(EqQuery('company', company.name))
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
@@ -1136,7 +1138,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                     row = world.get_row(row_number)
                     region = row[7]
             # Information about the job
-            url = '/companies/%s/%s/%s/' % (company.name, address.name, job.name)
+            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
             apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,

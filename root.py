@@ -349,8 +349,9 @@ class Root(Handler, BaseRoot):
         handler = get_handler(path)
         rows = handler.get_rows()
         rows = list(rows)
+        print len(rows)
         # We don't want the header
-        rows = rows[1:]
+        rows = rows[1:13346]
         # Load handlers
         users = self.get_handler('users')
         companies = self.get_handler('companies')

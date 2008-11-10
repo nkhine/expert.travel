@@ -37,6 +37,12 @@ class SiteRoot(Handler, BaseWebSite):
         """Logs out of the application."""
         # Remove the cookie
         context.del_cookie('__ac')
+        # XXX review the cookies names
+        context.del_cookie('user_profile_cookie')
+        context.del_cookie('address_cookie')
+        context.del_cookie('profile_cookie')
+        context.del_cookie('company_cookie')
+
         # Remove the user from the context
         context.user = None
         # Say goodbye
