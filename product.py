@@ -22,6 +22,8 @@ class Product(Folder):
     class_id = 'product'
     class_title = u'Product'
     class_description = u'Product'
+    class_icon16 = 'abakuc/images/Briefcase16.png'
+    class_icon48 = 'abakuc/images/Briefcase48.png'
     class_views = [
         ['view'],
         ['manage'],
@@ -376,10 +378,12 @@ class Product(Folder):
         root = get_context().root
         types = self.get_property('abakuc:holiday_type')
         activities = self.get_property('abakuc:holiday_activity')
+        board = self.get_property('abakuc:board')
         # Build the namespace
         namespace = {}
         namespace['types'] = root.get_holiday_types(types)
         namespace['activities'] = root.get_holiday_activities(activities)
+        namespace['board'] =  root.get_board_types(board)
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
         handler = self.get_handler('/ui/abakuc/product/edit.xml')
@@ -393,6 +397,7 @@ class Product(Folder):
                         ('abakuc:departure_date', True),
                         ('abakuc:return_date', True),
                         ('abakuc:price', True),
+                        ('abakuc:board', True),
                         ('abakuc:holiday_type', True)]
 
         # Check input data
@@ -407,24 +412,17 @@ class Product(Folder):
         difference = return_date - departure_date
         if return_date <= departure_date:
             params = {}
-            message = (u": Return date is beforee the departure date."
+            message = (u": Return date is before the departure date."
                          u"Please correct!")
             goto = './;edit_form?%s' % urlencode(params)
             return context.come_back(message, goto=goto)
 
-        #price = context.get_form_value('abakuc:price')
-        #print type(price)
-        #if not type(price) is type(decimal.Decimal(0)):
-        #    params = {}
-        #    message = (u"Use decimal format 0.00 for price."
-        #                 u"Please correct!")
-        #    goto = './;edit_form?%s' % urlencode(params)
-        #    return context.come_back(message, goto=goto)
-            
+        board = context.get_form_value('abakuc:board')
         topics = context.get_form_values('topic')
         self.set_property('abakuc:holiday_activity', tuple(topics))
         self.set_property('abakuc:departure_date', departure_date)
         self.set_property('abakuc:return_date', return_date)
+        self.set_property('abakuc:board',board)
 
         for key in self.edit_fields:
             self.set_property(key, context.get_form_value(key))

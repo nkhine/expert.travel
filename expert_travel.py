@@ -247,10 +247,13 @@ class ExpertTravel(SiteRoot):
         training = root.get_handler('training')
         items = training.search_handlers(handler_class=Training)
         for item in items:
-            tp_forum = list(item.search_handlers(format=Forum.class_id))
-            for item in tp_forum:
-                item != []
-                forums.append(item)
+            # We only want to list the published TP forums
+            is_open = item.get_property('ikaaro:website_is_open')
+            if is_open is True:
+                tp_forum = list(item.search_handlers(format=Forum.class_id))
+                for item in tp_forum:
+                    item != []
+                    forums.append(item)
 
         # Build the select list of forums and their URLs
         current_forums = []
@@ -788,20 +791,22 @@ class ExpertTravel(SiteRoot):
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'product'))
-        #today = (date.today()).strftime('%Y-%m-%d')
-        #query.append(RangeQuery('closing_date', today, None))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
         documents = results.get_documents()
         products = []
         for item in list(documents):
+            print item.name
             product = root.get_handler(item.abspath)
             get = product.get_property
             # Information about the item
             address = product.parent
             company = address.parent
             # Hotel information
-            hotel_location = product.get_property('abakuc:address')
+            hotel_location = product.get_property('abakuc:hotel')
+            # Every product must have a location
             if hotel_location:
                 hotel_address = product.get_address(hotel_location)
                 county = hotel_address.get_property('abakuc:county')
@@ -829,10 +834,9 @@ class ExpertTravel(SiteRoot):
                              'hotel': hotel.get_property('dc:title'),
                              'region': region,
                              'country': country,
-                #             'closing_date': get('abakuc:closing_date'),
-                #             'address': address.get_title_or_name(),
+                             'closing_date': get('abakuc:closing_date'),
+                             'price': get('abakuc:price'),
                              'description': description}
-                #trainings.append(training_to_add)
                 products.append(item_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('t4', default=0))

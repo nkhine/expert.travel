@@ -323,6 +323,16 @@ class Root(Handler, BaseRoot):
                 'is_selected': (ids is not None) and (row[0] in ids)})
 
         return namespace
+
+    def get_board_types(self, ids=None):
+        handler = self.get_handler('board_types.csv')
+        namespace = []
+        for row in handler.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
     #######################################################################
     # User Interface / Import
     #######################################################################

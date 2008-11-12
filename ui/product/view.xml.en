@@ -3,7 +3,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-<div class="yui-ge">
+<div class="yui-gc">
     <div class="yui-u first">
        <h1>${dc:title}</h1>
        <div id="training-doc">
@@ -19,12 +19,13 @@
       <p>${dc:description}</p>
 
       <span>{abakuc:news_text}</span>
+        <div class="info">
+          Offer expires on: ${abakuc:closing_date}<br /> 
+          Earliest departure: ${abakuc:departure_date}<br /> 
+          Earliest return date: ${abakuc:return_date}<br />
+          Price per person: ${abakuc:price}</div>
+        <div>
       </div>
-      <div class="info">
-        Offer expires on: ${abakuc:closing_date} <strong>earliest departure by
-        ${abakuc:departure_date}</strong> earliest return date by: ${abakuc:return_date}
-        Price per person: ${abakuc:price}</div>
-    <div>
     <script type="text/javascript"><!--
 			google_ad_client = "pub-2050823514740471";
 			google_ad_width = 336;
@@ -45,13 +46,13 @@
     </div>
     </div> <!-- yui-u first -->
     <div class="yui-u">
-        <ul stl:if="address">
-            <li>${hotel}</li>
-            <li>${continent}</li>
-            <li>${country}</li>
-            <li>${region}</li>
-            <li>${county}</li>
-        </ul>
+        <div stl:if="address">
+            <h1>${hotel}</h1>
+            <i>${continent}</i>
+            <i>${country}</i>
+            <i>${region}</i>
+            <i>${county}</i>
+        </div>
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->
 

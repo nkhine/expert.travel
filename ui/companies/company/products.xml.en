@@ -5,7 +5,7 @@
     <div class="batch">
       ${batch}
     </div>
-    <div stl:if="msg">{msg}</div>
+    <div stl:if="msg">${msg}</div>
     <div class="List">
       <stl:block repeat="item products"> 
         <dl class="ListItem" onmouseover="this.className='ListItem_Hover';"
@@ -17,7 +17,7 @@
             ${item/description}
           </dd>
           <dd class="info">
-            Posted on ${item/hotel} by ${item/country}, ${item/region}
+            From ${item/price} pp and staying at ${item/hotel}, ${item/country}, ${item/region}
           </dd>
         </dl>       
       </stl:block>

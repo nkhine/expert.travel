@@ -72,6 +72,17 @@
           Calendar.setup({inputField: "abakuc:return_date", ifFormat: "%Y-%m-%d", button: "return_date"});
           </script>
         </dd>
+      <dt>
+        <label for="board">Board Basis</label>
+      </dt>
+      <dd>
+            <select name="abakuc:board">
+              <option stl:repeat="item board" value="${item/id}" 
+                  selected="${item/is_selected}">
+                ${item/title}&nbsp;&nbsp;
+              </option>
+            </select>
+      </dd>
         <dt>
           <label for="dc:description">Short Description</label>
         </dt>

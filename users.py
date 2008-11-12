@@ -36,6 +36,7 @@ from companies import Company, Address
 from training import Training, Module
 from exam import Exam
 from marketing import Marketing
+from product import Product
 from news import News
 from jobs import Job, Candidature
 from utils import title_to_name, get_sort_name, t1, t2, t3, t4, t5
@@ -224,6 +225,12 @@ class User(iUser, WorkflowAware, Handler):
             return root.get_handler(job.abspath)
         return None
 
+    def get_products(self):
+        root = self.get_root()
+        results = root.search(format='product', members=self.name)
+        for product in results.get_documents():
+            return root.get_handler(product.abspath)
+        return None
     #######################################################################
     # Manage bookings
     def search_bookings(self, query=None, **kw):
@@ -446,6 +453,7 @@ class User(iUser, WorkflowAware, Handler):
         else:
             namespace['news'] = self.news_table(context)
             namespace['jobs'] = self.jobs_table(context)
+            namespace['products'] = self.products_table(context)
             namespace['enquiries'] = self.enquiries_list(context)
         namespace['current_training'] = self.training(context)
         namespace['training'] = self.training_table(context)
@@ -1169,7 +1177,31 @@ class User(iUser, WorkflowAware, Handler):
             address.del_object(job_id)
         return context.come_back(u'Job(s) delete')
 
+    ########################################################################
+    # Create a new product
+    create_product__access__ = 'is_self_or_admin'
+    def create_product(self, context):
+        address = self.get_address()
+        company = address.parent
+        url = '/companies/%s/%s/;new_resource_form?type=product' % (company.name,
+                                                                address.name)
+        goto = context.uri.resolve(url)
+        message = u'Please use this form to add a new product'
+        return context.come_back(message, goto=goto)
 
+
+    ########################################################################
+    # Remove job
+    remove_product__access__ = 'is_self_or_admin'
+    def remove_product(self, context):
+        ids = context.get_form_values('ids')
+        root = context.root
+        if not ids:
+            return context.come_back(u'Please select a Product')
+        address = self.get_address()
+        for product_id in ids:
+            address.del_object(product_id)
+        return context.come_back(u'Product(s) delete')
     ########################################################################
     # News table used in the 'tabs' method
     def news_table(self, context):
@@ -1267,10 +1299,10 @@ class User(iUser, WorkflowAware, Handler):
             is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
             is_guest = address.has_user_role(self.name, 'abakuc:guest')
             is_branch_manager_or_member = is_branch_manager or is_branch_member
-            columns = [('c1', u'Title'),
-                       ('c2', u'To be archived on'),
-                       ('c3', u'Applications'),
-                       ('c4', u'Short description')]
+            columns = [('c1-2', u'Title'),
+                       ('c2-2', u'To be archived on'),
+                       ('c3-2', u'Applications'),
+                       ('c4-2', u'Short description')]
             # Get all Jobs
             address_jobs = address.search_handlers(handler_class=Job)
             # Construct the lines of the table
@@ -1296,9 +1328,9 @@ class User(iUser, WorkflowAware, Handler):
                 job_to_add ={'id': job.name,
                              'checkbox': is_branch_manager,
                              'img': '/ui/abakuc/images/JobBoard16.png',
-                             'c1': (get('dc:title'),url+';view'),
-                             'c2': get('abakuc:closing_date'),
-                             'c4': description}
+                             'c1-2': (get('dc:title'),url+';view'),
+                             'c2-2': get('abakuc:closing_date'),
+                             'c4-2': description}
                 if nb_candidatures > 0:
                     job_to_add['c3'] = nb_candidatures,url+';view_candidatures'
                 else:
@@ -1313,7 +1345,7 @@ class User(iUser, WorkflowAware, Handler):
                 batch_fin = batch_total
             jobs = jobs[batch_start:batch_fin]
             # Order
-            sortby = context.get_form_value('sortby', 'c2')
+            sortby = context.get_form_value('sortby', 'c2-2')
             sortorder = context.get_form_value('sortorder', 'up')
             reverse = (sortorder == 'down')
             jobs.sort(lambda x,y: cmp(x[sortby], y[sortby]))
@@ -1355,7 +1387,98 @@ class User(iUser, WorkflowAware, Handler):
         handler = self.get_handler('/ui/abakuc/jobs/jobs_table.xml')
         return stl(handler, namespace)
 
+    ########################################################################
+    # Product table used in the 'tabs' method
+    def products_table(self, context):
+        root = context.root
+        namespace = {}
+        address = self.get_address()
+        if address:
+            company = address.parent
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(self.name, 'abakuc:guest')
+            is_branch_manager_or_member = is_branch_manager or is_branch_member
+            columns = [('c1-3', u'Title'),
+                       ('c2-3', u'To be archived on'),
+                       ('c3-3', u'Applications'),
+                       ('c4-3', u'Short description')]
+            # Get all Jobs
+            address_products = address.search_handlers(handler_class=Product)
+            # Construct the lines of the table
+            products = []
+            for product in list(address_products):
+                get = product.get_property
+                # Information about the job
+                url = '/companies/%s/%s/%s/' % (company.name, address.name,
+                                                     product.name)
+                description = reduce_string(get('dc:description'),
+                                            word_treshold=10,
+                                            phrase_treshold=40)
+                closing_date = get('abakuc:closing_date')
+                # All products should have a closing date
+                if closing_date is None:
+                    closing_date = date.today()
+                #Get no of applicants
+                print closing_date
+                product_to_add ={'id': product.name,
+                             'checkbox': is_branch_manager,
+                             'img': '/ui/abakuc/images/JobBoard16.png',
+                             'c1-3': (get('dc:title'),url+';view'),
+                             'c2-3': closing_date,
+                             'c4-3': description}
+                products.append(product_to_add)
+            # Set batch informations
+            batch_start = int(context.get_form_value('batchstart', default=0))
+            batch_size = 5
+            batch_total = len(products)
+            batch_fin = batch_start + batch_size
+            if batch_fin > batch_total:
+                batch_fin = batch_total
+            print products
+            products = products[batch_start:batch_fin]
+            # Order
+            sortby = context.get_form_value('sortby', 'c1-3')
+            sortorder = context.get_form_value('sortorder', 'up')
+            reverse = (sortorder == 'down')
+            products.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+            if reverse:
+                products.reverse()
+            # Set batch informations
+            # Namespace
+            if products:
+                actions = [('select', u'Select All', 'button_select_all',
+                            "return select_checkboxes('browse_list', true);"),
+                           ('select', u'Select None', 'button_select_none',
+                            "return select_checkboxes('browse_list', false);"),
+                           ('create_product', u'Add new Product', 'button_ok',
+                            None),
+                           ('remove_product', 'Delete Product/s', 'button_delete', None)]
+                product_table = table(columns, products, [sortby], sortorder, actions)
+                msgs = (u'There is one product.', u'There are ${n} products.')
+                product_batch = batch(context.uri, batch_start, batch_size,
+                                  batch_total, msgs=msgs)
+                msg = None
+            else:
+                products_actions = [('create_product', u'Add new product', 'button_ok',
+                            None)]
+                product_table = table(columns, jobs, [sortby], sortorder, products_actions)
+                product_batch = None
+                msg = None
+        else:
+            is_branch_manager = False
+            is_branch_member = False
+            is_guest = False
+            is_branch_manager_or_member = False
+            product_table = None
+            product_batch = None
+            msg = None
 
+        namespace['product_table'] = product_table
+        namespace['product_batch'] = product_batch
+        namespace['product_msg'] = msg
+        handler = self.get_handler('/ui/abakuc/product/products_table.xml')
+        return stl(handler, namespace)
     ########################################################################
     # List Enquiries
     def enquiries_list(self, context):
@@ -2032,9 +2155,11 @@ class User(iUser, WorkflowAware, Handler):
             items = training.search_handlers(handler_class=Training)
             for item in items:
                 tp_forum = list(item.search_handlers(format=Forum.class_id))
-                for item in tp_forum:
-                    item != []
-                    forums.append(item)
+                is_open = item.get_property('ikaaro:website_is_open')
+                if is_open is True:
+                    for item in tp_forum:
+                        item != []
+                        forums.append(item)
         # Build the select list of forums and their URLs
         current_forums = []
         forum_links = []
@@ -2114,8 +2239,10 @@ class User(iUser, WorkflowAware, Handler):
             for item in items:
                 tp_forum = list(item.search_handlers(format=Forum.class_id))
                 for item in tp_forum:
-                    item != []
-                    forums.append(item)
+                    is_open = item.get_property('ikaaro:website_is_open')
+                    if is_open is True:
+                        item != []
+                        forums.append(item)
         # Build the select list of forums and their URLs
         my_threads = []
         for item in forums:

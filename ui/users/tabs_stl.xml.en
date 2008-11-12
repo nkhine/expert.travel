@@ -92,7 +92,7 @@
                   ${training}
                 </div>
                 <div id="fragment-5">
-                  {marketplace}
+                  ${products}
                 </div>
                 </stl:block>
                 <stl:block if="not is_branch_manager_or_member">

@@ -68,7 +68,6 @@ class SalaryRange(Enumerate):
         {'name': '10', 'value': u'£70K-£100K'},
         {'name': '11', 'value': u'£100K+'}]
 
-
 class Schema(BaseSchema):
 
     class_prefix = 'abakuc'
@@ -130,6 +129,7 @@ class Schema(BaseSchema):
         'return_date': Date,
         'holiday_type': Unicode,
         'holiday_activity': Tokens,
+        'board': String,
         # News
         'news_text': Unicode,
         # Job

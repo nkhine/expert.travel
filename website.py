@@ -363,6 +363,8 @@ class SiteRoot(Handler, BaseWebSite):
             # get the namespace for the banner based on the search.
             print level1
             #namespace['banner'] = self.get_level1_title(level1)
+            # here we want to search the banners folder and return the
+            # banners associated with this 'level1'
 
         elif text is not None:
             # Search
