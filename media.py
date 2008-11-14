@@ -139,20 +139,10 @@ class Media(Folder, RoleAware):
     def list(self, context):
         namespace = {}
         # Set style
-        context.styles.append('/ui/abakuc/yui/carousel/carousel.css')
-        # Add the js scripts
-        context.scripts.append('/ui/abakuc/yui/yahoo-dom-event/yahoo-dom-event.js')
-        context.scripts.append('/ui/abakuc/yui/connection/connection-min.js')
-        context.scripts.append('/ui/abakuc/yui/element/element-beta-min.js')
-        context.scripts.append('/ui/abakuc/yui/carousel/carousel-beta-min.js')
-        ## Set style
-        #context.styles.append('http://yui.yahooapis.com/2.6.0/build/carousel/assets/skins/sam/carousel.css')
+        #context.styles.append('/ui/abakuc/yui/carousel/carousel.css')
         ## Add the js scripts
-        #context.scripts.append('http://yui.yahooapis.com/2.6.0/build/yahoo-dom-event/yahoo-dom-event.js')
-        #context.scripts.append('http://yui.yahooapis.com/2.6.0/build/connection/connection-min.js')
-        #context.scripts.append('http://yui.yahooapis.com/2.6.0/build/element/element-beta-min.js')
-        #context.scripts.append('http://yui.yahooapis.com/2.6.0/build/carousel/carousel-beta-min.js')
-
+        #context.scripts.append('/ui/abakuc/yui/utilities/utilities.js')
+        #context.scripts.append('/ui/abakuc/yui/container/container_core-min.js')
         # Get all the images and flash objects
         handlers = self.search_handlers(handler_class=File)
         images = []
@@ -165,6 +155,7 @@ class Media(Folder, RoleAware):
                 url = '/media/%s' % handler.name
                 if type == 'image':
                     item = {'url': url,
+                            'name': handler.name,
                             'title': handler.get_property('dc:title'),
                             'icon': handler.get_path_to_icon(size=16),
                             'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
@@ -195,11 +186,14 @@ class Media(Folder, RoleAware):
                 
         # Namespace
         namespace = {}
+        print images
         namespace['images'] = images
+        print namespace['images']
         namespace['flash'] = flash
         namespace['others'] = others
         namespace['title'] = self.get_property('dc:title')
-        handler = self.get_handler('/ui/abakuc/media/list.xml')
+        #handler = self.get_handler('/ui/abakuc/media/list.xml')
+        handler = self.get_handler('/ui/abakuc/media/spotlight.xml')
         return stl(handler, namespace)
 
     images__access__ = True 

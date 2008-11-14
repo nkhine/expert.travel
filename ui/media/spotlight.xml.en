@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+
+<link rel="stylesheet" type="text/css" href="/ui/abakuc/yui/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="/ui/abakuc/yui/carousel/assets/skins/sam/carousel.css" />
+<script type="text/javascript" src="/ui/abakuc/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="/ui/abakuc/yui/element/element-beta-min.js"></script>
+<script type="text/javascript" src="/ui/abakuc/yui/carousel/carousel-beta-min.js"></script>
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    /* Style the spotlight container */
+    #spotlight {
+        border: 1px solid #ccc;
+        height: 180px;
+        margin: 10px auto;
+        padding: 1px;
+        width: 240px;
+    }
+    
+    #container {
+        margin: 0 auto;
+    }
+
+    .yui-carousel-element li {
+        height: 75px;
+        opacity: 0.6;
+        width: 75px;
+    }
+    
+    .yui-carousel-element .yui-carousel-item-selected {
+        opacity: 1;
+    }
+
+    .yui-skin-sam .yui-carousel-nav ul li {
+        margin: 0;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<!-- The Carousel container -->
+<div id="container">
+    <ol id="carousel">
+        <li>
+            <img src="http://farm1.static.flickr.com/135/342099636_7b05b7cde5_s.jpg" />
+        </li>
+        <li>
+
+            <img src="http://farm1.static.flickr.com/136/342099938_fdef3ca3b5_s.jpg" />
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/147/342099522_3827eaa929_s.jpg" />
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/143/342100011_ec4d338c71_s.jpg" />
+        </li>
+        <li>
+
+            <img src="http://farm1.static.flickr.com/161/342100080_0fe4f9ccb0_s.jpg" />
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/153/342100324_82589c0ebe_s.jpg" />
+        </li>
+    </ol>
+</div>
+<!-- The spotlight container -->
+<div id="spotlight"></div>
+
+<style type="text/css">
+/* Style the spotlight container */
+#spotlight {
+	border: 1px solid #ccc;
+	height: 180px;
+	margin: 10px auto;
+	padding: 1px;
+	width: 240px;
+}
+
+.yui-carousel-element li {
+	opacity: 0.6;
+}
+
+.yui-carousel-element .yui-carousel-item-selected {
+	opacity: 1;
+}
+
+</style>
+<script type="text/javascript" src="/ui/abakuc/media/spotlight.js" />
