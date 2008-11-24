@@ -159,12 +159,19 @@ class Root(Handler, BaseRoot):
         cache['holiday_types.csv'] = holiday_types
         cache['holiday_types.csv.metadata'] = holiday_types.build_metadata()
 
-        # Holiday Types
+        # Holiday Activities
         holiday_activities = CSV()
         path = get_abspath(globals(), 'data/holiday_activities.csv')
         holiday_activities.load_state_from(path)
         cache['holiday_activities.csv'] = holiday_activities
         cache['holiday_activities.csv.metadata'] = holiday_activities.build_metadata()
+
+        # Rating Types
+        rating_types = CSV()
+        path = get_abspath(globals(), 'data/rating_types.csv')
+        rating_types.load_state_from(path)
+        cache['rating_types.csv'] = rating_types
+        cache['rating_types.csv.metadata'] = rating_types.build_metadata()
         
         # Expert Travel
         title = u'Expert Travel Website'
@@ -326,6 +333,16 @@ class Root(Handler, BaseRoot):
 
     def get_board_types(self, ids=None):
         handler = self.get_handler('board_types.csv')
+        namespace = []
+        for row in handler.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
+
+    def get_rating_types(self, ids=None):
+        handler = self.get_handler('rating_types.csv')
         namespace = []
         for row in handler.get_rows():
             namespace.append({

@@ -33,6 +33,7 @@ class Product(Folder):
 
 
     edit_fields = ['dc:title' , 'dc:description', 'dc:subject',
+                       'abakuc:text',
                        'abakuc:closing_date', 'abakuc:departure_date',
                        'abakuc:return_date', 'abakuc:price']
 
@@ -43,6 +44,23 @@ class Product(Folder):
 
     def get_document_types(self):
         return [File]
+    #######################################################################
+    # ACL 
+    #######################################################################
+    #def is_branch_manager(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    office = self.parent
+    #    # Is reviewer or member
+    #    return office.has_user_role(user.name, 'abakuc:branch_manager')
+
+    #def is_allowed_to_edit(self, user, object):
+    #    # Protect the document
+    #    return self.is_branch_manager(user, object)
 
     #######################################################################
     ## Indexes
@@ -79,7 +97,7 @@ class Product(Folder):
 
 
     @staticmethod
-    def get_form(name=None, description=None, website=None, subject=None):
+    def get_form(name=None, description=None, website=None, rating=None, subject=None):
         root = get_context().root
 
         namespace = {}
@@ -87,6 +105,9 @@ class Product(Folder):
         namespace['description'] = description
         namespace['website'] = website
         namespace['subject'] = subject
+        # Hotel rating
+        rating = root.get_rating_types()
+        namespace['rating'] = rating
 
         handler = root.get_handler('ui/abakuc/product/form.xml')
         return stl(handler, namespace)
@@ -168,6 +189,8 @@ class Product(Folder):
         website = context.get_form_value('abakuc:website')
         topics = ['hotel']
         types = 'other'
+        # Board type
+        rating = context.get_form_value('abakuc:rating')
 
         metadata.set_property('dc:title', title, language='en')
         metadata.set_property('dc:description', description)
@@ -175,6 +198,7 @@ class Product(Folder):
         metadata.set_property('abakuc:website', website)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('abakuc:type', types)
+        metadata.set_property('abakuc:rating', rating)
         metadata.set_property('ikaaro:website_is_open', False)
 
         # Set the Address..
@@ -329,6 +353,7 @@ class Product(Folder):
     view__access__ = True
     view__label__ = u'View'
     def view(self, context):
+        root = get_context().root
         # Build the namespace
         namespace = {}
         # Get the country, the region and the county
@@ -339,6 +364,11 @@ class Product(Folder):
             hotel_address = self.get_address(address)
             hotel = hotel_address.parent
             namespace['hotel'] = hotel.get_property('dc:title')
+            rating = hotel.get_property('abakuc:rating')
+            hotel_rating = root.get_rating_types(rating)
+            print hotel_rating
+            namespace['rating'] = hotel.get_property('abakuc:rating')
+
             if hotel_address is not None: 
                 county = hotel_address.get_property('abakuc:county')
                 for row_number in world.search(county=county):
@@ -356,6 +386,50 @@ class Product(Folder):
                 country = None
                 region = None
                 county = None
+
+        # Get all other documents
+        handlers = self.search_handlers(handler_class=File)
+        images = []
+        flash = []
+        others = []
+        for handler in handlers:
+            handler_state = handler.get_property('state')
+            if handler_state == 'public':
+                type = handler.get_content_type()
+                url = '%s' % handler.name
+                if type == 'image':
+                    item = {'url': url,
+                            'title': handler.get_property('dc:title'),
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    images.append(item)
+                elif type == 'application/x-shockwave-flash':
+                    item = {'url': url,
+                            'title': handler.get_property('dc:title'),
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    flash.append(item)
+                else:
+                    title = handler.get_property('dc:title')
+                    if title == '':
+                        title = 'View document'
+                    else:
+                        title = reduce_string(title, 10, 20)
+                    item = {'url': url,
+                            'title': title,
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    others.append(item)
+
+        namespace['images'] = images
+        namespace['flash'] = flash
+        namespace['others'] = others
 
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
@@ -398,6 +472,7 @@ class Product(Folder):
                         ('abakuc:return_date', True),
                         ('abakuc:price', True),
                         ('abakuc:board', True),
+                        ('abakuc:text', True),
                         ('abakuc:holiday_type', True)]
 
         # Check input data

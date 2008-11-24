@@ -18,7 +18,7 @@
         </span>
       <p>${dc:description}</p>
 
-      <span>{abakuc:news_text}</span>
+      <span>${abakuc:text}</span>
         <div class="info">
           Offer expires on: ${abakuc:closing_date}<br /> 
           Earliest departure: ${abakuc:departure_date}<br /> 
@@ -52,6 +52,25 @@
             <i>${country}</i>
             <i>${region}</i>
             <i>${county}</i>
+            <span stl:if="rating">${rating}</span>
+        </div>
+        <div stl:if="others">
+            <h2>Other document types</h2>
+            <ul>
+                <li stl:repeat="item others"><a href="${item/url}"><img src="${item/icon}" border="0"
+                name="${item/description}" keywords="${item/keywords}"
+                alt="${item/title}" /></a>
+                <a href="${item/url}" alt="${item/title}">${item/title}</a></li>
+            </ul>
+        </div>
+        <div stl:if="flash">
+            <h2>Videos and flash documents</h2>
+            <ul>
+                <li stl:repeat="item flash"><a href="${item/url}"><img src="${item/icon}" border="0"
+                name="${item/description}" keywords="${item/keywords}"
+                alt="${item/title}" /></a>
+                <a href="${item/url}" alt="${item/title}">${item/title}</a></li>
+            </ul>
         </div>
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->

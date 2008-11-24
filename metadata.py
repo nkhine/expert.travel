@@ -122,7 +122,6 @@ class Schema(BaseSchema):
         'questions_nums': Integer(default=20),
         'pass_marks_percentage': Integer(default=70),
         # Product 
-        'hotel': Unicode,
         'airline': Unicode,
         'price': Decimal(default=0.00),
         'departure_date': Date,
@@ -130,6 +129,10 @@ class Schema(BaseSchema):
         'holiday_type': Unicode,
         'holiday_activity': Tokens,
         'board': String,
+        'text': Unicode,
+        # Hotel
+        'hotel': Unicode,
+        'rating': String,
         # News
         'news_text': Unicode,
         # Job

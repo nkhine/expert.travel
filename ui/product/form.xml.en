@@ -25,6 +25,18 @@
           value="${website}" />
       </dd>
       <dt>
+        <label for="rating">Hotel rating</label>
+      </dt>
+      <dd>
+      <select id="rating" name="abakuc:rating">
+        <option stl:repeat="item rating" value="${item/id}"
+        selected="${item/is_selected}">${item/title}</option>
+      </select>
+      </dd>
+      <dd>
+        Used by search engines to index your entry.
+      </dd>
+      <dt>
         <label for="subject">Keywords (Separated by comma)</label>
       </dt>
       <dd>

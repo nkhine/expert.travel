@@ -189,6 +189,11 @@ class Media(Folder, RoleAware):
         print images
         namespace['images'] = images
         print namespace['images']
+        have_image = len(images)
+        if have_images > 0:
+            namespace['have_image'] = True 
+        else:
+            namespace['have_image'] = None 
         namespace['flash'] = flash
         namespace['others'] = others
         namespace['title'] = self.get_property('dc:title')

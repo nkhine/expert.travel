@@ -95,7 +95,7 @@
         </dt>
         <dd>
           <textarea rows="20" cols="80" id="abakuc:text"
-          name="abakuc:text">{abakuc:news_text}</textarea>
+          name="abakuc:text">${abakuc:text}</textarea>
         </dd>
         <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
       <dd>
