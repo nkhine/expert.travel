@@ -20,7 +20,7 @@
         <li><a href="#fragment-3"><span>Airline</span></a></li>
     </ul>
     <div id="fragment-1">
-      ${view}
+      ${edit}
     </div>
     <div id="fragment-2">
       ${hotel}

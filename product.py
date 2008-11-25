@@ -87,7 +87,7 @@ class Product(Folder):
         # Build stl
         root = context.root
         namespace = {}
-        namespace['view'] = self.edit_form(context)
+        namespace['edit'] = self.edit_form(context)
         namespace['hotel'] = self.setup_hotel_form(context)
         namespace['airline'] = self.setup_airline_form(context)
 

@@ -931,8 +931,8 @@ class Company(SiteRoot):
                              'hotel': hotel.get_property('dc:title'),
                              'region': region,
                              'country': country,
-                #             'closing_date': get('abakuc:closing_date'),
-                #             'address': address.get_title_or_name(),
+                             'closing_date': product.get_property('abakuc:closing_date'),
+                             'price': product.get_property('abakuc:price'),
                              'description': description}
                 #trainings.append(training_to_add)
                 products.append(item_to_add)

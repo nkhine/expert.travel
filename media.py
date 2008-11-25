@@ -139,10 +139,11 @@ class Media(Folder, RoleAware):
     def list(self, context):
         namespace = {}
         # Set style
-        #context.styles.append('/ui/abakuc/yui/carousel/carousel.css')
+        context.styles.append('/ui/abakuc/yui/carousel/carousel.css')
         ## Add the js scripts
-        #context.scripts.append('/ui/abakuc/yui/utilities/utilities.js')
-        #context.scripts.append('/ui/abakuc/yui/container/container_core-min.js')
+        context.scripts.append('/ui/abakuc/yui/utilities/utilities.js')
+        context.scripts.append('/ui/abakuc/yui/container/container_core-min.js')
+        context.scripts.append('/ui/abakuc/yui/carousel/carousel.js')
         # Get all the images and flash objects
         handlers = self.search_handlers(handler_class=File)
         images = []
@@ -186,12 +187,12 @@ class Media(Folder, RoleAware):
                 
         # Namespace
         namespace = {}
-        print images
         namespace['images'] = images
         print namespace['images']
         have_image = len(images)
-        if have_images > 0:
+        if have_image > 0:
             namespace['have_image'] = True 
+            namespace['total_images'] = len(images)
         else:
             namespace['have_image'] = None 
         namespace['flash'] = flash

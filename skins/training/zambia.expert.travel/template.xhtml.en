@@ -9,6 +9,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta stl:repeat="meta meta_tags" name="${meta/name}"
           content="${meta/content}" />
+
     <!-- CSS -->
     <link type="text/css" stl:repeat="style styles" rel="stylesheet"
     href="${style}"/>

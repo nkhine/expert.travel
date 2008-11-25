@@ -6,7 +6,7 @@
 <div class="yui-gc">
     <div class="yui-u first">
        <h1>${dc:title}</h1>
-       <div id="training-doc">
+      <!--
       <span class="training-doc-image">
         <stl:block stl:if="dc:title">
         <img src="{picture_url}" alt="{image1_title}, credits to: {image1_credit}" />
@@ -16,6 +16,7 @@
         </dt>
         </stl:block>
         </span>
+        -->
       <p>${dc:description}</p>
 
       <span>${abakuc:text}</span>
@@ -25,7 +26,6 @@
           Earliest return date: ${abakuc:return_date}<br />
           Price per person: ${abakuc:price}</div>
         <div>
-      </div>
     <script type="text/javascript"><!--
 			google_ad_client = "pub-2050823514740471";
 			google_ad_width = 336;

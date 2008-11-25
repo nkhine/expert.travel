@@ -3,94 +3,154 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+<script type="text/javascript">
+/**
+ * Image src URLs
+ **/
 
+var imageList = [
+        <stl:block stl:repeat="item images">
+				 "${item/url}",
+        </stl:block>
+				 ];
+var urlList = [
+        <stl:block stl:repeat="item images">
+				 "${item/url}",
+        </stl:block>
+				 ];
 
-<link rel="stylesheet" type="text/css" href="/ui/abakuc/yui/fonts/fonts-min.css" />
-<link rel="stylesheet" type="text/css" href="/ui/abakuc/yui/carousel/assets/skins/sam/carousel.css" />
-<script type="text/javascript" src="/ui/abakuc/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="/ui/abakuc/yui/element/element-beta-min.js"></script>
-<script type="text/javascript" src="/ui/abakuc/yui/carousel/carousel-beta-min.js"></script>
+var pageLoad = function() 
+{
+	carousel = new YAHOO.extension.Carousel("dhtml-carousel", 
+		{
+			numVisible:         3,
+			animationSpeed:     0.6,
+			animationMethod:    YAHOO.util.Easing.backBoth,
+			scrollInc:          1,
+			navMargin:          40,
+			scrollBeforeAmount: 1,
+			firstVisible:       -1,
+			size:               ${total_images},
+			scrollAfterAmount:  1,
+			prevElement:        "prev-arrow",
+			nextElement:        "next-arrow",
+			loadInitHandler:    loadInitialItems,
+			loadNextHandler:    loadNextItems,
+			loadPrevHandler:    loadPrevItems,
+			prevButtonStateHandler:   handlePrevButtonState,
+			nextButtonStateHandler:   handleNextButtonState,
+			animationCompleteHandler: completeHandler
+		}
+	);
+	
+	//carousel.loadNextHandlerEvt.subscribe(beforeNext, carousel);
+};
 
+</script>
 <!--begin custom header content for this example-->
 <style type="text/css">
-    /* Style the spotlight container */
-    #spotlight {
-        border: 1px solid #ccc;
-        height: 180px;
-        margin: 10px auto;
-        padding: 1px;
-        width: 240px;
-    }
-    
-    #container {
-        margin: 0 auto;
-    }
 
-    .yui-carousel-element li {
-        height: 75px;
-        opacity: 0.6;
-        width: 75px;
-    }
-    
-    .yui-carousel-element .yui-carousel-item-selected {
-        opacity: 1;
-    }
+.carousel-component {
+	padding:0px;
+}
+.carousel-component .carousel-list li { 
+	margin:4px;
+	width:85px; /* img width is 75 px from flickr + a.border-left (1) + a.border-right(1) + 
+	               img.border-left (1) + img.border-right (1) + a.margin (6)*/
+	/*	margin-left: auto;*/ /* for testing IE auto issue */
+}
 
-    .yui-skin-sam .yui-carousel-nav ul li {
-        margin: 0;
-    }
+.carousel-component .carousel-list li a { 
+	display:block;
+	margin:3px;
+	border:1px solid #e2edfa;
+	outline:none;
+	-moz-outline:none; 
+}
+
+.carousel-component .carousel-list li a:hover { 
+	border: 1px solid #87bf4e; 
+}
+
+.carousel-component .carousel-list li img { 
+	border:1px solid #999;
+	display:block; 
+	margin:4px 0px 0px 4px;
+}
+
+.carousel-component .carousel-list li strong { 
+	display:block; 
+}
+									
+
+#prev-arrow { 
+	position:absolute;
+	top:40px;
+	z-index:3;
+	cursor:pointer; 
+	left:5px; 
+}
+
+#next-arrow { 
+	position:absolute;
+	top:40px;
+	z-index:3;
+	cursor:pointer; 
+	right:5px; 
+}
+
+.spotlight {
+	border: 1px solid #2222ff;
+	filter: alpha(opacity=100); -moz-opacity:1.0;
+}
+
+.non-spotlight {
+	border: 1px solid #e2edfa;
+	filter: alpha(opacity=60); -moz-opacity:0.6;
+}
+
+#preview {
+	margin: 20px 100px 0px 0px;
+	padding:4px;
+	clear:both;
+}
+
+#preview img {
+	border: 1px solid gray;
+	padding:4px;
+}
+
+pre {
+	font-size:10px;
+}
+
 </style>
 
+<script type="text/javascript" src="/ui/abakuc/media/spotlight.js" />
 <!--end custom header content for this example-->
 
 
 <!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
 
 <!-- The Carousel container -->
-<div id="container">
-    <ol id="carousel">
-        <li>
-            <img src="http://farm1.static.flickr.com/135/342099636_7b05b7cde5_s.jpg" />
-        </li>
-        <li>
-
-            <img src="http://farm1.static.flickr.com/136/342099938_fdef3ca3b5_s.jpg" />
-        </li>
-        <li>
-            <img src="http://farm1.static.flickr.com/147/342099522_3827eaa929_s.jpg" />
-        </li>
-        <li>
-            <img src="http://farm1.static.flickr.com/143/342100011_ec4d338c71_s.jpg" />
-        </li>
-        <li>
-
-            <img src="http://farm1.static.flickr.com/161/342100080_0fe4f9ccb0_s.jpg" />
-        </li>
-        <li>
-            <img src="http://farm1.static.flickr.com/153/342100324_82589c0ebe_s.jpg" />
-        </li>
-    </ol>
+<p>Illustrates how to spotlight the middle item in the carousel. Several techniques illustrated:</p>
+<!-- Carousel Structure -->
+<div id="dhtml-carousel" class="carousel-component">
+	<div><img id="prev-arrow" class="left-button-image" src="/ui/abakuc/yui/carousel/assets/left-enabled.gif" alt="Previous Button"/>
+	</div>
+	<div><img id="next-arrow" class="right-button-image" src="/ui/abakuc/yui/carousel/assets/right-enabled.gif" alt="Next Button"/>
+	</div>
+	<div class="carousel-clip-region">
+		<ul class="carousel-list">
+			<!-- Filled in via the loadInitHandler, loadNextHandler, and loadPrevHandler
+			<li id="item-1">
+			<a href="#">
+				<img src="http://static.flickr.com/74/162582364_7fc3e2d60d_s.jpg"/>
+			</a>Number One</li>
+			-->
+		</ul>
+	</div>
 </div>
-<!-- The spotlight container -->
-<div id="spotlight"></div>
+<div id="preview"></div>
 
-<style type="text/css">
-/* Style the spotlight container */
-#spotlight {
-	border: 1px solid #ccc;
-	height: 180px;
-	margin: 10px auto;
-	padding: 1px;
-	width: 240px;
-}
 
-.yui-carousel-element li {
-	opacity: 0.6;
-}
-
-.yui-carousel-element .yui-carousel-item-selected {
-	opacity: 1;
-}
-
-</style>
-<script type="text/javascript" src="/ui/abakuc/media/spotlight.js" />

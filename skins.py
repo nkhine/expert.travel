@@ -108,7 +108,7 @@ class FrontOffice(Skin):
     def get_styles(self, context):
         styles = []
         # YUI reset-fonts-grids
-        styles.append('/ui/abakuc/images/reset-fonts-grids.css')
+        styles.append('/ui/abakuc/yui/reset-fonts-grids/reset-fonts-grids.css')
         # Epoz
         styles.append('/ui/epoz/style.css')
         # Calendar JavaScript Widget (http://dynarch.com/mishoo/calendar.epl)
