@@ -4,39 +4,11 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-ge">
+  <h1>${title}</h1>
     <div class="yui-u first">
-      <h1>${title}</h1>
-         <dl>
-           <dd>
-               <script type="text/javascript">
-              $(document).ready(function(){
-                $('#jqGalScroll').jqGalScroll({direction : 'horizontal', titleOpacity:.70,
-        height:350, width:500, speed:1000});
-              });
-                </script>
-            <ul id="jqGalScroll">
-                <li stl:repeat="item images"><img src="${item/url}" border="0"
-                name="${item/description}" keywords="${item/keywords}" alt="${item/title}"/></li>
-            </ul>
-           </dd>
-         </dl>
-         <div class="info">
-         </div>
+            ${tabs}
     </div> <!-- yui-u first -->
     <div class="yui-u">
-            <h2>Other document types</h2>
-            <ul>
-                <li stl:repeat="item others"><a href="${item/url}"><img src="${item/icon}" border="0"
-                name="${item/description}" keywords="${item/keywords}"
-                alt="${item/title}" /></a>
-                <a href="${item/url}" alt="${item/title}">${item/title}</a></li>
-            </ul>
-            <h2>Videos and flash documents</h2>
-            <ul>
-                <li stl:repeat="item flash"><a href="${item/url}"><img src="${item/icon}" border="0"
-                name="${item/description}" keywords="${item/keywords}"
-                alt="${item/title}" /></a>
-                <a href="${item/url}" alt="${item/title}">${item/title}</a></li>
-            </ul>
-        </div><!-- right-box -->
+
+    </div><!-- right-box -->
 </div> <!-- yui-g -->
