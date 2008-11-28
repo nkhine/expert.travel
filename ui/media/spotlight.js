@@ -82,21 +82,20 @@ var loadPrevItems = function(type, args) {
 var load = function(carousel, start, last) {
 
 	for(var i=start;i<=last;i++) {
-		var randomIndex = getRandom(8, lastRan);
-		lastRan = randomIndex;
-		carousel.addItem(i, fmtItem(imageList[randomIndex], urlList[randomIndex], "Number " + i, i), 'non-spotlight');
+		// var randomIndex = getRandom(8, lastRan);
+		// lastRan = randomIndex;
+		// carousel.addItem(i, fmtItem(imageList[randomIndex], urlList[randomIndex], "Number " + i, i), 'non-spotlight');
+		carousel.addItem(i, fmtItem(imageList[i], urlList[i], "Number " + i), 'non-spotlight');
 		
 		// Image click will scroll to the corresponding carousel item.
-		YAHOO.util.Event.addListener('carousel-image-'+i, 'click', function(evt) {
-			this.carousel.scrollTo(this.index-2);
-		}, {carousel:carousel,index:i}, true);
-/*
+		 YAHOO.util.Event.addListener('carousel-image-'+i, 'click', function(evt) {
+		 	this.carousel.scrollTo(this.index-2);
+		 }, {carousel:carousel,index:i}, true);
 		// Example of an alternate way to add an item (passing an element instead of html string)
 		var p = document.createElement("P");
 		var t = document.createTextNode("Item"+i);
 		p.appendChild(t);
 		carousel.addItem(i, p );
-*/
 	}
 };
 
@@ -197,5 +196,171 @@ function spotlight(carousel) {
 
 var carousel; // for ease of debugging; globals generally not a good idea
 
+
+YAHOO.util.Event.addListener(window, 'load', pageLoad);
+
+
+
+
+/**
+ * Since carousel.addItem uses an HTML string to create the interface
+ * for each carousel item, this method formats the HTML for an LI.
+ **/
+
+var fmtItem = function(imgUrl, url, title) {
+
+  	var innerHTML = 
+  		'<a href="' + 
+  		url + 
+  		'"><img src="' + 
+  		imgUrl +
+		'" width="' +
+		75 +
+		'" height="' +
+		75+
+		'"/>' + 
+  		title + 
+  		'<\/a>';
+  
+	return innerHTML;
+	
+};
+
+/**
+ * Custom inital load handler. Called when the carousel loads the initial
+ * set of data items. Specified to the carousel as the configuration
+ * parameter: loadInitHandler
+ **/
+var loadInitialItems = function(type, args) {
+
+	var start = args[0];
+	var last = args[1]; 
+	var alreadyCached = args[2]; 
+		
+	load(this, start, last);	
+
+	brightenOrDim(this);
+
+};
+
+/**
+ * Custom load next handler. Called when the carousel loads the next
+ * set of data items. Specified to the carousel as the configuration
+ * parameter: loadNextHandler
+ **/
+var loadNextItems = function(type, args) {	
+
+	var start = args[0];
+	var last = args[1]; 
+	var alreadyCached = args[2];
+	
+	if(!alreadyCached) {
+		load(this, start, last);
+	}
+
+	brightenOrDim(this);
+
+};
+
+/**
+ * Custom load previous handler. Called when the carousel loads the previous
+ * set of data items. Specified to the carousel as the configuration
+ * parameter: loadPrevHandler
+ **/
+var loadPrevItems = function(type, args) {
+	var start = args[0];
+	var last = args[1]; 
+	var alreadyCached = args[2];
+	
+	if(!alreadyCached) {
+		load(this, start, last);
+	}
+	
+	brightenOrDim(this);
+	
+	
+};
+
+var brightenOrDim = function(carousel) {
+	var firstItemRevealed=carousel.getFirstItemRevealed();
+	var lastItemRevealed=carousel.getLastItemRevealed();
+	var firstVisible = carousel.getProperty("firstVisible");
+	var lastVisible = carousel.getLastVisible();
+		
+	var first = (firstItemRevealed == -1) ? firstVisible : firstItemRevealed;
+	var last = (lastItemRevealed == -1) ? lastVisible : lastItemRevealed;
+	
+	for(var i=first; i<=last; i++) {
+		var li = carousel.getItem(i);
+		if(li) {
+			if(i == firstItemRevealed || i==lastItemRevealed) {
+				YAHOO.util.Dom.replaceClass(li, "bright", "dim");
+			} else {
+				YAHOO.util.Dom.replaceClass(li, "dim", "bright");
+			}
+		}
+	}
+	
+};
+
+var load = function(carousel, start, last) {
+	for(var i=start;i<=last;i++) {
+		carousel.addItem(i, fmtItem(imageList[i], urlList[i], "Number " + i), "bright");
+/*
+		// Example of an alternate way to add an item (passing an element instead of html string)
+		var p = document.createElement("P");
+		var t = document.createTextNode("Item"+i);
+		p.appendChild(t);
+		carousel.addItem(i, p );
+*/
+	}
+};
+
+/**
+ * Custom button state handler for enabling/disabling button state. 
+ * Called when the carousel has determined that the previous button
+ * state should be changed.
+ * Specified to the carousel as the configuration
+ * parameter: prevButtonStateHandler
+ **/
+var handlePrevButtonState = function(type, args) {
+
+	var enabling = args[0];
+	var leftImage = args[1];
+	if(enabling) {
+		leftImage.src = "images/left-enabled.gif";	
+	} else {
+		leftImage.src = "images/left-disabled.gif";
+	}
+	
+};
+
+/**
+ * You must create the carousel after the page is loaded since it is
+ * dependent on an HTML element (in this case 'dhtml-carousel'.) See the
+ * HTML code below.
+ **/
+
+var carousel; // for ease of debugging; globals generally not a good idea
+var pageLoad = function() 
+{
+	carousel = new YAHOO.extension.Carousel("dhtml-carousel", 
+		{
+			numVisible:        4,
+			animationSpeed:    0.25,
+			scrollInc:         3,
+			navMargin:         30,
+			revealAmount:      20,
+			size:              14,
+			wrap:              true,
+			prevElement:       "prev-arrow",
+			nextElement:       "next-arrow",
+			loadInitHandler:   loadInitialItems,
+			loadNextHandler:   loadNextItems,
+			loadPrevHandler:   loadPrevItems,
+			prevButtonStateHandler:   handlePrevButtonState
+		}
+	);
+};
 
 YAHOO.util.Event.addListener(window, 'load', pageLoad);

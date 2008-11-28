@@ -509,12 +509,12 @@ class Training(SiteRoot, WorkflowAware):
 
     def is_allowed_to_edit(self, user, object):
         root = object.get_site_root()
-        return self.is_training_manager_or_member(user, object)
+        return root.is_training_manager(user, object)
 
     def is_allowed_to_view(self, user, object):
         root = object.get_site_root()
         # Protect the document
-        return self.is_training_manager_or_member(user, object)
+        return root.is_training_manager_or_member(user, object)
 
     ########################################################################
     # Chart

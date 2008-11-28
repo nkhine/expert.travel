@@ -137,10 +137,10 @@ class News(RoleAware, Folder):
             response.set_header('Content-Type', 'image/%s' % format)
             return data
 
-        picture = self.get_handler('/ui/%s' % self.class_icon48)
-        format = self.class_icon48.split('.')[-1]
-        response.set_header('Content-Type', 'image/%s' % format)
-        return picture.to_str()
+        #picture = self.get_handler('/ui/%s' % self.class_icon48)
+        #format = self.class_icon48.split('.')[-1]
+        #response.set_header('Content-Type', 'image/%s' % format)
+        #return picture.to_str()
 
     ###################################################################
     # Create a new news item

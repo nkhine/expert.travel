@@ -44,23 +44,6 @@ class Product(Folder):
 
     def get_document_types(self):
         return [File]
-    #######################################################################
-    # ACL 
-    #######################################################################
-    #def is_branch_manager(self, user, object):
-    #    if not user:
-    #        return False
-    #    # Is global admin
-    #    root = object.get_root()
-    #    if root.is_admin(user, self):
-    #        return True
-    #    office = self.parent
-    #    # Is reviewer or member
-    #    return office.has_user_role(user.name, 'abakuc:branch_manager')
-
-    #def is_allowed_to_edit(self, user, object):
-    #    # Protect the document
-    #    return self.is_branch_manager(user, object)
 
     #######################################################################
     ## Indexes

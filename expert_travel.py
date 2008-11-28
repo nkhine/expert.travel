@@ -93,7 +93,6 @@ class ExpertTravel(SiteRoot):
             return address.has_user_role(user.name, 'abakuc:branch_manager',
             'abakuc:branch_member')
 
-
     def is_travel_agent(self, user, object):
         if user is None:
             return False

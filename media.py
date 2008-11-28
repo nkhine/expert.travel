@@ -1,9 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
-# Import from the Standard Library
-import datetime
-
 # Import from itools
 from itools.stl import stl
 from itools.cms.folder import Folder
@@ -28,10 +25,10 @@ class Media(Folder, RoleAware):
                     'new_user_form'],
                 ['edit_metadata_form']]
 
-    browse_content__access__ = 'is_training_manager'
-    new_resource_form__access__ = 'is_training_manager'
-    new_resource__access__ = 'is_training_manager'
-    edit_metadata_form__access__ = 'is_training_manager'
+    browse_content__access__ = 'is_allowed_to_add' 
+    new_resource_form__access__ = 'is_allowed_to_add'
+    new_resource__access__ = 'is_allowed_to_add'
+    edit_metadata_form__access__ = 'is_allowed_to_add'
     permissions_form__access__ = 'is_admin'
     new_user_form__access__ = 'is_admin'
 
@@ -43,6 +40,7 @@ class Media(Folder, RoleAware):
         images.sort(lambda x, y: cmp(get_sort_name(x.name),
                                      get_sort_name(y.name)))
         return images
+
     #######################################################################
     # ACL 
     #######################################################################
@@ -73,13 +71,33 @@ class Media(Folder, RoleAware):
         # Protect the document
         return self.is_training_manager_or_member(user, object)
 
+    def is_allowed_to_edit(self, user, object):
+        # Protect the document
+        return self.is_training_manager(user, object)
+
+    def is_allowed_to_add(self, user, object):
+        # Protect the document
+        return self.is_training_manager(user, object)
+
+    def is_allowed_to_move(self, user, object):
+        # Protect the document
+        return self.is_training_manager(user, object)
+
+    def is_allowed_to_trans(self, user, object, name):
+        return self.is_training_manager(user, object)
+
     #######################################################################
     # View media folder 
     #######################################################################
 
-    view__access__ = 'is_training_manager_or_member' 
+    view__access__ = 'is_allowed_to_view' 
     view__label__ = u'Media folder'
     def view(self, context):
+        office = self.parent
+        user = context.user
+        print office
+        print user.name
+        print office.has_user_role(user.name, 'abakuc:training_manager')
         # Set style
         context.styles.append('/ui/abakuc/jquery/css/jqGalScroll.css')
         # Add the js scripts
@@ -139,11 +157,20 @@ class Media(Folder, RoleAware):
     def list(self, context):
         namespace = {}
         # Set style
-        context.styles.append('/ui/abakuc/yui/carousel/carousel.css')
+        context.styles.append('/ui/abakuc/media/global.css')
+        context.styles.append('/ui/abakuc/media/thickbox.css')
         ## Add the js scripts
-        context.scripts.append('/ui/abakuc/yui/utilities/utilities.js')
-        context.scripts.append('/ui/abakuc/yui/container/container_core-min.js')
-        context.scripts.append('/ui/abakuc/yui/carousel/carousel.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.easing.1.3.js')
+        context.scripts.append('/ui/abakuc/jquery/thickbox-modified.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.idTabs.modified.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.scrollto.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.serialScroll.js')
+
+        context.scripts.append('/ui/abakuc/tools.js')
+        context.scripts.append('/ui/abakuc/media/tools.js')
+        context.scripts.append('/ui/abakuc/media/product.js')
+
         # Get all the images and flash objects
         handlers = self.search_handlers(handler_class=File)
         images = []
@@ -153,9 +180,11 @@ class Media(Folder, RoleAware):
             handler_state = handler.get_property('state')
             if handler_state == 'public':
                 type = handler.get_content_type()
-                url = '/media/%s' % handler.name
+                url_220 = '/media/%s/;icon220' % handler.name
+                url_70 = '/media/%s/;icon70' % handler.name
                 if type == 'image':
-                    item = {'url': url,
+                    item = {'url_220': url_220,
+                            'url_70': url_70,
                             'name': handler.name,
                             'title': handler.get_property('dc:title'),
                             'icon': handler.get_path_to_icon(size=16),
@@ -187,8 +216,8 @@ class Media(Folder, RoleAware):
                 
         # Namespace
         namespace = {}
-        namespace['images'] = images
-        print namespace['images']
+        namespace['images'] = images[1:]
+        namespace['image_1'] = images[0]
         have_image = len(images)
         if have_image > 0:
             namespace['have_image'] = True 
@@ -199,7 +228,8 @@ class Media(Folder, RoleAware):
         namespace['others'] = others
         namespace['title'] = self.get_property('dc:title')
         #handler = self.get_handler('/ui/abakuc/media/list.xml')
-        handler = self.get_handler('/ui/abakuc/media/spotlight.xml')
+        #handler = self.get_handler('/ui/abakuc/media/spotlight.xml')
+        handler = self.get_handler('/ui/abakuc/media/presta.xml')
         return stl(handler, namespace)
 
     images__access__ = True 

@@ -12,11 +12,15 @@ var imageList = [
         <stl:block stl:repeat="item images">
 				 "${item/url}",
         </stl:block>
+        "http://zambia.expert_travel/media/010108000645.jpg",
+        "http://zambia.expert_travel/media/010108000645.jpg"
 				 ];
 var urlList = [
         <stl:block stl:repeat="item images">
 				 "${item/url}",
         </stl:block>
+        "http://zambia.expert_travel/media/010108000645.jpg",
+        "http://zambia.expert_travel/media/010108000645.jpg"
 				 ];
 
 var pageLoad = function() 
@@ -27,11 +31,10 @@ var pageLoad = function()
 			animationSpeed:     0.6,
 			animationMethod:    YAHOO.util.Easing.backBoth,
 			scrollInc:          1,
+      firstVisible:       -1,
 			navMargin:          40,
-			scrollBeforeAmount: 1,
-			firstVisible:       -1,
-			size:               ${total_images},
-			scrollAfterAmount:  1,
+      revealAmount:      20,
+			size:               9,
 			prevElement:        "prev-arrow",
 			nextElement:        "next-arrow",
 			loadInitHandler:    loadInitialItems,

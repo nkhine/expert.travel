@@ -1,0 +1,204 @@
+/* Useful */
+.align_center { text-align:center; }
+.align_right { text-align:right; }
+.middle { vertical-align: middle; }
+.uppercase { text-transform:uppercase; }
+.hidden, .collapsed, .block_hidden_only_for_screen { display:none; }
+.wrap { white-space: normal; }
+.bold { font-weight: bold; }
+.strike { text-decoration:line-through; }
+.italic { font-style: italic; }
+.top { vertical-align: top; }
+.span_link { cursor:pointer; }
+.span_link:hover { text-decoration:underline; }
+.clear { clear:both; }
+br.clear {
+	clear:both;
+	line-height:0;
+	font-size:0;
+	height:0;
+}
+
+ul.footer_links li img.icon{ vertical-align:-2px; }
+
+/* transfert effect*/
+.transferProduct { border: 2px solid #888; }
+
+span.grower{ cursor:pointer; }
+
+/* Tabs */
+ul.idTabs {
+	list-style-type:none;
+	border-bottom:solid 1px #76839b;
+	height:21px;
+	margin-top:1em;
+}
+ul.idTabs li {
+	float:left;
+	margin-right:1px;
+}
+ul.idTabs li a {
+	background-image: url('../img/tab_bg.jpg');
+	display:block;
+	width:173px;
+	height:18px;
+	text-align:center;
+	text-decoration:none;
+	text-transform:uppercase;
+	font-weight:bold;
+	padding-top:3px;
+	color:#374853;
+}
+ul.idTabs li a.selected{
+	background-image: url('../img/tab_bg_selected.jpg');
+	color:white;
+}
+div.sheets{
+	clear:both;
+	padding:1em;
+}
+div#more_info_sheets ul li{	margin-bottom:0.4em; }
+
+/* global style */
+a {
+	color: #5d717e;
+	text-decoration: underline;
+	outline: none;
+}
+a:hover {
+	text-decoration: none;
+}
+input:focus {
+	outline: 0;
+	outline-offset: 0;
+}
+a img {
+	outline: none;
+	border: none;
+	text-decoration: none;
+}
+h2 {
+	font-size: 1.1em;
+	line-height:1.6em;
+	padding-left:0.5em;
+	margin: 0.5em 0;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #374853;
+	background: transparent url('../img/title_bg.gif') no-repeat top left;
+	height: 21px;
+}
+h2 span {
+	font-size: 0.9em;
+	text-transform: lowercase;
+	font-weight: normal;
+	font-style: italic;
+	color: #374853;
+	margin-left: 1em;
+}
+h3 { font-size: 1.1em; margin: 1em 0; }
+h4 { font-size: 1em; }
+
+/* global layout */
+
+
+#left_column, #center_column, #right_column {
+	float:left;
+}
+
+#center_column {
+	text-align:left;
+	text-align:left;
+	margin: 0 0 30px 0;
+}
+
+
+
+
+
+/* product.tpl */
+#primary_block #pb-right-column{
+	width:310px;
+	float:left;
+}
+#primary_block #image-block img{
+	border:#d0d1d5 solid 1px;
+  margin-left:10px;
+}
+#primary_block #image-block img#bigpic{ cursor:pointer; }
+#primary_block ul#usefull_link_block{
+	list-style-type:none;
+	margin-top:2em;
+}
+#primary_block ul#usefull_link_block li{ margin:0.5em 1em 0.5em 0; }
+#primary_block ul#usefull_link_block li a, #primary_block ul#usefull_link_block span.span_link, #primary_block ul#usefull_link_block span.span_link:hover{
+	text-decoration:none;
+	color:#76839b;
+	font-size:0.9em;
+	background: white url('../img/bullet_alt.jpg') no-repeat top left;
+	padding-left:15px;
+	display:block;
+	height:15px;
+}
+#primary_block #pb-left-column{
+	float:left;
+	margin-left:1.1em;
+	width:233px;
+}
+#primary_block #short_description_block{
+	background: #e5e6e7 url('../img/product-short-desc-bg.gif') repeat-x top left;
+	border: 1px #d0d3d8 solid;
+	padding:0.7em;
+	margin-bottom:1.5em;
+}
+
+#primary_block p.buttons_bottom_block{ margin:0; }
+#primary_block p.buttons_bottom_block a, #primary_block p.buttons_bottom_block input { margin:0.9em auto 0 auto; }
+#primary_block #short_description_content{ margin-bottom:0.5em; }
+
+/* views block */
+#views_block{
+	margin:0pt auto;
+}
+
+#thumbs_list{
+	overflow:hidden;
+	float:left;
+	width:250px;
+}
+#thumbs_list ul{
+	padding-left:0px;
+	list-style-type:none;
+}
+#thumbs_list li{
+	float:left;
+	cursor:pointer;
+}
+
+#thumbs_list li img{
+  margin:1px;
+}
+#view_scroll_left, #view_scroll_right{
+	background: url('../img/thumbs_left.gif') no-repeat center;
+	text-indent:-3000px;
+	display:block;
+	width:9px;
+	height:18px;
+	float:left;
+	margin-top:30px;
+}
+#view_scroll_right{
+	background-image: url('../img/thumbs_right.gif');
+}
+
+/* Printable version */
+@media print {
+	div#left_column, div#right_column, div#footer, a.button, span.button , .button, ul#usefull_link_block, div#header_user, #languages_block_top, #search_block_top, #currencies_block_top, ul#header_links, ul.idTabs, #availability_statut br {
+		display:none;
+	}
+	div#center_column {width:100%}
+	input.text{border:1px solid gray}
+	.block_hidden_only_for_screen { display:block; margin-top:1em; }
+	#more_info_sheets #idTab1{ width:530px; }
+	* {background:none!important;background-color:white!important;}
+}
