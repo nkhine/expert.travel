@@ -27,6 +27,7 @@
       </dd>
     </dl>
     <p>
+      <input type="hidden" name="unique_id" value="${unique_id}"/>
       <input type="submit" value="Post"/>
     </p>
   </form>

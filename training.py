@@ -507,6 +507,10 @@ class Training(SiteRoot, WorkflowAware):
         # Is training manager
         return self.has_user_role(user.name, 'abakuc:training_manager')
 
+    def is_allowed_to_add(self, user, object):
+        # Protect the document
+        return self.is_training_manager(user, object)
+
     def is_allowed_to_edit(self, user, object):
         root = object.get_site_root()
         return root.is_training_manager(user, object)

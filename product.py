@@ -8,6 +8,7 @@ from urllib import urlencode
 # Import from itools
 from itools.datatypes import Decimal
 from itools.cms.versioning import VersioningAware
+from itools.cms.access import RoleAware
 from itools.stl import stl
 from itools.cms.file import File
 from itools.cms.folder import Folder
@@ -36,7 +37,6 @@ class Product(Folder):
                        'abakuc:text',
                        'abakuc:closing_date', 'abakuc:departure_date',
                        'abakuc:return_date', 'abakuc:price']
-
 
     def new(self, **kw):
         Folder.new(self, **kw)
@@ -259,7 +259,8 @@ class Product(Folder):
             address.set_user_role(self.name, 'abakuc:branch_manager')
         else:
             address.set_user_role(self.name, 'abakuc:guest')
-        self.set_property('abakuc:address', address_name)
+        # Link the hotel's address to the product
+        self.set_property('abakuc:hotel', address_name)
         message = u'Hotel/Address selected.'
         # Take user back to the product
         home = ';view'

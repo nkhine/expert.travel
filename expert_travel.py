@@ -80,33 +80,33 @@ class ExpertTravel(SiteRoot):
     #######################################################################
     site_format = 'address'
 
-    def is_branch_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        address = user.get_address()
-        if address:
-            return address.has_user_role(user.name, 'abakuc:branch_manager',
-            'abakuc:branch_member')
+    #def is_branch_manager(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    address = user.get_address()
+    #    if address:
+    #        return address.has_user_role(user.name, 'abakuc:branch_manager',
+    #        'abakuc:branch_member')
 
-    def is_travel_agent(self, user, object):
-        if user is None:
-            return False
+    #def is_travel_agent(self, user, object):
+    #    if user is None:
+    #        return False
 
-        # TEST 015
-        return self.has_user_role(user.name, 'abakuc:branch_member')
+    #    # TEST 015
+    #    return self.has_user_role(user.name, 'abakuc:branch_member')
 
-    def is_allowed_to_view(self, user, object):
-        root = object.get_site_root()
-        return root.is_branch_manager(user, object)
+    #def is_allowed_to_view(self, user, object):
+    #    root = object.get_site_root()
+    #    return root.is_branch_manager(user, object)
 
-    def is_allowed_to_edit(self, user, object):
-        root = object.get_site_root()
-        return root.is_branch_manager(user, object)
+    #def is_allowed_to_edit(self, user, object):
+    #    root = object.get_site_root()
+    #    return root.is_branch_manager(user, object)
 
     def get_level1_title(self, level1):
        #return level1
@@ -261,6 +261,7 @@ class ExpertTravel(SiteRoot):
             ns = {}
             root = item.get_site_root()
             title = item.title_or_name
+            language = item.get_property('dc:language')
             description = reduce_string(item.get_property('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
@@ -273,6 +274,7 @@ class ExpertTravel(SiteRoot):
 
             forum_to_add = {'title': title,
                             'description': description,
+                            'language': language,
                             'url': url,
                             'threads': threads}
 
@@ -797,7 +799,6 @@ class ExpertTravel(SiteRoot):
         documents = results.get_documents()
         products = []
         for item in list(documents):
-            print item.name
             product = root.get_handler(item.abspath)
             get = product.get_property
             # Information about the item

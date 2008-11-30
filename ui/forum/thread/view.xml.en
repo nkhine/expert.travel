@@ -12,6 +12,9 @@
       <col width="80%" />
     </colgroup>
     <thead>
+      <tr stl:if="unique_id">
+        <th><a href="${item_url}">${item_title}</a></th>
+      </tr>
       <tr>
         <th>
          <a href="/forum/;view">« Back to forum.</a>

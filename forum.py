@@ -5,6 +5,7 @@ from operator import itemgetter
 from datetime import datetime
 
 # Import from itools
+
 from itools.datatypes import FileName, Unicode
 from itools.i18n import format_datetime
 from itools.stl import stl
@@ -95,7 +96,6 @@ class Thread(Folder):
 
     message_class = Message
 
-
     def new(self, data=u''):
         Folder.new(self)
         cache = self.cache
@@ -165,6 +165,15 @@ class Thread(Folder):
 
         return namespace
 
+    #######################################################################
+    ## Indexes
+    #######################################################################
+
+    def get_catalog_indexes(self):
+        indexes = Folder.get_catalog_indexes(self)
+        indexes['unique_id'] = self.get_property('abakuc:unique_id')
+        return indexes
+
 
     view__access__ = 'is_allowed_to_view'
     view__label__ = u"View"
@@ -174,6 +183,20 @@ class Thread(Folder):
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
         messages = self.get_message_namespace(context)
+        print messages
+        unique_id = self.get_property('abakuc:unique_id')
+        print type(self)
+        namespace['unique_id'] = unique_id
+        if unique_id is not None:
+            # link back to news item
+            root = context.root
+            results = root.search(format='news', unique_id=unique_id)
+            print  results.get_n_documents()
+            for item in results.get_documents():
+                news = self.get_handler(item.abspath)
+                print type(news)
+                namespace['item_url'] = item.abspath
+                namespace['item_title'] = news.get_property('dc:title')
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 8
@@ -327,6 +350,63 @@ class Forum(Folder):
         return stl(handler, namespace)
 
 
+    edit_metadata_form__access__ = 'is_admin'
+    def edit_metadata_form(self, context, language=None):
+        namespace = {}
+        # Language
+        root = context.root
+        #site_root = self.get_site_root()
+        #languages = site_root.get_property('ikaaro:website_languages')
+        #default_language = languages[0]
+        #language = context.get_cookie('content_language') or default_language
+        language = self.get_property('dc:language')
+        # List authorized countries
+        languages = [
+            {'name': y, 'title': x, 'selected': y == language}
+            for x, y in root.get_authorized_countries(context) ]
+        nb_countries = len(languages)
+        if nb_countries < 1:
+            raise ValueError, 'Number of countries is invalid'
+        # Show a list with all authorized countries
+        languages.sort(key=lambda x: x['title'])
+
+        #namespace['referrer'] = None
+        #if context.get_form_value('referrer'):
+        #    namespace['referrer'] = str(context.request.referrer)
+        # Form
+        title = self.get_property('dc:title')
+        # Description
+        description = self.get_property('dc:description')
+        #website = self.get_property('abakuc:website')
+        #topics = self.get_property('abakuc:topic')
+        #types = self.get_property('abakuc:type')
+        #logo = self.has_handler('logo')
+        subject = self.get_property('dc:subject')
+        namespace['title'] = title
+        namespace['description'] = description
+        namespace['subject'] = subject
+        namespace['language'] = languages
+        namespace['subject'] = subject
+
+        handler = self.get_handler('/ui/abakuc/forum/edit_metadata.xml')
+        return stl(handler, namespace)
+
+
+    edit_metadata__access__ = 'is_admin'
+    def edit_metadata(self, context):
+        title = context.get_form_value('dc:title')
+        description = context.get_form_value('dc:description')
+        subject = context.get_form_value('dc:subject')
+        language = context.get_form_value('dc:language')
+        country = context.get_form_value('country')
+        self.set_property('dc:title', title, language=language)
+        self.set_property('dc:description', description, language=language)
+        self.set_property('dc:subject', subject, language=language)
+        self.set_property('dc:language', language)
+
+        return context.come_back(MSG_CHANGES_SAVED)
+
+
     new_thread_form__access__ = 'is_allowed_to_edit'
     new_thread_form__label__ = u"New Thread"
     def new_thread_form(self, context):
@@ -343,12 +423,14 @@ class Forum(Folder):
             namespace['is_admin'] = ac.is_admin(user, self)
         namespace['rte'] =  self.get_rte(context, 'data', None)
         add_forum_style(context)
+        namespace['unique_id'] = context.get_form_value('unique_id')
         handler = self.get_handler('/ui/abakuc/forum/thread/new_thread.xml')
         return stl(handler, namespace)
 
 
     new_thread__access__ = 'is_allowed_to_edit'
     def new_thread(self, context):
+        keep = ['unique_id']
         title = context.get_form_value('dc:title').strip()
         if not title:
             return context.come_back(u"No title given.")
@@ -384,6 +466,10 @@ class Forum(Folder):
         thread = self.thread_class(data=data)
         thread, metadata = self.set_object(name, thread)
         thread.set_property('dc:title', title, language=default_language)
+        unique_id = context.get_form_value('unique_id')
+        print unique_id
+        if unique_id:
+            thread.set_property('abakuc:unique_id', unique_id)
 
         return context.come_back(u"Thread Created.", goto=name)
 

@@ -2167,6 +2167,7 @@ class User(iUser, WorkflowAware, Handler):
             ns = {}
             root = item.get_site_root()
             title = item.title_or_name
+            language = item.get_property('dc:language')
             description = reduce_string(item.get_property('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
@@ -2178,6 +2179,7 @@ class User(iUser, WorkflowAware, Handler):
             threads = item.get_thread_namespace(context)[:5]
             forum_to_add = {'title': title,
                             'description': description,
+                            'language': language,
                             'url': url,
                             'threads': threads}
 
@@ -2219,69 +2221,104 @@ class User(iUser, WorkflowAware, Handler):
         users = root.get_handler('users')
         # Set Style
         context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
-        site_root = self.get_site_root()
+        username = self.name
+        results = root.search(format='ForumThread', owner=username)
         namespace = {}
-        forums = []
-        if isinstance(site_root, Training):
-            namespace['office'] = True
-            forum = list(site_root.search_handlers(format=Forum.class_id))
-            for item in forum:
-                forums.append(item)
-        else:
-            namespace['office'] = False 
-            # Get the expert.travel forum
-            forum = list(site_root.search_handlers(format=Forum.class_id))
-            for item in forum:
-                forums.append(item)
-            # Get all Training programmes forums
-            training = root.get_handler('training')
-            items = training.search_handlers(handler_class=Training)
-            for item in items:
-                tp_forum = list(item.search_handlers(format=Forum.class_id))
-                for item in tp_forum:
-                    is_open = item.get_property('ikaaro:website_is_open')
-                    if is_open is True:
-                        item != []
-                        forums.append(item)
-        # Build the select list of forums and their URLs
         my_threads = []
-        for item in forums:
-            ns = {}
-            root = item.get_site_root()
-            title = item.title_or_name
-            description = reduce_string(item.get_property('dc:description'),
-                                        word_treshold=90,
-                                        phrase_treshold=240)
-            if isinstance(root, Training):
-                url = 'http://%s/%s' % ((str(root.get_vhosts()[0])), item.name)
+        for item in results.get_documents():
+            hostname = get_context().uri.authority.host
+            print hostname
+            thread = self.get_handler(item.abspath)
+            forum = thread.parent
+            site_root = forum.parent
+            if isinstance(site_root, Training):
+                url = 'http://%s/%s' % ((str(site_root.get_vhosts()[0])), forum.name)
             else:
-                url = '/%s' % (item.name)
-            # Locate all my threads
-            threads = list(item.search_handlers(handler_class=item.thread_class))
-            for thread in threads:
-                my_posts = self.name == thread.get_property('owner')
-                accept_language = context.get_accept_language()
-                if my_posts:
-                    title = thread.title
-                    thread_url = '%s/%s' % (url, thread.name)
-                    last = thread.get_last_post()
-                    last_author_id = last.get_property('owner')
-                    last_metadata = users.get_handler('%s.metadata' % last_author_id)
-                    add_my_posts = {'name': thread.name,
-                                    'forum_title': item.title,
-                                    'forum_url': url,
-                                    'title': title,
-                                    'author': (self.get_title() or
-                                        self.get_property('dc:title') or
-                                        self.get_property('ikaaro:email')),
-                                    'replies': len(thread.get_replies()),
-                                    'last_date': format_datetime(last.get_mtime(), accept_language),
-                                    'last_author': (users.get_handler(last_author_id).get_title() or
-                                        last_metadata.get_property('dc:title') or
-                                        last_metadata.get_property('ikaaro:email')),
-                                    'last_post': last.name,
-                                    'url': thread_url}
-                    my_threads.append(add_my_posts)
+                language = forum.get_property('dc:language')
+                # XXX update in production
+                url = 'http://%s.expert_travel/%s' % (language, forum.name)
+            accept_language = context.get_accept_language()
+            title = thread.title
+            thread_url = '%s/%s' % (url, thread.name)
+            last = thread.get_last_post()
+            last_author_id = last.get_property('owner')
+            last_metadata = users.get_handler('%s.metadata' % last_author_id)
+            add_my_posts = {'name': thread.name,
+                            'forum_title': forum.title,
+                            'forum_url': url,
+                            'title': title,
+                            'author': (self.get_title() or
+                                self.get_property('dc:title') or
+                                self.get_property('ikaaro:email')),
+                            'replies': len(thread.get_replies()),
+                            'last_date': format_datetime(last.get_mtime(), accept_language),
+                            'last_author': (users.get_handler(last_author_id).get_title() or
+                                last_metadata.get_property('dc:title') or
+                                last_metadata.get_property('ikaaro:email')),
+                            'last_post': last.name,
+                            'url': thread_url}
+            my_threads.append(add_my_posts)
+        #forums = []
+        #if isinstance(site_root, Training):
+        #    namespace['office'] = True
+        #    forum = list(site_root.search_handlers(format=Forum.class_id))
+        #    for item in forum:
+        #        forums.append(item)
+        #else:
+        #    namespace['office'] = False 
+        #    # Get the expert.travel forum
+        #    forum = list(site_root.search_handlers(format=Forum.class_id))
+        #    for item in forum:
+        #        forums.append(item)
+        #    # Get all Training programmes forums
+        #    training = root.get_handler('training')
+        #    items = training.search_handlers(handler_class=Training)
+        #    for item in items:
+        #        tp_forum = list(item.search_handlers(format=Forum.class_id))
+        #        for item in tp_forum:
+        #            is_open = item.get_property('ikaaro:website_is_open')
+        #            if is_open is True:
+        #                item != []
+        #                forums.append(item)
+        ## Build the select list of forums and their URLs
+        #my_threads = []
+        #for item in forums:
+        #    ns = {}
+        #    root = item.get_site_root()
+        #    title = item.title_or_name
+        #    description = reduce_string(item.get_property('dc:description'),
+        #                                word_treshold=90,
+        #                                phrase_treshold=240)
+        #    if isinstance(root, Training):
+        #        url = 'http://%s/%s' % ((str(root.get_vhosts()[0])), item.name)
+        #    else:
+        #        url = '/%s' % (item.name)
+        #    # Locate all my threads
+        #    threads = list(item.search_handlers(handler_class=item.thread_class))
+        #    for thread in threads:
+        #        my_posts = self.name == thread.get_property('owner')
+        #        accept_language = context.get_accept_language()
+        #        if my_posts:
+        #            title = thread.title
+        #            thread_url = '%s/%s' % (url, thread.name)
+        #            last = thread.get_last_post()
+        #            last_author_id = last.get_property('owner')
+        #            last_metadata = users.get_handler('%s.metadata' % last_author_id)
+        #            add_my_posts = {'name': thread.name,
+        #                            'forum_title': item.title,
+        #                            'forum_url': url,
+        #                            'title': title,
+        #                            'author': (self.get_title() or
+        #                                self.get_property('dc:title') or
+        #                                self.get_property('ikaaro:email')),
+        #                            'replies': len(thread.get_replies()),
+        #                            'last_date': format_datetime(last.get_mtime(), accept_language),
+        #                            'last_author': (users.get_handler(last_author_id).get_title() or
+        #                                last_metadata.get_property('dc:title') or
+        #                                last_metadata.get_property('ikaaro:email')),
+        #                            'last_post': last.name,
+        #                            'url': thread_url}
+        #            my_threads.append(add_my_posts)
 
         # Set batch informations
         batch_start = int(context.get_form_value('t5', default=0))

@@ -9,6 +9,7 @@ from random import choice
 from string import ascii_letters
 
 # Import from itools
+from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 from itools import get_abspath
 from itools.datatypes import Integer, String, Unicode
 from itools.handlers import get_handler
@@ -87,6 +88,7 @@ class Root(Handler, BaseRoot):
             KeywordField('level3', is_stored=True),
             KeywordField('level4', is_stored=True),
             KeywordField('user_id', is_stored=False),
+            KeywordField('unique_id', is_stored=True),
             KeywordField('closing_date', is_stored=False),
             TextField('company', is_stored=True),
             TextField('address', is_stored=True),
@@ -350,6 +352,7 @@ class Root(Handler, BaseRoot):
                 'is_selected': (ids is not None) and (row[0] in ids)})
 
         return namespace
+
     #######################################################################
     # User Interface / Import
     #######################################################################

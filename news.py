@@ -12,6 +12,7 @@ from StringIO import StringIO
 from PIL import Image as PILImage
 
 # Import from itools
+from itools.cms.utils import generate_password
 from itools.cms.access import RoleAware
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
@@ -20,7 +21,7 @@ from itools.vfs import vfs
 from itools.web import get_context
 from itools.rest import rest, to_html_events
 from itools.uri import Path, get_reference
-#from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
+from itools.cms.widgets import batch
 
 # Import from abakuc
 from base import Handler, Folder
@@ -76,72 +77,6 @@ class News(RoleAware, Folder):
         else:
             return 'We are somewhere else'
 
-    # Icons and images for list views
-    icon220__access__ = True
-    def icon220(self, context):
-        return self.get_icon(id='220x355', width=220, height=355)
-
-
-    icon70__access__ = True
-    def icon70(self, context):
-        return self.get_icon(id='70x70', width=70, height=None)
-
-
-    def get_icon70_HTMLtag(self, width=70, height=70):
-        if not self.get_property('abakuc:image1'):
-            return None
-        path = self.get_property('abakuc:image1')
-        picture = self.get_handler(path)
-        #Get the actual picture object
-        handler = picture.get_content_type()
-        if not vfs.get_size(picture.uri):
-            return None
-        here = get_context().handler
-        return "%s/;icon%s" % (here.get_pathto(self), width)
-
-
-    icon48__access__ = True
-    def icon48(self, context):
-        return self.get_icon(id='48x48', width=48, height=48)
-
-    # FIXME _icon
-    def get_icon(self, id, width, height):
-        response = get_context().response
-        #if self.has_handler('.picture'):
-        if not self.get_property('abakuc:image1'):
-            return None
-        path = self.get_property('abakuc:image1')
-        picture = self.get_handler(path)
-        if vfs.get_size(picture.uri):
-            width, height = int(width), height and int(height) or None
-            if not hasattr(picture, '_icon'):
-                picture._icon = {}
-            if id not in picture._icon:
-                data = picture.to_str()
-                im = PILImage.open(StringIO(data))
-                picture_width, picture_height = im.size
-                if picture_width > width or picture_height > height:
-                    if height == None:
-                        ratio = max(*im.size)*1./min(*im.size)
-                        height = int(ratio*width)
-
-                    im.thumbnail((width, height))
-                    s = StringIO()
-                    im.save(s, im.format)
-                    data = s.getvalue()
-                    s.close()
-
-                picture._icon[id] = data, im.format, im.size
-
-            data, format, size = picture._icon[id]
-            response.set_header('Content-Type', 'image/%s' % format)
-            return data
-
-        #picture = self.get_handler('/ui/%s' % self.class_icon48)
-        #format = self.class_icon48.split('.')[-1]
-        #response.set_header('Content-Type', 'image/%s' % format)
-        #return picture.to_str()
-
     ###################################################################
     # Create a new news item
     ###################################################################
@@ -156,7 +91,7 @@ class News(RoleAware, Folder):
     def new_instance_form(cls, context):
         namespace = context.build_form_namespace(cls.news_fields)
         namespace['class_id'] = News.class_id
-        path = '/ui/abakuc/news/news_new_resource_form.xml'
+        path = '/ui/abakuc/news/new_instance_form.xml'
         handler = context.root.get_handler(path)
         return stl(handler, namespace)
 
@@ -212,6 +147,7 @@ class News(RoleAware, Folder):
         # Set the date the news was posted
         date = datetime.now()
         metadata.set_property('dc:date', date)
+        metadata.set_property('abakuc:unique_id', generate_password(30))
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
 
@@ -248,6 +184,7 @@ class News(RoleAware, Folder):
         #namespace
         namespace = {}
         namespace['company'] = company.get_property('dc:title')
+        namespace['unique_id'] = self.get_property('abakuc:unique_id')
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
 
@@ -256,8 +193,8 @@ class News(RoleAware, Folder):
 
         namespace['abakuc:news_text'] = news_text
         # Image
-        namespace['picture_url'] = ';icon220'
         namespace['image1'] = image1 = self.get_property('abakuc:image1')
+        namespace['image1_url'] = '%s/;icon220' % image1
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
@@ -280,7 +217,7 @@ class News(RoleAware, Folder):
         hours, minutes = divmod(minutes, 60)
         if weeks != 0:
             time_posted = {'weeks': weeks,
-                                'days': None,
+                                'days': days,
                                 'hours': None,
                                 'minutes': None }
         else:
@@ -302,6 +239,42 @@ class News(RoleAware, Folder):
             member = self.parent.has_user_role(user.name,'abakuc:branch_member')
             is_branch_manager_or_member = reviewer or member
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
+
+        unique_id = self.get_property('abakuc:unique_id')
+        namespace['unique_id'] = unique_id
+        messages = []
+        namespace['messages'] = messages
+        namespace['thread'] = messages
+        print unique_id
+        if unique_id is not None:
+            # link back to news item
+            root = context.root
+            results = root.search(format='ForumThread', unique_id=unique_id)
+            print results.get_n_documents()
+            for item in results.get_documents():
+                thread = self.get_handler(item.abspath)
+                namespace['thread'] = item.name
+                messages = thread.get_message_namespace(context)
+                namespace['messages'] = messages
+        # Set batch informations
+        batch_start = int(context.get_form_value('batchstart', default=0))
+        batch_size = 8
+        batch_total = len(messages)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        messages = messages[batch_start:batch_fin]
+         # Namespace
+        if messages:
+            messages_batch = batch(context.uri, batch_start, batch_size,
+                              batch_total, msgs=(u"There is 1 message.",
+                                    u"There are ${n} messages."))
+            msg = None
+        else:
+            messages_batch = None
+            msg = u"Appologies, currently we don't have any messages in this forum"
+        namespace['batch'] = messages_batch
+        namespace['msg'] = msg
 
         # Navigation in news
         #Search the catalogue, list all news items in company
@@ -355,8 +328,8 @@ class News(RoleAware, Folder):
 
         # Image
         get_property = self.get_metadata().get_property
-        namespace['picture_url'] = ';icon220'
         namespace['image1'] = image1 = get_property('abakuc:image1')
+        namespace['image1_url'] = '%s/;icon220' % image1
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
@@ -372,7 +345,7 @@ class News(RoleAware, Folder):
 
 
         # Return stl
-        handler = self.get_handler('/ui/abakuc/news/news_edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/news/edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -460,6 +433,7 @@ class News(RoleAware, Folder):
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         indexes['closing_date'] = self.get_property('abakuc:closing_date')
+        indexes['unique_id'] = self.get_property('abakuc:unique_id')
         address = self.parent
         company = address.parent
         indexes['company'] = company.name

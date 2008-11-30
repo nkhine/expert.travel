@@ -134,6 +134,7 @@ class Schema(BaseSchema):
         'hotel': Unicode,
         'rating': String,
         # News
+        'unique_id': String,
         'news_text': Unicode,
         # Job
         'function': JobTitle,

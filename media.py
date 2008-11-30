@@ -10,7 +10,7 @@ from itools.cms.utils import reduce_string
 from itools.cms.registry import register_object_class, get_object_class
 from itools.xhtml import Document as XHTMLDocument
 
-class Media(Folder, RoleAware):
+class Media(Folder):
     class_id = 'Media'
     class_title = u'Media'
     class_description = u'Media content folder'
@@ -25,66 +25,34 @@ class Media(Folder, RoleAware):
                     'new_user_form'],
                 ['edit_metadata_form']]
 
-    browse_content__access__ = 'is_allowed_to_add' 
-    new_resource_form__access__ = 'is_allowed_to_add'
-    new_resource__access__ = 'is_allowed_to_add'
-    edit_metadata_form__access__ = 'is_allowed_to_add'
-    permissions_form__access__ = 'is_admin'
-    new_user_form__access__ = 'is_admin'
+    #browse_content__access__ = 'is_allowed_to_add' 
+    #new_resource_form__access__ = 'is_allowed_to_add'
+    #new_resource__access__ = 'is_allowed_to_add'
+    #edit_metadata_form__access__ = 'is_allowed_to_add'
+    #permissions_form__access__ = 'is_admin'
+    #new_user_form__access__ = 'is_admin'
 
     def get_document_types(self):
         return [File]
 
-    def get_images(self):
-        images = list(self.search_handlers(format=File.class_id))
-        images.sort(lambda x, y: cmp(get_sort_name(x.name),
-                                     get_sort_name(y.name)))
-        return images
-
     #######################################################################
     # ACL 
     #######################################################################
-    def is_training_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        office = self.parent
-        # Is reviewer or member
-        return office.has_user_role(user.name, 'abakuc:training_manager')
+    #def is_allowed_to_view(self, user, object):
+    #    return self.parent.is_training_manager(user, object)
 
-    def is_training_manager_or_member(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        office = self.parent
-        # Is reviewer or member
-        return (office.has_user_role(user.name, 'abakuc:training_manager') or
-                office.has_user_role(user.name, 'abakuc:branch_member'))
-    
-    def is_allowed_to_view(self, user, object):
-        # Protect the document
-        return self.is_training_manager_or_member(user, object)
+    #def is_allowed_to_edit(self, user, object):
+    #    return self.parent.is_training_manager(user, object)
 
-    def is_allowed_to_edit(self, user, object):
-        # Protect the document
-        return self.is_training_manager(user, object)
+    #def is_allowed_to_add(self, user, object):
+    #    return self.parent.is_training_manager(user, object)
 
-    def is_allowed_to_add(self, user, object):
-        # Protect the document
-        return self.is_training_manager(user, object)
+    #def is_allowed_to_move(self, user, object):
+    #    return self.parent.is_training_manager(user, object)
 
-    def is_allowed_to_move(self, user, object):
-        # Protect the document
-        return self.is_training_manager(user, object)
+    #def is_allowed_to_trans(self, user, object, name):
+    #    return self.parent.is_training_manager(user, object)
 
-    def is_allowed_to_trans(self, user, object, name):
-        return self.is_training_manager(user, object)
     #######################################################################
     # Tabs 
     #######################################################################
@@ -122,8 +90,8 @@ class Media(Folder, RoleAware):
     # View media folder 
     #######################################################################
 
-    view__access__ = 'is_allowed_to_view' 
-    view__label__ = u'Media folder'
+    #view__access__ = 'is_allowed_to_view' 
+    #view__label__ = u'Media folder'
     #def view(self, context):
     #    office = self.parent
     #    user = context.user
@@ -194,12 +162,17 @@ class Media(Folder, RoleAware):
     images__access__ = True 
     images__label__ = u'Images'
     def images(self, context):
+        '''
+        Used in tabs to display the images in jQuery carousel
+        We have a list of the image files only those in state
+        public.
+        We also change the template depending on how many images we have
+        '''
         # Set style
         context.styles.append('/ui/abakuc/media/global.css')
         context.styles.append('/ui/abakuc/media/thickbox.css')
         
         ## Add the js scripts
-        #context.scripts.append('/ui/abakuc/jquery/jquery.pack.js')
         context.scripts.append('/ui/abakuc/jquery/jquery.easing.1.3.js')
         context.scripts.append('/ui/abakuc/jquery/thickbox-modified.js')
         context.scripts.append('/ui/abakuc/jquery/jquery.scrollto.js')
