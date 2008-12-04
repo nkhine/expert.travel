@@ -338,6 +338,8 @@ class Training(SiteRoot, WorkflowAware):
     #######################################################################
     # Security / Access Control
     #######################################################################
+
+    # Global ACL for TP
     def is_admin(self, user, object):
         root = object.get_root()
         if root.is_admin(user, self):
@@ -353,7 +355,6 @@ class Training(SiteRoot, WorkflowAware):
         ## Is reviewer or member
         return self.has_user_role(user.name, 'abakuc:training_manager')
 
-
     def is_training_manager_or_member(self, user, object):
         if not user:
             return False
@@ -365,6 +366,7 @@ class Training(SiteRoot, WorkflowAware):
         return (self.has_user_role(user.name, 'abakuc:training_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
 
+    # We need this when we view the company object and when on TP
     def is_branch_manager(self, user, object):
         if not user:
             return False
@@ -513,7 +515,10 @@ class Training(SiteRoot, WorkflowAware):
 
     def is_allowed_to_edit(self, user, object):
         root = object.get_site_root()
-        return root.is_training_manager(user, object)
+        #if root.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member'):
+        #    return True
+        #return False
+        return root.is_training_manager_or_member(user, object)
 
     def is_allowed_to_view(self, user, object):
         root = object.get_site_root()

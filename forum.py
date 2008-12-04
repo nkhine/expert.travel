@@ -175,7 +175,7 @@ class Thread(Folder):
         return indexes
 
 
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = 'is_allowed_to_edit'
     view__label__ = u"View"
     def view(self, context):
         namespace = {}
@@ -269,8 +269,6 @@ class Forum(Folder):
 
     def get_document_types(self):
         return [self.thread_class]
-
-
 
     def get_thread_namespace(self, context):
         accept_language = context.get_accept_language()

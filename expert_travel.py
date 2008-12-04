@@ -80,18 +80,21 @@ class ExpertTravel(SiteRoot):
     #######################################################################
     site_format = 'address'
 
-    #def is_branch_manager(self, user, object):
-    #    if not user:
-    #        return False
-    #    # Is global admin
-    #    root = object.get_root()
-    #    if root.is_admin(user, self):
-    #        return True
-    #    # Is reviewer or member
-    #    address = user.get_address()
-    #    if address:
-    #        return address.has_user_role(user.name, 'abakuc:branch_manager',
-    #        'abakuc:branch_member')
+    def is_branch_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is reviewer or member
+        address = user.get_address()
+        if address:
+            return address.has_user_role(user.name, 'abakuc:branch_manager',
+            'abakuc:branch_member')
+
+    def is_training_manager(self, user, object):
+        return True
 
     #def is_travel_agent(self, user, object):
     #    if user is None:
@@ -104,9 +107,11 @@ class ExpertTravel(SiteRoot):
     #    root = object.get_site_root()
     #    return root.is_branch_manager(user, object)
 
-    #def is_allowed_to_edit(self, user, object):
-    #    root = object.get_site_root()
-    #    return root.is_branch_manager(user, object)
+    def is_allowed_to_edit(self, user, object):
+        root = object.get_site_root()
+        print root
+        return (root.is_branch_manager(user, object) or 
+                root.is_training_manager(user, object))
 
     def get_level1_title(self, level1):
        #return level1

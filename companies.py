@@ -35,6 +35,7 @@ from jobs import Job
 from metadata import JobTitle, SalaryRange
 from product import Product
 from utils import get_sort_name, t4
+from forum import Forum
 
 
 class Companies(Folder):
@@ -142,16 +143,6 @@ class Company(SiteRoot):
             return self.get_handler('/companies')
         return SiteRoot._get_virtual_handler(self, segment)
 
-    #def new(self, **kw):
-    #    SiteRoot.new(self, **kw)
-    #    cache = self.cache
-    #    # Add extra handlers here
-
-    #    media = Media()
-    #    cache['media'] = media
-    #    cache['media.metadata'] = media.build_metadata(
-    #        **{'dc:title': {'en': u'Media folder'}})
-
     #######################################################################
     # API
     #######################################################################
@@ -186,11 +177,11 @@ class Company(SiteRoot):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_allowed_to_edit(self, user, object):
-        for address in self.search_handlers(handler_class=Address):
-            if address.is_allowed_to_edit(user, address):
-                return True
-        return False
+    #def is_allowed_to_edit(self, user, object):
+    #    address = user.get_address()
+    #    print address
+    #    #for address in self.search_handlers(handler_class=Address):
+    #    return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
 
     def is_branch_manager(self, user, object):
         for address in self.search_handlers(handler_class=Address):
@@ -198,6 +189,10 @@ class Company(SiteRoot):
                 return True
         return False
 
+    #def is_branch_manager(self, user, object):
+    #    address = user.get_address()
+    #    print address
+    #    return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
 
     #######################################################################
     # User Interface / View
@@ -1016,7 +1011,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         #cache['products.metadata'] = products.build_metadata(**kw)
 
     def get_document_types(self):
-        return [News, Job, Product]
+        return [News, Job, Product, Forum]
 
 
     get_epoz_data__access__ = 'is_branch_manager_or_member'

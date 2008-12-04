@@ -25,7 +25,7 @@ class Media(Folder):
                     'new_user_form'],
                 ['edit_metadata_form']]
 
-    #browse_content__access__ = 'is_allowed_to_add' 
+    browse_content__access__ = 'is_allowed_to_add' 
     #new_resource_form__access__ = 'is_allowed_to_add'
     #new_resource__access__ = 'is_allowed_to_add'
     #edit_metadata_form__access__ = 'is_allowed_to_add'

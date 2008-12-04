@@ -8,6 +8,7 @@ import datetime
 from itools.datatypes import Integer, Unicode
 from itools.stl import stl
 from itools.cms import widgets
+from itools.cms.access import RoleAware
 from itools.cms.utils import generate_password
 from itools.cms.website import WebSite as BaseWebSite
 from itools.web import get_context
@@ -18,7 +19,7 @@ from itools.uri import Path, get_reference
 from base import Handler
 
 class SiteRoot(Handler, BaseWebSite):
-    __roles__ = [
+    __roles__ = RoleAware.__roles__ + [
         {'name': 'abakuc:training_manager', 'title': u"Training Manager",
          'unit': u"Training Manager"},
         {'name': 'abakuc:branch_manager', 'title': u"Branch Manager",
@@ -42,6 +43,7 @@ class SiteRoot(Handler, BaseWebSite):
         context.del_cookie('address_cookie')
         context.del_cookie('profile_cookie')
         context.del_cookie('company_cookie')
+        context.del_cookie('media_tabs_cookie')
 
         # Remove the user from the context
         context.user = None
