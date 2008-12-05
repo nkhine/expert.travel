@@ -17,8 +17,8 @@ from itools.cms.base import Node
 from itools.xml import Parser
 # Import from abakuc
 from image_map import ImageMap
-from expert_travel import ExpertTravel
-from companies import Company, Address
+#from expert_travel import ExpertTravel
+from companies import Companies, Company, Address
 from training import Training, Module, Topic
 from document import Document
 from countries import Country
@@ -135,12 +135,17 @@ class FrontOffice(Skin):
         level0 = [ x[1] for x in root.get_authorized_countries(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
+        print site_root
         format = site_root.site_format
+        print format
         namespace = Skin.build_namespace(self, context)
         level1 = []
-        if isinstance(site_root, ExpertTravel):
+        #if isinstance(site_root, ExpertTravel):
+        print isinstance(site_root, Companies)
+        if isinstance(site_root, Companies):
             # Navigation
             results = root.search(level0=level0, format=site_root.site_format)
+            print results
             # Flat
             ## XXX Here is a bug #133 if you re-start
             ## the server you no longer have a list
@@ -167,6 +172,7 @@ class FrontOffice(Skin):
         else:
             # Navigation
             namespace['level1'] = '' 
+        print level1
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
         if context_menu_html is None:
@@ -286,7 +292,7 @@ class FrontOffice(Skin):
         handler = context.handler
         root = handler.get_site_root()
         menu = tree(root, active_node=context.handler,
-                    allow=Company, user=context.user)
+                    allow=Companies, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
     ########################################################################
@@ -429,7 +435,7 @@ class FrontOffice(Skin):
     def get_left_menus(self, context):
         root =  context.handler.get_site_root()
         menus = []
-        if isinstance(root, ExpertTravel):
+        if isinstance(root, Companies):
             # Navigation
             menu = self.get_navigation_menu(context)
             menus.append(menu)

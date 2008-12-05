@@ -168,6 +168,13 @@ class Root(Handler, BaseRoot):
         cache['holiday_activities.csv'] = holiday_activities
         cache['holiday_activities.csv.metadata'] = holiday_activities.build_metadata()
 
+        # Board Types
+        board_types = CSV()
+        path = get_abspath(globals(), 'data/board_types.csv')
+        board_types.load_state_from(path)
+        cache['board_types.csv'] = board_types
+        cache['board_types.csv.metadata'] = board_types.build_metadata()
+
         # Rating Types
         rating_types = CSV()
         path = get_abspath(globals(), 'data/rating_types.csv')
@@ -381,7 +388,8 @@ class Root(Handler, BaseRoot):
         rows = list(rows)
         print len(rows)
         # We don't want the header
-        rows = rows[1:13346]
+        rows = rows[1:49]
+        #rows = rows[1:13346]
         # Load handlers
         users = self.get_handler('users')
         companies = self.get_handler('companies')

@@ -44,6 +44,7 @@ class SiteRoot(Handler, BaseWebSite):
         context.del_cookie('profile_cookie')
         context.del_cookie('company_cookie')
         context.del_cookie('media_tabs_cookie')
+        context.del_cookie('product_cookie')
 
         # Remove the user from the context
         context.user = None

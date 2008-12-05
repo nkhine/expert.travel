@@ -46,36 +46,36 @@ class News(RoleAware, Folder):
     ###################################################################
     # API 
     ###################################################################
-    def is_training(self):
-        """
-        Check to see if the user is on a training site.
-        Return a bool
-        """
-        training = self.get_site_root()
-        if isinstance(training, Training):
-            training = True
-        else:
-            training = False
-        return training
+    #def is_training(self):
+    #    """
+    #    Check to see if the user is on a training site.
+    #    Return a bool
+    #    """
+    #    training = self.get_site_root()
+    #    if isinstance(training, Training):
+    #        training = True
+    #    else:
+    #        training = False
+    #    return training
 
     # Get news items
-    get_news__access__ = True
-    def get_news(self, context):
-        address = self.parent
-        company = address.parent
-        office = company.parent.parent
-        from training import Training
-        namespace = {}
-        namespace['office'] = office
-        if isinstance(office, Training):
-            response = Training.news(office, context)
-            print response
-            namespace['response'] = response
-            # Return the page
-            handler = self.get_handler('/ui/abakuc/statistics/statistics.xml')
-            return stl(handler, namespace)
-        else:
-            return 'We are somewhere else'
+    #get_news__access__ = True
+    #def get_news(self, context):
+    #    address = self.parent
+    #    company = address.parent
+    #    office = company.parent.parent
+    #    from training import Training
+    #    namespace = {}
+    #    namespace['office'] = office
+    #    if isinstance(office, Training):
+    #        response = Training.news(office, context)
+    #        print response
+    #        namespace['response'] = response
+    #        # Return the page
+    #        handler = self.get_handler('/ui/abakuc/statistics/statistics.xml')
+    #        return stl(handler, namespace)
+    #    else:
+    #        return 'We are somewhere else'
 
     ###################################################################
     # Create a new news item

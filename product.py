@@ -64,15 +64,17 @@ class Product(Folder):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
         namespace['edit'] = self.edit_form(context)
+        namespace['view'] = self.images(context)
         namespace['hotel'] = self.setup_hotel_form(context)
         namespace['airline'] = self.setup_airline_form(context)
+        namespace['browse_content'] = self.browse_content(context)
 
         template_path = 'ui/abakuc/product/tabs.xml'
         template = root.get_handler(template_path)
@@ -486,6 +488,68 @@ class Product(Folder):
         for key in self.edit_fields:
             self.set_property(key, context.get_form_value(key))
         return context.come_back(MSG_CHANGES_SAVED)
+
+
+    images__access__ = True 
+    images__label__ = u'Images'
+    def images(self, context):
+        '''
+        Used in tabs to display the images in jQuery carousel
+        We have a list of the image files only those in state
+        public.
+        We also change the template depending on how many images we have
+        '''
+        # Set style
+        context.styles.append('/ui/abakuc/media/global.css')
+        context.styles.append('/ui/abakuc/media/thickbox.css')
+        
+        ## Add the js scripts
+        context.scripts.append('/ui/abakuc/jquery/jquery.easing.1.3.js')
+        context.scripts.append('/ui/abakuc/jquery/thickbox-modified.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.scrollto.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.serialScroll.js')
+
+        context.scripts.append('/ui/abakuc/tools.js')
+        context.scripts.append('/ui/abakuc/media/tools.js')
+        context.scripts.append('/ui/abakuc/media/product.js')
+        # Get all the images and flash objects
+        handlers = self.search_handlers(handler_class=File)
+        images = []
+        for handler in handlers:
+            handler_state = handler.get_property('state')
+            if handler_state == 'public':
+                type = handler.get_content_type()
+                url_220 = '%s/;icon220' % handler.name
+                url_70 = '%s/;icon70' % handler.name
+                if type == 'image':
+                    item = {'url_220': url_220,
+                            'url_70': url_70,
+                            'name': handler.name,
+                            'title': handler.get_property('dc:title'),
+                            'icon': handler.get_path_to_icon(size=16),
+                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': handler.get_property('dc:description'),
+                            'keywords': handler.get_property('dc:subject')}
+                    images.append(item)
+        # Namespace
+        namespace = {}
+        have_image = len(images)
+        if have_image > 0:
+            if have_image == 1:
+                namespace['more_than'] = False
+            else:
+                namespace['more_than'] = True
+                
+            namespace['image_1'] = images[0]
+            namespace['images'] = images[1:]
+            namespace['have_image'] = True 
+            namespace['total_images'] = len(images)
+        else:
+            namespace['have_image'] = None 
+            namespace['total_images'] = None
+
+        handler = self.get_handler('/ui/abakuc/media/images.xml')
+        return stl(handler, namespace)
 
 ###########################################################################
 # Register

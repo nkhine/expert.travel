@@ -35,7 +35,7 @@ from itools.cms.folder import Folder as iFolder
 # Import from abakuc
 from bookings import Bookings
 from image_map import ImageMap
-from companies import Company, Address
+from companies import Companies, Company, Address
 from base import Handler, Folder
 from website import SiteRoot
 from document import Document

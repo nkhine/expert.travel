@@ -643,7 +643,7 @@ class User(iUser, WorkflowAware, Handler):
             #get = news.get_property
             address = news.parent
             company = address.parent
-            url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
             news_items.append({'url': url,
                                'title': news.title})
 
@@ -663,7 +663,7 @@ class User(iUser, WorkflowAware, Handler):
             job = root.get_handler(job.abspath)
             address = job.parent
             company = address.parent
-            url = '/companies/%s/%s/%s' % (company.name, address.name, job.name)
+            url = '/%s/%s/%s' % (company.name, address.name, job.name)
             jobs.append({'url': url,
                          'title': job.title})
         namespace['jobs'] = jobs
@@ -1132,7 +1132,7 @@ class User(iUser, WorkflowAware, Handler):
     def create_news(self, context):
         address = self.get_address()
         company = address.parent
-        url = '/companies/%s/%s/;new_resource_form?type=news' % (company.name,
+        url = '/%s/%s/;new_resource_form?type=news' % (company.name,
                                                                 address.name)
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new news item'
@@ -1157,7 +1157,7 @@ class User(iUser, WorkflowAware, Handler):
     def create_job(self, context):
         address = self.get_address()
         company = address.parent
-        url = '/companies/%s/%s/;new_resource_form?type=Job' % (company.name,
+        url = '/%s/%s/;new_resource_form?type=Job' % (company.name,
                                                                 address.name)
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new job'
@@ -1183,7 +1183,7 @@ class User(iUser, WorkflowAware, Handler):
     def create_product(self, context):
         address = self.get_address()
         company = address.parent
-        url = '/companies/%s/%s/;new_resource_form?type=product' % (company.name,
+        url = '/%s/%s/;new_resource_form?type=product' % (company.name,
                                                                 address.name)
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new product'
@@ -1225,7 +1225,7 @@ class User(iUser, WorkflowAware, Handler):
                 #job = root.get_handler(job.abspath)
                 get = news.get_property
                 # Information about the news
-                url = '/companies/%s/%s/%s/;view' % (company.name, address.name,
+                url = '/%s/%s/%s/;view' % (company.name, address.name,
                                                      news.name)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=10,
@@ -1310,7 +1310,7 @@ class User(iUser, WorkflowAware, Handler):
             for job in list(address_jobs):
                 get = job.get_property
                 # Information about the job
-                url = '/companies/%s/%s/%s/' % (company.name, address.name,
+                url = '/%s/%s/%s/' % (company.name, address.name,
                                                      job.name)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=10,
@@ -1410,7 +1410,7 @@ class User(iUser, WorkflowAware, Handler):
             for product in list(address_products):
                 get = product.get_property
                 # Information about the job
-                url = '/companies/%s/%s/%s/' % (company.name, address.name,
+                url = '/%s/%s/%s/' % (company.name, address.name,
                                                      product.name)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=10,
@@ -1462,7 +1462,7 @@ class User(iUser, WorkflowAware, Handler):
             else:
                 products_actions = [('create_product', u'Add new product', 'button_ok',
                             None)]
-                product_table = table(columns, jobs, [sortby], sortorder, products_actions)
+                product_table = table(columns, products, [sortby], sortorder, products_actions)
                 product_batch = None
                 msg = None
         else:
@@ -1491,7 +1491,7 @@ class User(iUser, WorkflowAware, Handler):
             company = address.parent
 
             csv = address.get_handler('log_enquiry.csv')
-            url = '/companies/%s/%s/' % (company.name, address.name)
+            url = '/%s/%s/' % (company.name, address.name)
             results = []
             for row in csv.get_rows():
                 date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
