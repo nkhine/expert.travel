@@ -120,8 +120,10 @@ class Root(Handler, BaseRoot):
         cache = self.cache
 
         # Companies
-        title = u'Companies Directory'
-        kw = {'dc:title': {'en': title}}
+        title = u'Expert Travel'
+        kw = {'dc:title': {'en': title},
+              'ikaaro:website_is_open': True}
+        #kw = {'dc:title': {'en': title}}
         companies = Companies()
         cache['companies'] = companies
         cache['companies.metadata'] = companies.build_metadata(**kw)
@@ -183,12 +185,12 @@ class Root(Handler, BaseRoot):
         cache['rating_types.csv.metadata'] = rating_types.build_metadata()
         
         # Expert Travel
-        title = u'Expert Travel Website'
-        expert_travel = ExpertTravel()
-        kw = {'dc:title': {'en': title},
-              'ikaaro:website_is_open': True}
-        cache['expert'] = expert_travel
-        cache['expert.metadata'] = expert_travel.build_metadata(**kw)
+        #title = u'Expert Travel Website'
+        #expert_travel = ExpertTravel()
+        #kw = {'dc:title': {'en': title},
+        #      'ikaaro:website_is_open': True}
+        #cache['expert'] = expert_travel
+        #cache['expert.metadata'] = expert_travel.build_metadata(**kw)
 
         # Destinations Guide
         title = u'Destinations Guide'

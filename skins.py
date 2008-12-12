@@ -135,17 +135,13 @@ class FrontOffice(Skin):
         level0 = [ x[1] for x in root.get_authorized_countries(context) ]
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
-        print site_root
         format = site_root.site_format
-        print format
         namespace = Skin.build_namespace(self, context)
         level1 = []
         #if isinstance(site_root, ExpertTravel):
-        print isinstance(site_root, Companies)
         if isinstance(site_root, Companies):
             # Navigation
             results = root.search(level0=level0, format=site_root.site_format)
-            print results
             # Flat
             ## XXX Here is a bug #133 if you re-start
             ## the server you no longer have a list
@@ -172,7 +168,6 @@ class FrontOffice(Skin):
         else:
             # Navigation
             namespace['level1'] = '' 
-        print level1
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
         if context_menu_html is None:

@@ -1205,6 +1205,8 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # News table used in the 'tabs' method
     def news_table(self, context):
+        root = context.site_root
+        here = context.handler or root
         namespace = {}
         address = self.get_address()
         if address:
@@ -1222,11 +1224,10 @@ class User(iUser, WorkflowAware, Handler):
             # Construct the lines of the table
             news_items = []
             for news in list(address_news):
-                #job = root.get_handler(job.abspath)
+                handler = root.get_handler(news.abspath)
                 get = news.get_property
                 # Information about the news
-                url = '/%s/%s/%s/;view' % (company.name, address.name,
-                                                     news.name)
+                url = '%s/;view' % here.get_pathto(handler)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=10,
                                             phrase_treshold=40)
@@ -1290,7 +1291,8 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # Job table used in the 'tabs' method
     def jobs_table(self, context):
-        root = context.root
+        root = context.site_root
+        here = context.handler or root
         namespace = {}
         address = self.get_address()
         if address:
@@ -1307,28 +1309,29 @@ class User(iUser, WorkflowAware, Handler):
             address_jobs = address.search_handlers(handler_class=Job)
             # Construct the lines of the table
             jobs = []
-            for job in list(address_jobs):
-                get = job.get_property
+            for item in list(address_jobs):
+                get = item.get_property
+                handler = root.get_handler(item.abspath)
+                # Information about the news
+                url = '%s/;view' % here.get_pathto(handler)
                 # Information about the job
-                url = '/%s/%s/%s/' % (company.name, address.name,
-                                                     job.name)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=10,
                                             phrase_treshold=40)
                 #Get no of applicants
                 users = root.get_handler('users')
                 nb_candidatures = 0
-                y = root.get_handler(url)
+                y = root.get_handler(item.abspath)
                 candidatures = y.search_handlers(handler_class=Candidature)
                 for x in candidatures:
                     user_id = x.get_property('user_id')
                     user = users.get_handler(user_id)
                     if user.has_property('ikaaro:user_must_confirm') is False:
                             nb_candidatures += 1
-                job_to_add ={'id': job.name,
+                job_to_add ={'id': item.name,
                              'checkbox': is_branch_manager,
                              'img': '/ui/abakuc/images/JobBoard16.png',
-                             'c1-2': (get('dc:title'),url+';view'),
+                             'c1-2': (get('dc:title'),url),
                              'c2-2': get('abakuc:closing_date'),
                              'c4-2': description}
                 if nb_candidatures > 0:
@@ -1390,7 +1393,8 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     # Product table used in the 'tabs' method
     def products_table(self, context):
-        root = context.root
+        root = context.site_root
+        here = context.handler or root
         namespace = {}
         address = self.get_address()
         if address:
@@ -1410,8 +1414,9 @@ class User(iUser, WorkflowAware, Handler):
             for product in list(address_products):
                 get = product.get_property
                 # Information about the job
-                url = '/%s/%s/%s/' % (company.name, address.name,
-                                                     product.name)
+                handler = root.get_handler(product.abspath)
+                # Information about the news
+                url = '%s/;view' % here.get_pathto(handler)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=10,
                                             phrase_treshold=40)
@@ -1420,7 +1425,6 @@ class User(iUser, WorkflowAware, Handler):
                 if closing_date is None:
                     closing_date = date.today()
                 #Get no of applicants
-                print closing_date
                 product_to_add ={'id': product.name,
                              'checkbox': is_branch_manager,
                              'img': '/ui/abakuc/images/JobBoard16.png',
@@ -1435,7 +1439,6 @@ class User(iUser, WorkflowAware, Handler):
             batch_fin = batch_start + batch_size
             if batch_fin > batch_total:
                 batch_fin = batch_total
-            print products
             products = products[batch_start:batch_fin]
             # Order
             sortby = context.get_form_value('sortby', 'c1-3')
@@ -2227,7 +2230,6 @@ class User(iUser, WorkflowAware, Handler):
         my_threads = []
         for item in results.get_documents():
             hostname = get_context().uri.authority.host
-            print hostname
             thread = self.get_handler(item.abspath)
             forum = thread.parent
             site_root = forum.parent

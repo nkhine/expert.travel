@@ -109,7 +109,6 @@ class ExpertTravel(SiteRoot):
 
     def is_allowed_to_edit(self, user, object):
         root = object.get_site_root()
-        print root
         return (root.is_branch_manager(user, object) or 
                 root.is_training_manager(user, object))
 

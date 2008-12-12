@@ -207,7 +207,7 @@ class Training(SiteRoot, WorkflowAware):
         name = segment.name
         if name == 'companies':
             return self.get_handler('/companies')
-        if name == 'training':
+        elif name == 'training':
             return self.get_handler('/training')
         return SiteRoot._get_virtual_handler(self, segment)
     #######################################################################

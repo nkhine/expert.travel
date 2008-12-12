@@ -69,7 +69,6 @@ class News(RoleAware, Folder):
     #    namespace['office'] = office
     #    if isinstance(office, Training):
     #        response = Training.news(office, context)
-    #        print response
     #        namespace['response'] = response
     #        # Return the page
     #        handler = self.get_handler('/ui/abakuc/statistics/statistics.xml')
@@ -245,12 +244,10 @@ class News(RoleAware, Folder):
         messages = []
         namespace['messages'] = messages
         namespace['thread'] = messages
-        print unique_id
         if unique_id is not None:
             # link back to news item
             root = context.root
             results = root.search(format='ForumThread', unique_id=unique_id)
-            print results.get_n_documents()
             for item in results.get_documents():
                 thread = self.get_handler(item.abspath)
                 namespace['thread'] = item.name

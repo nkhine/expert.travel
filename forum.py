@@ -183,18 +183,14 @@ class Thread(Folder):
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
         messages = self.get_message_namespace(context)
-        print messages
         unique_id = self.get_property('abakuc:unique_id')
-        print type(self)
         namespace['unique_id'] = unique_id
         if unique_id is not None:
             # link back to news item
             root = context.root
             results = root.search(format='news', unique_id=unique_id)
-            print  results.get_n_documents()
             for item in results.get_documents():
                 news = self.get_handler(item.abspath)
-                print type(news)
                 namespace['item_url'] = item.abspath
                 namespace['item_title'] = news.get_property('dc:title')
         # Set batch informations
@@ -465,7 +461,6 @@ class Forum(Folder):
         thread, metadata = self.set_object(name, thread)
         thread.set_property('dc:title', title, language=default_language)
         unique_id = context.get_form_value('unique_id')
-        print unique_id
         if unique_id:
             thread.set_property('abakuc:unique_id', unique_id)
 

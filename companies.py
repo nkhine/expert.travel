@@ -7,35 +7,36 @@ from string import Template
 import mimetypes
 
 # Import from itools
-from itools.datatypes import Email, Integer, String, Unicode, FileName
-from itools.i18n.locale_ import format_datetime
 from itools.catalog import EqQuery, AndQuery, RangeQuery
-from itools.stl import stl
-from itools.web import get_context
-from itools.xml import get_element
-from itools.xhtml import Document as XHTMLDocument
 from itools.cms.access import AccessControl, RoleAware
 from itools.cms.binary import Image
+from itools.cms.catalog import schedule_to_reindex
 from itools.cms.csv import CSV
+from itools.cms.html import XHTMLFile
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.utils import generate_password
-from itools.cms.widgets import table, batch
-from itools.cms.catalog import schedule_to_reindex
 from itools.cms.utils import reduce_string
-from itools.cms.workflow import WorkflowAware
-from itools.uri import encode_query, Reference, Path
 from itools.cms.versioning import VersioningAware
+from itools.cms.widgets import table, batch
+from itools.cms.workflow import WorkflowAware
+from itools.datatypes import Email, Integer, String, Unicode, FileName
+from itools.i18n.locale_ import format_datetime
+from itools.stl import stl
+from itools.uri import encode_query, Reference, Path
+from itools.web import get_context
+from itools.xhtml import Document as XHTMLDocument
+from itools.xml import get_element
 
 # Import from abakuc
 from base import Handler, Folder
+from forum import Forum
 from handlers import EnquiriesLog, EnquiryType
-from website import SiteRoot
-from news import News
 from jobs import Job
 from metadata import JobTitle, SalaryRange
+from news import News
 from product import Product
 from utils import get_sort_name, t1, t2, t3, t4, t5
-from forum import Forum
+from website import SiteRoot
 
 
 class Companies(SiteRoot):
@@ -90,6 +91,17 @@ class Companies(SiteRoot):
     # User Interface
     #######################################################################
     site_format = 'address'
+
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
+    def is_allowed_to_edit(self, user, object):
+        if not user:
+            return False
+        address = user.get_address()
+        #for address in self.search_handlers(handler_class=Address):
+        return address.has_user_role(user.name, 'abakuc:training_manager',
+            'abakuc:branch_member', 'abakuc:branch_manager')
 
     def is_branch_manager(self, user, object):
         if not user:
@@ -215,6 +227,7 @@ class Companies(SiteRoot):
     view__label__ = u'View'
     def view(self, context):
         from users import User
+        from training import Training
         root = context.root
         user = context.user
         namespace = {}
@@ -227,10 +240,13 @@ class Companies(SiteRoot):
             namespace['company'] = User.company(user, context)
         skin = root.get_skin()
         skin_path = skin.abspath
-        if skin_path == '/ui/aruni':
+        if skin.abspath == '/ui/aruni':
             handler = self.get_handler('/ui/abakuc/home.xml')
         else:
-            handler = root.get_skin().get_handler('home.xml')
+            if isinstance(context.site_root, Training):
+                handler = context.site_root.get_handler('faq.xhtml')
+            else:
+                handler = skin.get_handler('home.xml')
         return stl(handler, namespace)
 
     forum__access__ = True
@@ -364,6 +380,8 @@ class Companies(SiteRoot):
         results = catalog.search(query)
         documents = results.get_documents()
         news_items = []
+        from training import Training
+        training = self.get_site_root()
         for news in list(documents):
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
@@ -375,7 +393,10 @@ class Companies(SiteRoot):
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
-            url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            if isinstance(training, Training):
+                url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            else:
+                url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
@@ -446,6 +467,8 @@ class Companies(SiteRoot):
         # Construct the lines of the table
         add_line = True
         news_items = []
+        from training import Training
+        training = self.get_site_root()
         for news in results.get_documents():
             users = self.get_handler('/users')
             news = root.get_handler(news.abspath)
@@ -457,8 +480,10 @@ class Companies(SiteRoot):
                          users.get_handler(username).get_title() or username)
             address = news.parent
             company = address.parent
-            url = '/%s/%s/%s' % (company.name, address.name,
-                                           news.name)
+            if isinstance(training, Training):
+                url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            else:
+                url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
@@ -956,7 +981,17 @@ class Company(SiteRoot):
     # API
     #######################################################################
     def is_training(self):
-        return None
+        """
+        Check to see if the user is on a training site.
+        Return a bool
+        """
+        training = self.get_site_root()
+        from training import Training
+        if isinstance(training, Training):
+            training = True
+        else:
+            training = False
+        return training
 
     def get_website(self):
         website = self.get_property('abakuc:website')
@@ -988,7 +1023,6 @@ class Company(SiteRoot):
     #######################################################################
     def is_allowed_to_edit(self, user, object):
         address = user.get_address()
-        print address
         #for address in self.search_handlers(handler_class=Address):
         return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
 
@@ -1000,7 +1034,6 @@ class Company(SiteRoot):
 
     #def is_branch_manager(self, user, object):
     #    address = user.get_address()
-    #    print address
     #    return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
 
     #######################################################################
@@ -1056,17 +1089,17 @@ class Company(SiteRoot):
     addresses__label__ = u'Branches'
     addresses__access__ = True
     def addresses(self, context):
-        here = context.handler
+        root = context.site_root
+        here = context.handler or root
         title = here.get_title()
         namespace = {}
         addresses = self.search_handlers(handler_class=Address)
         items = []
         for address in addresses:
-            company = address.parent
-            url = '/%s/%s/;view' % (company.name, address.name)
-            enquire = '/%s/%s/;enquiry_form' % (company.name, address.name)
-            address_to_add = {'url': url,
-                               'enquire': enquire,
+            handler = root.get_handler(address.abspath)
+            url = '%s/' % here.get_pathto(handler)
+            address_to_add = {'url': url+';view',
+                               'enquire': url+';enquiry_form',
                                'address': address.get_property('abakuc:address'),
                                'town': address.get_property('abakuc:town'),
                                'postcode': address.get_property('abakuc:postcode'),
@@ -1100,7 +1133,6 @@ class Company(SiteRoot):
         namespace['batch'] = items_batch
         namespace['title'] = title
         namespace['items'] = items
-        #handler = self.get_handler('/ui/abakuc/companies/list.xml')
         handler = self.get_handler('/ui/abakuc/companies/company/addresses.xml')
         return stl(handler, namespace)
 
@@ -1109,15 +1141,17 @@ class Company(SiteRoot):
     list_addresses__label__ = u'Branches'
     list_addresses__access__ = True
     def list_addresses(self, context):
+        root = context.site_root
+        here = context.handler or root
         namespace = {}
         #namespace['title'] = company.title_or_name
         addresses = self.search_handlers(handler_class=Address)
         items = []
         for address in addresses:
-            url = '/%s/%s/' % (self.name, address.name)
-            enquire = '/%s/%s/;enquiry_form' % (self.name, address.name)
+            handler = root.get_handler(address.abspath)
+            url = '%s/' % here.get_pathto(handler)
             address_to_add = {'url': url,
-                               'enquire': enquire,
+                               'enquire': url+';enquiry_form',
                                'address': address.get_property('abakuc:address'),
                                'town': address.get_property('abakuc:town'),
                                'postcode': address.get_property('abakuc:postcode'),
@@ -1159,7 +1193,8 @@ class Company(SiteRoot):
     products__label__ = u'List jobs'
     products__access__ = True
     def products(self, context):
-        root = context.root
+        root = context.site_root
+        here = context.handler or root
         from root import world
         namespace = {}
         catalog = context.server.catalog
@@ -1198,13 +1233,14 @@ class Company(SiteRoot):
                     region = ''
                     county = ''
 
-                url = '/%s/%s/%s' % (company.name, address.name, item.name)
+                url = '%s/' % here.get_pathto(product)
+                #url = '/%s/%s/%s' % (company.name, address.name, item.name)
                 #apply = '/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
                 description = reduce_string(product.get_property('dc:description'),
                                             word_treshold=90,
                                             phrase_treshold=240)
                 item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                             'url': url,
+                             'url': url+';view',
                              'title': product.get_property('dc:title'),
                              'hotel': hotel.get_property('dc:title'),
                              'region': region,
@@ -1246,9 +1282,10 @@ class Company(SiteRoot):
     list_jobs__access__ = True
     def list_jobs(self, context):
         from root import world
+        root = context.site_root
+        here = context.handler or root
         namespace = {}
         namespace['batch'] = ''
-        root = context.root
         catalog = context.server.catalog
         query = []
         query.append(EqQuery('format', 'Job'))
@@ -1275,13 +1312,13 @@ class Company(SiteRoot):
                     row = world.get_row(row_number)
                     region = row[7]
                     county = get('abakuc:county')
-            url = '/%s/%s/%s' % (company.name, address.name, job.name)
+            url = '%s/' % here.get_pathto(job)
             apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             job_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                         'url': url,
+                         'url': url+';view',
                          'apply': apply,
                          'title': get('dc:title'),
                          'county': county,
@@ -1327,6 +1364,7 @@ class Company(SiteRoot):
     def jobs(self, context):
         from root import world
         root = context.root
+        here = context.handler or root
         namespace = {}
         # Total number of jobs
         today = date.today().strftime('%Y-%m-%d')
@@ -1367,21 +1405,19 @@ class Company(SiteRoot):
                     row = world.get_row(row_number)
                     region = row[7]
                     county = row[8]
-            url = '/%s/%s/%s' % (company.name, address.name,
-                                           job.name)
-            apply = '%s/;application_form' % (url)
+            url = '%s/' % here.get_pathto(job)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             if job_title is None or job_title in (job.title).lower():
                 jobs.append({
-                    'url': url,
+                    'url': url+';view',
                     'title': job.title,
                     'function': JobTitle.get_value(get('abakuc:function')),
                     'salary': SalaryRange.get_value(get('abakuc:salary')),
                     'county': county,
                     'region': region,
-                    'apply': apply,
+                    'apply': url+';application_form',
                     'closing_date': get('abakuc:closing_date'),
                     'description': description})
         # Set batch informations
@@ -1423,7 +1459,8 @@ class Company(SiteRoot):
         namespace = {}
         namespace['batch'] = ''
         #Search the catalogue, list all news items in company
-        root = context.root
+        root = context.site_root
+        here = context.handler or root
         catalog = context.server.catalog
         query = []
         today = (date.today()).strftime('%Y-%m-%d')
@@ -1446,13 +1483,11 @@ class Company(SiteRoot):
             user_exist = users.has_handler(username)
             usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
-            address = news.parent
-            company = address.parent
-            url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            url = '%s/' % here.get_pathto(news)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
-            news_items.append({'url': url,
+            news_items.append({'url': url+';view',
                                'title': news.title,
                                'closing_date': get('abakuc:closing_date'),
                                'date_posted': get('dc:date'),
@@ -1490,6 +1525,7 @@ class Company(SiteRoot):
     news__label__ = u'Current news'
     def news(self, context):
         root = context.root
+        here = context.handler or root
         namespace = {}
         # Total number of news items
         today = date.today().strftime('%Y-%m-%d')
@@ -1515,16 +1551,13 @@ class Company(SiteRoot):
             user_exist = users.has_handler(username)
             usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
-            address = news.parent
-            company = address.parent
-            url = '/%s/%s/%s' % (company.name, address.name,
-                                           news.name)
+            url = '%s/' % here.get_pathto(news)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
             if news_title is None or news_title in (news.title).lower():
                 news_items.append({
-                    'url': url,
+                    'url': url+';view',
                     'title': news.title,
                     'closing_date': get('abakuc:closing_date'),
                     'date_posted': get('dc:date'),
@@ -1820,7 +1853,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         #cache['products.metadata'] = products.build_metadata(**kw)
 
     def get_document_types(self):
-        return [News, Job, Product, Forum]
+        return [News, Job, Product]
 
 
     get_epoz_data__access__ = 'is_branch_manager_or_member'
@@ -1856,7 +1889,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         indexes['title'] = company.get_property('dc:title')
         # We need to index the news, jobs and products
         indexes['products'] = self.get_products()
-        print indexes
         return indexes
 
 
@@ -1959,7 +1991,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['country'] = country
         namespace['region'] = region
         namespace['county'] = self.get_property('abakuc:county')
-        print self.get_products()
 
 
         ################
