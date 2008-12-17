@@ -7,27 +7,20 @@
         <h2>Personnal Details</h2>
         </stl:block>
         <stl:block if="lastname">
-        <h2>${firstname} ${lastname}</h2>
+        <h2>${firstname} ${lastname}<span><a href="${url};state_form"><strong
+                class="wf_${statename}">${state}</strong></a></span></h2>
         </stl:block>
-        <p>${email}</p>
+        <p>${email}
+        <span stl:if="is_admin">Admin</span>
+        <span stl:if="is_branch_manager"><a href="${url};state_form">Manager</a></span>
+        <span stl:if="is_branch_member"><a href="${url};state_form">Member</a></span>
+        <span stl:if="is_guest"><a href="${url};state_form">Guest</a></span>
+        </p>
         <ul>
-            <li stl:if="is_admin">Admin</li>
-            <li stl:if="is_branch_manager">Manager</li>
-            <li stl:if="is_branch_member">Member</li>
-            <li stl:if="is_guest">Guest</li>
-            <li>
-                <a href="${url};state_form"><strong
-                class="wf_${statename}">${state}</strong></a>
-            </li>
-            <li>
-            <a href="${url};portrait_form">Modify portrait.</a>
-            </li>
-            <li>
-            <a href="${url};edit_account_form">Edit account details.</a>
-            </li>
-            <li>
-            <a href="${url};edit_password_form">Change password.</a>
-            </li>
+            <li><a href="${url};profile">My profile.</a></li>
+            <li><a href="${url};portrait_form">Modify portrait.</a></li>
+            <li><a href="${url};edit_account_form">Edit account details.</a></li>
+            <li><a href="${url};edit_password_form">Change password.</a></li>
           </ul>  
     </div><!-- / yui-u first-->
     <div class="yui-u">

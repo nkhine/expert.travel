@@ -82,10 +82,10 @@ class Companies(SiteRoot):
         cache['faq.xhtml'] = faq
         cache['faq.xhtml.metadata'] = faq.build_metadata(
             **{'dc:title': {'en': u'FAQs'}})
-        help = XHTMLFile()
-        cache['help.xhtml'] = help
-        cache['help.xhtml.metadata'] = help.build_metadata(
-            **{'dc:title': {'en': u'Help'}})
+        #help = XHTMLFile()
+        #cache['help.xhtml'] = help
+        #cache['help.xhtml.metadata'] = help.build_metadata(
+        #    **{'dc:title': {'en': u'Help'}})
 
     #######################################################################
     # User Interface
@@ -338,28 +338,29 @@ class Companies(SiteRoot):
 
     terms__access__ = True
     def terms(self, context):
-        root = context.root
-        skin = root.get_skin()
-        skin_path = skin.abspath
         namespace = {}
-        if skin_path == '/ui/aruni':
-            handler = self.get_handler('/ui/abakuc/terms.xml')
-        else:
-            handler = root.get_skin().get_handler('terms.xml')
+        handler = self.get_handler('/ui/abakuc/terms.xml')
         return stl(handler, namespace) 
 
     about__access__ = True
     def about(self, context):
         root = context.root
-        skin = root.get_skin()
-        skin_path = skin.abspath
         namespace = {}
-        if skin_path == '/ui/aruni':
-            handler = self.get_handler('/ui/abakuc/about.xml')
-        else:
-            handler = root.get_skin().get_handler('about.xml')
+        handler = self.get_handler('/ui/abakuc/about.xml')
         return stl(handler, namespace) 
 
+
+    help__access__ = True
+    def help(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/help.xml')
+        return stl(handler, namespace) 
+
+    more__access__ = True
+    def more(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/more.xml')
+        return stl(handler, namespace) 
 
     ####################################################################
     # News - List

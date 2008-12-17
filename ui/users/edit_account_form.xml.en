@@ -56,6 +56,13 @@
           Check to remove the logo.
         </stl:block>
       </dd>
+      <stl:block if="is_admin">
+        <dt><strong>Disable user's account</strong></dt>
+        <dd>
+          <input type="checkbox" id="abakuc:user_disabled"
+                      name="abakuc:user_disabled" value="1" />
+        </dd>
+      </stl:block>
       <stl:block if="must_confirm">
         <dt><strong>To confirm these changes, you must type your actual
             password.</strong></dt>

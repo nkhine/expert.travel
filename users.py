@@ -126,6 +126,7 @@ class User(iUser, WorkflowAware, Handler):
                     'edit_portrait_form', 'edit_password_form'],
                    ['tasks_list']]
 
+
     ########################################################################
     # API
     ########################################################################
@@ -477,7 +478,8 @@ class User(iUser, WorkflowAware, Handler):
 
     #######################################################################
     # Edit Account
-    account_fields = iUser.account_fields + ['abakuc:phone', 'abakuc:job_title']
+    account_fields = iUser.account_fields + ['abakuc:phone', 'abakuc:job_title',
+                    'abakuc:user_disabled']
 
     edit_account_form__access__ = 'is_allowed_to_edit'
     edit_account_form__label__ = u'Edit'
@@ -498,6 +500,11 @@ class User(iUser, WorkflowAware, Handler):
             namespace['must_confirm'] = False
         else:
             namespace['must_confirm'] = True
+
+        # Disable account check box
+        user = context.user
+        is_admin = root.is_admin(user, self) 
+        namespace['is_admin'] = is_admin
 
         handler = self.get_handler('/ui/abakuc/users/edit_account_form.xml')
         return stl(handler, namespace)

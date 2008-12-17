@@ -99,6 +99,11 @@ class SiteRoot(Handler, BaseWebSite):
             message = u'The user "$username" is not active.'
             return context.come_back(message, username=email, keep=keep)
 
+        # Check the user is not disabled 
+        if user.get_property('abakuc:user_disabled'):
+            message = u'The user "$username" has been disabled.'
+            return context.come_back(message, username=email, keep=keep)
+
         # Check the password is right
         if not user.authenticate(password):
             return context.come_back(u'The password is wrong.', keep=keep)

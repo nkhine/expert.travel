@@ -228,6 +228,16 @@ th a.sort_none {
 
 .nowrap * { white-space: nowrap; }
 
+/**************************************************************************
+ * User Profile   
+ **************************************************************************/
+.user span a {
+	font-size: 77%;
+	margin: 0.1em 0.5em 0.1em 0.5em;
+  text-decoration: none;
+}
+
+
 /* Workflow */
 .workflow { text-decoration: none; }
 .wf_private { color: #c00; }
