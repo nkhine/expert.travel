@@ -245,7 +245,7 @@ class Companies(SiteRoot):
             if isinstance(context.site_root, Training):
                 handler = context.site_root.get_handler('faq.xhtml')
             else:
-                handler = skin.get_handler('home.xml')
+                handler = skin.get_handler('home.xhtml')
         return stl(handler, namespace)
 
     forum__access__ = True

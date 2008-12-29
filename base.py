@@ -15,4 +15,5 @@ class Folder(Handler, BaseFolder):
 
 # Register domain (i18n)
 path = get_abspath(globals(), 'locale')
+print path
 register_domain(Handler.class_domain, path)

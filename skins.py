@@ -126,7 +126,6 @@ class FrontOffice(Skin):
         # Dynamic styles
         for style in context.styles:
             styles.append(style)
-
         return styles
 
     def get_template_title(self, context):
@@ -191,6 +190,7 @@ class FrontOffice(Skin):
         root = context.root
         # Level0 correspond to the country (uk, fr) ...
         level0 = [ x[1] for x in root.get_authorized_countries(context) ]
+        print level0
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
         format = site_root.site_format
@@ -598,9 +598,9 @@ class CountrySkin(FrontOffice):
 
 websites = {
     # Main Sites
+    'destinationsguide.info': DestinationsSkin,
     'fr.expert.travel': FrontOffice,
     'uk.expert.travel': FrontOffice,
-    'destinationsguide.info': DestinationsSkin,
     # Companies
     'abakuc.expert.travel': CompanySkin,
     '.expert.travel': CompanySkin,

@@ -291,8 +291,8 @@ class SiteRoot(Handler, BaseWebSite):
     #######################################################################
     # User Interface
     #######################################################################
-    def GET(self, context):
-        return context.uri.resolve2(';view')
+    #def GET(self, context):
+    #    return context.uri.resolve2(';view')
 
 
     #view__access__ = True
