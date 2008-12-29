@@ -7,15 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta stl:repeat="meta meta_tags" name="${meta/name}"
           content="${meta/content}" />
-
-    <!-- CSS 
-    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/reset-fonts-grids.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/uk.expert.travel/style.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
-    <link type="text/css" rel="stylesheet" href="/ui/abakuc/jquery/css/jquery.tablesorter.css" />
-    -->
     <link rel="SHORTCUT ICON" href="/ui/abakuc/images/favicon.ico" />
-		<link rel="alternate" type="application/rss+xml" title="${title}" href=";rss?type=DESC" />
+		<link rel="alternate" type="application/rss+xml" title="${title}" href=";rss" />
     <link type="text/css" stl:repeat="style styles" rel="stylesheet"
     href="${style}"/>    
     <!-- JavaScript -->

@@ -30,7 +30,7 @@ from users import UserFolder
 from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
-from expert_travel import ExpertTravel
+#from expert_travel import ExpertTravel
 from training import Trainings, Training
 from utils import title_to_name
 
@@ -211,7 +211,7 @@ class Root(Handler, BaseRoot):
         help = XHTMLFile()
         cache['help.xhtml'] = help
         cache['help.xhtml.metadata'] = help.build_metadata(
-                                            **{'dc:title': {'en': u'Help me'}})
+                        **{'dc:title': {'en': u'Help me'}})
 
     ########################################################################
     # Login

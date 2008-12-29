@@ -114,7 +114,6 @@ class SiteRoot(Handler, BaseWebSite):
         # Update registration date 
         registration_date = user.get_property('abakuc:registration_date')
         if registration_date is None:
-            print 'no registration date'
             user.set_property('abakuc:registration_date', datetime.date.today())
         # Update last login date
         last_login_date = user.get_property('abakuc:last_login_date')
@@ -347,7 +346,7 @@ class SiteRoot(Handler, BaseWebSite):
 
         # The namespace
         namespace = {}
-        namespace['title'] = None
+        #namespace['title'] = 'Hello' 
         namespace['banner'] = None
         namespace['regions'] = []
 
@@ -401,7 +400,6 @@ class SiteRoot(Handler, BaseWebSite):
             level.sort(key=lambda x: x['title'])
             namespace['level'] = level
             # get the namespace for the banner based on the search.
-            print level1
             #namespace['banner'] = self.get_level1_title(level1)
             # here we want to search the banners folder and return the
             # banners associated with this 'level1'

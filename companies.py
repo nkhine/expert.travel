@@ -977,9 +977,12 @@ class Company(SiteRoot):
     # Security / Access Control
     #######################################################################
     def is_allowed_to_edit(self, user, object):
-        address = user.get_address()
-        #for address in self.search_handlers(handler_class=Address):
-        return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
+        if user is not None:
+            address = user.get_address()
+            #for address in self.search_handlers(handler_class=Address):
+            return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
+        else:
+            return False
 
     def is_branch_manager(self, user, object):
         for address in self.search_handlers(handler_class=Address):

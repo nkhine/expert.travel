@@ -129,6 +129,64 @@ class FrontOffice(Skin):
 
         return styles
 
+    def get_template_title(self, context):
+        """Return the title to give to the template document."""
+        here = context.handler
+        # Not Found
+        if here is None:
+            return u'404 Not Found'
+        # In the Root
+        site_root = context.root
+        root = here.get_site_root()
+        root_title = root.get_title()
+        if root is here:
+            if isinstance(root, Companies):
+                countries = [x[1] for x in site_root.get_authorized_countries(context)]
+                country = str.upper(countries[0])
+                level1 = context.get_form_value('level1')
+                level2 = context.get_form_value('level2')
+                level3 = context.get_form_value('level3')
+                level4 = context.get_form_value('level4')
+                mapping = {'root_title': root_title,
+                           'country': country,
+                           'here_title': here.get_title()}
+                if level1 is not None:
+                    level1 = root.get_level1_title(level1)
+                    mapping = {'root_title': root_title,
+                               'country': country,
+                               'here_title': level1}
+                    if level2 is not None:
+                        mapping = {'root_title': root_title,
+                                   'country': country,
+                                   'here_title': level1,
+                                   'level2': level2}
+                        if level3 is not None:
+                            mapping = {'root_title': root_title,
+                                       'country': country,
+                                       'here_title': level1,
+                                       'level2': level2,
+                                       'level3': level3}
+                            if level4 is not None:
+                                mapping = {'root_title': root_title,
+                                           'country': country,
+                                           'here_title': level1,
+                                           'level2': level2,
+                                           'level3': level3,
+                                           'level4': level4}
+                                # head title
+                                return here.gettext("%(country)s %(root_title)s: %(here_title)s:\
+                                    %(level2)s: %(level3)s: %(level4)s") % mapping
+                            return here.gettext("%(country)s %(root_title)s: %(here_title)s:\
+                                %(level2)s: %(level3)s") % mapping
+                        return here.gettext("%(country)s %(root_title)s: %(here_title)s:\
+                            %(level2)s") % mapping
+                    return here.gettext("%(country)s %(root_title)s: %(here_title)s") % mapping
+                return here.gettext("%(root_title)s: %(country)s %(here_title)s") % mapping
+        # Somewhere else
+        mapping = {'root_title': root_title,
+                   'here_title': here.get_title()}
+        return here.gettext("%(root_title)s: %(here_title)s") % mapping
+
     def build_namespace(self, context):
         root = context.root
         # Level0 correspond to the country (uk, fr) ...
@@ -137,6 +195,7 @@ class FrontOffice(Skin):
         site_root = context.handler.get_site_root()
         format = site_root.site_format
         namespace = Skin.build_namespace(self, context)
+        # Title & Meta
         level1 = []
         if isinstance(site_root, Companies):
             # Navigation

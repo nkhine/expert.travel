@@ -238,18 +238,19 @@ class Training(SiteRoot, WorkflowAware):
             training = False
         return training
 
-    def login(self, context):
-        response = SiteRoot.login(self, context)
-        if str(response.path[-1]) == ';login_form':
-            return response
-        user = context.user
-        if not self.has_user_role(user.name, 'abakuc:training_manager') and \
-           not self.has_user_role(user.name, 'abakuc:partner') and \
-           not self.has_user_role(user.name, 'abakuc:branch_member'):
-            self.set_user_role(user.name, 'abakuc:branch_member')
-            schedule_to_reindex(user)
+    #def login(self, context):
+    #    response = SiteRoot.login(self, context)
+    #    if str(response.path[-1]) == ';login_form':
+    #        return response
+    #    user = context.user
+    #    if not self.has_user_role(user.name, 'abakuc:training_manager') and \
+    #       not self.has_user_role(user.name, 'abakuc:partner') and \
+    #       not self.has_user_role(user.name, 'abakuc:branch_member') and \
+    #       not self.has_user_role(user.name, 'abakuc:guest'):
+    #        self.set_user_role(user.name, 'abakuc:branch_member')
+    #        schedule_to_reindex(user)
 
-        return response
+    #    return response
 
     def get_news(self, address):
         results = address.search(format='news')
