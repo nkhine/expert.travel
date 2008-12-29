@@ -6,68 +6,89 @@
 <div class="yui-ge">
     <div class="yui-u first">
         <h1>${dc:title}</h1>
-        <table stl:if="image1" style="float: left;">
+        <table width="100%">
             <tr>
                 <td>
-                    <img src="${image1_url}" alt="${image1_title}, credits to: ${image1_credit}" style="float: left;" />
+                <table stl:if="image1" style="float: left;">
+                    <tr>
+                        <td>
+                            <img src="${image1_url}" alt="${image1_title}, credits to: ${image1_credit}" style="float: left;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            ${image1_title}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            ${image1_credit}
+                        </td>
+                    </tr>
+                </table>
+                <p>${dc:description}</p>
+                <p>${abakuc:news_text}</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="info">
+                Posted on: ${date} <strong>by <a href="${user_uri}" title="View
+                        ${user}'s profile">${user}</a></strong><br /> Time: <span
+                        stl:if="posted/weeks">${posted/weeks} weeks, ${posted/days}
+                        days ago</span>
+                        <stl:block stl:if="not posted/weeks">
+                            <span stl:if="posted/days">
+                        ${posted/days} days, ${posted/hours}
+                         hours ${posted/minutes} mins ago</span>
+                            <span stl:if="not posted/days">
+                        ${posted/hours} hours ${posted/minutes} mins ago</span>
+                        </stl:block>
                 </td>
             </tr>
             <tr>
                 <td>
-                    ${image1_title}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    ${image1_credit}
-                </td>
-            </tr>
-        </table>
-        <p>${dc:description}</p>
-        <p>${abakuc:news_text}</p>
-        <div class="info">
-        Posted on: ${date} <strong>by <a href="${user_uri}" title="View
-                ${user}'s profile">${user}</a></strong><br /> Time: <span
-                stl:if="posted/days">${posted/weeks} weeks, ${posted/days}
-                days ago</span>
-                <span stl:if="not posted/days">${posted/days} days, ${posted/hours}
-                h:${posted/minutes}m ago</span>
-        </div>
-        <div>
-        <a href="/forum/;new_thread_form?unique_id=${unique_id}">create reply</a>
-          <table class="tablesorter">
-    <colgroup>
-      <col width="20%" />
-      <col width="80%" />
-    </colgroup>
-    <thead>
-      <tr stl:if="unique_id">
-        <th><a href="/forum/${thread}">${thread} »</a></th>
-      </tr>
-      <tr>
-        <th>
-         <a href="/forum/;view">« Back to forum.</a>
-        </th>
-        <th>
-          ${batch} ${msg}
-        </th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr stl:repeat="message messages" class="${repeat/message/even}">
-        <td valign="top" class="forum_message_info">
-          <p class="forum_message_author">${message/author}</p>
-          <p class="forum_message_date">${message/mtime}</p>
-          <a stl:if="message/editable" href="${message/edit_form}">Edit</a>
-        </td>
-        <td valign="top" class="forum_message_body">
-          <p>${message/body}</p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-        </div>
+                  <table class="tablesorter">
+                    <colgroup>
+                      <col width="20%" />
+                      <col width="80%" />
+                    </colgroup>
+                    <thead>
+                      <tr stl:if="not messages">
+                        <th colspan="2">
+                        <a
+                        href="${url}/;new_thread_form?unique_id=${unique_id}"
+                        class="create_discussion">Create a New Discussion »</a>
+                        </th>
+                      </tr>  
+                      <tr stl:if="messages">
+                        <th colspan="2"><a href="${url}/${thread}">View full
+                        discussion. »</a> located at the ${forum} forum.</th>
+                      </tr>
+                      <tr>
+                        <th>
+                         <a href="${url}/;view">« Back to forum.</a>
+                        </th>
+                        <th>
+                          ${batch} ${msg}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr stl:repeat="message messages" class="${repeat/message/even}">
+                        <td valign="top" class="forum_message_info">
+                          <p class="forum_message_author">${message/author}</p>
+                          <p class="forum_message_date">${message/mtime}</p>
+                          <a stl:if="message/editable" href="${message/edit_form}">Edit</a>
+                        </td>
+                        <td valign="top" class="forum_message_body">
+                          <p>${message/body}</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </td>
+              </tr>
+          </table>
         <div>
         <script type="text/javascript"><!--
           google_ad_client = "pub-2050823514740471";

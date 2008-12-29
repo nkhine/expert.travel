@@ -13,7 +13,8 @@
     </colgroup>
     <thead>
       <tr stl:if="unique_id">
-        <th><a href="${item_url}">${item_title}</a></th>
+        <th colspan="2">Viewing discussion in relation to <a
+        href="${item_url}">${item_title}</a> news item.</th>
       </tr>
       <tr>
         <th>

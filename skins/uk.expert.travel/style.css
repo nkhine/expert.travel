@@ -237,7 +237,10 @@ th a.sort_none {
   text-decoration: none;
 }
 
-
+.points a {
+  text-decoration: none;
+  color: #c00;
+}
 /* Workflow */
 .workflow { text-decoration: none; }
 .wf_private { color: #c00; }
@@ -248,7 +251,8 @@ th a.sort_none {
  * Portrait box   
  **************************************************************************/
 .portrait {
-	margin: 0.5em;
+  float: right;
+	margin: 0.1em;
 }
 /**************************************************************************
  * Content box   

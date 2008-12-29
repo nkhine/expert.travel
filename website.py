@@ -190,6 +190,21 @@ class SiteRoot(Handler, BaseWebSite):
         terms = context.get_form_value('abakuc:terms')
         functions = context.get_form_value('functions')
 
+        # Check email address has an MX record
+        email_uri = 'mailto:'+email
+        r1 = get_reference(email_uri)
+        host = r1.host
+        import dns.resolver
+        from dns.exception import DNSException
+        # Here we check to see if email host has an MX record
+        try:
+            # This may take long
+            answers = dns.resolver.query(host, 'MX')
+        except DNSException, e:
+            answers = None
+        if not answers:
+            message = u'The email supplied is invalid!'
+            return context.come_back(message, keep=keep)
         # Do we already have a user with that email?
         root = context.root
         results = root.search(email=email)
@@ -257,6 +272,23 @@ class SiteRoot(Handler, BaseWebSite):
         else:
             handler = root.get_skin().get_handler('/ui/abakuc/about.xml')
         return stl(handler, namespace)
+
+    bookmarks__access__ = True
+    def bookmarks(self, context):
+        root = context.root
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        namespace = {}
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/bookmarks.xml')
+        else:
+            handler = root.get_skin().get_handler('/ui/abakuc/bookmarks.xml')
+        return stl(handler, namespace)
+    # http://del.icio.us/post?url=http://uk.expert.travel/
+    # http://digg.com/submit?url=http://www.cruise.co.uk/cruise-guides/
+    # http://reddit.com/submit?url=http://www.cruise.co.uk/cruise-guides/
+    # http://www.facebook.com/sharer.php?u=http://www.cruise.co.uk/cruise-guides/
+    # http://www.stumbleupon.com/submit?url=http://www.cruise.co.uk/
     #######################################################################
     # User Interface
     #######################################################################

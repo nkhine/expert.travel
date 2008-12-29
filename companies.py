@@ -22,6 +22,7 @@ from itools.cms.workflow import WorkflowAware
 from itools.datatypes import Email, Integer, String, Unicode, FileName
 from itools.i18n.locale_ import format_datetime
 from itools.stl import stl
+from itools.uri import Path
 from itools.uri import encode_query, Reference, Path
 from itools.web import get_context
 from itools.xhtml import Document as XHTMLDocument
@@ -142,8 +143,6 @@ class Companies(SiteRoot):
         return {'info': info, 'joinisopen': False}
 
     def get_tabs_stl(self, context):
-        # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
         context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
@@ -362,6 +361,12 @@ class Companies(SiteRoot):
         handler = self.get_handler('/ui/abakuc/more.xml')
         return stl(handler, namespace) 
 
+    points__access__ = True
+    def points(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/points.xml')
+        return stl(handler, namespace) 
+
     ####################################################################
     # News - List
     ####################################################################
@@ -392,12 +397,10 @@ class Companies(SiteRoot):
             user_exist = users.has_handler(username)
             usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
-            address = news.parent
-            company = address.parent
             if isinstance(training, Training):
-                url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
+                url = news.abspath
             else:
-                url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
+                url = Path(news.abspath)[1:]
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
@@ -479,12 +482,10 @@ class Companies(SiteRoot):
             user_exist = users.has_handler(username)
             usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
-            address = news.parent
-            company = address.parent
             if isinstance(training, Training):
-                url = '/companies/%s/%s/%s/;view' % (company.name, address.name, news.name)
+                url = news.abspath
             else:
-                url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
+                url = Path(news.abspath)[1:]
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
@@ -893,53 +894,6 @@ class Companies(SiteRoot):
         handler = self.get_handler('/ui/abakuc/companies/company/products.xml')
         return stl(handler, namespace)
 
-
-    #view__access__ = 'is_allowed_to_view'
-    #view__label__ = u'View'
-    #def view(self, context):
-    #    here = context.handler
-    #    namespace = {}
-    #    title = here.get_title()
-    #    companies = self.search_handlers(handler_class=Company)
-    #    items = []
-    #    for item in companies:
-    #        get = item.get_property
-    #        url = '%s/;view' %  item.name
-    #        description = reduce_string(get('dc:description'),
-    #                                    word_treshold=90,
-    #                                    phrase_treshold=240)
-    #        company = {'url': url,
-    #                  'id': item.name,
-    #                  'description': description,
-    #                  'title': item.title_or_name}
-    #        items.append(company)
-    #        items.sort(key=lambda x: x['id'])
-    #    # Set batch informations
-    #    batch_start = int(context.get_form_value('batchstart', default=0))
-    #    batch_size = 5
-    #    batch_total = len(items)
-    #    batch_fin = batch_start + batch_size
-    #    if batch_fin > batch_total:
-    #        batch_fin = batch_total
-    #    items = items[batch_start:batch_fin]
-    #    # Namespace
-    #    if items:
-    #        msgs = (u'There is one company.',
-    #                u'There are ${n} companies.')
-    #        items_batch = batch(context.uri, batch_start, batch_size,
-    #                      batch_total, msgs=msgs)
-    #        msg = None
-    #    else:
-    #        items_batch = None
-    #        msg = u'Currently there no published companies.'
-
-    #    namespace['batch'] = items_batch
-    #    namespace['msg'] = msg
-    #    namespace['title'] = title
-    #    namespace['items'] = items
-
-    #    handler = self.get_handler('/ui/abakuc/companies/view.xml')
-    #    return stl(handler, namespace)
 
 class Company(SiteRoot):
 

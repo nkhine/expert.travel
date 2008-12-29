@@ -12,7 +12,6 @@
     <!-- CSS -->
     <link type="text/css" stl:repeat="style styles" rel="stylesheet"
     href="${style}"/>
-    <link type="text/css" rel="stylesheet" href="/ui/abakuc/images/ui.tabs.css" />
     <!-- JavaScript -->
     <script type="text/javascript" stl:repeat="script scripts" src="${script}" />
     <script type="text/javascript" src="/ui/abakuc/office.js" />

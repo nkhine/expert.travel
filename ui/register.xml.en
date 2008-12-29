@@ -49,16 +49,11 @@
       </dt>
       <dd>
       I confirm that I have read and accepted the
-        <a style="text-decoration: underline"
-        onclick="popup(';terms_conditions', 400, 400); return false;"
-        href="#">Terms &amp; Conditions</a> <span>*</span>
-      <input name="abakuc:terms" type="checkbox" value="1"
-      checked="${abakuc:terms}"/>
+        <a style="text-decoration: underline" 
+        href=";terms">Terms &amp; Conditions</a>
+      <input type="submit" value="I accept. Continue with set up &raquo;" class="button_ok"/>
       </dd>
     </dl>
-    <p>
-      <input type="submit" value="Register" class="button_ok"/>
-    </p>
   </form>
   <script language="javascript">
     focus("ikaaro:firstname")

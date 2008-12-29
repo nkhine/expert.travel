@@ -335,6 +335,12 @@ class User(iUser, WorkflowAware, Handler):
         different tabs, so that:
         [Profile] [Company]
         """
+        # Set Style
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
         root = context.root
 
         namespace = {}
@@ -388,10 +394,6 @@ class User(iUser, WorkflowAware, Handler):
         - Training (list all training programmes)
         - Administrate
         """
-        # Add a script
-        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
-        context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         users = root.get_handler('users')

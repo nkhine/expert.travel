@@ -32,7 +32,7 @@
           src="/ui/abakuc/images/NoUserImage.gif" alt="Profile Image"
           class="portrait"/></a>
         </stl:block>
-        <dt class="points">${points}</dt>
+        <dt class="points"><a href="/;points">${points}</a></dt>
     </div><!-- / yui-u-->
 </div><!-- / yui-gc-->
 <!-- /user's details -->

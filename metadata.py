@@ -95,8 +95,7 @@ class Schema(BaseSchema):
         'previous_login_dates': Date,
         'points': Integer(default=0),
         'terms': Boolean(default=True,
-                                  title=u'Terms & Conditions',
-                                  is_mandatory= True),
+                                  title=u'Terms & Conditions'),
         # Company
         'website': String,
         'topic': Tokens,

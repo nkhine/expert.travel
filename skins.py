@@ -138,7 +138,6 @@ class FrontOffice(Skin):
         format = site_root.site_format
         namespace = Skin.build_namespace(self, context)
         level1 = []
-        #if isinstance(site_root, ExpertTravel):
         if isinstance(site_root, Companies):
             # Navigation
             results = root.search(level0=level0, format=site_root.site_format)
@@ -174,7 +173,6 @@ class FrontOffice(Skin):
             namespace['context_menu_html'] = 'None' 
         else:    
             namespace['context_menu_html'] = context_menu_html
-        #namespace['context_menu_html'] = context_menu_html
 
         return namespace
 
@@ -316,22 +314,6 @@ class FrontOffice(Skin):
     ###########################################################################
     # Menu
     ###########################################################################
-    #namespaces = {
-    #None: 'http://www.w3.org/1999/xhtml',
-    #'stl': 'http://xml.itools.org/namespaces/stl'}
-
-    #menu_template = list(Parser("""
-    #<dl>
-    #<stl:block repeat="item items">
-    #  <dt class="${item/class}">
-    #    <img stl:if="item/src" src="${item/src}" alt="" width="16" height="16" />
-    #    <stl:block if="not item/href">{item/title}</stl:block>
-    #    <a stl:if="item/href" href="${item/href}">{item/title}</a>
-    #  </dt>
-    #  <dd>${item/items}</dd>
-    #</stl:block>
-    #</dl>
-    #""", namespaces))
 
     def get_modules_menu(self, context, depth=6):
         """Build the namespace for the navigation menu."""
@@ -350,7 +332,6 @@ class FrontOffice(Skin):
             h for h in handlers if isinstance(h, allow) ]
         handlers.sort(lambda x, y: cmp(get_sort_name(x.name),
                                        get_sort_name(y.name)))
-        #namespace = {}
         for node in handlers:
             active_node=context.handler
             src = node.get_path_to_icon(size=16, from_handler=active_node)
@@ -556,7 +537,6 @@ class CountrySkin(FrontOffice):
             # Default
             return self.get_handler('../.destinationsguide.info/template.xhtml')
 
-
 websites = {
     # Main Sites
     'fr.expert.travel': FrontOffice,
@@ -573,7 +553,6 @@ countries = {
 }
 
 trainings = {
-    #'training.expert.travel': TrainingSkin,
     'tp1.training.expert.travel': FrontOffice,
     'uk.tp1.expert.travel': FrontOffice,
     'zambia.expert.travel': FrontOffice,

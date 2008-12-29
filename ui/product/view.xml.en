@@ -3,6 +3,15 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
+<script type="text/javascript">
+  ThickboxI18nImage = 'Image';
+  ThickboxI18nOf = 'of';
+  ThickboxI18nClose = 'Close';
+  ThickboxI18nOrEscKey = 'or Esc key';
+  ThickboxI18nNext = 'Next &gt;';
+  ThickboxI18nPrev = '&lt; Prev';
+  tb_pathToImage = '/ui/abakuc/images/loadingAnimation.gif';
+</script>
 <div class="yui-gc">
     <div class="yui-u first">
        <h1>${dc:title}</h1>
@@ -17,6 +26,36 @@
         </stl:block>
         </span>
         -->
+               <dl>
+           <dd stl:if="not have_image">
+                No images
+           </dd>
+           <dd stl:if="have_image">
+                <div id="image-block">
+                    <img id="bigpic" src="${image_1/url_220}" alt="${image_1/description}" title="${image_1/title}" />
+                </div>
+                <div id="views_block" stl:if="more_than">
+                    <a id="view_scroll_left" title="Other views" href="javascript:{}">Next</a>
+                        <div id="thumbs_list">
+                          <ul style="width: 10000px">
+                            <li>
+                              <a href="${image_1/url_220}" rel="other-views" class="thickbox shown">
+                                <img id="${image_1/name}" src="${image_1/url_70}" alt="${image_1/description}" title="${image_1/title}" />
+                              </a>
+                            </li>
+                            <stl:block stl:repeat="item images">
+                            <li>
+                              <a href="${item/url_220}" rel="other-views" class="thickbox">
+                                <img id="${item/name}" src="${item/url_70}" alt="${item/description}" title="${item/title}" />
+                              </a>
+                            </li>
+                            </stl:block>
+                          </ul>
+                        </div>
+                    <a id="view_scroll_right" title="Other views" href="javascript:{}">Next</a>
+                  </div>
+           </dd>
+         </dl>
       <p>${dc:description}</p>
 
       <span>${abakuc:text}</span>

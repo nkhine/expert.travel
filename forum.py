@@ -5,20 +5,22 @@ from operator import itemgetter
 from datetime import datetime
 
 # Import from itools
-
-from itools.datatypes import FileName, Unicode
-from itools.i18n import format_datetime
-from itools.stl import stl
-from itools.xml import Parser
-from itools.xhtml import sanitize_stream, xhtml_uri
-from itools.html import Parser as HTMLParser
-from itools.rest import checkid
 from itools.cms.folder import Folder
+from itools.cms.html import XHTMLFile
 from itools.cms.messages import *
 from itools.cms.registry import register_object_class
-from itools.cms.html import XHTMLFile
 from itools.cms.text import Text
 from itools.cms.widgets import batch
+from itools.datatypes import FileName, Unicode
+from itools.html import Parser as HTMLParser
+from itools.i18n import format_datetime
+from itools.rest import checkid
+from itools.stl import stl
+from itools.uri import Path
+from itools.xhtml import sanitize_stream, xhtml_uri
+from itools.xml import Parser
+
+# Import from abakuc
 
 def add_forum_style(context):
     style = context.root.get_handler('ui/forum/forum.css')
@@ -189,10 +191,16 @@ class Thread(Folder):
             # link back to news item
             root = context.root
             results = root.search(format='news', unique_id=unique_id)
+            training = self.get_site_root()
+            from training import Training
             for item in results.get_documents():
                 news = self.get_handler(item.abspath)
-                namespace['item_url'] = item.abspath
                 namespace['item_title'] = news.get_property('dc:title')
+                if isinstance(training, Training):
+                    namespace['item_url'] = item.abspath
+                else:
+                    # Need to strip the '/companies' from the path
+                    namespace['item_url'] = Path(item.abspath)[1:]
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 8
@@ -393,9 +401,9 @@ class Forum(Folder):
         subject = context.get_form_value('dc:subject')
         language = context.get_form_value('dc:language')
         country = context.get_form_value('country')
-        self.set_property('dc:title', title, language=language)
-        self.set_property('dc:description', description, language=language)
-        self.set_property('dc:subject', subject, language=language)
+        self.set_property('dc:title', title)
+        self.set_property('dc:description', description)
+        self.set_property('dc:subject', subject)
         self.set_property('dc:language', language)
 
         return context.come_back(MSG_CHANGES_SAVED)

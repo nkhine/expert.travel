@@ -169,6 +169,7 @@ class News(RoleAware, Folder):
     view__access__ = True
     view__label__ = u'View news'
     def view(self, context):
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
         username = self.get_property('owner')
         users = self.get_handler('/users')
         user_exist = users.has_handler(username)
@@ -219,6 +220,17 @@ class News(RoleAware, Folder):
                                 'days': days,
                                 'hours': None,
                                 'minutes': None }
+        elif days <=7:
+            time_posted = {'weeks': None,
+                                'days': days,
+                                'hours': hours,
+                                'minutes': minutes }
+
+        elif days ==0:
+            time_posted = {'weeks': None,
+                                'days': None,
+                                'hours': hours,
+                                'minutes': minutes }
         else:
             time_posted = {'weeks': None,
                                 'days': days,
@@ -227,6 +239,7 @@ class News(RoleAware, Folder):
         namespace['date'] = date
         namespace['posted'] = time_posted
 
+        print namespace['posted']
         # Person who added the job
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
@@ -244,12 +257,25 @@ class News(RoleAware, Folder):
         messages = []
         namespace['messages'] = messages
         namespace['thread'] = messages
+        site_root = self.get_site_root()
+        url = '/forum'
         if unique_id is not None:
             # link back to news item
             root = context.root
             results = root.search(format='ForumThread', unique_id=unique_id)
             for item in results.get_documents():
                 thread = self.get_handler(item.abspath)
+                thread_root = thread.get_site_root()
+                forum = thread.parent
+                forum_root = forum.parent
+                from training import Training
+                if isinstance(forum_root, Training):
+                    url = 'http://%s/%s' % ((str(thread_root.get_vhosts()[0])), \
+                                                forum.name)
+                else:
+                    url = 'http://uk.expert_travel/%s' % (forum.name)
+                namespace['url'] = url
+                namespace['forum'] = forum.title
                 namespace['thread'] = item.name
                 messages = thread.get_message_namespace(context)
                 namespace['messages'] = messages
@@ -264,12 +290,12 @@ class News(RoleAware, Folder):
          # Namespace
         if messages:
             messages_batch = batch(context.uri, batch_start, batch_size,
-                              batch_total, msgs=(u"There is 1 message.",
-                                    u"There are ${n} messages."))
+                              batch_total, msgs=(u"There is 1 discussion.",
+                                    u"There are ${n} discussions."))
             msg = None
         else:
             messages_batch = None
-            msg = u"Appologies, currently we don't have any messages in this forum"
+            msg = u"Currently we don't have any discussions for this news item."
         namespace['batch'] = messages_batch
         namespace['msg'] = msg
 

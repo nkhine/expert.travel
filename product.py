@@ -120,25 +120,28 @@ class Product(Folder):
             namespace['hotel'] = None
         name = context.get_form_value('dc:title')
         name = name.strip()
-
         namespace['name'] = name
-
         if name:
-            name = name.lower()
-            found = []
-            companies = self.get_handler('/companies')
-            for company in companies.search_handlers():
-                title = company.get_property('dc:title')
-                topic = company.get_property('abakuc:topic')
-                if name not in title.lower():
-                    continue
-                if 'hotel' not in topic:
-                    continue
-                found.append({'name': company.name, 'title': title})
-            found.sort()
-            namespace['n_found'] = len(found)
-            namespace['found'] = found
-            namespace['form'] = self.get_form()
+            if len(name) <= 1:
+                namespace['name'] = None 
+                message = u'Please increase your search word!.'
+                return context.come_back(message)
+            else:
+                name = name.lower()
+                found = []
+                companies = self.get_handler('/companies')
+                for company in companies.search_handlers():
+                    title = company.get_property('dc:title')
+                    topic = company.get_property('abakuc:topic')
+                    if name not in title.lower():
+                        continue
+                    if 'hotel' not in topic:
+                        continue
+                    found.append({'name': company.name, 'title': title})
+                found.sort()
+                namespace['n_found'] = len(found)
+                namespace['found'] = found
+                namespace['form'] = self.get_form()
         else:
             namespace['found'] = None
             namespace['form'] = None
@@ -339,6 +342,20 @@ class Product(Folder):
     view__access__ = True
     view__label__ = u'View'
     def view(self, context):
+        # Set style
+        context.styles.append('/ui/abakuc/media/global.css')
+        context.styles.append('/ui/abakuc/media/thickbox.css')
+        
+        ## Add the js scripts
+        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.easing.1.3.js')
+        context.scripts.append('/ui/abakuc/jquery/thickbox-modified.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.scrollto.js')
+        context.scripts.append('/ui/abakuc/jquery/jquery.serialScroll.js')
+
+        context.scripts.append('/ui/abakuc/tools.js')
+        context.scripts.append('/ui/abakuc/media/tools.js')
+        context.scripts.append('/ui/abakuc/media/product.js')
         root = get_context().root
         # Build the namespace
         namespace = {}
@@ -383,8 +400,12 @@ class Product(Folder):
             if handler_state == 'public':
                 type = handler.get_content_type()
                 url = '%s' % handler.name
+                url_220 = '%s/;icon220' % handler.name
+                url_70 = '%s/;icon70' % handler.name
                 if type == 'image':
-                    item = {'url': url,
+                    item = {'url_220': url_220,
+                            'url_70': url_70,
+                            'name': handler.name,
                             'title': handler.get_property('dc:title'),
                             'icon': handler.get_path_to_icon(size=16),
                             'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
@@ -413,7 +434,22 @@ class Product(Folder):
                             'keywords': handler.get_property('dc:subject')}
                     others.append(item)
 
-        namespace['images'] = images
+        # Namespace
+        have_image = len(images)
+        if have_image > 0:
+            if have_image == 1:
+                namespace['more_than'] = False
+            else:
+                namespace['more_than'] = True
+                
+            namespace['image_1'] = images[0]
+            namespace['images'] = images[1:]
+            namespace['have_image'] = True 
+            namespace['total_images'] = len(images)
+        else:
+            namespace['have_image'] = None 
+            namespace['total_images'] = None
+        #namespace['images'] = images
         namespace['flash'] = flash
         namespace['others'] = others
 
