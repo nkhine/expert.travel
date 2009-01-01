@@ -240,7 +240,7 @@ class Companies(SiteRoot):
         skin = root.get_skin()
         skin_path = skin.abspath
         if skin.abspath == '/ui/aruni':
-            handler = self.get_handler('/ui/abakuc/home.xml')
+            handler = self.get_handler('/ui/abakuc/home.xhtml')
         else:
             if isinstance(context.site_root, Training):
                 handler = context.site_root.get_handler('faq.xhtml')
@@ -524,7 +524,7 @@ class Companies(SiteRoot):
         #namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['news_title'] = news_title
         # Return the page
-        handler = self.get_handler('/ui/abakuc/news/search.xhtml')
+        handler = self.get_handler('/ui/abakuc/news/search.xml')
         return stl(handler, namespace)
 
     ####################################################################
@@ -699,7 +699,7 @@ class Companies(SiteRoot):
         namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['job_title'] = job_title
         # Return the page
-        handler = self.get_handler('/ui/abakuc/jobs/search.xhtml')
+        handler = self.get_handler('/ui/abakuc/jobs/search.xml')
         return stl(handler, namespace)
 
     ########################################################################
@@ -928,8 +928,8 @@ class Company(SiteRoot):
         name = segment.name
         if name == 'countries':
             return self.get_handler('/countries')
-        #if name == 'companies':
-        #    return self.get_handler('/companies')
+        if name == 'companies':
+            return self.get_handler('/companies')
         return SiteRoot._get_virtual_handler(self, segment)
 
     #######################################################################
@@ -1405,7 +1405,7 @@ class Company(SiteRoot):
         namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['job_title'] = job_title
         # Return the page
-        handler = self.get_handler('/ui/abakuc/jobs/search.xhtml')
+        handler = self.get_handler('/ui/abakuc/jobs/search.xml')
         return stl(handler, namespace)
 
 
@@ -1548,7 +1548,7 @@ class Company(SiteRoot):
         #namespace['salary'] = SalaryRange.get_namespace(salary)
         namespace['news_title'] = news_title
         # Return the page
-        handler = self.get_handler('/ui/abakuc/news/search.xhtml')
+        handler = self.get_handler('/ui/abakuc/news/search.xml')
         return stl(handler, namespace)
 
     #######################################################################
@@ -1609,14 +1609,15 @@ class Company(SiteRoot):
         topics = context.get_form_values('topic')
         types = context.get_form_values('type')
         logo = context.get_form_value('logo')
-        subject = context.get_form_value('subject')
+        subject = context.get_form_value('dc:subject')
 
+        print subject
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description)
         self.set_property('abakuc:website', website)
         self.set_property('abakuc:topic', tuple(topics))
         self.set_property('abakuc:type', types)
-        #self.set_property('dc:subject', subject)
+        self.set_property('dc:subject', subject)
 
         # The logo
         if context.has_form_value('remove_logo'):
@@ -2274,6 +2275,12 @@ class Address(RoleAware, WorkflowAware, Folder):
             value = context.get_form_value(key)
             self.set_property(key, value)
 
+        # Set the address meta tags, generated from company and topic
+        #company = self.parent
+        #description = company.get_property('dc:description')
+        #subject = company.get_property('dc:subject')
+        #self.set_property('dc:description', description)
+        #self.set_propery('dc:subject', subject)
         message = u'Changes Saved.'
         goto = context.get_form_value('referrer') or None
         #goto = context.uri.resolve(';edit_account_form')

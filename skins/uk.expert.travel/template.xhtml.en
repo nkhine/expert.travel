@@ -8,7 +8,7 @@
     <meta stl:repeat="meta meta_tags" name="${meta/name}"
           content="${meta/content}" />
     <link rel="SHORTCUT ICON" href="/ui/abakuc/images/favicon.ico" />
-		<link rel="alternate" type="application/rss+xml" title="${title}" href=";rss" />
+		<link rel="alternate" type="application/rss+xml" title="${title}" href="/;rss" />
     <link type="text/css" stl:repeat="style styles" rel="stylesheet"
     href="${style}"/>    
     <!-- JavaScript -->

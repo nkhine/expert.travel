@@ -135,56 +135,65 @@ class FrontOffice(Skin):
         if here is None:
             return u'404 Not Found'
         # In the Root
-        site_root = context.root
-        root = here.get_site_root()
-        root_title = root.get_title()
-        if root is here:
-            if isinstance(root, Companies):
-                countries = [x[1] for x in site_root.get_authorized_countries(context)]
+        site_root = here.get_site_root()
+        site_title = site_root.get_title()
+        title = '%s: %s' % (site_title, here.get_title())
+        if site_root is here:
+            if isinstance(site_root, Companies):
+                root = context.root
+                countries = [x[1] for x in root.get_authorized_countries(context)]
                 country = str.upper(countries[0])
                 level1 = context.get_form_value('level1')
                 level2 = context.get_form_value('level2')
                 level3 = context.get_form_value('level3')
                 level4 = context.get_form_value('level4')
-                mapping = {'root_title': root_title,
-                           'country': country,
-                           'here_title': here.get_title()}
+                title = '%s: %s %s' % (site_title, country, here.get_title())
                 if level1 is not None:
-                    level1 = root.get_level1_title(level1)
-                    mapping = {'root_title': root_title,
-                               'country': country,
-                               'here_title': level1}
+                    level1 = site_root.get_level1_title(level1)
+                    title = '%s: %s' % (title, level1)
                     if level2 is not None:
-                        mapping = {'root_title': root_title,
-                                   'country': country,
-                                   'here_title': level1,
-                                   'level2': level2}
+                        title = '%s: %s' % (title, level2)
                         if level3 is not None:
-                            mapping = {'root_title': root_title,
-                                       'country': country,
-                                       'here_title': level1,
-                                       'level2': level2,
-                                       'level3': level3}
+                            title = '%s: %s' % (title, level3)
                             if level4 is not None:
-                                mapping = {'root_title': root_title,
-                                           'country': country,
-                                           'here_title': level1,
-                                           'level2': level2,
-                                           'level3': level3,
-                                           'level4': level4}
-                                # head title
-                                return here.gettext("%(country)s %(root_title)s: %(here_title)s:\
-                                    %(level2)s: %(level3)s: %(level4)s") % mapping
-                            return here.gettext("%(country)s %(root_title)s: %(here_title)s:\
-                                %(level2)s: %(level3)s") % mapping
-                        return here.gettext("%(country)s %(root_title)s: %(here_title)s:\
-                            %(level2)s") % mapping
-                    return here.gettext("%(country)s %(root_title)s: %(here_title)s") % mapping
-                return here.gettext("%(root_title)s: %(country)s %(here_title)s") % mapping
+                                title = '%s: %s' % (title, level4)
         # Somewhere else
-        mapping = {'root_title': root_title,
-                   'here_title': here.get_title()}
-        return here.gettext("%(root_title)s: %(here_title)s") % mapping
+        return title
+
+
+    def get_meta_tags(self, context):
+        """
+        Return a list of dict with meta tags to give to the template document.
+        """
+        here = context.handler
+        keywords = here.get_property('dc:subject')
+        meta = [{'name': 'description',
+                 'content': here.get_property('dc:description')},
+                {'name': 'keywords',
+                 'content': keywords},
+                {'name': 'robots',
+                 'content': 'index,follow'}]
+        site_root = here.get_site_root()
+        site_title = site_root.get_title()
+        title = '%s: %s' % (site_title, here.get_title())
+        if site_root is here:
+            if isinstance(site_root, Companies):
+                root = context.root
+                countries = [x[1] for x in root.get_authorized_countries(context)]
+                country = str.upper(countries[0])
+                level1 = context.get_form_value('level1')
+                level2 = context.get_form_value('level2')
+                level3 = context.get_form_value('level3')
+                level4 = context.get_form_value('level4')
+                keywords = '%s, %s, %s' % (site_title, country, here.get_title())
+                if level1 is not None:
+                    keywords = {'name': 'keywords', 'content': '%s, %s, %s' % \
+                    (site_title, country, level1)}
+                    print keywords
+                    #meta[keywords] = keywords
+                    print meta
+                    
+        return meta
 
     def build_namespace(self, context):
         root = context.root

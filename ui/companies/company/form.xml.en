@@ -59,7 +59,7 @@
         <label for="subject">Keywords (Separated by comma)</label>
       </dt>
       <dd>
-        <input type="text" size="48" name="dc:subject" id="subject"
+        <input type="text" size="48" id="subject" name="dc:subject" 
           value="${subject}" />
       </dd>
       <dd>

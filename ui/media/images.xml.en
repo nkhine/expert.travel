@@ -21,7 +21,8 @@
            </dd>
            <dd stl:if="have_image">
                 <div id="image-block">
-                    <img id="bigpic" src="${image_1/url_220}" alt="${image_1/description}" title="${image_1/title}" />
+                    <img id="bigpic" src="${image_1/url_220}"
+                    alt="${image_1/description}" title="${image_1/title}" height="255" />
                 </div>
                 <div id="views_block" stl:if="more_than">
                     <a id="view_scroll_left" title="Other views" href="javascript:{}">Next</a>

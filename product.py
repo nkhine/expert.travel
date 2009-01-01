@@ -80,6 +80,96 @@ class Product(Folder):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
+    def view_tabs(self, context):
+        # Set Style
+        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        # Add a script
+        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        # Build stl
+        root = context.root
+        namespace = {}
+        namespace['overview'] = self.overview(context)
+        namespace['hotel'] = self.hotel(context)
+        namespace['itinerary'] = self.itinerary(context)
+        namespace['documents'] = self.documents(context)
+        namespace['contact'] = self.contact(context)
+
+        template_path = 'ui/abakuc/product/view_tabs.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
+    overview__access__ = True
+    overview__label__ = u'Overview'
+    def overview(self, context):
+        root = context.root
+        namespace = {}
+        for key in self.edit_fields:
+            namespace[key] = self.get_property(key)
+
+        template_path = 'ui/abakuc/product/overview.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
+
+    hotel__access__ = True
+    hotel__label__ = u'Hotel'
+    def hotel(self, context):
+        root = context.root
+        # Build the namespace
+        namespace = {}
+        # Get the country, the region and the county
+        from root import world
+        address = self.get_property('abakuc:hotel')
+        namespace['address'] = address
+        if address is not None:
+            hotel_address = self.get_address(address)
+            hotel = hotel_address.parent
+            namespace['hotel'] = hotel.get_property('dc:title')
+            rating = hotel.get_property('abakuc:rating')
+            hotel_rating = root.get_rating_types(rating)
+            namespace['rating'] = hotel.get_property('abakuc:rating')
+            if hotel_address is not None: 
+                county = hotel_address.get_property('abakuc:county')
+                for row_number in world.search(county=county):
+                    row = world.get_row(row_number)
+                    continent = row[1]
+                    country = row[6]
+                    region = row[7]
+                    county = row[8]
+                    namespace['continent'] = continent
+                    namespace['country'] = country
+                    namespace['region'] = region
+                    namespace['county'] = county
+            else:
+                continent = None
+                country = None
+                region = None
+                county = None
+
+        template_path = 'ui/abakuc/product/hotel.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
+
+    itinerary__access__ = True
+    itinerary__label__ = u'itinerary'
+    def itinerary(self, context):
+        pass
+    
+    
+    documents__access__ = True
+    documents__label__ = u'Overview'
+    def documents(self, context):
+        pass
+
+
+    contact__access__ = True
+    contact__label__ = u'Overview'
+    def contact(self, context):
+        pass
+
 
     @staticmethod
     def get_form(name=None, description=None, website=None, rating=None, subject=None):
@@ -359,37 +449,6 @@ class Product(Folder):
         root = get_context().root
         # Build the namespace
         namespace = {}
-        # Get the country, the region and the county
-        from root import world
-        address = self.get_property('abakuc:hotel')
-        namespace['address'] = address
-        if address is not None:
-            hotel_address = self.get_address(address)
-            hotel = hotel_address.parent
-            namespace['hotel'] = hotel.get_property('dc:title')
-            rating = hotel.get_property('abakuc:rating')
-            hotel_rating = root.get_rating_types(rating)
-            print hotel_rating
-            namespace['rating'] = hotel.get_property('abakuc:rating')
-
-            if hotel_address is not None: 
-                county = hotel_address.get_property('abakuc:county')
-                for row_number in world.search(county=county):
-                    row = world.get_row(row_number)
-                    continent = row[1]
-                    country = row[6]
-                    region = row[7]
-                    county = row[8]
-                    namespace['continent'] = continent
-                    namespace['country'] = country
-                    namespace['region'] = region
-                    namespace['county'] = county
-            else:
-                continent = None
-                country = None
-                region = None
-                county = None
-
         # Get all other documents
         handlers = self.search_handlers(handler_class=File)
         images = []
@@ -450,8 +509,11 @@ class Product(Folder):
             namespace['have_image'] = None 
             namespace['total_images'] = None
         #namespace['images'] = images
+        namespace['title'] = self.get_property('dc:title') 
+        namespace['description'] = self.get_property('dc:description') 
         namespace['flash'] = flash
         namespace['others'] = others
+        namespace['view_tabs'] = self.view_tabs(context)
 
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)

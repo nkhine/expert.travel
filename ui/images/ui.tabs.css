@@ -144,3 +144,126 @@
     padding: 0 0 0 20px;
     background: url(loading.gif) no-repeat 0 50%;
 }
+
+
+/* Search Tabs */
+#searchTabs, .searchTabs {
+    background-color:#40274A;
+    background-image:url(/ui/abakuc/images/sidenav_bg.jpg);
+    background-repeat:repeat-x;
+    margin:0pt 0pt 3px;
+}
+#searchTabs ul.ui-tabs-nav {
+    background-color:#9F73A4;
+    height:23px;
+    list-style-type:none;
+    margin:0pt;
+    padding:0pt;
+    width:200px;
+}
+#searchTabs ul.ui-tabs-nav li {
+    background-color:#9F73A4;
+    float:left;
+    margin:0pt;
+}
+#searchTabs ul.ui-tabs-nav li.hols a {
+    padding:0pt 9px 0pt 0pt;
+    width:65px;
+}
+#searchTabs ul.ui-tabs-nav li.hotels a {
+    padding:0pt 9px 0pt 0pt;
+    width:51px;
+}
+#searchTabs ul.ui-tabs-nav li.flights a {
+    padding:0pt 9px 0pt 0pt;
+    width:55px;
+}
+#searchTabs ul.ui-tabs-nav li a {
+    background-image:url(/ui/abakuc/images/radio.png);
+    background-position:left center;
+    background-repeat:no-repeat;
+    color:#FFFFFF;
+    display:block;
+    margin:0pt;
+    text-align:right;
+    text-decoration:none;
+}
+#searchTabs ul.ui-tabs-nav li a:hover {
+    background-color:#6A456E;
+    background-image:url(/ui/abakuc/images/radiohover.png);
+    background-position:left center;
+    background-repeat:no-repeat;
+    color:#FFFFFF;
+    display:block;
+    text-decoration:none;
+}
+#searchTabs ul.ui-tabs-nav li.ui-tabs-selected a {
+    background-color:#2A2827;
+    background-image:url(/ui/abakuc/images/radioselected.png);
+    background-position:left center;
+    background-repeat:no-repeat;
+    color:#FFFFFF;
+    display:block;
+    text-decoration:none;
+}
+#searchTabs ul.ui-tabs-nav li.ui-tabs-selected-eye a {
+    background-image:url(/ui/abakuc/images/radio_eye.gif);
+}
+.details_panel ul.ui-tabs-nav {
+    list-style-type:none;
+    margin:3px 0pt 0pt 4px;
+    padding:2px 0pt;
+}
+.details_panel ul.ui-tabs-nav li {
+    display:inline;
+    margin:0pt;
+    padding:0pt;
+}
+.details_panel ul.ui-tabs-nav li a {
+    background-color:#CFC1CB;
+    background-image:none;
+    color:#000000;
+    margin:0pt;
+    padding:5px 10px;
+    text-decoration:none;
+    width:50px;
+}
+.details_panel ul.ui-tabs-nav li a span {
+    margin:0pt;
+    padding:0pt;
+}
+.details_panel ul.ui-tabs-nav li a:hover {
+    background-color:#E3DDD7;
+    background-image:none;
+    color:#000000;
+    text-decoration:none;
+}
+.details_panel ul.ui-tabs-nav li.ui-tabs-selected a {
+    background-color:#CEC6BE;
+    color:#000000;
+    text-decoration:none;
+}
+.roomDetailHeader ul li.description ul.ui-tabs-nav {
+    list-style-type:none;
+    margin:0pt;
+    padding:0pt;
+}
+.roomDetailHeader ul li.description ul.ui-tabs-nav li {
+    border:medium none;
+    display:inline;
+    margin:0pt 2px 0pt 1px;
+    padding:0pt;
+}
+.roomDetailHeader ul li.description ul.ui-tabs-nav li a {
+    background-color:#CEC6BE;
+    border:1px solid #FFFFFF;
+    color:#000000;
+    padding:3px 5px;
+    text-decoration:none;
+}
+.roomDetailHeader ul li.description ul.ui-tabs-nav li.ui-tabs-selected a {
+    background-color:#C2B7AC;
+    border:1px solid #685C50;
+    color:#000000;
+    text-decoration:none;
+}

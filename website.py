@@ -288,6 +288,19 @@ class SiteRoot(Handler, BaseWebSite):
     # http://reddit.com/submit?url=http://www.cruise.co.uk/cruise-guides/
     # http://www.facebook.com/sharer.php?u=http://www.cruise.co.uk/cruise-guides/
     # http://www.stumbleupon.com/submit?url=http://www.cruise.co.uk/
+
+    rss__access__ = True
+    def rss(self, context):
+        root = context.root
+        skin = root.get_skin()
+        skin_path = skin.abspath
+        namespace = {}
+        if skin_path == '/ui/aruni':
+            handler = self.get_handler('/ui/abakuc/rss.xml')
+        else:
+            handler = root.get_skin().get_handler('/ui/abakuc/rss.xml')
+        return stl(handler, namespace)
+
     #######################################################################
     # User Interface
     #######################################################################
