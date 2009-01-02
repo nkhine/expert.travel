@@ -2,7 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
-from datetime import datetime
+import datetime
 from urllib import urlencode
 
 # Import from itools
@@ -15,6 +15,9 @@ from itools.cms.folder import Folder
 from itools.cms.messages import *
 from itools.cms.registry import register_object_class, get_object_class
 from itools.web import get_context
+from itools.cms.utils import generate_password
+from itools.uri import Path, get_reference
+
 # Import from abakuc
 from utils import title_to_name
 
@@ -126,11 +129,20 @@ class Product(Folder):
         if address is not None:
             hotel_address = self.get_address(address)
             hotel = hotel_address.parent
+            namespace['is_hotel'] = True
             namespace['hotel'] = hotel.get_property('dc:title')
             rating = hotel.get_property('abakuc:rating')
             hotel_rating = root.get_rating_types(rating)
             namespace['rating'] = hotel.get_property('abakuc:rating')
+            namespace['website'] = hotel.get_property('abakuc:website')
             if hotel_address is not None: 
+                namespace['hotel_url'] = self.get_pathto(hotel_address)
+                namespace['hotel_address'] = hotel_address.get_property('abakuc:address')
+                namespace['town'] = hotel_address.get_property('abakuc:town')
+                namespace['postcode'] = hotel_address.get_property('abakuc:postcode')
+                namespace['phone'] = hotel_address.get_property('abakuc:phone')
+                namespace['fax'] = hotel_address.get_property('abakuc:fax')
+                namespace['rating'] = hotel_address.get_property('abakuc:rating')
                 county = hotel_address.get_property('abakuc:county')
                 for row_number in world.search(county=county):
                     row = world.get_row(row_number)
@@ -142,11 +154,6 @@ class Product(Folder):
                     namespace['country'] = country
                     namespace['region'] = region
                     namespace['county'] = county
-            else:
-                continent = None
-                country = None
-                region = None
-                county = None
 
         template_path = 'ui/abakuc/product/hotel.xml'
         template = root.get_handler(template_path)
@@ -203,9 +210,11 @@ class Product(Folder):
     setup_hotel_form__label__ = u'Setup hotel'
     def setup_hotel_form(self, context):
         namespace = {}
-        hotel = self.get_address(self.get_property('abakuc:address'))
-        if hotel is not None:
-            namespace['hotel'] = hotel.parent.name
+        address = self.get_property('abakuc:hotel')
+        namespace['address'] = address
+        if address is not None:
+            hotel = self.get_address(address)
+            namespace['hotel'] = hotel.parent.get_property('dc:title')
         else:
             namespace['hotel'] = None
         name = context.get_form_value('dc:title')
@@ -314,6 +323,18 @@ class Product(Folder):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
+
+        # Add hotel contact
+        register_fields = [('ikaaro:firstname', True),
+                           ('ikaaro:lastname', True),
+                           ('ikaaro:email', True)]
+
+        
+        
+        #namespace = context.build_form_namespace(self.register_fields)
+        namespace['ikaaro:firstname'] = None
+        namespace['ikaaro:lastname'] = None
+        namespace['ikaaro:email'] = None
         handler = root.get_handler('ui/abakuc/companies/company/address/form.xml')
         return stl(handler, namespace)
 
@@ -365,6 +386,11 @@ class Product(Folder):
 
     setup_address__access__ = 'is_branch_manager'
     def setup_address(self, context):
+        keep = ['ikaaro:firstname', 'ikaaro:lastname', \
+                'ikaaro:email', 'abakuc:address', 'abakuc:county' \
+                'abakuc:town', 'abakuc:postcode', 'abakuc:phone' \
+                'abakuc:fax']
+
         from companies import Address
         user = context.user
         name = context.get_form_value('company_name')
@@ -374,33 +400,99 @@ class Product(Folder):
         address = context.get_form_value('abakuc:address')
         if not address:
             message = u'Please give an Address'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
         name = title_to_name(address)
         if company.has_handler(name):
             message = u'The address already exist'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
 
         if not context.get_form_value('abakuc:county'):
             message = u'Please choose a county'
-            return context.come_back(message)
+            return context.come_back(message, keep=keep)
 
-        address, metadata = company.set_object(name, Address())
-        # Set Properties
-        # Link the hotel's address to the product
-        self.set_property('abakuc:hotel', name)
+        # Create the manager for the address
+        firstname = context.get_form_value('ikaaro:firstname').strip()
+        lastname = context.get_form_value('ikaaro:lastname').strip()
+        email = context.get_form_value('ikaaro:email').strip()
+        # Check email address has an MX record
+        email_uri = 'mailto:'+email
+        r1 = get_reference(email_uri)
+        host = r1.host
+        import dns.resolver
+        from dns.exception import DNSException
+        # Here we check to see if email host has an MX record
+        try:
+            # This may take long
+            answers = dns.resolver.query(host, 'MX')
+        except DNSException, e:
+            answers = None
+        if not answers:
+            message = u'The email supplied is invalid!'
+            return context.come_back(message, keep=keep)
+        # Do we already have a user with that email?
+        root = context.root
+        results = root.search(email=email)
+        users = root.get_handler('users')
+        if results.get_n_documents():
+            user = results.get_documents()[0]
+            user = users.get_handler(user.name)
+            if not user.has_property('ikaaro:user_must_confirm'):
+                message = u'There is already an active user with that email.'
+                return context.come_back(message, keep=keep)
+        else:
+            # Add the user
+            user = users.set_user(email, None)
+            user.set_property('ikaaro:firstname', firstname, language='en')
+            user.set_property('ikaaro:lastname', lastname, language='en')
+            user.set_property('owner', user.name)
+            # Set the role
+            from training import Training
+            office = self.get_site_root()
+            if isinstance(office, Training):
+                # Sets the role of the user, from training.py
+                default_role = self.__roles__[2]['name']
+                self.set_user_role(user.name, default_role)
+            else:
+                address, metadata = company.set_object(name, Address())
+                print address
+                default_role = address.__roles__[0]['name']
+                print default_role
+                address.set_user_role(user.name, default_role)
 
-        for name in ['address', 'county', 'town', 'postcode',
-                     'phone', 'fax']:
-            name = 'abakuc:%s' % name
-            value = context.get_form_value(name)
-            address.set_property(name, value)
+                # Set Properties
+                # Link the hotel's address to the product
+                self.set_property('abakuc:hotel', name)
 
-        message = u'Company/Address setup done.'
+                for name in ['address', 'county', 'town', 'postcode',
+                             'phone', 'fax']:
+                    name = 'abakuc:%s' % name
+                    value = context.get_form_value(name)
+                    address.set_property(name, value)
+
+        # Set product specific data
+        functions = 'marketing-director'
+        user.set_property('abakuc:functions', functions)
+        # Set the registration date
+        user.set_property('abakuc:registration_date', datetime.date.today())
+        # Set the terms & conditions
+        terms = True 
+        user.set_property('abakuc:terms', True)
+        # Send confirmation email
+        key = generate_password(30)
+        user.set_property('ikaaro:user_must_confirm', key)
+        user.send_confirmation(context, email)
+
+        # Bring the user to the login form
+        message = self.gettext(
+            u"Company/Address setup done. "
+            u"An email has been sent to hotel, to validate the hotel "
+            u"process follow the instructions detailed in it.")
+
         home = ';view'
         goto = context.uri.resolve(home)
-        return context.come_back(message, goto=goto)
+        return context.come_back(message.encode('utf-8'), goto=goto)
 
     ########################################################################
     # Setup airline 

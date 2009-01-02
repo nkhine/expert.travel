@@ -3,10 +3,10 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h2>Setup hotel form</h2>
-<p stl:if="hotel">
+<p stl:if="address">
     we have a hotel ${hotel}
 </p>
-<p>
+<p stl:if="not address">
 Please first search whether hotel information is already
 in the database.
 </p>

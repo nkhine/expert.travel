@@ -997,7 +997,8 @@ class Company(SiteRoot):
     #######################################################################
     # User Interface / View
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
+    #view__access__ = 'is_allowed_to_view'
+    view__access__ = True 
     view__label__ = u'View'
     def view(self, context):
         namespace = {}
@@ -1556,14 +1557,13 @@ class Company(SiteRoot):
     #######################################################################
     @staticmethod
     def get_form(name=None, description=None, website=None, topics=None,\
-                types=None, logo=None, subject=None):
+                types=None, logo=None, rating=None, subject=None):
         root = get_context().root
 
         namespace = {}
         namespace['title'] = name
         namespace['description'] = description
         namespace['website'] = website
-        namespace['topics'] = root.get_topics_namespace(topics)
         #XXX Make this list only types specific for the sub-site
         #site_specific_types = root.get_site_types(types)
         #if site is localhost list all
@@ -1573,6 +1573,12 @@ class Company(SiteRoot):
         namespace['types'] = root.get_types_namespace(types)
         namespace['logo'] = logo
         namespace['subject'] = subject
+
+        namespace['topics'] = root.get_topics_namespace(topics)
+        namespace['rating'] = rating
+        if 'hotel' in topics:
+            rating = root.get_rating_types(rating)
+            namespace['rating'] = rating
 
         handler = root.get_handler('ui/abakuc/companies/company/form.xml')
         return stl(handler, namespace)
@@ -1591,10 +1597,11 @@ class Company(SiteRoot):
         website = self.get_property('abakuc:website')
         topics = self.get_property('abakuc:topic')
         types = self.get_property('abakuc:type')
+        rating = self.get_property('abakuc:rating')
         logo = self.has_handler('logo')
         subject = self.get_property('dc:subject')
         namespace['form'] = self.get_form(title, description, website,\
-                                        topics, types, logo, subject)
+                                        topics, types, logo, rating, subject)
 
         handler = self.get_handler('/ui/abakuc/companies/company/edit_metadata.xml')
         return stl(handler, namespace)
@@ -1606,12 +1613,20 @@ class Company(SiteRoot):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
         website = context.get_form_value('abakuc:website')
-        topics = context.get_form_values('topic')
-        types = context.get_form_values('type')
+        rating = context.get_form_value('abakuc:rating')
         logo = context.get_form_value('logo')
         subject = context.get_form_value('dc:subject')
+        topics = context.get_form_values('topic')
+        types = context.get_form_values('type')
 
-        print subject
+        # If hotel we need to set the topic and type
+        hotel = self.get_property('abakuc:rating')
+        if hotel:
+            self.set_property('abakuc:rating', rating)
+            topics = ['hotel']
+            types = 'other'
+
+        print topics
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description)
         self.set_property('abakuc:website', website)

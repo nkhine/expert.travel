@@ -2,16 +2,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl" />
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-gc">
     <div class="yui-u first">
-        <h1>${hotel}</h1>
-        <i>${continent}</i>
-        <i>${country}</i>
-        <i>${region}</i>
-        <i>${county}</i>
+                <stl:block stl:if="address">
+                    <h2>${hotel} <span stl:if="rating"
+                    class="${rating}">${rating}</span></h2>
+                    <dt><a href="${website}">${website}</a></dt>
+                    <dd>
+                        <address>${address}<span><a
+                            href="${hotel_url}">Preview</a></span><br />
+                            ${town}<br />
+                            ${county}<br />
+                            ${postcode}
+                        </address>
+                    </dd>
+                    <dd stl:if="phone">Tel:&nbsp;${phone}</dd>
+                    <dd stl:if="fax">Fax:&nbsp;${fax}</dd>
+                </stl:block>
+                <stl:block stl:if="not address">Product is not linked to a hotel</stl:block>
     </div> <!-- yui-u first -->
     <div class="yui-u">
-        <span stl:if="rating">${rating}</span>
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->

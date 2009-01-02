@@ -24,12 +24,13 @@
         <input type="text" size="48" name="abakuc:website" id="website"
           value="${website}" />
       </dd>
+      <stl:block if="not rating">
       <dt>
         <label for="topic">Business Function</label>
       </dt>
       <dd>
         <select id="topic" name="topic" size="8"
-                    multiple="multiple" style="width: 90%">
+                    style="width: 90%">
           <option stl:repeat="topic topics" value="${topic/id}"
             selected="${topic/is_selected}">${topic/title}</option> 
         </select>
@@ -43,6 +44,18 @@
             checked="${type/is_selected}" />${type/title} 
         </stl:block>
       </dd>
+      </stl:block>
+      <stl:block if="rating">
+        <dt>
+          <label for="rating">Hotel rating</label>
+        </dt>
+        <dd>
+        <select id="rating" name="abakuc:rating">
+          <option stl:repeat="item rating" value="${item/id}"
+          selected="${item/is_selected}">${item/title}</option>
+        </select>
+        </dd>
+      </stl:block>
       <dt>
         <label for="logo">Logo</label>
       </dt>
@@ -66,5 +79,3 @@
         Used by search engines to index your entry.
       </dd>
     </dl>
-
-</stl:block>

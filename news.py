@@ -239,7 +239,6 @@ class News(RoleAware, Folder):
         namespace['date'] = date
         namespace['posted'] = time_posted
 
-        print namespace['posted']
         # Person who added the job
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
@@ -274,11 +273,11 @@ class News(RoleAware, Folder):
                                                 forum.name)
                 else:
                     url = 'http://uk.expert_travel/%s' % (forum.name)
-                namespace['url'] = url
                 namespace['forum'] = forum.title
                 namespace['thread'] = item.name
                 messages = thread.get_message_namespace(context)
                 namespace['messages'] = messages
+        namespace['url'] = url
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 8
