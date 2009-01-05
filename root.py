@@ -184,6 +184,13 @@ class Root(Handler, BaseRoot):
         cache['rating_types.csv'] = rating_types
         cache['rating_types.csv.metadata'] = rating_types.build_metadata()
         
+        # Rating Types
+        currency = CSV()
+        path = get_abspath(globals(), 'data/currency.csv')
+        currency.load_state_from(path)
+        cache['currency.csv'] = currency
+        cache['currency.csv.metadata'] = currency.build_metadata()
+
         # Expert Travel
         #title = u'Expert Travel Website'
         #expert_travel = ExpertTravel()
@@ -362,6 +369,15 @@ class Root(Handler, BaseRoot):
 
         return namespace
 
+    def get_currency(self, ids=None):
+        handler = self.get_handler('currency.csv')
+        namespace = []
+        for row in handler.get_rows():
+            namespace.append({
+                'id': row[1], 'title': row[0], 'sign': row[2],
+                'is_selected': (ids is not None) and (row[1] in ids)})
+
+        return namespace
     #######################################################################
     # User Interface / Import
     #######################################################################

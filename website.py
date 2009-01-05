@@ -166,9 +166,57 @@ class SiteRoot(Handler, BaseWebSite):
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
     def register_form(self, context, functions=None):
+        from itools.handlers import get_handler
+        from itools import get_abspath
         root = get_context().root
         namespace = context.build_form_namespace(self.register_fields)
         namespace['functions'] = root.get_functions_namespace(functions)
+        ## Captcha
+        #import Image as PILImage, ImageDraw, ImageFont
+        ## create a 5 char random strin
+        #imgtext = generate_password(5)
+        ## PIL "code" - open image, add text using font, save as new
+        #path = get_abspath(globals(), 'ui/images/bg.jpg')
+        #im=PILImage.open(path)
+        #draw=ImageDraw.Draw(im)
+        #font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
+        #font=ImageFont.truetype(font_path, 18)
+        #draw.text((10,10),imgtext, font=font, fill=(100,100,50))
+        ## save as a temporary image
+        ## we need to save this in the database
+        #im_name = generate_password(5) + '.jpg'
+        #companies = root.get_handler('companies')
+        #SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images')
+        ##SITE_IMAGES_DIR_PATH = root.get_handler('companies')
+        #root_path = root.get_abspath()
+        #tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
+        #im.save(tempname, "JPEG")
+        #from itools.cms.binary import Image
+        #path = get_abspath(globals(), tempname)
+        #print self.uri.resolve2(root_path)
+        #print path
+        #img = get_handler(path)
+        ##image = Image()
+        #captcha = '/ui/abakuc/images/%s' % im_name
+        #im_handler = get_handler(captcha)
+        ##im_handler.set_property('dc:subject', imgtext)
+        #cache = self.cache
+
+        #cache_meta = '%s.metadata' % im_name
+        #terms = Image()
+        #cache[im_name] = terms
+        ##cache[cache_meta] = terms.build_metadata(
+        ##    **{'dc:subject': {'en': imgtext}})
+
+        ##print img.get_property('dc:subject')
+        ##print imgtext
+        ##import mimetypes
+        ##guessed, encoding = mimetypes.guess_type(captcha)
+        ##print guessed, encoding
+        #print im_name
+        #print im_handler.get_physical_path()
+        #namespace['captcha'] = captcha
+        namespace['captcha'] = None 
         handler = self.get_handler('/ui/abakuc/register.xml')
         return stl(handler, namespace)
 
@@ -188,6 +236,8 @@ class SiteRoot(Handler, BaseWebSite):
         email = context.get_form_value('ikaaro:email').strip()
         terms = context.get_form_value('abakuc:terms')
         functions = context.get_form_value('functions')
+
+
 
         # Check email address has an MX record
         email_uri = 'mailto:'+email

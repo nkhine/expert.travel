@@ -19,6 +19,17 @@
         <dd>
           <input type="text" name="abakuc:price" value="${abakuc:price}"/>
         </dd>
+      <dt>
+        <label for="currency">Currency</label>
+      </dt>
+      <dd>
+            <select name="abakuc:currency">
+              <option stl:repeat="item currency" value="${item/id}" 
+                  selected="${item/is_selected}">
+                ${item/title}&nbsp;-&nbsp;${item/sign}&nbsp;&nbsp;
+              </option>
+            </select>
+      </dd>
        <dt>
         <label for="topic">Holiday Type</label>
       </dt>

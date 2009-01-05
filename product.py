@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
+import locale
 import datetime
 from urllib import urlencode
 
@@ -39,7 +40,7 @@ class Product(Folder):
     edit_fields = ['dc:title' , 'dc:description', 'dc:subject',
                        'abakuc:text',
                        'abakuc:closing_date', 'abakuc:departure_date',
-                       'abakuc:return_date', 'abakuc:price']
+                       'abakuc:return_date', 'abakuc:price', 'abakuc:currency']
 
     def new(self, **kw):
         Folder.new(self, **kw)
@@ -103,6 +104,26 @@ class Product(Folder):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
+    def get_currency(self, context):
+        """
+        Used in skins.py to search for companies
+        only for the specific country.
+        We need to extend this so that it does not rely on the URI
+        to get the origin of the user.
+        Perhaps we should look at where they have logged in from.
+        For now all TP's must have the country code in their URI
+        i.e. http://uk.tp1.expert.travel etc...
+        """
+        root = context.handler.get_site_root()
+        country_code = get_host_prefix(context)
+        if country_code is not None:
+            if not isinstance(root, Company):
+                # Rule for address as: http://fr.expert.travel/
+                country_name = self.get_country_name(country_code)
+                return [(country_name, country_code)]
+            return self.get_active_countries(context)
+        return [(country_name, country_code)]
+
     overview__access__ = True
     overview__label__ = u'Overview'
     def overview(self, context):
@@ -111,6 +132,22 @@ class Product(Folder):
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
 
+        currency = self.get_property('abakuc:currency')
+        price = self.get_property('abakuc:price')
+        currencies = root.get_currency(currency)
+        #for x in [d for d in currencies if d['is_selected']]:
+        currency = (d for d in currencies if d['is_selected']).next()
+        if currency['id'] == 'EUR':
+            locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
+            price = locale.format('%.2f', price, True)
+            format = '%s %s' % (price, currency['sign'])
+        else:
+            locale.setlocale(locale.LC_ALL,('en', 'ascii'))
+            price = locale.format('%.2f', price, True)
+            format = '%s %s' % (currency['sign'], price)
+        
+        namespace['price'] = format
+        print format
         template_path = 'ui/abakuc/product/overview.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)
@@ -629,11 +666,13 @@ class Product(Folder):
         types = self.get_property('abakuc:holiday_type')
         activities = self.get_property('abakuc:holiday_activity')
         board = self.get_property('abakuc:board')
+        currency = self.get_property('abakuc:currency')
         # Build the namespace
         namespace = {}
         namespace['types'] = root.get_holiday_types(types)
         namespace['activities'] = root.get_holiday_activities(activities)
         namespace['board'] =  root.get_board_types(board)
+        namespace['currency'] =  root.get_currency(currency)
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
         handler = self.get_handler('/ui/abakuc/product/edit.xml')
@@ -660,6 +699,7 @@ class Product(Folder):
         closing_date = context.get_form_value('abakuc:closing_date')
         departure_date = context.get_form_value('abakuc:departure_date')
         return_date = context.get_form_value('abakuc:return_date')
+        currency = context.get_form_value('abakuc:currency')
         difference = return_date - departure_date
         if return_date <= departure_date:
             params = {}
@@ -674,6 +714,7 @@ class Product(Folder):
         self.set_property('abakuc:departure_date', departure_date)
         self.set_property('abakuc:return_date', return_date)
         self.set_property('abakuc:board',board)
+        self.set_property('abakuc:currency',currency)
 
         for key in self.edit_fields:
             self.set_property(key, context.get_form_value(key))

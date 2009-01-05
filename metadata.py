@@ -129,6 +129,7 @@ class Schema(BaseSchema):
         'holiday_type': Unicode,
         'holiday_activity': Tokens,
         'board': String,
+        'currency': Unicode,
         'text': Unicode,
         # Hotel
         'hotel': Unicode,

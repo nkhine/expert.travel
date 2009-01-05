@@ -13,7 +13,7 @@
           Offer expires on: ${abakuc:closing_date}<br /> 
           Earliest departure: ${abakuc:departure_date}<br /> 
           Earliest return date: ${abakuc:return_date}<br />
-          Price per person: ${abakuc:price}
+          Price per person: ${price}
         </span>
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->

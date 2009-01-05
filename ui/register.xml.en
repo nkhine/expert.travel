@@ -45,6 +45,12 @@
         </select>
       </dd>
       <dt>
+        <label for="functions">Captcha</label>
+      </dt>
+      <dd style="width: 90%">
+        <img id="captcha" src="${captcha}" alt="captcha" title="captcha" />
+      </dd>
+      <dt>
         <label for="terms">Terms &amp; Conditions</label>
       </dt>
       <dd>
