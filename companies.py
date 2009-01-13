@@ -101,8 +101,7 @@ class Companies(SiteRoot):
             return False
         address = user.get_address()
         #for address in self.search_handlers(handler_class=Address):
-        return address.has_user_role(user.name, 'abakuc:training_manager',
-            'abakuc:branch_member', 'abakuc:branch_manager')
+        return address.has_user_role(user.name, 'abakuc:branch_member', 'abakuc:branch_manager')
 
     def is_branch_manager(self, user, object):
         if not user:
@@ -1575,10 +1574,11 @@ class Company(SiteRoot):
         namespace['subject'] = subject
 
         namespace['topics'] = root.get_topics_namespace(topics)
+
         namespace['rating'] = rating
-        if 'hotel' in topics:
-            rating = root.get_rating_types(rating)
-            namespace['rating'] = rating
+        #if 'hotel' in topics:
+        #    rating = root.get_rating_types(rating)
+        #    namespace['rating'] = rating
 
         handler = root.get_handler('ui/abakuc/companies/company/form.xml')
         return stl(handler, namespace)
@@ -1626,7 +1626,6 @@ class Company(SiteRoot):
             topics = ['hotel']
             types = 'other'
 
-        print topics
         self.set_property('dc:title', title, language='en')
         self.set_property('dc:description', description)
         self.set_property('abakuc:website', website)
@@ -2206,11 +2205,12 @@ class Address(RoleAware, WorkflowAware, Folder):
 
     #######################################################################
     # User Interface / Edit
+    # /usr/sbin/python-updateruu
     #######################################################################
     @staticmethod
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
                  address_country=None, address_region=None,
-                 address_county=None):
+                 address_county=None, hotel=None):
         context = get_context()
         root = context.root
         # List authorized countries
@@ -2235,6 +2235,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
+        namespace['hotel'] = hotel
         handler = root.get_handler('ui/abakuc/companies/company/address/form.xml')
         return stl(handler, namespace)
 

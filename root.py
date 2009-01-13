@@ -77,7 +77,7 @@ class Root(Handler, BaseRoot):
     site_format =''
     #######################################################################
     # Administrator Email
-    contact_email = 'norman@khine.net'
+    contact_email = 'norman@expert.travel'
 
     #######################################################################
     # Index & Search

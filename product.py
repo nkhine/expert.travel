@@ -136,18 +136,20 @@ class Product(Folder):
         price = self.get_property('abakuc:price')
         currencies = root.get_currency(currency)
         #for x in [d for d in currencies if d['is_selected']]:
-        currency = (d for d in currencies if d['is_selected']).next()
-        if currency['id'] == 'EUR':
-            locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
-            price = locale.format('%.2f', price, True)
-            format = '%s %s' % (price, currency['sign'])
-        else:
-            locale.setlocale(locale.LC_ALL,('en', 'ascii'))
-            price = locale.format('%.2f', price, True)
-            format = '%s %s' % (currency['sign'], price)
+        if currency:
+            currency = (d for d in currencies if d['is_selected']).next()
+            if currency['id'] == 'EUR':
+                locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
+                price = locale.format('%.2f', price, True)
+                format = '%s %s' % (price, currency['sign'])
+            else:
+                locale.setlocale(locale.LC_ALL,('en', 'ascii'))
+                price = locale.format('%.2f', price, True)
+                format = '%s %s' % (currency['sign'], price)
         
+        else:
+            format = None
         namespace['price'] = format
-        print format
         template_path = 'ui/abakuc/product/overview.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)
@@ -368,11 +370,10 @@ class Product(Folder):
 
         
         
-        #namespace = context.build_form_namespace(self.register_fields)
         namespace['ikaaro:firstname'] = None
         namespace['ikaaro:lastname'] = None
         namespace['ikaaro:email'] = None
-        handler = root.get_handler('ui/abakuc/companies/company/address/form.xml')
+        handler = root.get_handler('ui/abakuc/product/address_form.xml')
         return stl(handler, namespace)
 
     setup_address_form__access__ = 'is_branch_manager'

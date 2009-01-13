@@ -55,4 +55,33 @@
       </td>
     </tr>
   </table>
+  <stl:block stl:if="hotel">
+  <h2>Hotel contact details</h2>
+  <dl>
+      <dt>
+        <label for="ikaaro:firstname">
+          First Name</label>
+      </dt>
+      <dd>
+        <input type="text" id="ikaaro:firstname" name="ikaaro:firstname"
+          value="${ikaaro:firstname}" />
+      </dd>
+      <dt>
+        <label for="ikaaro:lastname">
+          Last Name</label>
+      </dt>
+      <dd>
+        <input type="text" id="ikaaro:lastname" name="ikaaro:lastname"
+          value="${ikaaro:lastname}" />
+      </dd>
+      <dt>
+        <label for="ikaaro:email">
+          Email address</label>
+      </dt>
+      <dd>
+        <input type="text" id="ikaaro:email" name="ikaaro:email"
+          value="${ikaaro:email}" />
+      </dd>
+  </dl>
+    </stl:block>
 </stl:block>
