@@ -21,6 +21,7 @@ from itools.cms.metadata import Password
 from itools.cms.registry import register_object_class
 from itools.cms.users import UserFolder as iUserFolder, User as iUser
 from itools.cms.utils import get_parameters
+from itools.cms.messages import *
 from itools.rest import checkid
 from itools.cms.widgets import batch, table
 from itools.xml import Parser
