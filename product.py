@@ -525,8 +525,8 @@ class Product(Folder):
         # Bring the user to the login form
         message = self.gettext(
             u"Company/Address setup done. "
-            u"An email has been sent to hotel, to validate the hotel "
-            u"process follow the instructions detailed in it.")
+            u"An email has been sent to %s, to validate the hotel "
+            u"process follow the instructions detailed in it.") % email
 
         home = ';view'
         goto = context.uri.resolve(home)

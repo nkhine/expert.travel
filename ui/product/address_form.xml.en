@@ -55,7 +55,6 @@
       </td>
     </tr>
   </table>
-  <stl:block stl:if="hotel">
   <h2>Hotel contact details</h2>
   <dl>
       <dt>
@@ -83,5 +82,4 @@
           value="${ikaaro:email}" />
       </dd>
   </dl>
-    </stl:block>
 </stl:block>

@@ -237,8 +237,6 @@ class SiteRoot(Handler, BaseWebSite):
         terms = context.get_form_value('abakuc:terms')
         functions = context.get_form_value('functions')
 
-
-
         # Check email address has an MX record
         email_uri = 'mailto:'+email
         r1 = get_reference(email_uri)

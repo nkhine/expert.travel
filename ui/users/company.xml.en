@@ -20,7 +20,7 @@
           <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
           <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
           <dd>
-            <a href=";setup_company_form">Switch to another company</a>.
+            <a href="${setup_company_form}">Switch to another company</a>.
           </dd>
           <div stl:if="is_guest">
               <div stl:if="contact">

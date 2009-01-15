@@ -846,6 +846,8 @@ class User(iUser, WorkflowAware, Handler):
     ########################################################################
     company__access__ = 'is_self_or_admin'
     def company(self, context):
+        root = context.site_root
+        here = context.handler or root
         users = self.get_handler('/users')
         user = context.user
         address = self.get_address()
@@ -872,7 +874,7 @@ class User(iUser, WorkflowAware, Handler):
             namespace['company'] = {'name': company.name,
                                     'title': company.get_property('dc:title'),
                                     'website': company.get_website(),
-                                    'path': self.get_pathto(company)}
+                                    'path': here.get_pathto(company)}
             # Address
             addr = {'name': address.name,
                     'address': address.get_property('abakuc:address'),
@@ -881,7 +883,7 @@ class User(iUser, WorkflowAware, Handler):
                     'postcode':address.get_property('abakuc:postcode'),
                     'phone': address.get_property('abakuc:phone'),
                     'fax': address.get_property('abakuc:fax'),
-                    'address_path': self.get_pathto(address)}
+                    'address_path': here.get_pathto(address)}
 
             namespace['address'] = addr
 
