@@ -101,7 +101,8 @@ class Companies(SiteRoot):
             return False
         address = user.get_address()
         #for address in self.search_handlers(handler_class=Address):
-        return address.has_user_role(user.name, 'abakuc:branch_member', 'abakuc:branch_manager')
+        if address:
+            return address.has_user_role(user.name, 'abakuc:branch_member', 'abakuc:branch_manager')
 
     def is_branch_manager(self, user, object):
         if not user:
