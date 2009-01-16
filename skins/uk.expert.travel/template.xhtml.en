@@ -65,7 +65,7 @@
                             <stl:block if="level1">
                                 <ul stl:repeat="option level1">
                                     <li>
-                                        <a href="/;search?level1=${option/name}">
+                                        <a href="/;search?level1=${option/id}">
                                         ${option/title}</a>
                                     </li>
                                 </ul>

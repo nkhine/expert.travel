@@ -7,17 +7,17 @@ import datetime
 from urllib import urlencode
 
 # Import from itools
-from itools.datatypes import Decimal
-from itools.cms.versioning import VersioningAware
 from itools.cms.access import RoleAware
-from itools.stl import stl
 from itools.cms.file import File
 from itools.cms.folder import Folder
 from itools.cms.messages import *
 from itools.cms.registry import register_object_class, get_object_class
-from itools.web import get_context
 from itools.cms.utils import generate_password
+from itools.cms.versioning import VersioningAware
+from itools.datatypes import Decimal
+from itools.stl import stl
 from itools.uri import Path, get_reference
+from itools.web import get_context
 
 # Import from abakuc
 from utils import title_to_name
@@ -716,6 +716,11 @@ class Product(Folder):
         self.set_property('abakuc:return_date', return_date)
         self.set_property('abakuc:board',board)
         self.set_property('abakuc:currency',currency)
+
+        date = self.get_property('dc:date')
+        if date is None:
+            self.set_property('dc:date', datetime.date.today())
+            self.set_property('abakuc:unique_id', generate_password(30))
 
         for key in self.edit_fields:
             self.set_property(key, context.get_form_value(key))

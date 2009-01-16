@@ -368,6 +368,75 @@ class Companies(SiteRoot):
         return stl(handler, namespace) 
 
     ####################################################################
+    # List
+    ####################################################################
+    list__label__ = u'List news'
+    list__access__ = True
+    def list(self, context):
+        namespace = {}
+        namespace['batch'] = ''
+        #Search the catalogue, list all news items in company
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        items = []
+        news = []
+        jobs = []
+        products = []
+        from training import Training
+        training = self.get_site_root()
+        for item in list(documents):
+            users = self.get_handler('/users')
+            item = root.get_handler(item.abspath)
+            get = item.get_property
+            # Information about the news item
+            username = item.get_property('owner')
+            user_exist = users.has_handler(username)
+            usertitle = (user_exist and
+                         users.get_handler(username).get_title() or username)
+            if isinstance(training, Training):
+                url = item.abspath
+            else:
+                url = Path(item.abspath)[1:]
+            description = reduce_string(get('dc:description'),
+                                        word_treshold=10,
+                                        phrase_treshold=60)
+            items.append({'url': url,
+                               'title': item.title,
+                               'closing_date': get('abakuc:closing_date'),
+                               'date_posted': get('dc:date'),
+                               'owner': usertitle,
+                               'description': description})
+        # Set batch informations
+        batch_start = int(context.get_form_value('t1', default=0))
+        batch_size = 5
+        batch_total = len(items)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        items = items[batch_start:batch_fin]
+        # Namespace
+        if items:
+            msgs = (u'There is one news item.',
+                    u'There are ${n} news items.')
+            batch = t1(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            batch = None
+            msg = u'Currently there is no news.'
+
+        namespace['news_batch'] = batch
+        namespace['msg'] = msg
+        namespace['news_items'] = items
+        handler = self.get_handler('/ui/abakuc/companies/company/news.xml')
+        return stl(handler, namespace)
+    ####################################################################
     # News - List
     ####################################################################
     list_news__label__ = u'List news'

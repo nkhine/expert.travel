@@ -12,16 +12,16 @@ from StringIO import StringIO
 from PIL import Image as PILImage
 
 # Import from itools
-from itools.cms.utils import generate_password
 from itools.cms.access import RoleAware
-from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
+from itools.cms.registry import register_object_class, get_object_class
+from itools.cms.utils import generate_password
+from itools.cms.widgets import batch
+from itools.rest import rest, to_html_events
 from itools.stl import stl
+from itools.uri import Path, get_reference
 from itools.vfs import vfs
 from itools.web import get_context
-from itools.rest import rest, to_html_events
-from itools.uri import Path, get_reference
-from itools.cms.widgets import batch
 
 # Import from abakuc
 from base import Handler, Folder

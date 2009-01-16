@@ -17,6 +17,7 @@ from itools.rest import rest, to_html_events
 from itools.cms.widgets import table
 from itools.cms.utils import generate_password
 from itools.catalog import EqQuery, AndQuery, RangeQuery
+from itools.cms.utils import generate_password
 
 # Import from abakuc
 from base import Handler, Folder
@@ -152,6 +153,10 @@ class Job(Folder, RoleAware):
         metadata.set_property('ikaaro:history', property)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
+
+        date = datetime.now()
+        metadata.set_property('dc:date', date)
+        metadata.set_property('abakuc:unique_id', generate_password(30))
 
         goto = './%s/;%s' % (name, handler.get_firstview())
         message = u'New Job added.'
