@@ -76,9 +76,9 @@
                             </stl:block>   
                     </div>
                     </div>
-                    <stl:block if="not office">
+                        <div class="cj">
                         <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2h5"> </SCRIPT>
-                    </stl:block>
+                        </div>
                 </div><!-- yui-b -->
                 <div id="yui-main">
                     <div class="yui-b">
