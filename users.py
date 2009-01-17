@@ -315,11 +315,10 @@ class User(iUser, WorkflowAware, Handler):
                 trainings = \
                 list(training_handler.search_handlers(handler_class=Training))
                 for training in trainings:
-                    to = training.get_property('dc:title')
                     username = self.name
                     users = training.get_members()
                     if username in users:
-                        training_programmes.append(to)
+                        training_programmes.append(training.name)
             indexes['training_programmes'] = training_programmes
     
         pp.pprint(indexes)
