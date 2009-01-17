@@ -38,8 +38,8 @@
       <dt>
         <label for="functions">Job Function</label>
       </dt>
-      <dd style="width: 90%">
-        <select id="functions" name="functions">
+      <dd>
+        <select id="functions" name="functions" style="width: 90%">
           <option stl:repeat="item functions" value="${item/id}"
             selected="${item/is_selected}">${item/title}</option> 
         </select>
@@ -47,7 +47,7 @@
       <dt>
         <label for="functions">Captcha</label>
       </dt>
-      <dd style="width: 90%">
+      <dd>
         <img id="captcha" src="${captcha}" alt="captcha" title="captcha" />
       </dd>
       <dt>
@@ -57,10 +57,11 @@
       I confirm that I have read and accepted the
         <a style="text-decoration: underline" 
         href=";terms">Terms &amp; Conditions</a>
-      <input type="submit" value="I accept. Continue with set up &raquo;" class="button_ok"/>
+      <input type="submit" value="I accept. Continue with set up ..." class="button_ok"/>
       </dd>
     </dl>
   </form>
   <script language="javascript">
     focus("ikaaro:firstname")
   </script>
+  </stl:block>
