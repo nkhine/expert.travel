@@ -1299,7 +1299,7 @@ class Training(SiteRoot, WorkflowAware):
         skin = root.get_skin()
         skin_path = skin.abspath
         if skin_path == '/ui/aruni':
-            handler = self.get_handler('/ui/abakuc/home.xml')
+            handler = self.get_handler('/ui/abakuc/home.xhtml')
         else:
             handler = root.get_skin().get_handler('home.xhtml')
         return stl(handler, namespace)
