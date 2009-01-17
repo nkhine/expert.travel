@@ -5,26 +5,26 @@
     <stl:block repeat="menu1 menus/items">
         <dt>
           <img stl:if="menu1/src" src="${menu1/src}" alt="" width="16" height="16" />
-          <stl:block stl:if="menu1/active" class="active">
+          <div stl:if="menu1/active" class="active">
             <a title="${menu1/title}" href="${menu1/href}">${menu1/title}</a> 
-          </stl:block>
-          <stl:block stl:if="not menu1/active" class="inactive"> 
+          </div>
+          <div stl:if="not menu1/active" class="inactive"> 
             <a title="${menu1/title}" href="${menu1/href}">${menu1/title}</a> 
-          </stl:block>
+          </div>
         </dt>
             <div class="menu2_block" stl:repeat="menu2 menu1/items">
-                <stl:block class="${menu1/class}">  
+                <div class="${menu1/class}">  
                   <img stl:if="menu2/src" src="${menu2/src}" alt="" width="16" height="16" />
                   <a stl:if="menu2/active" title="${menu2/title}" class="active" href="${menu2/href}">${menu2/title}</a>
                   <a stl:if="not menu2/active" title="${menu2/title}" href="${menu2/href}">${menu2/title}</a>
-                </stl:block>
+                </div>
 
               <div class="menu3_block" stl:repeat="menu3 menu2/items">
-                <stl:block class="${menu1/class}">  
+                <div class="${menu1/class}">  
                   <img stl:if="menu3/src" src="${menu3/src}" alt="" width="16" height="16" />
                   <a stl:if="menu3/active" title="${menu3/title}" class="active" href="${menu3/href}">${menu3/title}</a>
                   <a stl:if="not menu3/active" title="${menu3/title}" href="${menu3/href}">${menu3/title}</a>
-                </stl:block>
+                </div>
               </div>
             </div>
     </stl:block>
