@@ -407,7 +407,7 @@ class Root(Handler, BaseRoot):
         print len(rows)
         # We don't want the header
         #rows = rows[1:49]
-        rows = rows[1:5500]
+        rows = rows[1:550]
         #rows = rows[5501:13346]
         # Load handlers
         users = self.get_handler('users')

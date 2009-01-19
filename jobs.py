@@ -2,27 +2,35 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the standard library
+import sha
 import datetime
 #from datetime import datetime
 from string import Template
 import mimetypes
 
 # Import from itools
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.cms.access import RoleAware
-from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.file import File
+from itools.cms.registry import register_object_class, get_object_class
+from itools.cms.utils import generate_password
+from itools.cms.utils import generate_password
+from itools.cms.widgets import table
+from itools.rest import rest, to_html_events
 from itools.stl import stl
 from itools.web import get_context
-from itools.rest import rest, to_html_events
-from itools.cms.widgets import table
-from itools.cms.utils import generate_password
-from itools.catalog import EqQuery, AndQuery, RangeQuery
-from itools.cms.utils import generate_password
+from itools import get_abspath
+from itools.handlers import get_handler
+from itools.uri import Path, Reference, get_reference, encode_query
+from itools.cms.metadata import Password
 
 # Import from abakuc
 from base import Handler, Folder
 from handlers import ApplicationsLog
 from metadata import JobTitle, SalaryRange
+
+def crypt_captcha(captcha):
+    return sha.new(captcha).digest()
 
 # Definition of the fields of the forms to add new job application
 application_fields = [
@@ -319,6 +327,32 @@ class Job(Folder, RoleAware):
         if context.user is None:
             namespace = context.build_form_namespace(application_fields)
             namespace['is_authenticated'] = False
+            # We add a captcha for non-authenticated users
+            import Image as PILImage, ImageDraw, ImageFont
+            # create a 5 char random strin
+            imgtext = generate_password(5)
+            crypt_imgtext = crypt_captcha(imgtext)
+            encoded_imgtext = Password.encode('%s' % crypt_imgtext)
+            # PIL "code" - open image, add text using font, save as new
+            path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+            im=PILImage.open(path)
+            draw=ImageDraw.Draw(im)
+            font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
+            font=ImageFont.truetype(font_path, 18)
+            draw.text((10,10),imgtext, font=font, fill=(100,100,50))
+            # save as a temporary image
+            # XXX on page refresh the first file is not removed.
+            im_name = generate_password(5) + '.jpg'
+            SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images/captcha')
+            tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
+            im.save(tempname, "JPEG")
+            path = get_abspath(globals(), tempname)
+            img = get_handler(path)
+            namespace['img'] = img
+            namespace['captcha'] = '/ui/abakuc/images/captcha/%s' % im_name
+            # we need to pass this path as we can then delete the captcha file
+            namespace['captcha_path'] = 'ui/images/captcha/%s' % im_name
+            namespace['crypt_imgtext'] = encoded_imgtext
         else:
             namespace = context.build_form_namespace(application_fields_auth)
             namespace['is_authenticated'] = True
@@ -474,6 +508,8 @@ class Candidature(RoleAware, Folder):
         if context.user is None:
             namespace = context.build_form_namespace(cls.apply_fields)
             namespace['is_authenticated'] = False
+
+
         else:
             namespace = context.build_form_namespace(cls.apply_fields_auth)
             namespace['is_authenticated'] = True
@@ -492,9 +528,10 @@ class Candidature(RoleAware, Folder):
         # Check input data
         if user is None:
             apply_fields = cls.apply_fields
+            keep = [ x for x, y in apply_fields ]
         else:
             apply_fields = cls.apply_fields_auth
-        keep = [ x for x, y in apply_fields ]
+            keep = [ x for x, y in apply_fields ]
         error = context.check_form_input(apply_fields)
         if error is not None:
             return context.come_back(error, keep=keep)
@@ -532,6 +569,21 @@ class Candidature(RoleAware, Folder):
         # Create the User
         confirm = None
         if user is None:
+            # We remove the captcha
+            captcha_path = context.get_form_value('captcha_path').strip()
+            if captcha_path:
+                im_handler = get_abspath(globals(), captcha_path)
+                from itools import vfs
+                vfs.remove(im_handler)
+            # We check captcha now 
+            captcha = context.get_form_value('captcha').strip()
+            crypted = crypt_captcha(captcha)
+            crypt_imgtext = context.get_form_value('crypt_imgtext')
+            decrypt =  Password.decode('%s' % crypt_imgtext)
+            if crypted != decrypt:
+                message = u'You typed an incorrect captcha string.'
+                return context.come_back(message, keep=keep)
+
             users = root.get_handler('users')
             email = context.get_form_value('ikaaro:email')
             # Check the user is not already there

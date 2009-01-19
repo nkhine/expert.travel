@@ -54,6 +54,22 @@
       <input type="text" size="40" name="abakuc:phone"
         value="${abakuc:phone/value}" />
         </dd>
+              <dt>
+        <label for="functions">Captcha</label>
+      </dt>
+      <dd>
+        <img id="captcha" src="${captcha}" alt="captcha" title="captcha" />
+      </dd>
+      <dd>
+        Please type in the word from the image above:
+      </dd>
+      <dd>
+        <input type="text" id="captcha" name="captcha" value="" />
+      </dd>
+      <input stl:if="crypt_imgtext" name="crypt_imgtext" type="hidden" 
+        value="${crypt_imgtext}"/>
+      <input stl:if="captcha" name="captcha_path" type="hidden"
+       value="${captcha_path}"/>
     </dl>
   </stl:block>
   <p>

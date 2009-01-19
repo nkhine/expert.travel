@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
+import sha
 from datetime import datetime, date, timedelta
 from string import Template
 import mimetypes
@@ -13,6 +14,7 @@ from itools.cms.binary import Image
 from itools.cms.catalog import schedule_to_reindex
 from itools.cms.csv import CSV
 from itools.cms.html import XHTMLFile
+from itools.cms.metadata import Password
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.utils import generate_password
 from itools.cms.utils import reduce_string
@@ -22,11 +24,12 @@ from itools.cms.workflow import WorkflowAware
 from itools.datatypes import Email, Integer, String, Unicode, FileName
 from itools.i18n.locale_ import format_datetime
 from itools.stl import stl
-from itools.uri import Path
-from itools.uri import encode_query, Reference, Path
+from itools.uri import Path, Reference, get_reference, encode_query
 from itools.web import get_context
 from itools.xhtml import Document as XHTMLDocument
 from itools.xml import get_element
+from itools import get_abspath
+from itools.handlers import get_handler
 
 # Import from abakuc
 from base import Handler, Folder
@@ -39,6 +42,8 @@ from product import Product
 from utils import get_sort_name, t1, t2, t3, t4, t5
 from website import SiteRoot
 
+def crypt_captcha(captcha):
+    return sha.new(captcha).digest()
 
 class Companies(SiteRoot):
 
@@ -1077,6 +1082,7 @@ class Company(SiteRoot):
                                         phrase_treshold=480)
         namespace['description'] = description
         namespace['website'] = self.get_website()
+        namespace['license'] = self.get_property('abakuc:license')
         namespace['logo'] = self.has_handler('logo')
         namespace['tabs'] = self.tabs(context)
 
@@ -2398,12 +2404,39 @@ class Address(RoleAware, WorkflowAware, Folder):
         if context.user is None:
             namespace = context.build_form_namespace(self.enquiry_fields)
             namespace['is_authenticated'] = False
+            # We add a captcha for non-authenticated users
+            import Image as PILImage, ImageDraw, ImageFont
+            # create a 5 char random strin
+            imgtext = generate_password(5)
+            crypt_imgtext = crypt_captcha(imgtext)
+            encoded_imgtext = Password.encode('%s' % crypt_imgtext)
+            # PIL "code" - open image, add text using font, save as new
+            path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+            im=PILImage.open(path)
+            draw=ImageDraw.Draw(im)
+            font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
+            font=ImageFont.truetype(font_path, 18)
+            draw.text((10,10),imgtext, font=font, fill=(100,100,50))
+            # save as a temporary image
+            # XXX on page refresh the first file is not removed.
+            im_name = generate_password(5) + '.jpg'
+            SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images/captcha')
+            tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
+            im.save(tempname, "JPEG")
+            path = get_abspath(globals(), tempname)
+            img = get_handler(path)
+            namespace['img'] = img
+            namespace['captcha'] = '/ui/abakuc/images/captcha/%s' % im_name
+            # we need to pass this path as we can then delete the captcha file
+            namespace['captcha_path'] = 'ui/images/captcha/%s' % im_name
+            namespace['crypt_imgtext'] = encoded_imgtext
         else:
             namespace = context.build_form_namespace(self.enquiry_fields_auth)
             namespace['is_authenticated'] = True
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
+
 
         handler = self.get_handler('/ui/abakuc/enquiries/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
@@ -2416,10 +2449,25 @@ class Address(RoleAware, WorkflowAware, Folder):
 
         # Check input data
         if user is None:
+            # We remove the captcha
+            captcha_path = context.get_form_value('captcha_path').strip()
+            if captcha_path:
+                im_handler = get_abspath(globals(), captcha_path)
+                from itools import vfs
+                vfs.remove(im_handler)
             enquiry_fields = self.enquiry_fields
+            keep = [ x for x, y in enquiry_fields ]
+            # We check captcha now 
+            captcha = context.get_form_value('captcha').strip()
+            crypted = crypt_captcha(captcha)
+            crypt_imgtext = context.get_form_value('crypt_imgtext')
+            decrypt =  Password.decode('%s' % crypt_imgtext)
+            if crypted != decrypt:
+                message = u'You typed an incorrect captcha string.'
+                return context.come_back(message, keep=keep)
         else:
             enquiry_fields = self.enquiry_fields_auth
-        keep = [ x for x, y in enquiry_fields ]
+            keep = [ x for x, y in enquiry_fields ]
         error = context.check_form_input(enquiry_fields)
         if error is not None:
             return context.come_back(error, keep=keep)

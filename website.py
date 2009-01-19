@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
+import sha
 import datetime
 
 # Import from itools
@@ -9,14 +10,20 @@ from itools.datatypes import Integer, Unicode
 from itools.stl import stl
 from itools.cms import widgets
 from itools.cms.access import RoleAware
+from itools.cms.metadata import Password
 from itools.cms.utils import generate_password
 from itools.cms.website import WebSite as BaseWebSite
 from itools.web import get_context
 from itools.cms.catalog import schedule_to_reindex
 from itools.uri import Path, get_reference
-
+from itools.handlers import get_handler
+from itools import get_abspath
 # Import from abakuc
 from base import Handler
+
+def crypt_captcha(captcha):
+    return sha.new(captcha).digest()
+
 
 class SiteRoot(Handler, BaseWebSite):
     __roles__ = RoleAware.__roles__ + [
@@ -166,63 +173,47 @@ class SiteRoot(Handler, BaseWebSite):
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
     def register_form(self, context, functions=None):
-        from itools.handlers import get_handler
-        from itools import get_abspath
         root = get_context().root
         namespace = context.build_form_namespace(self.register_fields)
         namespace['functions'] = root.get_functions_namespace(functions)
-        ## Captcha
-        #import Image as PILImage, ImageDraw, ImageFont
-        ## create a 5 char random strin
-        #imgtext = generate_password(5)
-        ## PIL "code" - open image, add text using font, save as new
-        #path = get_abspath(globals(), 'ui/images/bg.jpg')
-        #im=PILImage.open(path)
-        #draw=ImageDraw.Draw(im)
-        #font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
-        #font=ImageFont.truetype(font_path, 18)
-        #draw.text((10,10),imgtext, font=font, fill=(100,100,50))
-        ## save as a temporary image
-        ## we need to save this in the database
-        #im_name = generate_password(5) + '.jpg'
-        #companies = root.get_handler('companies')
-        #SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images')
-        ##SITE_IMAGES_DIR_PATH = root.get_handler('companies')
-        #root_path = root.get_abspath()
-        #tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
-        #im.save(tempname, "JPEG")
-        #from itools.cms.binary import Image
-        #path = get_abspath(globals(), tempname)
-        #print self.uri.resolve2(root_path)
-        #print path
-        #img = get_handler(path)
-        ##image = Image()
-        #captcha = '/ui/abakuc/images/%s' % im_name
-        #im_handler = get_handler(captcha)
-        ##im_handler.set_property('dc:subject', imgtext)
-        #cache = self.cache
-
-        #cache_meta = '%s.metadata' % im_name
-        #terms = Image()
-        #cache[im_name] = terms
-        ##cache[cache_meta] = terms.build_metadata(
-        ##    **{'dc:subject': {'en': imgtext}})
-
-        ##print img.get_property('dc:subject')
-        ##print imgtext
-        ##import mimetypes
-        ##guessed, encoding = mimetypes.guess_type(captcha)
-        ##print guessed, encoding
-        #print im_name
-        #print im_handler.get_physical_path()
-        #namespace['captcha'] = captcha
-        namespace['captcha'] = None 
+        # Captcha
+        import Image as PILImage, ImageDraw, ImageFont
+        # create a 5 char random strin
+        imgtext = generate_password(5)
+        crypt_imgtext = crypt_captcha(imgtext)
+        encoded_imgtext = Password.encode('%s' % crypt_imgtext)
+        # PIL "code" - open image, add text using font, save as new
+        path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+        im=PILImage.open(path)
+        draw=ImageDraw.Draw(im)
+        font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
+        font=ImageFont.truetype(font_path, 18)
+        draw.text((10,10),imgtext, font=font, fill=(100,100,50))
+        # save as a temporary image
+        # XXX on page refresh the first file is not removed.
+        im_name = generate_password(5) + '.jpg'
+        SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images/captcha')
+        tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
+        im.save(tempname, "JPEG")
+        path = get_abspath(globals(), tempname)
+        img = get_handler(path)
+        namespace['img'] = img
+        namespace['captcha'] = '/ui/abakuc/images/captcha/%s' % im_name
+        # we need to pass this path as we can then delete the captcha file
+        namespace['captcha_path'] = 'ui/images/captcha/%s' % im_name
+        namespace['crypt_imgtext'] = encoded_imgtext
         handler = self.get_handler('/ui/abakuc/register.xml')
         return stl(handler, namespace)
 
 
     register__access__ = 'is_allowed_to_register'
     def register(self, context):
+        # Remove the captcha file
+        captcha_path = context.get_form_value('captcha_path').strip()
+        if captcha_path:
+            im_handler = get_abspath(globals(), captcha_path)
+            from itools import vfs
+            vfs.remove(im_handler)
         keep = ['ikaaro:firstname', 'ikaaro:lastname', \
                 'ikaaro:email', 'abakuc:terms']
         # Check input data
@@ -236,7 +227,15 @@ class SiteRoot(Handler, BaseWebSite):
         email = context.get_form_value('ikaaro:email').strip()
         terms = context.get_form_value('abakuc:terms')
         functions = context.get_form_value('functions')
-
+        # We check captcha now 
+        captcha = context.get_form_value('captcha').strip()
+        crypted = crypt_captcha(captcha)
+        crypt_imgtext = context.get_form_value('crypt_imgtext')
+        decrypt =  Password.decode('%s' % crypt_imgtext)
+        if crypted != decrypt:
+            message = u'You typed an incorrect captcha string.'
+            return context.come_back(message, keep=keep)
+        
         # Check email address has an MX record
         email_uri = 'mailto:'+email
         r1 = get_reference(email_uri)

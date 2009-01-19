@@ -50,6 +50,12 @@
       <dd>
         <img id="captcha" src="${captcha}" alt="captcha" title="captcha" />
       </dd>
+      <dd>
+        Please type in the word from the image above:
+      </dd>
+      <dd>
+        <input type="text" id="captcha" name="captcha" value="" />
+      </dd>
       <dt>
         <label for="terms">Terms &amp; Conditions</label>
       </dt>
@@ -57,6 +63,9 @@
       I confirm that I have read and accepted the
         <a style="text-decoration: underline" 
         href=";terms">Terms &amp; Conditions</a>
+      <input stl:if="crypt_imgtext" name="crypt_imgtext" type="hidden" value="${crypt_imgtext}"/>
+      <input stl:if="captcha" name="captcha_path" type="hidden"
+      value="${captcha_path}"/>
       <input type="submit" value="I accept. Continue with set up ..." class="button_ok"/>
       </dd>
     </dl>
