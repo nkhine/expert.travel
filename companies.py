@@ -154,16 +154,11 @@ class Companies(SiteRoot):
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         namespace = {}
-        namespace['news'] = None 
-        namespace['jobs'] = None
-        namespace['products'] = None
-        namespace['training'] = None
-        namespace['forum'] = None
-        #namespace['news'] = self.list_news(context)
-        #namespace['jobs'] = self.list_jobs(context)
-        #namespace['products'] = self.list_products(context)
-        #namespace['training'] = self.training_table(context)
-        #namespace['forum'] = self.forum(context)
+        namespace['news'] = self.list_news(context)
+        namespace['jobs'] = self.list_jobs(context)
+        namespace['products'] = self.list_products(context)
+        namespace['training'] = self.training_table(context)
+        namespace['forum'] = self.forum(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -1065,9 +1060,10 @@ class Company(SiteRoot):
             return False
 
     def is_branch_manager(self, user, object):
-        for address in self.search_handlers(handler_class=Address):
-            if address.is_branch_manager(user, address):
-                return True
+        if user is not None:
+            for address in self.search_handlers(handler_class=Address):
+                if address.is_branch_manager(user, address):
+                    return True
         return False
 
     #def is_branch_manager(self, user, object):
@@ -2762,3 +2758,9 @@ class Address(RoleAware, WorkflowAware, Folder):
 register_object_class(Companies)
 register_object_class(Company)
 register_object_class(Address)
+
+
+if __name__ == '__main__':
+    # Check input
+    load_documents()
+    profile.run('list_news()')
