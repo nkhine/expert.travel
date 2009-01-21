@@ -3,6 +3,7 @@
 
 # Import from the Standard Library
 import sha
+import subprocess
 import datetime
 
 # Import from itools
@@ -184,6 +185,8 @@ class SiteRoot(Handler, BaseWebSite):
         encoded_imgtext = Password.encode('%s' % crypt_imgtext)
         # PIL "code" - open image, add text using font, save as new
         path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+        sound_path = get_abspath(globals(), 'data/sound')
+        sound_output_path = get_abspath(globals(), 'ui/sound')
         im=PILImage.open(path)
         draw=ImageDraw.Draw(im)
         font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
@@ -191,17 +194,32 @@ class SiteRoot(Handler, BaseWebSite):
         draw.text((10,10),imgtext, font=font, fill=(100,100,50))
         # save as a temporary image
         # XXX on page refresh the first file is not removed.
-        im_name = generate_password(5) + '.jpg'
+        im_name = generate_password(5)
         SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images/captcha')
-        tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
+        tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, (im_name + '.jpg'))
         im.save(tempname, "JPEG")
         path = get_abspath(globals(), tempname)
         img = get_handler(path)
         namespace['img'] = img
-        namespace['captcha'] = '/ui/abakuc/images/captcha/%s' % im_name
+        namespace['captcha'] = '/ui/abakuc/images/captcha/%s' % (im_name + '.jpg')
         # we need to pass this path as we can then delete the captcha file
-        namespace['captcha_path'] = 'ui/images/captcha/%s' % im_name
+        namespace['captcha_path'] = 'ui/images/captcha/%s' % (im_name + '.jpg')
         namespace['crypt_imgtext'] = encoded_imgtext
+        # Generate a sound file of the captcha
+        sox_filenames = []
+        for x in imgtext:
+            if x.isupper():
+                sox_filenames.append('%s/upper_%s.wav' % (sound_path, x))
+            else:
+                sox_filenames.append('%s/%s.wav' % (sound_path, x))
+        subprocess.call(['sox'] + sox_filenames + \
+                        ['%s/%s' % (sound_output_path, (im_name + '.wav'))])
+        namespace['sound_captcha'] = '/ui/abakuc/sound/%s' % (im_name + '.wav')
+        # we need to pass this path as we can then delete the file
+        namespace['sound_path'] = 'ui/sound/%s' % (im_name + '.wav')
+        print im_name
+        print namespace['captcha']
+        print namespace['sound_captcha']
         handler = self.get_handler('/ui/abakuc/register.xml')
         return stl(handler, namespace)
 

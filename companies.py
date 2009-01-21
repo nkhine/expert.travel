@@ -154,11 +154,16 @@ class Companies(SiteRoot):
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         namespace = {}
-        namespace['news'] = self.list_news(context)
-        namespace['jobs'] = self.list_jobs(context)
-        namespace['products'] = self.list_products(context)
-        namespace['training'] = self.training_table(context)
-        namespace['forum'] = self.forum(context)
+        namespace['news'] = None 
+        namespace['jobs'] = None
+        namespace['products'] = None
+        namespace['training'] = None
+        namespace['forum'] = None
+        #namespace['news'] = self.list_news(context)
+        #namespace['jobs'] = self.list_jobs(context)
+        #namespace['products'] = self.list_products(context)
+        #namespace['training'] = self.training_table(context)
+        #namespace['forum'] = self.forum(context)
         template = """
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
@@ -383,6 +388,7 @@ class Companies(SiteRoot):
         #Search the catalogue, list all news items in company
         root = context.root
         catalog = context.server.catalog
+        print catalog
         query = []
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))

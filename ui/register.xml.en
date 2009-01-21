@@ -56,6 +56,11 @@
       <dd>
         <input type="text" id="captcha" name="captcha" value="" />
       </dd>
+      <dd>
+<div>
+<embed height="16" autostart="false" bgcolor="white" src="${sound_captcha}" type="audio/wav"/>
+</div>
+      </dd>
       <dt>
         <label for="terms">Terms &amp; Conditions</label>
       </dt>
@@ -66,6 +71,8 @@
       <input stl:if="crypt_imgtext" name="crypt_imgtext" type="hidden" value="${crypt_imgtext}"/>
       <input stl:if="captcha" name="captcha_path" type="hidden"
       value="${captcha_path}"/>
+      <input stl:if="sound_path" name="sound_path" type="hidden"
+      value="${sound_path}"/>
       <input type="submit" value="I accept. Continue with set up ..." class="button_ok"/>
       </dd>
     </dl>
