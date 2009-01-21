@@ -1055,7 +1055,7 @@ class Company(SiteRoot):
         if user is not None:
             address = user.get_address()
             #for address in self.search_handlers(handler_class=Address):
-            return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
+            return address.has_user_role(user.name, 'abakuc:branch_member')
         else:
             return False
 
