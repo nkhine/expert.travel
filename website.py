@@ -209,7 +209,8 @@ class SiteRoot(Handler, BaseWebSite):
         sox_filenames = []
         for x in imgtext:
             if x.isupper():
-                sox_filenames.append('%s/upper_%s.wav' % (sound_path, x))
+                sox_filenames.append('%s/upper_%s.wav' % (sound_path, \
+                                    x.lower()))
             else:
                 sox_filenames.append('%s/%s.wav' % (sound_path, x))
         subprocess.call(['sox'] + sox_filenames + \

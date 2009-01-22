@@ -1054,8 +1054,9 @@ class Company(SiteRoot):
     def is_allowed_to_edit(self, user, object):
         if user is not None:
             address = user.get_address()
-            #for address in self.search_handlers(handler_class=Address):
-            return address.has_user_role(user.name, 'abakuc:branch_member')
+            if address:
+                #for address in self.search_handlers(handler_class=Address):
+                return address.has_user_role(user.name, 'abakuc:branch_member')
         else:
             return False
 
