@@ -30,7 +30,7 @@ from users import UserFolder
 from companies import Companies, Company, Address
 from countries import Countries, Country
 from destinations import Destinations
-#from expert_travel import ExpertTravel
+from expert_travel import ExpertTravel
 from training import Trainings, Training
 from utils import title_to_name
 
@@ -192,12 +192,12 @@ class Root(Handler, BaseRoot):
         cache['currency.csv.metadata'] = currency.build_metadata()
 
         # Expert Travel
-        #title = u'Expert Travel Website'
-        #expert_travel = ExpertTravel()
-        #kw = {'dc:title': {'en': title},
-        #      'ikaaro:website_is_open': True}
-        #cache['expert'] = expert_travel
-        #cache['expert.metadata'] = expert_travel.build_metadata(**kw)
+        title = u'Expert Travel Website'
+        expert_travel = ExpertTravel()
+        kw = {'dc:title': {'en': title},
+              'ikaaro:website_is_open': True}
+        cache['expert'] = expert_travel
+        cache['expert.metadata'] = expert_travel.build_metadata(**kw)
 
         # Destinations Guide
         title = u'Destinations Guide'

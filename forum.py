@@ -200,7 +200,8 @@ class Thread(Folder):
                     namespace['item_url'] = item.abspath
                 else:
                     # Need to strip the '/companies' from the path
-                    namespace['item_url'] = Path(item.abspath)[1:]
+                    #namespace['item_url'] = Path(item.abspath)[1:]
+                    namespace['item_url'] = Path(item.abspath)
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 8

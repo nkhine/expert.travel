@@ -17,8 +17,9 @@ from itools.cms.base import Node
 from itools.xml import Parser
 # Import from abakuc
 from image_map import ImageMap
-#from expert_travel import ExpertTravel
-from companies import Companies, Company, Address
+from expert_travel import ExpertTravel
+#from companies import Companies, Company, Address
+from companies import Company, Address
 from training import Training, Module, Topic
 from document import Document
 from countries import Country
@@ -139,7 +140,7 @@ class FrontOffice(Skin):
         site_title = site_root.get_title()
         title = '%s: %s' % (site_title, here.get_title())
         if site_root is here:
-            if isinstance(site_root, Companies):
+            if isinstance(site_root, ExpertTravel):
                 root = context.root
                 countries = [x[1] for x in root.get_authorized_countries(context)]
                 country = str.upper(countries[0])
@@ -177,7 +178,7 @@ class FrontOffice(Skin):
         site_title = site_root.get_title()
         title = '%s: %s' % (site_title, here.get_title())
         if site_root is here:
-            if isinstance(site_root, Companies):
+            if isinstance(site_root, ExpertTravel):
                 root = context.root
                 countries = [x[1] for x in root.get_authorized_countries(context)]
                 country = str.upper(countries[0])
@@ -203,35 +204,37 @@ class FrontOffice(Skin):
         namespace = Skin.build_namespace(self, context)
         # Title & Meta
         level1 = []
-        if isinstance(site_root, Companies):
+        if isinstance(site_root, ExpertTravel):
             # Navigation
             #XXX This is what takes so long...
-            namespace['level1'] = root.get_topics_namespace(topics)
+            #XXX NO that is not, reason seems is that I used the companies
+            #folder to create a view.
+            #namespace['level1'] = root.get_topics_namespace(topics)
             #print namespace['level1']
-            #results = root.search(level0=level0, format=site_root.site_format)
+            results = root.search(level0=level0, format=site_root.site_format)
             # Flat
-            ## XXX Here is a bug #133 if you re-start
-            ## the server you no longer have a list
-            ## you need to re-index
-            ## Why is it when you index all topics
-            ## are a list, but when you restart they are not?
-            #for x in results.get_documents():
-            #    x = x.level1
-            #    if isinstance(x, list):
-            #        level1.extend(x)
-            #    else:
-            #        #level1.append(x)
-            #        y = x.split(' ')
-            #        level1.extend(y)
-            ## Unique
-            ## Only works on Expert.Travel and Company objects
-            #level1 = set(level1)
-            ## We don't want to list hotels
-            #level1.discard('hotel')
-            #level1 = [ {'id': x, 'title': site_root.get_level1_title(x)}
-            #           for x in level1 ]
-            #level1.sort(key=lambda x: x['title'])
-            #namespace['level1'] = level1
+            # XXX Here is a bug #133 if you re-start
+            # the server you no longer have a list
+            # you need to re-index
+            # Why is it when you index all topics
+            # are a list, but when you restart they are not?
+            for x in results.get_documents():
+                x = x.level1
+                if isinstance(x, list):
+                    level1.extend(x)
+                else:
+                    #level1.append(x)
+                    y = x.split(' ')
+                    level1.extend(y)
+            # Unique
+            # Only works on Expert.Travel and Company objects
+            level1 = set(level1)
+            # We don't want to list hotels
+            level1.discard('hotel')
+            level1 = [ {'id': x, 'title': site_root.get_level1_title(x)}
+                       for x in level1 ]
+            level1.sort(key=lambda x: x['title'])
+            namespace['level1'] = level1
         else:
             # Navigation
             namespace['level1'] = '' 
@@ -353,7 +356,7 @@ class FrontOffice(Skin):
         handler = context.handler
         root = handler.get_site_root()
         menu = tree(root, active_node=context.handler,
-                    allow=Companies, user=context.user)
+                    allow=ExpertTravel, user=context.user)
         return {'title': self.gettext(u'Navigation'), 'content': menu}
 
     ########################################################################
@@ -479,7 +482,7 @@ class FrontOffice(Skin):
     def get_left_menus(self, context):
         root =  context.handler.get_site_root()
         menus = []
-        if isinstance(root, Companies):
+        if isinstance(root, ExpertTravel):
             # Navigation
             menu = self.get_navigation_menu(context)
             menus.append(menu)

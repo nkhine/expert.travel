@@ -1142,9 +1142,8 @@ class User(iUser, WorkflowAware, Handler):
     create_news__access__ = 'is_self_or_admin'
     def create_news(self, context):
         address = self.get_address()
-        company = address.parent
-        url = '/%s/%s/;new_resource_form?type=news' % (company.name,
-                                                                address.name)
+        url = '/%s/;new_resource_form?type=news' % (self.get_pathto(address))
+        print url
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new news item'
         return context.come_back(message, goto=goto)
@@ -1167,9 +1166,7 @@ class User(iUser, WorkflowAware, Handler):
     create_job__access__ = 'is_self_or_admin'
     def create_job(self, context):
         address = self.get_address()
-        company = address.parent
-        url = '/%s/%s/;new_resource_form?type=Job' % (company.name,
-                                                                address.name)
+        url = '/%s/;new_resource_form?type=Job' % (self.get_pathto(address))
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new job'
         return context.come_back(message, goto=goto)
@@ -1193,9 +1190,7 @@ class User(iUser, WorkflowAware, Handler):
     create_product__access__ = 'is_self_or_admin'
     def create_product(self, context):
         address = self.get_address()
-        company = address.parent
-        url = '/%s/%s/;new_resource_form?type=product' % (company.name,
-                                                                address.name)
+        url = '/%s/;new_resource_form?type=product' % (self.get_pathto(address))
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new product'
         return context.come_back(message, goto=goto)
