@@ -1165,14 +1165,14 @@ class Address(RoleAware, WorkflowAware, Folder):
     def view(self, context):
         from root import world
         county = self.get_property('abakuc:county')
-        if county is None:
-            # XXX Every address should have a county
-            country = region = county = '-'
-        else:
+        if county:
             for row_number in world.search(county=county):
                 row = world.get_row(row_number)
                 country = row[6]
                 region = row[7]
+        else:
+            # XXX Every address should have a county
+            country = region = county = '-'
 
         namespace = {}
         namespace['company'] = self.parent.get_property('dc:title')

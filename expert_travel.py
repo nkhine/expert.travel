@@ -6,18 +6,18 @@ from datetime import date
 from string import Template
 
 # Import from itools
-from itools.datatypes import XMLAttribute
-from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 from itools import get_abspath
+from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
 from itools.cms.csv import CSV
 from itools.cms.html import XHTMLFile
 from itools.cms.registry import register_object_class
-from itools.cms.widgets import table, batch
 from itools.cms.utils import reduce_string
+from itools.cms.widgets import table, batch
+from itools.datatypes import XMLAttribute
 from itools.stl import stl
 from itools.utils import get_version
-
 from itools.xhtml import Document as XHTMLDocument
+
 # Import from abakuc
 from metadata import JobTitle, SalaryRange
 from training import Training
@@ -76,10 +76,6 @@ class ExpertTravel(SiteRoot):
         #cache['help.xhtml.metadata'] = help.build_metadata(
         #    **{'dc:title': {'en': u'Help'}})
 
-    #######################################################################
-    # User Interface
-    #######################################################################
-    site_format = 'address'
 
     #######################################################################
     # Security / Access Control
@@ -88,7 +84,6 @@ class ExpertTravel(SiteRoot):
         if not user:
             return False
         address = user.get_address()
-        #for address in self.search_handlers(handler_class=Address):
         if address:
             return address.has_user_role(user.name, 'abakuc:branch_member', 'abakuc:branch_manager')
 
@@ -105,11 +100,16 @@ class ExpertTravel(SiteRoot):
             return address.has_user_role(user.name, 'abakuc:branch_manager',
             'abakuc:branch_member')
 
+
+    #######################################################################
+    # User Interface
+    #######################################################################
+    site_format = 'address'
+
     def is_training_manager(self, user, object):
         return True
 
     def get_level1_title(self, level1):
-       #return level1
         topics = self.get_handler('../topics.csv')
         for row in topics.get_rows():
             if level1 == row[0]:
@@ -323,78 +323,53 @@ class ExpertTravel(SiteRoot):
         return stl(handler, namespace)        
 
 
-    terms__access__ = True
-    def terms(self, context):
-        namespace = {}
-        handler = self.get_handler('/ui/abakuc/terms.xml')
-        return stl(handler, namespace) 
-
-    about__access__ = True
-    def about(self, context):
-        root = context.root
-        namespace = {}
-        handler = self.get_handler('/ui/abakuc/about.xml')
-        return stl(handler, namespace) 
-
-
-    help__access__ = True
-    def help(self, context):
-        namespace = {}
-        handler = self.get_handler('/ui/abakuc/help.xml')
-        return stl(handler, namespace) 
-
-    more__access__ = True
-    def more(self, context):
-        namespace = {}
-        handler = self.get_handler('/ui/abakuc/more.xml')
-        return stl(handler, namespace) 
-
-    points__access__ = True
-    def points(self, context):
-        namespace = {}
-        handler = self.get_handler('/ui/abakuc/points.xml')
-        return stl(handler, namespace) 
-
     ####################################################################
     # List
     ####################################################################
     list__label__ = u'List news'
     list__access__ = True
     def list(self, context):
-        namespace = {}
-        namespace['batch'] = ''
-        #Search the catalogue, list all news items in company
+        '''
+            Perform one search to pull all items with closing date.
+            That will include News, Jobs and Products.
+
+            This will then be sorted by type and then placed in the
+            tabs.
+        '''
         root = context.root
+        users = self.get_handler('/users')
+
+        # Search the catalogue
         catalog = context.server.catalog
-        print catalog
         query = []
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
+
+        # Build the lists
         documents = results.get_documents()
         items = []
         news = []
         jobs = []
         products = []
-        from training import Training
-        training = self.get_site_root()
         for item in list(documents):
-            users = self.get_handler('/users')
             item = root.get_handler(item.abspath)
+            #type = item.get_type()
+            #print type
+            print item.isinstance()
             get = item.get_property
-            # Information about the news item
+            # Information about the item
             username = item.get_property('owner')
             user_exist = users.has_handler(username)
             usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
-            if isinstance(training, Training):
-                url = item.abspath
-            else:
-                url = Path(item.abspath)[1:]
+            url = self.get_pathto(item)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
+            # here we need to split it by item type
+            # before it is appended
             items.append({'url': url,
                                'title': item.title,
                                'closing_date': get('abakuc:closing_date'),
@@ -420,6 +395,8 @@ class ExpertTravel(SiteRoot):
             batch = None
             msg = u'Currently there is no news.'
 
+        namespace = {}
+        namespace['batch'] = ''
         namespace['news_batch'] = batch
         namespace['msg'] = msg
         namespace['news_items'] = items
@@ -947,5 +924,37 @@ class ExpertTravel(SiteRoot):
         namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/companies/company/products.xml')
         return stl(handler, namespace)
+
+
+    terms__access__ = True
+    def terms(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/terms.xml')
+        return stl(handler, namespace) 
+
+    about__access__ = True
+    def about(self, context):
+        root = context.root
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/about.xml')
+        return stl(handler, namespace) 
+
+    help__access__ = True
+    def help(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/help.xml')
+        return stl(handler, namespace) 
+
+    more__access__ = True
+    def more(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/more.xml')
+        return stl(handler, namespace) 
+
+    points__access__ = True
+    def points(self, context):
+        namespace = {}
+        handler = self.get_handler('/ui/abakuc/points.xml')
+        return stl(handler, namespace) 
 
 register_object_class(ExpertTravel)
