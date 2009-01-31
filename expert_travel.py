@@ -7,7 +7,7 @@ from string import Template
 
 # Import from itools
 from itools import get_abspath
-from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
+from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery, OrQuery
 from itools.cms.csv import CSV
 from itools.cms.html import XHTMLFile
 from itools.cms.registry import register_object_class
@@ -342,11 +342,15 @@ class ExpertTravel(SiteRoot):
         # Search the catalogue
         catalog = context.server.catalog
         query = []
+        news_or_products_or_jobs = OrQuery(
+          EqQuery('format', 'news'),
+          EqQuery('format', 'product'),
+          EqQuery('format', 'Job'))
+        query.append(news_or_products_or_jobs)
         today = (date.today()).strftime('%Y-%m-%d')
         query.append(RangeQuery('closing_date', today, None))
         query = AndQuery(*query)
         results = catalog.search(query)
-
         # Build the lists
         documents = results.get_documents()
         items = []
@@ -355,9 +359,6 @@ class ExpertTravel(SiteRoot):
         products = []
         for item in list(documents):
             item = root.get_handler(item.abspath)
-            #type = item.get_type()
-            #print type
-            print item.isinstance()
             get = item.get_property
             # Information about the item
             username = item.get_property('owner')
@@ -370,6 +371,7 @@ class ExpertTravel(SiteRoot):
                                         phrase_treshold=60)
             # here we need to split it by item type
             # before it is appended
+            
             items.append({'url': url,
                                'title': item.title,
                                'closing_date': get('abakuc:closing_date'),
@@ -386,14 +388,14 @@ class ExpertTravel(SiteRoot):
         items = items[batch_start:batch_fin]
         # Namespace
         if items:
-            msgs = (u'There is one news item.',
-                    u'There are ${n} news items.')
+            msgs = (u'There is one item.',
+                    u'There are ${n} items.')
             batch = t1(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
             batch = None
-            msg = u'Currently there is no news.'
+            msg = u'Currently there is no items.'
 
         namespace = {}
         namespace['batch'] = ''
