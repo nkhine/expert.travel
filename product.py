@@ -132,6 +132,8 @@ class Product(Folder):
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
 
+        airline = self.get_property('abakuc:airline')
+        print airline
         currency = self.get_property('abakuc:currency')
         price = self.get_property('abakuc:price')
         currencies = root.get_currency(currency)
@@ -214,7 +216,13 @@ class Product(Folder):
     contact__access__ = True
     contact__label__ = u'Overview'
     def contact(self, context):
-        pass
+        from companies import Address
+        namespace = {}
+        address = self.parent
+        response = Address.enquiry_form(address, context)
+        namespace['response'] = response
+        handler = self.get_handler('/ui/abakuc/response.xml')
+        return stl(handler, namespace)
 
 
     @staticmethod
@@ -524,7 +532,7 @@ class Product(Folder):
 
         # Bring the user to the login form
         message = self.gettext(
-            u"Company/Address setup done. "
+            u"Hotel/Address setup done. "
             u"An email has been sent to %s, to validate the hotel "
             u"process follow the instructions detailed in it.") % email
 
@@ -540,7 +548,9 @@ class Product(Folder):
         root = get_context().root
         namespace = {}
         # List all airline companies
+        airline = self.get_property('abakuc:airline')
         namespace['airlines'] = root.get_airlines(airline)
+        print namespace['airlines']
         handler = root.get_handler('ui/abakuc/product/setup_airline.xml')
         return stl(handler, namespace)
 

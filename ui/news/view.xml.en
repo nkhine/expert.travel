@@ -4,36 +4,44 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-ge">
-    <div class="yui-u first">
+    <div class="yui-u first news">
         <h1>${dc:title}</h1>
+        <p>${dc:description}</p>
         <table width="100%">
             <tr>
                 <td>
-                <table stl:if="image1" style="float: left;">
+                <table stl:if="image1" class="yui-dt">
                     <tr>
                         <td>
-                            <img src="${image1_url}" alt="${image1_title}, credits to: ${image1_credit}" style="float: left;" />
+                            <img src="${image1_url}" alt="${image1_title}, credits to: ${image1_credit}" />
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td class="yui-dt-title">
                             ${image1_title}
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td class="yui-dt-credit">
                             ${image1_credit}
                         </td>
                     </tr>
                 </table>
-                <p>${dc:description}</p>
                 <p>${abakuc:news_text}</p>
                 </td>
             </tr>
             <tr>
                 <td class="info">
-                Posted on: ${date} <strong>by <a href="${user_uri}" title="View
-                        ${user}'s profile">${user}</a></strong><br /> Time: <span
+                Posted on: ${date} <strong>by 
+                <stl:block stl:if="is_branch_manager_or_member">
+                <a href="${user_uri}" title="View
+                        ${user}'s profile">${user}</a>
+                        </stl:block>
+                        <stl:block stl:if="not is_branch_manager_or_member">
+                        ${user}
+                        </stl:block>
+
+                        </strong><br /> Time: <span
                         stl:if="posted/weeks">${posted/weeks} weeks, ${posted/days}
                         days ago</span>
                         <stl:block stl:if="not posted/weeks">

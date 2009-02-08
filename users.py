@@ -527,6 +527,23 @@ class User(iUser, WorkflowAware, Handler):
         if not Email.is_valid(email):
             return context.come_back(MSG_INVALID_EMAIL)
 
+        # Check email address has an MX record
+        email_uri = 'mailto:'+email
+        r1 = get_reference(email_uri)
+        host = r1.host
+        import dns.resolver
+        from dns.exception import DNSException
+        # Here we check to see if email host has an MX record
+        try:
+            # This may take long
+            answers = dns.resolver.query(host, 'MX')
+        except DNSException, e:
+            answers = None
+        if not answers:
+            message = u'The email supplied is invalid!'
+            return context.come_back(MSG_INVALID_EMAIL)
+
+
         root = context.root
         results = root.search(email=email)
         if results.get_n_documents():

@@ -59,6 +59,11 @@
         value="${crypt_imgtext}"/>
       <input stl:if="captcha" name="captcha_path" type="hidden"
        value="${captcha_path}"/>
+       <dd>
+<div>
+<embed height="16" autostart="false" bgcolor="white" src="${sound_captcha}" type="audio/wav"/>
+</div>
+       </dd>
   </stl:block>
   <p>
     Only genuine enquiries will be sent to ${company}.

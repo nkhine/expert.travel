@@ -4,8 +4,9 @@
 
 <h2>Setup hotel form</h2>
 <p stl:if="address">
-    we have a hotel ${hotel}
+    This product is already attached to the <b>${hotel}</b> hotel.
 </p>
+<hr />
 <p stl:if="not address">
 Please first search whether hotel information is already
 in the database.
@@ -18,6 +19,7 @@ Type the name of the hotel :
 <form action=";setup_hotel_form" method="get" style="margin-left: 2em">
   <input type="text" name="dc:title" value="${name}" size="40" />
   <input type="submit" value="Search" />
+<dt><label for="search">Hotel name: (e.g. Holiday Inn) </label></dt>
 </form>
 
 <stl:block if="name">

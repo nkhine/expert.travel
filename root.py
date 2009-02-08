@@ -316,7 +316,7 @@ class Root(Handler, BaseRoot):
 
         return namespace
 
-    def get_airlines(self, ids=None):
+    def get_airlines(self, airline=None):
         companies_handler = self.get_handler('companies')
         companies = companies_handler.search_handlers(handler_class=Company)
         airlines = []
@@ -325,7 +325,7 @@ class Root(Handler, BaseRoot):
                 airlines.append({
                     'id': item.name,
                     'title': item.get_title(),
-                    'is_selected': (ids is not None) })
+                    'is_selected': (airline is not None) })
         
         return airlines
 

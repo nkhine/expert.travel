@@ -15,5 +15,8 @@
           Earliest return date: ${abakuc:return_date}<br />
           Price per person: ${price}
         </span>
+        <span>
+            <a href="../;enquiry_form" class="action"><span>Make an enquiry</span></a>
+        </span>
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->

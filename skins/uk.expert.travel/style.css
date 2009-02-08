@@ -259,7 +259,69 @@ th a.sort_none {
  **************************************************************************/
 #content {
 	margin: 0.5em;
+  clear: both; 
 }
+/**************************************************************************
+ * News   
+ **************************************************************************/
+.news {
+  clear: both; 
+}
+.news p {
+	margin: 0.5em;
+}
+.yui-dt {
+  float: left;
+  margin: 5px 10px;
+}
+.yui-dt-title {
+  padding-left: 5px;
+  font-weight: bold;
+  font-size: 85%
+}
+.yui-dt-credit {
+  padding-left: 8px;
+  font-style: italic;
+  font-size: 77%
+}
+
+.button {
+  background-color: #ffffff;
+  border-bottom: 2px solid #ffffff;
+  cursor: pointer;
+  height: 22px;
+  margin: 1px 1px 1px 1px;
+  padding-bottom: 1px;
+  width: 22px;
+}
+
+.button:hover {
+  border-bottom: 2px solid #ff0000;
+}
+
+.formatblock {
+  margin-bottom: 2px;
+}
+
+.epoz_frame {
+  border: 1px #ccc solid;
+  height: 300px;
+  width: 98%;
+}
+
+.epoz_textarea {
+  width: 100%;
+  height: 300px;
+}
+
+.epoz_switch {
+  height: 10px;
+  margin: 0px;
+  width: 10px;
+}
+
+
+
 /**************************************************************************
  * Form   
  **************************************************************************/
@@ -279,6 +341,12 @@ th a.sort_none {
 	}
 
 #form input:focus, textarea:focus { background: #efefef; color: #000; }
+/**************************************************************************
+ * CJ   
+ **************************************************************************/
+.cj {
+    margin: 10px 0 5px 17px;
+}
 /**************************************************************************
  * Lists   
  **************************************************************************/

@@ -931,8 +931,8 @@ class Company(SiteRoot):
             product = root.get_handler(item.abspath)
             get = product.get_property
             # Information about the item
-            address = product.parent
-            company = address.parent
+            #address = product.parent
+            #company = address.parent
             # Hotel information
             hotel_location = product.get_property('abakuc:hotel')
             # Every product must have a location
@@ -952,7 +952,7 @@ class Company(SiteRoot):
                     region = ''
                     county = ''
 
-                url = '/%s/%s/%s' % (company.name, address.name, item.name)
+                url = '%s' % here.get_pathto(item)
                 #apply = '/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
                 description = reduce_string(product.get_property('dc:description'),
                                             word_treshold=90,
@@ -1204,28 +1204,27 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['batch'] = ''
         #Search the catalogue, list all news items in address
         root = context.root
+        here = context.handler or root
         company = self.parent
         handlers = self.search_handlers(handler_class=News)
         today = (date.today()).strftime('%Y-%m-%d')
         news_items = []
-        for news in handlers:
+        for item in handlers:
             users = self.get_handler('/users')
-            news = root.get_handler(news.abspath)
-            get = news.get_property
+            item = root.get_handler(item.abspath)
+            get = item.get_property
             closing_date = get('abakuc:closing_date')
             # Information about the news item
-            username = news.get_property('owner')
+            username = item.get_property('owner')
             user_exist = users.has_handler(username)
             usertitle = (user_exist and
                          users.get_handler(username).get_title() or username)
-            address = news.parent
-            company = address.parent
-            url = '/%s/%s/%s/;view' % (company.name, address.name, news.name)
+            url = '%s' % here.get_pathto(item)
             description = reduce_string(get('dc:description'),
                                         word_treshold=10,
                                         phrase_treshold=60)
             news_items.append({'url': url,
-                               'title': news.title,
+                               'title': item.title,
                                'closing_date': get('abakuc:closing_date'),
                                'date_posted': get('dc:date'),
                                'owner': usertitle,
@@ -1265,6 +1264,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['batch'] = ''
         # Construct the lines of the table
         root = context.root
+        here = context.handler or root
         company = self.parent
         today = (date.today()).strftime('%Y-%m-%d')
         handlers = self.search_handlers(handler_class=Job)
@@ -1286,7 +1286,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                         row = world.get_row(row_number)
                         region = row[7]
                 # Information about the job
-                url = '/%s/%s/%s' % (company.name, address.name, job.name)
+                url = '%s' % here.get_pathto(job)
                 apply = '%s/;application_form' % (url)
                 description = reduce_string(get('dc:description'),
                                             word_treshold=90,
@@ -1338,6 +1338,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         from root import world
         namespace = {}
         root = context.root
+        here = context.handler or root
         today = date.today()
         handlers = self.search_handlers(handler_class=Product)
         products = []
@@ -1370,7 +1371,8 @@ class Address(RoleAware, WorkflowAware, Folder):
                         region = ''
                         county = ''
 
-                    url = '/%s/%s/%s' % (company.name, address.name, item.name)
+                    url = '%s' % here.get_pathto(item)
+                    #url = '/%s/%s/%s' % (company.name, address.name, item.name)
                     #apply = '/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
                     description = reduce_string(product.get_property('dc:description'),
                                                 word_treshold=90,
@@ -1591,43 +1593,12 @@ class Address(RoleAware, WorkflowAware, Folder):
             namespace['sound_captcha'] = '/ui/abakuc/sound/%s' % (im_name + '.wav')
             # we need to pass this path as we can then delete the file
             namespace['sound_path'] = 'ui/sound/%s' % (im_name + '.wav')
-            print im_name
-            print namespace['captcha']
-            print namespace['sound_captcha']
-
-            ## We add a captcha for non-authenticated users
-            #import Image as PILImage, ImageDraw, ImageFont
-            ## create a 5 char random strin
-            #imgtext = generate_password(5)
-            #crypt_imgtext = crypt_captcha(imgtext)
-            #encoded_imgtext = Password.encode('%s' % crypt_imgtext)
-            ## PIL "code" - open image, add text using font, save as new
-            #path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
-            #im=PILImage.open(path)
-            #draw=ImageDraw.Draw(im)
-            #font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
-            #font=ImageFont.truetype(font_path, 18)
-            #draw.text((10,10),imgtext, font=font, fill=(100,100,50))
-            ## save as a temporary image
-            ## XXX on page refresh the first file is not removed.
-            #im_name = generate_password(5) + '.jpg'
-            #SITE_IMAGES_DIR_PATH = get_abspath(globals(), 'ui/images/captcha')
-            #tempname = '%s/%s' % (SITE_IMAGES_DIR_PATH, im_name)
-            #im.save(tempname, "JPEG")
-            #path = get_abspath(globals(), tempname)
-            #img = get_handler(path)
-            #namespace['img'] = img
-            #namespace['captcha'] = '/ui/abakuc/images/captcha/%s' % im_name
-            ## we need to pass this path as we can then delete the captcha file
-            #namespace['captcha_path'] = 'ui/images/captcha/%s' % im_name
-            #namespace['crypt_imgtext'] = encoded_imgtext
         else:
             namespace = context.build_form_namespace(self.enquiry_fields_auth)
             namespace['is_authenticated'] = True
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
-
 
         handler = self.get_handler('/ui/abakuc/enquiries/enquiry_edit_metadata.xml')
         return stl(handler, namespace)
@@ -1947,9 +1918,3 @@ class Address(RoleAware, WorkflowAware, Folder):
 register_object_class(Companies)
 register_object_class(Company)
 register_object_class(Address)
-
-
-if __name__ == '__main__':
-    # Check input
-    load_documents()
-    profile.run('list_news()')
