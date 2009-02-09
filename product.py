@@ -21,6 +21,7 @@ from itools.web import get_context
 
 # Import from abakuc
 from utils import title_to_name
+from itinerary import Itinerary
 
 class Product(Folder):
 
@@ -47,7 +48,7 @@ class Product(Folder):
         cache = self.cache
 
     def get_document_types(self):
-        return [File]
+        return [File, Itinerary]
 
     #######################################################################
     ## Indexes

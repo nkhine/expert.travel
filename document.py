@@ -22,8 +22,6 @@ from itools.datatypes import FileName
 from itools.datatypes import DateTime
 from itools.html import Parser as HTMLParser
 # Import from abakuc
-#from workflow import iHTML, TraveluniWorkflowAware
-#from namespaces import BusinessFunction
 from utils import get_new_id, get_sort_name
 
 class Document(XHTMLFile):
