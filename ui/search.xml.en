@@ -28,7 +28,19 @@
         <div stl:if="banner">
         ${banner}
         </div>
-        <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2da"> </SCRIPT>
+        <script type="text/javascript"><!--
+google_ad_client = "pub-2050823514740471";
+/* uk.expert.travel - categories list */
+google_ad_slot = "2956621488";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+        <!-- <SCRIPT type="text/javascript" LANGUAGE="javascript"
+        src="http://www.qksz.net/1e-g2da"> </SCRIPT>-->
       </div>
       <div id="List">
         <stl:block repeat="item companies"> 

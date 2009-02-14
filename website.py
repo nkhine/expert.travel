@@ -426,7 +426,7 @@ class SiteRoot(Handler, BaseWebSite):
         # The namespace
         namespace = {}
         #namespace['title'] = 'Hello' 
-        namespace['banner'] = None
+        namespace['banner'] = None 
         namespace['regions'] = []
 
         # Breadcrumbs path
