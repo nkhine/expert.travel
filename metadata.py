@@ -106,8 +106,11 @@ class Schema(BaseSchema):
         'county': Unicode,
         'town': Unicode,
         'phone': String,
+        'freephone': Boolean(default=False,
+                                title=u'Freephone'),
         'fax': String,
-        'license': Unicode,
+        #'licence': String,
+        'licence': Unicode,
         # Email
         'enquiry_subject': Unicode,
         'enquiry': Unicode,

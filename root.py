@@ -7,6 +7,7 @@ import datetime
 # Import from the Standard Library
 from random import choice
 from string import ascii_letters
+import re
 
 # Import from itools
 from itools.catalog import EqQuery, AndQuery, PhraseQuery, RangeQuery
@@ -378,6 +379,28 @@ class Root(Handler, BaseRoot):
                 'is_selected': (ids is not None) and (row[1] in ids)})
 
         return namespace
+    def get_licences(self):
+        path = get_abspath(globals(), 'data/abakuc_import_companies.csv')
+        handler = get_handler(path)
+        rows = handler.get_rows()
+        rows = list(rows)
+        print len(rows)
+
+        namespace = []
+        for count, row in enumerate(rows):
+            affiliations = row[12]
+            licences = re.split("\n+", affiliations)
+            licence_list = [re.split("\((\w+)\)", licence) for licence in licences]
+            for x in licence_list:
+                for y in x:
+                    if y.isupper():
+                        namespace.append(y)
+
+        return set(namespace)
+        
+
+
+
     #######################################################################
     # User Interface / Import
     #######################################################################
@@ -407,8 +430,9 @@ class Root(Handler, BaseRoot):
         print len(rows)
         # We don't want the header
         #rows = rows[1:49]
-        rows = rows[1:550]
-        #rows = rows[5501:13346]
+        #rows = rows[1:550]
+        rows = rows[5500:5600]
+        #rows = rows[5500:13346]
         # Load handlers
         users = self.get_handler('users')
         companies = self.get_handler('companies')
@@ -473,8 +497,21 @@ class Root(Handler, BaseRoot):
                     type = 'other'
                 metadata.set_property('abakuc:type', 'other')
                 metadata.set_property('ikaaro:website_is_open', True)
-                metadata.set_property('abakuc:license', row[12])
+                # Need to split the licences into individual atoms
+                #metadata.set_property('abakuc:licence', row[12])
+                licences = re.split("\n+", row[12])
+                licenceRe = re.compile(r'\(([A-Z]+)\)( No. (\d+))?')
+                affiliation = {}
+                #for licence in licences:
+                #    m = licenceRe.search(licence)
+                #    if m:
+                #        affiliation[m.group(1)] = m.group(3)
+                #        metadata.set_property('abakuc:licence', affiliation)
+                #    else:
+                #        metadata.set_property('abakuc:licence', row[12])
+                metadata.set_property('abakuc:licence', row[12])
                 metadata.set_property('abakuc:type', type)
+                print affiliation
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)

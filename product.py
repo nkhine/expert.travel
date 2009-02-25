@@ -134,7 +134,6 @@ class Product(Folder):
             namespace[key] = self.get_property(key)
 
         airline = self.get_property('abakuc:airline')
-        print airline
         currency = self.get_property('abakuc:currency')
         price = self.get_property('abakuc:price')
         currencies = root.get_currency(currency)
@@ -153,6 +152,10 @@ class Product(Folder):
         else:
             format = None
         namespace['price'] = format
+        # Get phone number
+        address = self.parent
+        namespace['abakuc:phone'] = address.get_property('abakuc:phone')
+        print namespace['abakuc:phone']
         template_path = 'ui/abakuc/product/overview.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)

@@ -228,7 +228,7 @@ class Company(SiteRoot):
                                         phrase_treshold=480)
         namespace['description'] = description
         namespace['website'] = self.get_website()
-        namespace['license'] = self.get_property('abakuc:license')
+        namespace['licence'] = self.get_property('abakuc:licence')
         namespace['logo'] = self.has_handler('logo')
         namespace['tabs'] = self.tabs(context)
 
@@ -1433,7 +1433,7 @@ class Address(RoleAware, WorkflowAware, Folder):
     #######################################################################
     @staticmethod
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
-                 address_country=None, address_region=None,
+                 freephone=None, address_country=None, address_region=None,
                  address_county=None, hotel=None):
         context = get_context()
         root = context.root
@@ -1455,6 +1455,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['postcode'] = postcode
         namespace['town'] = town
         namespace['phone'] = phone
+        namespace['freephone'] = freephone
         namespace['fax'] = fax
         namespace['countries'] = countries
         namespace['regions'] = regions
@@ -1475,6 +1476,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         postcode = self.get_property('abakuc:postcode')
         town = self.get_property('abakuc:town')
         phone = self.get_property('abakuc:phone')
+        freephone = self.get_property('abakuc:freephone')
         fax = self.get_property('abakuc:fax')
         # Get the country, the region and the county
         from root import world
@@ -1488,7 +1490,7 @@ class Address(RoleAware, WorkflowAware, Folder):
                 address_country = row[5]
                 address_region = row[7]
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
-                                          address_country, address_region,
+                                          freephone, address_country, address_region,
                                           address_county)
 
         handler = self.get_handler('/ui/abakuc/companies/company/address/edit_metadata.xml')
@@ -1508,7 +1510,7 @@ class Address(RoleAware, WorkflowAware, Folder):
             return context.come_back(message)
 
         # Link the User to the Address
-        keys = ['address', 'postcode', 'town', 'phone', 'fax', 'county']
+        keys = ['address', 'postcode', 'town', 'phone', 'freephone', 'fax', 'county']
 
         for key in keys:
             key = 'abakuc:%s' % key

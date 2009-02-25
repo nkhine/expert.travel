@@ -10,13 +10,51 @@
     </div> <!-- yui-u first -->
     <div class="yui-u">
         <span class="info">
-          Offer expires on: ${abakuc:closing_date}<br /> 
-          Earliest departure: ${abakuc:departure_date}<br /> 
-          Earliest return date: ${abakuc:return_date}<br />
-          Price per person: ${price}
+          <dl>
+              <dt>
+                  <label for="title"><h3>Summary</h3></label>
+              </dt>
+              <dd>Offer expires on: ${abakuc:closing_date}</dd>
+              <dd>Earliest departure: ${abakuc:departure_date}</dd>
+              <dd>Earliest return date: ${abakuc:return_date}</dd>
+          </dl>
+          <dl>
+              <dt>
+                  <label for="title"><h3>Price</h3></label>
+              </dt>
+              <dd>Price per person: ${price}</dd>
+          </dl>
+          <dl>
+              <dt>
+                  <label for="title"><h3>Flying in with:</h3></label>
+              </dt>
+              <dd>Airline 1</dd>
+              <dd>Airline 1</dd>
+              <dd>Airline 1</dd>
+              <dd>Airline 1</dd>
+          </dl>
+          <dl>
+              <dt>
+                  <label for="title"><h3>Flights available from:</h3></label>
+              </dt>
+              <dd>Airport</dd>
+              <dd>Airport</dd>
+              <dd>Airport</dd>
+          </dl>
+          <dl>
+              <dt>
+                  <label for="title"><h3>Contact</h3></label>
+              </dt>
+              <dd stl:if="abakuc:phone">Tel: ${abakuc:phone}</dd>
+          </dl>
         </span>
         <span>
             <a href="../;enquiry_form" class="action"><span>Make an enquiry</span></a>
         </span>
     </div> <!-- yui-u -->
-</div> <!-- yui-g -->
+</div> <!-- yui-gc -->
+<dl>
+<dd class="info">
+    Licenses: ABTA: 12345 ATOL: 12345678 BBBBBBBA AJajajAJAJajaklj kljaLKJALKj
+</dd>
+</dl>

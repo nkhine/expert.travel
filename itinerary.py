@@ -22,6 +22,10 @@ from itools.stl import stl
 from itools.uri import Path, get_reference
 from itools.vfs import vfs
 from itools.web import get_context
+from itools.cms.messages import *
+from itools.cms.html import XHTMLFile
+from itools.i18n import get_language_name
+from itools.rest import checkid
 
 # Import from abakuc
 from base import Handler, Folder
@@ -42,11 +46,14 @@ class Itinerary(RoleAware, Folder):
         ['view'],
         ['browse_content?mode=list'],
         ['edit_metadata_form'],
-        ['add_itinerary_form']]
+        ['add_itinerary_day_form']]
 
     browse_content__access__ = 'is_admin'
     new_resource_form__access__ = 'is_branch_manager_or_member'
     new_resource__access__ = 'is_branch_manager_or_member'
+
+    def get_document_types(self):
+        return [ItineraryDay, File]
 
     ###################################################################
     # API 
@@ -104,64 +111,59 @@ class Itinerary(RoleAware, Folder):
         x = container.search_handlers(handler_class=cls)
         # A product can only have one itinerary
         items = list(x)
-        print items
         if items != 0:
             for item in items:
                 root = context.root
                 item = root.get_handler(item.abspath)
-                print item.name
                 goto = '%s/;view' % item.name
-                print goto
                 message = u'Please modify the original itinerary!'
                 return context.come_back(message, goto=goto)            
-        else:
-            from datetime import datetime
-            username = ''
-            if context is not None:
-                user = context.user
-                if user is not None:
-                    username = user.name
+        from datetime import datetime
+        username = ''
+        if context is not None:
+            user = context.user
+            if user is not None:
+                username = user.name
 
-            # Check data
-            keep = [ x for x, y in cls.itinerary_fields ]
-            error = context.check_form_input(cls.itinerary_fields)
-            if error is not None:
-                return context.come_back(error, keep=keep)
-            name = 'itinerary'
-            # Job title
-            title = context.get_form_value('dc:title')
-            # Set properties
-            handler = cls()
-            metadata = handler.build_metadata()
-            for key in ['dc:title' , 'dc:description', 'abakuc:text']:
-                try:
-                    value = context.get_form_value(key)
-                    if not value:
-                        message = (u"You have to fill all fields. You can edit"
-                                   u" these afterwords")
-                        return context.come_back(message)
-                    metadata.set_property(key, context.get_form_value(key))
-                except:
-                    message = u'Error of DataTypes.'
+        # Check data
+        keep = [ x for x, y in cls.itinerary_fields ]
+        error = context.check_form_input(cls.itinerary_fields)
+        if error is not None:
+            return context.come_back(error, keep=keep)
+        name = 'itinerary'
+        # Job title
+        title = context.get_form_value('dc:title')
+        # Set properties
+        handler = cls()
+        metadata = handler.build_metadata()
+        for key in ['dc:title' , 'dc:description', 'abakuc:text']:
+            try:
+                value = context.get_form_value(key)
+                if not value:
+                    message = (u"You have to fill all fields. You can edit"
+                               u" these afterwords")
                     return context.come_back(message)
+                metadata.set_property(key, context.get_form_value(key))
+            except:
+                message = u'Error of DataTypes.'
+                return context.come_back(message)
 
-            # Set the date the news was posted
-            date = datetime.now()
-            metadata.set_property('dc:date', date)
-            metadata.set_property('abakuc:unique_id', generate_password(30))
-            # Add the object
-            handler, metadata = container.set_object(name, handler, metadata)
+        # Set the date the itinerary was posted
+        date = datetime.now()
+        metadata.set_property('dc:date', date)
+        metadata.set_property('abakuc:unique_id', generate_password(30))
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        message = u'Itinerary item has been added. Add some itinerary days now!'
+        return context.come_back(message, goto=goto)
 
-            goto = './%s/;%s' % (name, handler.get_firstview())
-            message = u'News item has been added.'
-            return context.come_back(message, goto=goto)
-
-    add_news_form__access__ = 'is_branch_manager_or_member'
-    add_news_form__label__ = u'Add news'
-    def add_news_form(self, context):
-        url = '../;new_resource_form?type=news'
+    add_itinerary_day_form__access__ = 'is_branch_manager_or_member'
+    add_itinerary_day_form__label__ = u'Add an itinerary day'
+    def add_itinerary_day_form(self, context):
+        url = '../;new_resource_form?type=itinerary_day'
         goto = context.uri.resolve(url)
-        message = u'Please use this form to add a new news item'
+        message = u'Please use this form to add a new itinerary day'
         return context.come_back(message, goto=goto)
 
 
@@ -491,4 +493,80 @@ class Itinerary(RoleAware, Folder):
         address = product.parent
         return address.is_branch_manager_or_member(user, object)
 
+class ItineraryDay(XHTMLFile):
+
+    class_id = 'itinerary_day'
+    class_aliases = []
+    class_title = u'Itinerary Day'
+    class_views = [['view'],
+                   ['edit_form'],
+                   ['edit_metadata_form'],
+                   ['state_form']]
+
+    @classmethod
+    def new_instance_form(cls, context, name=''):
+        root = context.root
+        here = context.handler
+        site_root = here.get_site_root()
+        namespace = {}
+        # The class id
+        namespace['class_id'] = cls.class_id
+        website_languages = site_root.get_property('ikaaro:website_languages')
+        default_language = website_languages[0]
+        languages = []
+        for code in website_languages:
+            language_name = get_language_name(code)
+            languages.append({'code': code,
+                              'name': cls.gettext(language_name),
+                              'isdefault': code == default_language})
+        namespace['languages'] = languages
+
+        handler = root.get_handler('/ui/abakuc/training/document/new_instance.xml')
+        return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        title = context.get_form_value('dc:title')
+        language = context.get_form_value('dc:language')
+
+        # Generate the new_instance name
+        # based on the class_id
+        document_names = [ x for x in container.get_handler_names()
+                           if x.startswith(cls.class_id) ]
+        if document_names:
+            i = get_sort_name(max(document_names))[1]+ 1
+            name = '%s%d.%s' % (cls.class_id, i, cls.class_extension)
+        else:
+            name = '%s1.%s' % (cls.class_id, cls.class_extension)
+
+        # Check the name
+        name = name.strip()
+        if not name:
+            return context.come_back(MSG_NAME_MISSING)
+
+        name = checkid(name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        #name = FileName.encode((name, cls.class_extension, language))
+
+        # Check the name is free
+        if container.has_handler(name):
+            return context.come_back(MSG_NAME_CLASH)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        metadata.set_property('dc:title', title, language=language)
+        metadata.set_property('dc:language', language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+
 register_object_class(Itinerary)
+register_object_class(ItineraryDay)

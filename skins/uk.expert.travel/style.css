@@ -167,6 +167,7 @@ no-repeat;width:400px;height:62px;}
 #bread { margin: 1.2em 0 0.3em 0; font-size: 77%; }
 .batch { text-align:right; margin: 0.2em; font-size: 77%; }
 .info { text-align:right; margin: 0.3em; font-size: 85%; }
+.info h3 { margin-top: 0.8em; text-align:left; font-size: 100%; border-bottom: 1px solid #d3d7cf; }
 /**************************************************************************
  * Categories style 
  **************************************************************************/

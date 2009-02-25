@@ -54,5 +54,12 @@
           value="${fax}" />
       </td>
     </tr>
+    <tr>
+      <td>
+        <label for="freephone">Is it a freephone number?</label><br/>
+        <input type="checkbox" name="abakuc:freephone" id="freephone"
+          checked="${freephone}" value="1" />
+      </td>
+    </tr>
   </table>
 </stl:block>

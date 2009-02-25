@@ -871,6 +871,7 @@ class ExpertTravel(SiteRoot):
             # Hotel information
             hotel_location = product.get_property('abakuc:hotel')
             # Every product must have a location
+            # XXX what if it is a cruise?
             if hotel_location:
                 hotel_address = product.get_address(hotel_location)
                 county = hotel_address.get_property('abakuc:county')
