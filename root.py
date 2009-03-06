@@ -4,6 +4,7 @@
 # Import from the future
 from __future__ import with_statement
 import datetime
+import pickle
 # Import from the Standard Library
 from random import choice
 from string import ascii_letters
@@ -121,7 +122,7 @@ class Root(Handler, BaseRoot):
         cache = self.cache
 
         # Companies
-        title = u'Expert Travel'
+        title = u'Companies'
         kw = {'dc:title': {'en': title},
               'ikaaro:website_is_open': True}
         #kw = {'dc:title': {'en': title}}
@@ -135,6 +136,13 @@ class Root(Handler, BaseRoot):
         countries = Countries()
         cache['countries'] = countries
         cache['countries.metadata'] = countries.build_metadata(**kw)
+
+        # Affiliations 
+        affiliations = CSV()
+        path = get_abspath(globals(), 'data/affiliations.csv')
+        affiliations.load_state_from(path)
+        cache['affiliations.csv'] = affiliations
+        cache['affiliations.csv.metadata'] = affiliations.build_metadata()
 
         # Business Topics
         topics = CSV()
@@ -287,6 +295,16 @@ class Root(Handler, BaseRoot):
     #                                 get_sort_name(y.name)))
     #    return training
 
+    def get_affiliations_namespace(self, ids=None):
+        affiliations = self.get_handler('affiliations.csv')
+        namespace = []
+        for row in affiliations.get_rows():
+            namespace.append({
+                'id': row[0], 'title': row[1],
+                'is_selected': (ids is not None) and (row[0] in ids)})
+
+        return namespace
+
     def get_topics_namespace(self, ids=None):
         topics = self.get_handler('topics.csv')
         namespace = []
@@ -431,7 +449,7 @@ class Root(Handler, BaseRoot):
         # We don't want the header
         #rows = rows[1:49]
         #rows = rows[1:550]
-        rows = rows[5500:5600]
+        rows = rows[5500:5605]
         #rows = rows[5500:13346]
         # Load handlers
         users = self.get_handler('users')
@@ -499,19 +517,41 @@ class Root(Handler, BaseRoot):
                 metadata.set_property('ikaaro:website_is_open', True)
                 # Need to split the licences into individual atoms
                 #metadata.set_property('abakuc:licence', row[12])
-                licences = re.split("\n+", row[12])
-                licenceRe = re.compile(r'\(([A-Z]+)\)( No. (\d+))?')
-                affiliation = {}
+                #licences = re.split("\n+", row[12])
+                #licenceRe = re.compile(r'\(([A-Z]+)\)( No. (\d+))?')
+                #my_list = []
+                #affiliations = {}
                 #for licence in licences:
                 #    m = licenceRe.search(licence)
                 #    if m:
-                #        affiliation[m.group(1)] = m.group(3)
-                #        metadata.set_property('abakuc:licence', affiliation)
-                #    else:
-                #        metadata.set_property('abakuc:licence', row[12])
+                #        my_list.append(str(m.group(1)))
+                #        if m.group(3) is None:
+                #        #    affiliations[m.group(1)] = 'not available'
+                #            aff_row = [m.group(1), m.group(3)]
+                #        else:
+                #            aff_row = [m.group(1), 'none']
+                #        #    affiliations[m.group(1)] = m.group(3)
+                #        # Storing the affilation data inside a CSV file in the company
+                #        # folder
+                #        handler = company.get_handler('affiliation.csv')
+                #        print handler
+                #        handler.add_row(aff_row)
+                #        #affiliation = metadata.get_property('abakuc:licence')
+                #        #if affiliation:
+                #        #    if str(m.group(1) not in affiliation:
+                #        #        affiliation += (str(m.group(1)),)
+                #        #        metadata.set_property('abakuc:licence', (str(m.group(1)),))
+                #    #metadata.set_property('abakuc:licence', (str(my_list),))
+                #    #else:
+                #    #    metadata.set_property('abakuc:licence', row[12])
+                #print affiliations
+                # convert to string
+                #affiliation = str(my_list).lower().strip().replace('[', '').replace(']', '').replace('\'', '')
+                # use pickle function and store the dictionary
+                #affiliation = pickle.dumps(affiliations)
+                #metadata.set_property('abakuc:licence', affiliation)
                 metadata.set_property('abakuc:licence', row[12])
                 metadata.set_property('abakuc:type', type)
-                print affiliation
             # Add Address
             address_title = row[6].strip()
             address_name = title_to_name(address_title)
@@ -530,8 +570,56 @@ class Root(Handler, BaseRoot):
                     address.set_property('abakuc:town', row[4])
                 address.set_property('abakuc:phone', str(row[8]))
                 address.set_property('abakuc:fax', str(row[9]))
+                licences = re.split("\n+", row[12])
+                licenceRe = re.compile(r'\(([A-Z]+)\)( No. (\w+))?')
+                for licence in licences:
+                    m = licenceRe.search(licence)
+                    if m:
+                        print m.group(3)
+                        if m.group(3) is not None:
+                            aff_row = [m.group(1), m.group(3)]
+                        else:
+                            aff_row = [m.group(1), 'none']
+                        # Storing the affilation data inside a CSV file in the company
+                        # folder
+                        handler = address.get_handler('affiliation.csv')
+                        handler.add_row(aff_row)
                 if user is not None:
                     address.set_user_role(user.name, 'abakuc:branch_manager')
+
+        message = ('Remember to reindex the database now:'
+                   ' <a href=";catalog_form">reindex</a>.')
+        return message
+
+
+    import_affiliation__access__ = 'is_admin'
+    def import_affiliation(self, context):
+        ###################################################################
+        # Import affiliations 
+        
+        companies = self.get_handler('companies')
+        # Read the input CSV file
+        path = get_abspath(globals(), 'data/abakuc_import_companies.csv')
+        handler = get_handler(path)
+        rows = handler.get_rows()
+        rows = list(rows)
+
+        namespace = []
+        affiliation = []
+        dic = {}
+        for count, row in enumerate(rows):
+            affiliations = row[12]
+            licences = re.split("\n+", affiliations)
+            #licence_list = [re.split("\((\w+)\)", licence) for licence in licences]
+            # get the affiliation.csv file
+            licenceRe = re.compile(r'([^(]+)\(([A-Z]+)\)( No. (\w+))?')
+            for licence in licences:
+                m = licenceRe.search(licence)
+                if m:
+                    print m.group(1), m.group(2), m.group(3)
+                    aff_row = [m.group(2), m.group(1)]
+                    handler = self.get_handler('affiliations.csv')
+                    handler.add_row(aff_row)
 
         message = ('Remember to reindex the database now:'
                    ' <a href=";catalog_form">reindex</a>.')

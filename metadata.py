@@ -3,9 +3,8 @@
 
 # Import from itools
 from itools.datatypes import Boolean, Integer, String, Unicode,\
-                            Email, Tokens, Date, Decimal
+                            Email, Tokens, Date, Decimal, Enumerate
 from itools.schemas import Schema as BaseSchema, register_schema
-from itools.datatypes import Enumerate
 
 class Continent(Enumerate):
 
@@ -100,6 +99,17 @@ class Schema(BaseSchema):
         'website': String,
         'topic': Tokens,
         'type': String,
+        # Affiliations
+        'abta': Unicode(title=u'ABTA', is_mandatory=False),
+        'iata': Unicode(title=u'IATA', is_mandatory=False),
+        'world_choice': Unicode(title=u'World Choice', is_mandatory=False),
+        'travel_trust': Unicode(title=u'Travel Trust Association',
+                                is_mandatory=False),
+        'atol': Unicode(title=u'ATOL', is_mandatory=False),
+        'advantage': Unicode(title=u'Advantage', is_mandatory=False),
+        'midconsort': Unicode(title=u'Midconsort', is_mandatory=False),
+        'global_travel': Unicode(title=u'Global Travel Group',
+                                 is_mandatory=False),
         # Address
         'address': Unicode,
         'postcode': String,

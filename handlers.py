@@ -78,7 +78,14 @@ class ApplicationsLog(CSV):
               'email': Email,
               'phone': String}
 
+class AffiliationTable(CSV):
 
+    class_id = 'AffiliationsTable'
+
+    columns = ['affiliation', 'affiliation_no']
+    schema = {'affiliation': String,
+              'affiliation_no': Unicode}
 
 register_object_class(EnquiriesLog)
 register_object_class(ApplicationsLog)
+register_object_class(AffiliationTable)

@@ -3,6 +3,7 @@
 
 # Import from the Standard Library
 import sha
+import pickle
 import subprocess
 from datetime import datetime, date, timedelta
 from string import Template
@@ -35,7 +36,7 @@ from itools.handlers import get_handler
 # Import from abakuc
 from base import Handler, Folder
 from forum import Forum
-from handlers import EnquiriesLog, EnquiryType
+from handlers import EnquiriesLog, EnquiryType, AffiliationTable
 from jobs import Job
 from metadata import JobTitle, SalaryRange
 from news import News
@@ -80,6 +81,10 @@ class Companies(Folder):
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,
                                         phrase_treshold=240)
+            affiliation = get('abakuc:licence')
+            print affiliation
+            #affiliations = pickle.loads(affiliation)
+            #print affiliations
             company = {'url': url,
                       'id': item.name,
                       'description': description,
@@ -114,7 +119,7 @@ class Companies(Folder):
         return stl(handler, namespace)
 
 
-class Company(SiteRoot):
+class Company(SiteRoot, Folder):
 
     class_id = 'company'
     class_title = u'Company'
@@ -132,9 +137,10 @@ class Company(SiteRoot):
                    ['edit_metadata_form']]
 
 
+
     permissions_form__access__ = 'is_allowed_to_edit'
     new_user_form__access__ = 'is_allowed_to_edit'
-    browse_content__access__ = 'is_allowed_to_edit'
+    browse_content__access__ = 'is_admin'
 
     def get_document_types(self):
         return []
@@ -1020,7 +1026,7 @@ class Address(RoleAware, WorkflowAware, Folder):
          'unit': u"Guest"},
     ]
 
-    __fixed_handlers__ = ['log_enquiry.csv']
+    __fixed_handlers__ = ['log_enquiry.csv', 'affiliation.csv']
 
     permissions_form__access__ = 'is_branch_manager'
     permissions__access__ = 'is_branch_manager'
@@ -1039,6 +1045,10 @@ class Address(RoleAware, WorkflowAware, Folder):
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
+
+        affiliation = AffiliationTable()
+        cache['affiliation.csv'] = affiliation
+        cache['affiliation.csv.metadata'] = affiliation.build_metadata()
 
         # Jobs folder
         #title = u'Products folder'
@@ -1156,6 +1166,38 @@ class Address(RoleAware, WorkflowAware, Folder):
         template_path = 'ui/abakuc/companies/company/tabs.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)
+
+    #########################################################################
+    # Affiliations 
+    affiliations__label__ = u'Affiliations'
+    affiliations__access__ = 'is_branch_manager'
+    def affiliations(self, context):
+        root = context.root
+        root_csv = root.get_handler('affiliations.csv')
+        csv = self.get_handler('affiliation.csv')
+        rows = root_csv.get_rows()
+
+        namespace = {}
+        affiliations = []
+        for row in csv.get_rows():
+            ids, affiliation_no = row
+            #for row_number in root_csv.search(
+            #print ids
+            #affiliations_list = root.get_affiliations_namespace(ids)
+            for count, row in enumerate(rows):
+                id = row[0]
+                if ids == id:
+                    title = row[1]
+                    print title
+            affiliations.append({
+                'index': row.number,
+                #'affiliation': affiliations_list.title,
+                'title': title,
+                'affiliation': ids,
+                'affiliation_no': affiliation_no})
+        namespace['affiliations'] = affiliations
+        print namespace['affiliations']
+
 
 
     #######################################################################
