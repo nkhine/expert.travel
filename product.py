@@ -14,6 +14,7 @@ from itools.cms.messages import *
 from itools.cms.registry import register_object_class, get_object_class
 from itools.cms.utils import generate_password
 from itools.cms.versioning import VersioningAware
+from itools.cms.workflow import WorkflowAware
 from itools.datatypes import Decimal
 from itools.stl import stl
 from itools.uri import Path, get_reference
@@ -23,7 +24,7 @@ from itools.web import get_context
 from utils import title_to_name
 from itinerary import Itinerary
 
-class Product(Folder):
+class Product(Folder, WorkflowAware):
 
     class_id = 'product'
     class_title = u'Product'
@@ -35,6 +36,7 @@ class Product(Folder):
         ['manage'],
         ['browse_content?mode=list'],
         ['new_resource_form'],
+        ['state_form'],
         ['setup_hotel_form']]
 
 
@@ -52,7 +54,6 @@ class Product(Folder):
 
     #######################################################################
     ## Indexes
-    #######################################################################
     def get_catalog_indexes(self):
         indexes = Folder.get_catalog_indexes(self)
         #indexes['function'] = self.get_property('abakuc:function')
@@ -64,7 +65,8 @@ class Product(Folder):
         indexes['address'] = address.name
         return indexes
 
-
+    ########################################################################
+    # Tabs 
     def tabs(self, context):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
@@ -76,10 +78,11 @@ class Product(Folder):
         root = context.root
         namespace = {}
         namespace['edit'] = self.edit_form(context)
-        namespace['view'] = self.images(context)
+        namespace['view'] = self.overview(context)
         namespace['hotel'] = self.setup_hotel_form(context)
         namespace['airline'] = self.setup_airline_form(context)
         namespace['browse_content'] = self.browse_content(context)
+        namespace['state'] = self.state_form(context)
 
         template_path = 'ui/abakuc/product/tabs.xml'
         template = root.get_handler(template_path)
@@ -105,6 +108,8 @@ class Product(Folder):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
+    ########################################################################
+    # API 
     def get_currency(self, context):
         """
         Used in skins.py to search for companies
@@ -125,6 +130,8 @@ class Product(Folder):
             return self.get_active_countries(context)
         return [(country_name, country_code)]
 
+    ########################################################################
+    # View 
     overview__access__ = True
     overview__label__ = u'Overview'
     def overview(self, context):
@@ -133,9 +140,8 @@ class Product(Folder):
         for key in self.edit_fields:
             namespace[key] = self.get_property(key)
 
-        airline = self.get_property('abakuc:airline')
-        currency = self.get_property('abakuc:currency')
         price = self.get_property('abakuc:price')
+        currency = self.get_property('abakuc:currency')
         currencies = root.get_currency(currency)
         #for x in [d for d in currencies if d['is_selected']]:
         if currency:
@@ -152,15 +158,110 @@ class Product(Folder):
         else:
             format = None
         namespace['price'] = format
+        companies = root.get_handler('companies')
+        # List airlines
+        airline_list = []
+        airlines = self.get_property('abakuc:airline')
+        for airline in airlines:
+            for address in companies.search_handlers(airline):
+                company = address.parent
+                url = '%s' % self.get_pathto(company)
+                airline_list.append({
+                    'id': company.name,
+                    'title': company.get_title(),
+                    'url': url})
+
+        airline_list.sort(key=lambda x: x['id'])
+        namespace['airlines'] = airline_list
         # Get phone number
         address = self.parent
         namespace['abakuc:phone'] = address.get_property('abakuc:phone')
-        print namespace['abakuc:phone']
         template_path = 'ui/abakuc/product/overview.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
+    edit_form__access__ = 'is_allowed_to_edit'
+    edit_form__label__ = u'Edit'
+    def edit_form(self, context):
+        root = get_context().root
+        types = self.get_property('abakuc:holiday_type')
+        activities = self.get_property('abakuc:holiday_activity')
+        board = self.get_property('abakuc:board')
+        currency = self.get_property('abakuc:currency')
+        # Build the namespace
+        namespace = {}
+        namespace['types'] = root.get_holiday_types(types)
+        namespace['activities'] = root.get_holiday_activities(activities)
+        namespace['board'] =  root.get_board_types(board)
+        namespace['currency'] =  root.get_currency(currency)
+        for key in self.edit_fields:
+            namespace[key] = self.get_property(key)
+        handler = self.get_handler('/ui/abakuc/product/edit.xml')
+        return stl(handler, namespace)
 
+
+    edit__access__ = 'is_allowed_to_edit'
+    def edit_metadata(self, context):
+        verify = [('dc:title', True), ('dc:description', True),
+                        ('abakuc:closing_date', True),
+                        ('abakuc:departure_date', True),
+                        ('abakuc:return_date', True),
+                        ('abakuc:price', True),
+                        ('abakuc:board', True),
+                        ('abakuc:text', True),
+                        ('holiday_type', True),
+                        ('holiday_activity', True)]
+
+        # Check input data
+        error = context.check_form_input(verify)
+        if error is not None:
+            return context.come_back(error)
+        
+        # Check dates are correct
+        closing_date = context.get_form_value('abakuc:closing_date')
+        departure_date = context.get_form_value('abakuc:departure_date')
+        return_date = context.get_form_value('abakuc:return_date')
+        difference = return_date - departure_date
+        if return_date <= departure_date:
+            params = {}
+            message = (u": Return date is before the departure date."
+                         u"Please correct!")
+            goto = './;edit_form?%s' % urlencode(params)
+            return context.come_back(message, goto=goto)
+
+        # Set metadata
+        self.set_property('abakuc:departure_date', departure_date)
+        self.set_property('abakuc:return_date', return_date)
+        
+        # Currency
+        currency = context.get_form_value('abakuc:currency')
+        self.set_property('abakuc:currency',currency)
+
+        # Board type
+        board = context.get_form_value('abakuc:board')
+        self.set_property('abakuc:board',board)
+
+        # Holiday type
+        holiday_type = context.get_form_value('holiday_type')
+        self.set_property('abakuc:holiday_type', holiday_type)
+        
+        # Holiday activity
+        holiday_activity = context.get_form_values('holiday_activity')
+        self.set_property('abakuc:holiday_activity', tuple(holiday_activity))
+
+
+        date = self.get_property('dc:date')
+        if date is None:
+            self.set_property('dc:date', datetime.date.today())
+            self.set_property('abakuc:unique_id', generate_password(30))
+
+        for key in self.edit_fields:
+            self.set_property(key, context.get_form_value(key))
+        return context.come_back(MSG_CHANGES_SAVED)
+
+
+    ########################################################################
+    # Hotel
     hotel__access__ = True
     hotel__label__ = u'Hotel'
     def hotel(self, context):
@@ -506,9 +607,7 @@ class Product(Folder):
                 self.set_user_role(user.name, default_role)
             else:
                 address, metadata = company.set_object(name, Address())
-                print address
                 default_role = address.__roles__[0]['name']
-                print default_role
                 address.set_user_role(user.name, default_role)
 
                 # Set Properties
@@ -548,13 +647,14 @@ class Product(Folder):
     # Setup airline 
     setup_airline_form__access__ = 'is_branch_manager'
     setup_airline_form__label__ = u'Setup hotel'
-    def setup_airline_form(self, airline=None):
+    def setup_airline_form(self, context):
         root = get_context().root
         namespace = {}
         # List all airline companies
         airline = self.get_property('abakuc:airline')
+        airport = self.get_property('abakuc:airport')
         namespace['airlines'] = root.get_airlines(airline)
-        print namespace['airlines']
+        namespace['airports'] = root.get_airports(airport)
         handler = root.get_handler('ui/abakuc/product/setup_airline.xml')
         return stl(handler, namespace)
 
@@ -562,10 +662,12 @@ class Product(Folder):
     setup_airline__label__ = u'Setup hotel'
     def setup_airline(self, context):
         root = get_context().root
-        name = context.get_form_value('airline')
+        airline = context.get_form_values('airline')
+        airport = context.get_form_values('airport')
         # Link the hotel's address to the product
-        self.set_property('abakuc:airline', name)
-        message = u'Airline linked to product.'
+        self.set_property('abakuc:airline', tuple(airline))
+        self.set_property('abakuc:airport', tuple(airport))
+        message = u'Airlines/Airports linked to product.'
         home = ';view'
         goto = context.uri.resolve(home)
         return context.come_back(message, goto=goto)
@@ -673,72 +775,6 @@ class Product(Folder):
         handler = self.get_handler('/ui/abakuc/product/manage.xml')
         return stl(handler, namespace)
 
-
-    edit_form__access__ = 'is_allowed_to_edit'
-    edit_form__label__ = u'Edit'
-    def edit_form(self, context):
-        root = get_context().root
-        types = self.get_property('abakuc:holiday_type')
-        activities = self.get_property('abakuc:holiday_activity')
-        board = self.get_property('abakuc:board')
-        currency = self.get_property('abakuc:currency')
-        # Build the namespace
-        namespace = {}
-        namespace['types'] = root.get_holiday_types(types)
-        namespace['activities'] = root.get_holiday_activities(activities)
-        namespace['board'] =  root.get_board_types(board)
-        namespace['currency'] =  root.get_currency(currency)
-        for key in self.edit_fields:
-            namespace[key] = self.get_property(key)
-        handler = self.get_handler('/ui/abakuc/product/edit.xml')
-        return stl(handler, namespace)
-
-
-    edit__access__ = 'is_allowed_to_edit'
-    def edit_metadata(self, context):
-        verify = [('dc:title', True), ('dc:description', True),
-                        ('abakuc:closing_date', True),
-                        ('abakuc:departure_date', True),
-                        ('abakuc:return_date', True),
-                        ('abakuc:price', True),
-                        ('abakuc:board', True),
-                        ('abakuc:text', True),
-                        ('abakuc:holiday_type', True)]
-
-        # Check input data
-        error = context.check_form_input(verify)
-        if error is not None:
-            return context.come_back(error)
-        
-        # Check dates are correct
-        closing_date = context.get_form_value('abakuc:closing_date')
-        departure_date = context.get_form_value('abakuc:departure_date')
-        return_date = context.get_form_value('abakuc:return_date')
-        currency = context.get_form_value('abakuc:currency')
-        difference = return_date - departure_date
-        if return_date <= departure_date:
-            params = {}
-            message = (u": Return date is before the departure date."
-                         u"Please correct!")
-            goto = './;edit_form?%s' % urlencode(params)
-            return context.come_back(message, goto=goto)
-
-        board = context.get_form_value('abakuc:board')
-        topics = context.get_form_values('topic')
-        self.set_property('abakuc:holiday_activity', tuple(topics))
-        self.set_property('abakuc:departure_date', departure_date)
-        self.set_property('abakuc:return_date', return_date)
-        self.set_property('abakuc:board',board)
-        self.set_property('abakuc:currency',currency)
-
-        date = self.get_property('dc:date')
-        if date is None:
-            self.set_property('dc:date', datetime.date.today())
-            self.set_property('abakuc:unique_id', generate_password(30))
-
-        for key in self.edit_fields:
-            self.set_property(key, context.get_form_value(key))
-        return context.come_back(MSG_CHANGES_SAVED)
 
 
     images__access__ = True 

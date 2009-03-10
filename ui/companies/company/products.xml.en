@@ -17,7 +17,8 @@
             ${item/description}
           </dd>
           <dd class="info">
-            From ${item/price} pp and staying at ${item/hotel}, ${item/country}, ${item/region}
+            From ${item/price} pp <stl:block stl:if="item/hotel">and staying at
+            ${item/hotel}, ${item/country}, ${item/region}</stl:block>
           </dd>
         </dl>       
       </stl:block>

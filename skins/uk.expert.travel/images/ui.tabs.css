@@ -16,11 +16,11 @@
 /* Skin */
 
 #tab1 .ui-tabs-panel {
-    height: 155px;
+    height: 190px;
     border-top: 1px solid #97a5b0;
     border-right: 1px solid #97a5b0;
-    border-bottom: none;
     border-left: 1px solid #97a5b0;
+    border-bottom: none;
 }
 #tab1 .ui-tabs-nav {
     background: #fFF;
@@ -35,26 +35,24 @@
     background: #FFF;
 }
 #tab2 .ui-tabs-panel {
+    position:relative;top:-3px;
     border-top: 1px solid #97a5b0;
     border-right: none;
     border-left: none;
     border-bottom: none;
 }
 #tab2 .ui-tabs-nav {
-    border: none;
-    height: 22px;
-    margin-left: 5px;
+    margin: 0 5px 0 0;
+    height: 25px;
+    padding: 0 0 0 1px;
 }
 #tab2 .ui-tabs-nav a {
     font-size: 11px;
-    margin-left: 2px;
+    margin-left: 5px;
 }
 #tab2 .ui-tabs-nav a span {
-    width: 64px; /* IE 6 treats width as min-width */
-    min-width: 64px;
     height: 15px; /* IE 6 treats height as min-height */
     min-height: 15px;
-    padding-top: 6px;
 }
 /* Skin */
 .ui-tabs-nav {

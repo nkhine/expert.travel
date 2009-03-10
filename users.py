@@ -4,32 +4,33 @@
 # Import from the standard library
 import mimetypes
 from datetime import datetime, date
+from urllib import urlencode
 
 # Import from itools
-from itools import uri
-from itools.i18n import format_datetime
 from itools import handlers
-from itools.stl import stl
-from itools.uri import Path, get_reference
-from itools.web import get_context
-from itools.cms.registry import get_object_class
+from itools import uri
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.cms.access import AccessControl
+from itools.cms.base import Handler
 from itools.cms.binary import Image
 from itools.cms.folder import Folder
-from itools.cms.base import Handler
+from itools.cms.messages import *
 from itools.cms.metadata import Password
+from itools.cms.registry import get_object_class
 from itools.cms.registry import register_object_class
 from itools.cms.users import UserFolder as iUserFolder, User as iUser
 from itools.cms.utils import get_parameters
-from itools.cms.messages import *
-from itools.rest import checkid
-from itools.cms.widgets import batch, table
-from itools.xml import Parser
-from itools.datatypes import Email
-from itools.cms.workflow import WorkflowAware
-from itools.xhtml import Document as XHTMLDocument
 from itools.cms.utils import reduce_string
-from itools.catalog import EqQuery, AndQuery, RangeQuery
+from itools.cms.widgets import batch, table
+from itools.cms.workflow import WorkflowAware
+from itools.datatypes import Boolean, Email, Enumerate, Integer, is_datatype
+from itools.i18n import format_datetime
+from itools.rest import checkid
+from itools.stl import stl
+from itools.uri import Path, get_reference
+from itools.web import get_context
+from itools.xhtml import Document as XHTMLDocument
+from itools.xml import Parser
 
 # Import from our product
 from bookings import Bookings
@@ -345,10 +346,13 @@ class User(iUser, WorkflowAware, Handler):
 
         namespace = {}
         namespace['user'] = self.user(context)
-        company = self.company(context)
+        #company = self.company(context)
         namespace['company'] = self.company(context)
         address = self.get_address()
         namespace['has_address'] = address
+        affiliations = self.affiliations(context)
+        namespace['affiliations'] = affiliations
+        # Manager tabs
         namespace['is_branch_manager'] = None
         if address:
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
@@ -922,6 +926,134 @@ class User(iUser, WorkflowAware, Handler):
         # Return the page
         handler = self.get_handler('/ui/abakuc/response.xml')
         return stl(handler, namespace)
+
+    affiliations__access__ = 'is_self_or_admin'
+    def affiliations(self, context, is_branch_manager=None, title=None):
+        root = get_context().root
+        namespace = {}
+        address = self.get_address()
+        if address:
+            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
+            csv = address.get_handler('affiliation.csv')
+            items = []
+            affiliations = root.get_affiliations_namespace()
+            for index, row in enumerate(csv.get_rows()):
+                ids, affiliation_no = row
+                affiliation = [d for d in affiliations if d['id'] == ids]
+                for item in affiliation:
+                    title = item['title']
+                edit_affiliation = context.get_form_value('edit_affiliation', type=Integer)
+                if index == edit_affiliation:
+                    selected = True
+                    edit_row = None 
+                else:
+                    selected = False
+                    edit_row = '?edit_affiliation=%s' %  index
+                items.append({
+                    'index': index,
+                    'affiliation': ids,
+                    'selected': selected,
+                    'edit_row': edit_row,
+                    'title': title,
+                    'affiliation_no': affiliation_no})
+            items.sort(key=lambda x: x['affiliation'])
+            # batch
+            batch_start = int(context.get_form_value('batchstart', default=0))
+            batch_size = 4
+            batch_total = len(items)
+            batch_fin = batch_start + batch_size
+            if batch_fin > batch_total:
+                batch_fin = batch_total
+            items = items[batch_start:batch_fin]
+            # Namespace
+            if items:
+                items_batch = batch(context.uri, batch_start, batch_size,
+                                  batch_total,
+                                  msgs=(u"Your company has one affiliation.",
+                                        u"Your company has ${n} affiliations."))
+                msg = None
+            else:
+                items_batch = None
+                msg = u"Your company does not have any affiliations."
+            namespace['batch'] = items_batch
+            namespace['msg'] = msg
+            namespace['items'] = items
+            items2keys = set(item['affiliation'] for item in items)
+            items_to_add = []
+            for item in affiliations:
+                if item['id'] not in items2keys:
+                    items_to_add.append(item)
+            items_to_add.sort(key=lambda x: x['id'])
+            namespace['items_to_add'] = items_to_add
+        namespace['is_branch_manager'] = is_branch_manager
+
+        handler = self.get_handler('/ui/abakuc/users/affiliations.xml')
+        return stl(handler, namespace)
+
+    add_affiliation__access__ = 'is_self_or_admin'
+    def add_affiliation(self, context):
+        check_fields = [('affiliation', True), ('affiliation_no', True)]
+        keep = [ x for x, y in check_fields ]
+        error = context.check_form_input(check_fields)
+        if error is not None:
+            message = u'Please select and add an affiliation number.'
+            return context.come_back(message, keep=keep)
+        affiliation = context.get_form_value('affiliation')
+        affiliation_no = context.get_form_value('affiliation_no')
+        address = self.get_address()
+        if address:
+            row = [affiliation, affiliation_no]
+            csv = address.get_handler('affiliation.csv')
+            csv.add_row(row)
+            message = (u"Your affiliation has been added")
+            return context.come_back(message.encode('utf-8'))
+
+
+
+    edit_affiliation__access__ = 'is_self_or_admin'
+    def edit_affiliation(self, context):
+        check_fields = [('affiliation_no', True)]
+        keep = [ x for x, y in check_fields ]
+        error = context.check_form_input(check_fields)
+        if error is not None:
+            message = u'Please add an affiliation number.'
+            return context.come_back(message, keep=keep)
+        new_affiliation_no = context.get_form_value('affiliation_no')
+        address = self.get_address()
+        if address:
+            url = ';profile'
+            index = context.get_form_value('index', type=Integer)
+            csv = address.get_handler('affiliation.csv')
+            row = csv.get_row(index)
+            if row[1] == new_affiliation_no:
+                goto = context.uri.resolve(url)
+                message = (u"Affilation number is the same, no changes made!")
+                return context.come_back(message.encode('utf-8'), goto=goto)
+            row.set_value('affiliation_no', new_affiliation_no)
+            goto = context.uri.resolve(url)
+            message = (u"The affiliation number has been updated!")
+            return context.come_back(message.encode('utf-8'), goto=goto)
+
+    delete_affiliation__access__ = 'is_self_or_admin'
+    def delete_affiliation(self, context):
+        check_fields = [('index', True)]
+        keep = [ x for x, y in check_fields ]
+        error = context.check_form_input(check_fields)
+        if error is not None:
+            message = u'Invalid or no record selected for removal!'
+            return context.come_back(message, keep=keep)
+        # Get the row
+        address = self.get_address()
+        if address:
+            index = context.get_form_value('index', type=Integer)
+            csv = address.get_handler('affiliation.csv')
+            if csv:
+                csv.del_row(index)
+            url = ';profile'
+            goto = context.uri.resolve(url)
+            message = (u"The affilation has been deleted!")
+            return context.come_back(message.encode('utf-8'), goto=goto)
+
     ########################################################################
     # Manage tab 
     ########################################################################
@@ -1160,7 +1292,6 @@ class User(iUser, WorkflowAware, Handler):
     def create_news(self, context):
         address = self.get_address()
         url = '/%s/;new_resource_form?type=news' % (self.get_pathto(address))
-        print url
         goto = context.uri.resolve(url)
         message = u'Please use this form to add a new news item'
         return context.come_back(message, goto=goto)

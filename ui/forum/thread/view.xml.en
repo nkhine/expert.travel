@@ -45,10 +45,15 @@
   <a name="new_reply" />
   <h3>Post a Reply</h3>
   <form action=";new_reply" method="post">
-    <p>
+    <div>
       ${rte}
-      <input type="submit" value="Reply" />
-    </p>
+    </div>
+          <span class="info">
+        By using this Forum you agree not to submit data which is untrue, defamatory, obscene or abusive or otherwise objectionable or in breach of any applicable laws or rights of third parties and to indemnify and hold Expert.Travel harmless from any claim or demand, including reasonable attorneys' fees, made by any third party due to or arising out of data you submit, post, transmit or make available through this Forum, your use of the Forum, or your violation of our Terms &amp; Conditions
+      </span>
+      <div>
+      <input type="submit" value="I agree, post reply." />
+      </div>
   </form>
 
 </stl:block>

@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
+import locale
 import sha
 import pickle
 import subprocess
@@ -75,6 +76,7 @@ class Companies(Folder):
         title = here.get_title()
         companies = self.search_handlers(handler_class=Company)
         items = []
+        # XXX this is very slow, as it has to loop for all companies.
         for item in companies:
             get = item.get_property
             url = '%s/;view' %  item.name
@@ -82,15 +84,13 @@ class Companies(Folder):
                                         word_treshold=90,
                                         phrase_treshold=240)
             affiliation = get('abakuc:licence')
-            print affiliation
             #affiliations = pickle.loads(affiliation)
-            #print affiliations
             company = {'url': url,
                       'id': item.name,
                       'description': description,
                       'title': item.title_or_name}
             items.append(company)
-            items.sort(key=lambda x: x['id'])
+        items.sort(key=lambda x: x['id'])
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 5
@@ -374,94 +374,6 @@ class Company(SiteRoot, Folder):
 
         return stl(handler, namespace)
 
-    ####################################################################
-    # List all products 
-    products__label__ = u'List jobs'
-    products__access__ = True
-    def products(self, context):
-        root = context.site_root
-        here = context.handler or root
-        from root import world
-        namespace = {}
-        catalog = context.server.catalog
-        query = []
-        query.append(EqQuery('format', 'product'))
-        # We only need this objects items
-        query.append(EqQuery('company', self.name))
-        today = (date.today()).strftime('%Y-%m-%d')
-        query.append(RangeQuery('closing_date', today, None))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        documents = results.get_documents()
-        products = []
-        for item in list(documents):
-            product = root.get_handler(item.abspath)
-            get = product.get_property
-            closing_date = get('abakuc:closing_date')
-            # Information about the item
-            address = product.parent
-            company = address.parent
-            # Hotel information
-            hotel_location = product.get_property('abakuc:hotel')
-            # Every product must have a location
-            if hotel_location:
-                hotel_address = product.get_address(hotel_location)
-                county = hotel_address.get_property('abakuc:county')
-                hotel = hotel_address.parent
-                if county is not None:
-                    for row_number in world.search(county=county):
-                        row = world.get_row(row_number)
-                        country = row[6]
-                        region = row[7]
-                        county = row[8]
-                else:
-                    country = ''
-                    region = ''
-                    county = ''
-
-                url = '%s/' % here.get_pathto(product)
-                #url = '/%s/%s/%s' % (company.name, address.name, item.name)
-                #apply = '/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
-                description = reduce_string(product.get_property('dc:description'),
-                                            word_treshold=90,
-                                            phrase_treshold=240)
-                item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
-                             'url': url+';view',
-                             'title': product.get_property('dc:title'),
-                             'hotel': hotel.get_property('dc:title'),
-                             'region': region,
-                             'country': country,
-                             'closing_date': get('abakuc:closing_date'),
-                             'price': get('abakuc:price'),
-                #             'address': address.get_title_or_name(),
-                             'description': description}
-                #trainings.append(training_to_add)
-                products.append(item_to_add)
-        # Set batch informations
-        batch_start = int(context.get_form_value('t4', default=0))
-        batch_size = 5
-        batch_total = len(products)
-        batch_fin = batch_start + batch_size
-        if batch_fin > batch_total:
-            batch_fin = batch_total
-        products = products[batch_start:batch_fin]
-        # Namespace
-        if products:
-            msgs = (u'There is one product.',
-                    u'There are ${n} products.')
-            products_batch = t4(context.uri, batch_start, batch_size,
-                              batch_total, msgs=msgs)
-            msg = None
-        else:
-            products_table = None
-            products_batch = None
-            msg = u'Sorry but there are no products'
-
-        namespace['products'] = products
-        namespace['batch'] = products_batch
-        namespace['msg'] = msg
-        handler = self.get_handler('/ui/abakuc/companies/company/products.xml')
-        return stl(handler, namespace)
     ####################################################################
     # List jobs
     list_jobs__label__ = u'List jobs'
@@ -916,8 +828,124 @@ class Company(SiteRoot, Folder):
         return context.come_back(message, goto=goto)
 
     ####################################################################
+    # List all products 
+    products__label__ = u'List products'
+    products__access__ = True
+    def products(self, context):
+        root = context.root
+        here = context.handler or root
+        from root import world
+        namespace = {}
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'product'))
+        # We only need this objects items
+        query.append(EqQuery('company', self.name))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        documents = results.get_documents()
+        products = []
+        for item in list(documents):
+            product = root.get_handler(item.abspath)
+            get = product.get_property
+            # Information about the item
+            address = product.parent
+            company = address.parent
+            url = '%s/' % self.get_pathto(product)
+            description = reduce_string(product.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            # Price and currency
+            price = product.get_property('abakuc:price')
+            currency = product.get_property('abakuc:currency')
+            currencies = root.get_currency(currency)
+            if currency:
+                currency = (d for d in currencies if d['is_selected']).next()
+                if currency['id'] == 'EUR':
+                    locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
+                    price = locale.format('%.2f', price, True)
+                    format = '%s %s' % (price, currency['sign'])
+                else:
+                    locale.setlocale(locale.LC_ALL,('en', 'ascii'))
+                    price = locale.format('%.2f', price, True)
+                    format = '%s %s' % (currency['sign'], price)
+            
+            else:
+                format = None
+            #namespace['price'] = format
+
+            # Hotel information
+            hotel_location = product.get_property('abakuc:hotel')
+            # Every product must have a location
+            # XXX what if it is a cruise?
+
+            if hotel_location:
+                hotel_address = product.get_address(hotel_location)
+                county = hotel_address.get_property('abakuc:county')
+                hotel = hotel_address.parent
+                #county = get('abakuc:county')
+                if county is not None:
+                    for row_number in world.search(county=county):
+                        row = world.get_row(row_number)
+                        country = row[6]
+                        region = row[7]
+                        county = row[8]
+                else:
+                    country = ''
+                    region = ''
+                    county = ''
+
+                item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                             'url': url,
+                             'title': product.get_property('dc:title'),
+                             'hotel': hotel.get_property('dc:title'),
+                             'region': region,
+                             'country': country,
+                             'closing_date': get('abakuc:closing_date'),
+                             'price': format,
+                             'description': description}
+            else:
+                item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                             'url': url,
+                             'title': product.get_property('dc:title'),
+                             'hotel': None,
+                             'region': None,
+                             'country': None,
+                             'closing_date': get('abakuc:closing_date'),
+                             'price': format,
+                             'description': description}
+            products.append(item_to_add)
+        # Set batch informations
+        batch_start = int(context.get_form_value('t4', default=0))
+        batch_size = 5
+        batch_total = len(products)
+        batch_fin = batch_start + batch_size
+        if batch_fin > batch_total:
+            batch_fin = batch_total
+        products = products[batch_start:batch_fin]
+        # Namespace
+        if products:
+            msgs = (u'There is one product.',
+                    u'There are ${n} products.')
+            products_batch = t4(context.uri, batch_start, batch_size,
+                              batch_total, msgs=msgs)
+            msg = None
+        else:
+            products_table = None
+            products_batch = None
+            msg = u'Sorry but there are no products'
+
+        namespace['products'] = products
+        namespace['batch'] = products_batch
+        namespace['msg'] = msg
+        handler = self.get_handler('/ui/abakuc/companies/company/products.xml')
+        return stl(handler, namespace)
+
+    ####################################################################
     # List company products 
-    list_products__label__ = u'List jobs'
+    list_products__label__ = u'List products'
     list_products__access__ = True
     def list_products(self, context):
         from root import world
@@ -937,11 +965,36 @@ class Company(SiteRoot, Folder):
             product = root.get_handler(item.abspath)
             get = product.get_property
             # Information about the item
-            #address = product.parent
-            #company = address.parent
+            address = product.parent
+            company = address.parent
+            url = '%s/' % self.get_pathto(product)
+            description = reduce_string(product.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            # Price and currency
+            price = product.get_property('abakuc:price')
+            currency = product.get_property('abakuc:currency')
+            currencies = root.get_currency(currency)
+            if currency:
+                currency = (d for d in currencies if d['is_selected']).next()
+                if currency['id'] == 'EUR':
+                    locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
+                    price = locale.format('%.2f', price, True)
+                    format = '%s %s' % (price, currency['sign'])
+                else:
+                    locale.setlocale(locale.LC_ALL,('en', 'ascii'))
+                    price = locale.format('%.2f', price, True)
+                    format = '%s %s' % (currency['sign'], price)
+            
+            else:
+                format = None
+            #namespace['price'] = format
+
             # Hotel information
             hotel_location = product.get_property('abakuc:hotel')
             # Every product must have a location
+            # XXX what if it is a cruise?
+
             if hotel_location:
                 hotel_address = product.get_address(hotel_location)
                 county = hotel_address.get_property('abakuc:county')
@@ -958,22 +1011,26 @@ class Company(SiteRoot, Folder):
                     region = ''
                     county = ''
 
-                url = '%s' % here.get_pathto(item)
-                #apply = '/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
-                description = reduce_string(product.get_property('dc:description'),
-                                            word_treshold=90,
-                                            phrase_treshold=240)
                 item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                              'url': url,
                              'title': product.get_property('dc:title'),
                              'hotel': hotel.get_property('dc:title'),
                              'region': region,
                              'country': country,
-                             'closing_date': product.get_property('abakuc:closing_date'),
-                             'price': product.get_property('abakuc:price'),
+                             'closing_date': get('abakuc:closing_date'),
+                             'price': format,
                              'description': description}
-                #trainings.append(training_to_add)
-                products.append(item_to_add)
+            else:
+                item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                             'url': url,
+                             'title': product.get_property('dc:title'),
+                             'hotel': None,
+                             'region': None,
+                             'country': None,
+                             'closing_date': get('abakuc:closing_date'),
+                             'price': format,
+                             'description': description}
+            products.append(item_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('t4', default=0))
         batch_size = 5
@@ -1188,7 +1245,6 @@ class Address(RoleAware, WorkflowAware, Folder):
                 id = row[0]
                 if ids == id:
                     title = row[1]
-                    print title
             affiliations.append({
                 'index': row.number,
                 #'affiliation': affiliations_list.title,
@@ -1196,9 +1252,6 @@ class Address(RoleAware, WorkflowAware, Folder):
                 'affiliation': ids,
                 'affiliation_no': affiliation_no})
         namespace['affiliations'] = affiliations
-        print namespace['affiliations']
-
-
 
     #######################################################################
     # User Interface / View
@@ -1395,6 +1448,27 @@ class Address(RoleAware, WorkflowAware, Folder):
                 # Information about the item
                 address = product.parent
                 company = address.parent
+                url = '%s' % here.get_pathto(item)
+                description = reduce_string(product.get_property('dc:description'),
+                                            word_treshold=90,
+                                            phrase_treshold=240)
+                # Price and currency
+                price = product.get_property('abakuc:price')
+                currency = product.get_property('abakuc:currency')
+                currencies = root.get_currency(currency)
+                if currency:
+                    currency = (d for d in currencies if d['is_selected']).next()
+                    if currency['id'] == 'EUR':
+                        locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
+                        price = locale.format('%.2f', price, True)
+                        format = '%s %s' % (price, currency['sign'])
+                    else:
+                        locale.setlocale(locale.LC_ALL,('en', 'ascii'))
+                        price = locale.format('%.2f', price, True)
+                        format = '%s %s' % (currency['sign'], price)
+                
+                else:
+                    format = None                
                 # Hotel information
                 hotel_location = product.get_property('abakuc:hotel')
                 # Every product must have a location
@@ -1412,25 +1486,27 @@ class Address(RoleAware, WorkflowAware, Folder):
                         country = ''
                         region = ''
                         county = ''
-
-                    url = '%s' % here.get_pathto(item)
-                    #url = '/%s/%s/%s' % (company.name, address.name, item.name)
-                    #apply = '/%s/%s/%s/;application_form' % (company.name, address.name, item.name)
-                    description = reduce_string(product.get_property('dc:description'),
-                                                word_treshold=90,
-                                                phrase_treshold=240)
                     item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                                  'url': url,
                                  'title': product.get_property('dc:title'),
                                  'hotel': hotel.get_property('dc:title'),
                                  'region': region,
                                  'country': country,
-                                 'price': get('abakuc:price'),
+                                 'price': format,
                                  'closing_date': get('abakuc:closing_date'),
-                    #             'address': address.get_title_or_name(),
                                  'description': description}
-                    #trainings.append(training_to_add)
-                    products.append(item_to_add)
+                else:
+                    item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                                 'url': url,
+                                 'title': product.get_property('dc:title'),
+                                 'hotel': None,
+                                 'region': None,
+                                 'country': None,
+                                 'price': format,
+                                 'closing_date': get('abakuc:closing_date'),
+                                 'description': description}
+                    
+                products.append(item_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('t4', default=0))
         batch_size = 5

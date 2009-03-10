@@ -344,9 +344,24 @@ class Root(Handler, BaseRoot):
                 airlines.append({
                     'id': item.name,
                     'title': item.get_title(),
-                    'is_selected': (airline is not None) })
+                    'is_selected': (airline is not None) and (item.name in airline) })
         
+        airlines.sort(key=lambda x: x['id'])
         return airlines
+
+    def get_airports(self, airport=None):
+        companies_handler = self.get_handler('companies')
+        companies = companies_handler.search_handlers(handler_class=Company)
+        airports = []
+        for item in companies:
+            if item.has_property('abakuc:topic', 'airports'):
+                airports.append({
+                    'id': item.name,
+                    'title': item.get_title(),
+                    'is_selected': (airports is not None) and (item.name in airport) })
+        
+        airports.sort(key=lambda x: x['id'])
+        return airports
 
     def get_holiday_activities(self, ids=None):
         handler = self.get_handler('holiday_activities.csv')
@@ -402,8 +417,6 @@ class Root(Handler, BaseRoot):
         handler = get_handler(path)
         rows = handler.get_rows()
         rows = list(rows)
-        print len(rows)
-
         namespace = []
         for count, row in enumerate(rows):
             affiliations = row[12]
@@ -448,8 +461,8 @@ class Root(Handler, BaseRoot):
         print len(rows)
         # We don't want the header
         #rows = rows[1:49]
-        #rows = rows[1:550]
-        rows = rows[5500:5605]
+        rows = rows[1:1550]
+        #rows = rows[5500:5605]
         #rows = rows[5500:13346]
         # Load handlers
         users = self.get_handler('users')

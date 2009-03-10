@@ -8,14 +8,26 @@
         <label for="topic">Airline</label>
       </dt>
       <dd>
-        <select id="airline" name="airline" style="width: 80%">
-          <option value="">Choose airline ---></option>
+        <select id="airline" name="airline" 
+            size="8" multiple="multiple" style="width: 80%">
           <option stl:repeat="airline airlines" value="${airline/id}"
             selected="${airline/is_selected}">${airline/title}</option> 
         </select>
       </dd>
-
     </dl>
+    <dl>
+      <dt>
+        <label for="topic">Airport</label>
+      </dt>
+      <dd>
+        <select id="airport" name="airport" 
+            size="8" multiple="multiple" style="width: 80%">
+          <option stl:repeat="airport airports" value="${airport/id}"
+            selected="${airport/is_selected}">${airport/title}</option> 
+        </select>
+      </dd>
+    </dl>
+
   <p><input type="submit" value="Link airline" class="button_ok" /></p>
 </form>
 

@@ -20,6 +20,7 @@
         <li><a href="#fragment-3"><span>Airline</span></a></li>
         <li><a href="#fragment-4"><span>Documents</span></a></li>
         <li><a href="#fragment-5"><span>Pre-view</span></a></li>
+        <li><a href="#fragment-6"><span>Publish</span></a></li>
     </ul>
     <div id="fragment-1">
       ${edit}
@@ -35,6 +36,9 @@
     </div>
     <div id="fragment-5">
       ${view}
+    </div>
+    <div id="fragment-6">
+      ${state}
     </div>
 </div>
 </stl:block>

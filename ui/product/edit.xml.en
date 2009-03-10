@@ -14,7 +14,7 @@
           <input type="text" name="dc:title" value="${dc:title}"/>
         </dd>
         <dt>
-          <label for="abakuc:price">Price</label>
+          <label for="abakuc:price">Price, per person</label>
         </dt>
         <dd>
           <input type="text" name="abakuc:price" value="${abakuc:price}"/>
@@ -34,19 +34,19 @@
         <label for="topic">Holiday Type</label>
       </dt>
       <dd>
-        <select id="abakuc:holiday_type" name="abakuc:holiday_type" style="width: 90%">
-          <option stl:repeat="type types" value="${type/id}"
-            selected="${type/is_selected}">${type/title}</option> 
+        <select id="holiday_type" name="holiday_type" style="width: 90%">
+          <option stl:repeat="item types" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option> 
         </select>
       </dd>
       <dt>
         <label for="activities">Holiday Activity</label>
       </dt>
       <dd>
-        <select id="topic" name="topic" 
+        <select id="holiday_activity" name="holiday_activity" 
             size="8" multiple="multiple" style="width: 90%">
-          <option stl:repeat="activity activities" value="${activity/id}"
-            selected="${activity/is_selected}">${activity/title}</option> 
+          <option stl:repeat="item activities" value="${item/id}"
+            selected="${item/is_selected}">${item/title}</option> 
         </select>
       </dd>
 
@@ -62,7 +62,7 @@
           </script>
         </dd>
         <dt>
-          <label for="abakuc:closing_date">Erliest Departure Date</label>
+          <label for="abakuc:closing_date">Earliest Departure Date</label>
         </dt>
         <dd>
           <input id="abakuc:departure_date" name="abakuc:departure_date" 

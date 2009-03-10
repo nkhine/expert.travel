@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the standard library
+import locale
 from datetime import date
 from string import Template
 
@@ -868,10 +869,34 @@ class ExpertTravel(SiteRoot):
             # Information about the item
             address = product.parent
             company = address.parent
+            url = '%s/' % self.get_pathto(product)
+            description = reduce_string(product.get_property('dc:description'),
+                                        word_treshold=90,
+                                        phrase_treshold=240)
+            # Price and currency
+            price = product.get_property('abakuc:price')
+            currency = product.get_property('abakuc:currency')
+            currencies = root.get_currency(currency)
+            if currency:
+                currency = (d for d in currencies if d['is_selected']).next()
+                if currency['id'] == 'EUR':
+                    locale.setlocale(locale.LC_ALL,('fr', 'ascii'))
+                    price = locale.format('%.2f', price, True)
+                    format = '%s %s' % (price, currency['sign'])
+                else:
+                    locale.setlocale(locale.LC_ALL,('en', 'ascii'))
+                    price = locale.format('%.2f', price, True)
+                    format = '%s %s' % (currency['sign'], price)
+            
+            else:
+                format = None
+            #namespace['price'] = format
+
             # Hotel information
             hotel_location = product.get_property('abakuc:hotel')
             # Every product must have a location
             # XXX what if it is a cruise?
+
             if hotel_location:
                 hotel_address = product.get_address(hotel_location)
                 county = hotel_address.get_property('abakuc:county')
@@ -888,10 +913,6 @@ class ExpertTravel(SiteRoot):
                     region = ''
                     county = ''
 
-                url = '%s/' % self.get_pathto(product)
-                description = reduce_string(product.get_property('dc:description'),
-                                            word_treshold=90,
-                                            phrase_treshold=240)
                 item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
                              'url': url,
                              'title': product.get_property('dc:title'),
@@ -899,9 +920,19 @@ class ExpertTravel(SiteRoot):
                              'region': region,
                              'country': country,
                              'closing_date': get('abakuc:closing_date'),
-                             'price': get('abakuc:price'),
+                             'price': format,
                              'description': description}
-                products.append(item_to_add)
+            else:
+                item_to_add ={'img': '/ui/abakuc/images/JobBoard16.png',
+                             'url': url,
+                             'title': product.get_property('dc:title'),
+                             'hotel': None,
+                             'region': None,
+                             'country': None,
+                             'closing_date': get('abakuc:closing_date'),
+                             'price': format,
+                             'description': description}
+            products.append(item_to_add)
         # Set batch informations
         batch_start = int(context.get_form_value('t4', default=0))
         batch_size = 5
