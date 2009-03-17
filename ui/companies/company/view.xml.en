@@ -11,6 +11,12 @@
         </a> </span> ${description} </p>
         <p stl:if="licence">${licence}</p>
         ${tabs}
+        <ul class="info">
+            <li stl:repeat="item affiliations">${item/title} (${item/affiliation}) -
+                        <stl:block stl:repeat="affiliation_no item/affiliation_no">
+                        ${affiliation_no}</stl:block>
+            </li>
+        </ul>
         </div> <!-- yui-u first -->
         <!-- 1/3 column -->
         <div class="yui-u">

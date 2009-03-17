@@ -30,7 +30,7 @@
       </dt>
       <dd>
         <select id="topic" name="topic" size="8"
-                    style="width: 90%">
+                    style="width: 90%" multiple="multiple">
           <option stl:repeat="topic topics" value="${topic/id}"
             selected="${topic/is_selected}">${topic/title}</option> 
         </select>

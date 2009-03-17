@@ -187,6 +187,7 @@ class SiteRoot(Handler, BaseWebSite):
         path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
         sound_path = get_abspath(globals(), 'data/sound')
         sound_output_path = get_abspath(globals(), 'ui/sound')
+        print sound_output_path
         im=PILImage.open(path)
         draw=ImageDraw.Draw(im)
         font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')

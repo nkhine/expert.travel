@@ -237,6 +237,11 @@ class Company(SiteRoot, Folder):
         namespace['licence'] = self.get_property('abakuc:licence')
         namespace['logo'] = self.has_handler('logo')
         namespace['tabs'] = self.tabs(context)
+        
+        affiliations = self.get_affiliations(context)
+        
+        namespace['affiliations'] = affiliations
+        print namespace['affiliations']
 
         handler = self.get_handler('/ui/abakuc/companies/company/view.xml')
         return stl(handler, namespace)
@@ -270,6 +275,40 @@ class Company(SiteRoot, Folder):
         # List users
 
         return members
+
+    def get_affiliations(self, context):
+        addresses = self.search_handlers(handler_class=Address)
+        items = []
+        affiliations = []
+        for address in addresses:
+            affiliation = address.get_affiliations(context)
+            affiliations.extend(affiliation)
+        mykeys = [item['affiliation'] for item in affiliations]
+        dup_keys = []
+        for key in mykeys:
+            if mykeys.count(key) >= 2:
+                dup_keys.append(key)
+            else:
+                licence = [d for d in affiliations if d['affiliation'] == key]
+                for item in licence:
+                   affiliation_no = item['affiliation_no']
+                licences_to_add = {'affiliation_no': [affiliation_no],
+                                    'affiliation': key,
+                                    'title': item['title']}
+                items.append(licences_to_add)
+        for key in set(dup_keys):
+            licence = [d for d in affiliations if d['affiliation'] == key]
+            values = [d['affiliation_no'] for d in licence if d.has_key('affiliation_no')]
+            for item in licence:
+                title = item['title']
+            licences_to_add = {'affiliation_no': values,
+                                'affiliation': key,
+                                'title': item['title']}
+            items.append(licences_to_add)
+
+        items.sort(key=lambda x: x['affiliation'])
+        return items
+
     ####################################################################
     # List addresses
     addresses__label__ = u'Branches'
@@ -1205,6 +1244,52 @@ class Address(RoleAware, WorkflowAware, Folder):
         return members
 
 
+    def get_affiliations(self, context):
+        root = get_context().root
+        is_branch_manager = self.has_user_role(self.name, 'abakuc:branch_manager')
+        csv = self.get_handler('affiliation.csv')
+        # XXX what happens if we create a new address
+        # that does not have affiliations
+        items = []
+        affiliations = root.get_affiliations_namespace()
+        for index, row in enumerate(csv.get_rows()):
+            ids, affiliation_no = row
+            affiliation = [d for d in affiliations if d['id'] == ids]
+            for item in affiliation:
+                title = item['title']
+            edit_affiliation = context.get_form_value('edit_affiliation', type=Integer)
+            if index == edit_affiliation:
+                selected = True
+                edit_row = None 
+            else:
+                selected = False
+                edit_row = '?edit_affiliation=%s' %  index
+            items.append({
+                'index': index,
+                'affiliation': ids,
+                'selected': selected,
+                'edit_row': edit_row,
+                'title': title,
+                'affiliation_no': affiliation_no})
+        items.sort(key=lambda x: x['affiliation'])
+
+        return items
+
+    def get_affiliations_to_add(self, context):
+        root = get_context().root
+        affiliations = root.get_affiliations_namespace()
+        items = self.get_affiliations(context)
+        if items:
+            items_to_add = []
+            items2keys = set(item['affiliation'] for item in items)
+            for item in affiliations:
+                if item['id'] not in items2keys:
+                    items_to_add.append(item)
+            items_to_add.sort(key=lambda x: x['id'])
+        else:
+            items_to_add = affiliations
+        return items_to_add
+
     def tabs(self, context):
         # Set Style
         context.styles.append('/ui/abakuc/images/ui.tabs.css')
@@ -1282,6 +1367,7 @@ class Address(RoleAware, WorkflowAware, Folder):
         namespace['region'] = region
         namespace['county'] = self.get_property('abakuc:county')
 
+        namespace['affiliations'] =  self.get_affiliations(context)
 
         ################
         # Tabs 

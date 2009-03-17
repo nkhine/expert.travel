@@ -639,6 +639,7 @@ class Marketing(Folder):
         # Metadata
         namespace['user'] = user
         namespace['questions'] = [ questions[x] for x in questions ]
+        print namespace['questions']
         namespace['title'] = self.get_property('dc:title')
         namespace['user_attempts'] = self.results.get_n_attempts(user.name) + 1
         handler = self.get_handler('/ui/abakuc/marketing/fill_form.xml')

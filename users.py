@@ -933,30 +933,9 @@ class User(iUser, WorkflowAware, Handler):
         namespace = {}
         address = self.get_address()
         if address:
+            items = address.get_affiliations(context)
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-            csv = address.get_handler('affiliation.csv')
-            items = []
-            affiliations = root.get_affiliations_namespace()
-            for index, row in enumerate(csv.get_rows()):
-                ids, affiliation_no = row
-                affiliation = [d for d in affiliations if d['id'] == ids]
-                for item in affiliation:
-                    title = item['title']
-                edit_affiliation = context.get_form_value('edit_affiliation', type=Integer)
-                if index == edit_affiliation:
-                    selected = True
-                    edit_row = None 
-                else:
-                    selected = False
-                    edit_row = '?edit_affiliation=%s' %  index
-                items.append({
-                    'index': index,
-                    'affiliation': ids,
-                    'selected': selected,
-                    'edit_row': edit_row,
-                    'title': title,
-                    'affiliation_no': affiliation_no})
-            items.sort(key=lambda x: x['affiliation'])
+            namespace['is_branch_manager'] = is_branch_manager
             # batch
             batch_start = int(context.get_form_value('batchstart', default=0))
             batch_size = 4
@@ -978,14 +957,15 @@ class User(iUser, WorkflowAware, Handler):
             namespace['batch'] = items_batch
             namespace['msg'] = msg
             namespace['items'] = items
-            items2keys = set(item['affiliation'] for item in items)
-            items_to_add = []
-            for item in affiliations:
-                if item['id'] not in items2keys:
-                    items_to_add.append(item)
-            items_to_add.sort(key=lambda x: x['id'])
-            namespace['items_to_add'] = items_to_add
-        namespace['is_branch_manager'] = is_branch_manager
+            
+            #items_to_add = []
+            #items2keys = set(item['affiliation'] for item in items)
+            #for item in affiliations:
+            #    if item['id'] not in items2keys:
+            #        items_to_add.append(item)
+            #items_to_add.sort(key=lambda x: x['id'])
+            namespace['items_to_add'] = address.get_affiliations_to_add(context)
+            print namespace['items_to_add']
 
         handler = self.get_handler('/ui/abakuc/users/affiliations.xml')
         return stl(handler, namespace)
@@ -1007,7 +987,6 @@ class User(iUser, WorkflowAware, Handler):
             csv.add_row(row)
             message = (u"Your affiliation has been added")
             return context.come_back(message.encode('utf-8'))
-
 
 
     edit_affiliation__access__ = 'is_self_or_admin'
