@@ -158,21 +158,24 @@ class Product(Folder, WorkflowAware):
         else:
             format = None
         namespace['price'] = format
+        print namespace['price']
         companies = root.get_handler('companies')
         # List airlines
         airline_list = []
         airlines = self.get_property('abakuc:airline')
-        for airline in airlines:
-            for address in companies.search_handlers(airline):
-                company = address.parent
-                url = '%s' % self.get_pathto(company)
-                airline_list.append({
-                    'id': company.name,
-                    'title': company.get_title(),
-                    'url': url})
+        if airlines:
+            for airline in airlines:
+                for address in companies.search_handlers(airline):
+                    company = address.parent
+                    url = '%s' % self.get_pathto(company)
+                    airline_list.append({
+                        'id': company.name,
+                        'title': company.get_title(),
+                        'url': url})
 
-        airline_list.sort(key=lambda x: x['id'])
+            airline_list.sort(key=lambda x: x['id'])
         namespace['airlines'] = airline_list
+        print namespace['airlines']
         # Get phone number
         address = self.parent
         namespace['abakuc:phone'] = address.get_property('abakuc:phone')

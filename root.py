@@ -358,7 +358,7 @@ class Root(Handler, BaseRoot):
                 airports.append({
                     'id': item.name,
                     'title': item.get_title(),
-                    'is_selected': (airports is not None) and (item.name in airport) })
+                    'is_selected': (airport is not None) and (item.name in airport) })
         
         airports.sort(key=lambda x: x['id'])
         return airports

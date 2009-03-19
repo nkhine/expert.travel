@@ -26,8 +26,9 @@
           </dl>
           <dl>
               <dt>
-                  <label for="title"><h3>Flying in with:</h3></label>
+                  <label for="title"><h3>Flying in withXXX:</h3></label>
               </dt>
+              <dd stl:repeat="airline airlines">${airline/title}</dd>
           </dl>
           <dl>
               <dt>
