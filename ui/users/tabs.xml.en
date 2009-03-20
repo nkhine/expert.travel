@@ -17,8 +17,10 @@
         <ul>
             <li><a href="#fragment-21"><span>Profile</span></a></li>
             <li><a href="#fragment-22"><span>Company</span></a></li>
-            <li><a href="#fragment-23"><span>Affiliations</span></a></li>
-            <li stl:if="has_address"><a href="#fragment-24"><span>Branches</span></a></li>
+            <stl:block stl:if="has_address">
+                <li><a href="#fragment-23"><span>Affiliations</span></a></li>
+                <li><a href="#fragment-24"><span>Branches</span></a></li>
+            </stl:block>
             <li stl:if="is_branch_manager"><a href="#fragment-25"><span>Administrate</span></a></li>
         </ul>
             <div id="fragment-21">
@@ -27,12 +29,14 @@
             <div id="fragment-22">
               ${company}
             </div>
-            <div id="fragment-23">
-              ${affiliations}
-            </div>
-            <div stl:if="has_address" id="fragment-24">
-              ${addresses}
-            </div>
+            <stl:block stl:if="has_address">
+                <div id="fragment-23">
+                  ${affiliations}
+                </div>
+                <div id="fragment-24">
+                  ${addresses}
+                </div>
+            </stl:block>
             <div stl:if="is_branch_manager" id="fragment-25">
                 ${manage}
             </div>

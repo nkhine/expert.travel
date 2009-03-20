@@ -350,13 +350,13 @@ class User(iUser, WorkflowAware, Handler):
         namespace['company'] = self.company(context)
         address = self.get_address()
         namespace['has_address'] = address
-        affiliations = self.affiliations(context)
-        namespace['affiliations'] = affiliations
         # Manager tabs
         namespace['is_branch_manager'] = None
         if address:
             is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
             namespace['is_branch_manager'] = is_branch_manager
+            affiliations = self.affiliations(context)
+            namespace['affiliations'] = affiliations
             namespace['addresses'] = self.addresses(context)
             namespace['manage'] = self.manage(context)
 

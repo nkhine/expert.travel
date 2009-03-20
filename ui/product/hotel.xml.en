@@ -11,7 +11,7 @@
                     <dt><a href="${website}">${website}</a></dt>
                     <dd>
                         <address>${address}<span><a
-                            href="${hotel_url}">Preview</a></span><br />
+                            href="${hotel_url}"> view</a></span><br />
                             ${town}<br />
                             ${county}<br />
                             ${postcode}

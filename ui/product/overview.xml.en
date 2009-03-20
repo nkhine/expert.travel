@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:stl="http://xml.itools.org/namespaces/stl" />
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
 <div class="yui-gc">
     <div class="yui-u first">
       <h2>Details</h2>
@@ -26,17 +26,23 @@
           </dl>
           <dl>
               <dt>
-                  <label for="title"><h3>Flying in withXXX:</h3></label>
+                  <label for="title"><h3>Flights available with:</h3></label>
               </dt>
-              <dd stl:repeat="airline airlines">${airline/title}</dd>
+                <ul>
+                    <li stl:repeat="item airlines"><a
+                    href="${item/url}">${item/title}</a>
+                    </li>
+                </ul> 
           </dl>
           <dl>
               <dt>
                   <label for="title"><h3>Flights available from:</h3></label>
               </dt>
-              <dd>Airport</dd>
-              <dd>Airport</dd>
-              <dd>Airport</dd>
+                <ul>
+                    <li stl:repeat="item airports"><a
+                    href="${item/url}">${item/title}</a>
+                    </li>
+                </ul> 
           </dl>
           <dl>
               <dt>
@@ -50,8 +56,4 @@
         </span>
     </div> <!-- yui-u -->
 </div> <!-- yui-gc -->
-<dl>
-<dd class="info">
-    Licenses: ABTA: 12345 ATOL: 12345678 BBBBBBBA AJajajAJAJajaklj kljaLKJALKj
-</dd>
-</dl>
+</stl:block>

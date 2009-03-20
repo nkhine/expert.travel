@@ -37,5 +37,13 @@
       ${contact}
     </div>
 </div>
+    <div>
+    <ul class="info">
+        <li stl:repeat="item affiliations">${item/title} (${item/affiliation}) -
+                    <stl:block stl:repeat="affiliation_no item/affiliation_no">
+                    ${affiliation_no}</stl:block>
+        </li>
+    </ul> 
+    </div>
 </stl:block>
 

@@ -104,6 +104,28 @@ class Product(Folder, WorkflowAware):
         namespace['documents'] = self.documents(context)
         namespace['contact'] = self.contact(context)
 
+        # Affilations
+        address = self.parent
+        company = address.parent
+        affiliations = company.get_affiliations(context)
+        namespace['affiliations'] = affiliations
+        # List airlines
+        root = context.root
+        airline_list = []
+        airlines = self.get_property('abakuc:airline')
+        if airlines:
+            companies = root.get_handler('companies')
+            for airline in airlines:
+                for item in companies.search_handlers(airline):
+                    company = item.parent
+                    url = '%s' % self.get_pathto(company)
+                airline_list.append({
+                    'id': company.name,
+                    'title': company.get_title(),
+                    'url': url})
+
+        airline_list.sort(key=lambda x: x['id'])
+        namespace['airlines'] = airline_list
         template_path = 'ui/abakuc/product/view_tabs.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)
@@ -135,6 +157,7 @@ class Product(Folder, WorkflowAware):
     overview__access__ = True
     overview__label__ = u'Overview'
     def overview(self, context):
+        context.del_cookie('product_cookie')
         root = context.root
         namespace = {}
         for key in self.edit_fields:
@@ -158,24 +181,45 @@ class Product(Folder, WorkflowAware):
         else:
             format = None
         namespace['price'] = format
-        print namespace['price']
         companies = root.get_handler('companies')
         # List airlines
         airline_list = []
         airlines = self.get_property('abakuc:airline')
         if airlines:
             for airline in airlines:
-                for address in companies.search_handlers(airline):
-                    company = address.parent
-                    url = '%s' % self.get_pathto(company)
-                    airline_list.append({
-                        'id': company.name,
-                        'title': company.get_title(),
-                        'url': url})
+                company = companies.get_handler(airline)
+                url = '%s' % self.get_pathto(company)
+                airline_list.append({
+                    'id': company.name,
+                    'title': company.get_title(),
+                    'url': url})
 
-            airline_list.sort(key=lambda x: x['id'])
-        namespace['airlines'] = airline_list
-        print namespace['airlines']
+        airline_list.sort(key=lambda x: x['id'])
+        # We only want to list max of 5 airlines
+        if len(airline_list) >= 5:
+            namespace['airlines'] = airline_list[:5]
+        else:
+            namespace['airlines'] = airline_list
+        # List airports
+        airport_list = []
+        airports = self.get_property('abakuc:airport')
+        if airports:
+            for airport in airports:
+                company = companies.get_handler(airport)
+                url = '%s' % self.get_pathto(company)
+                airport_list.append({
+                    'id': company.name,
+                    'title': company.get_title(),
+                    'url': url})
+
+        airport_list.sort(key=lambda x: x['id'])
+        # We only want to list max of 5 airports
+        if len(airport_list) >= 5:
+            namespace['airports'] = airport_list[:5]
+        else:
+            namespace['airports'] = airport_list
+        print namespace['airports']
+
         # Get phone number
         address = self.parent
         namespace['abakuc:phone'] = address.get_property('abakuc:phone')

@@ -241,7 +241,6 @@ class Company(SiteRoot, Folder):
         affiliations = self.get_affiliations(context)
         
         namespace['affiliations'] = affiliations
-        print namespace['affiliations']
 
         handler = self.get_handler('/ui/abakuc/companies/company/view.xml')
         return stl(handler, namespace)
