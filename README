@@ -4,8 +4,20 @@ abakuc portal has been built on top of itools' (http://ikaaro.org) python
 framework and is a project designed to implement the internal workings of a
 business-to-business magazine publisher.
 
+Requirements
+============
+
+Software    Version   Used by         Home
+---------   -------   -------------   ----------------------------------------
+Python        2.5.2   itools          http://www.python.org/
+iTools	      0.16.9  abakuc  	      http://www.hforge.org/	
+SoX	      14.2.0  abakuc	      http://sox.sourceforge.net/
+SWFTools      0.8.1+  abakuc	      http://www.swftools.org/		
+
 The basics:
+===========
 
 We have 3 entities, Advertisers, Enquiries, Users; all of these are mangled into
-the publication which in turn has: Aricles, Images (media objects)
-Also
+the publication which in turn has: Aricles, Images (media objects).
+
+The core of the application is based on the Users class and the Company class.

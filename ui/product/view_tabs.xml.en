@@ -28,7 +28,7 @@
       ${hotel}
     </div>
     <div id="fragment-3">
-      {itinerary}
+      ${itinerary}
     </div>
     <div id="fragment-4">
       ${documents}

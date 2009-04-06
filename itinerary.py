@@ -4,6 +4,7 @@
 # Import from the standard library
 import time
 import datetime
+import random
 from string import Template
 import mimetypes
 from StringIO import StringIO
@@ -26,9 +27,13 @@ from itools.cms.messages import *
 from itools.cms.html import XHTMLFile
 from itools.i18n import get_language_name
 from itools.rest import checkid
+from itools.catalog import EqQuery, AndQuery, RangeQuery
+from itools import get_abspath
+from itools.uri import Path
 
 # Import from abakuc
 from base import Handler, Folder
+from utils import get_sort_name
 
 class Itinerary(RoleAware, Folder):
 
@@ -158,6 +163,56 @@ class Itinerary(RoleAware, Folder):
         message = u'Itinerary item has been added. Add some itinerary days now!'
         return context.come_back(message, goto=goto)
 
+    def get_itinerary_days(self, context):
+        """
+        Return a list with all the itinerary days that have been
+        published.
+        """
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'itinerary_day'))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        document_names = results.get_documents()
+        itinerary_days = []
+        for itinerary_day in document_names:
+            itinerary_day_path = Path(itinerary_day.abspath)
+            handler = self.get_handler(itinerary_day_path)
+            description = handler.get_property('dc:description')
+            itinerary_days.append({
+                'id': itinerary_day.name,
+                'title': handler.get_title(),
+                'url': self.get_pathto(handler),
+                'description': handler.get_property('dc:description')
+            })
+        itinerary_days.sort(key=lambda x: x['id'])
+        return itinerary_days
+
+    def get_itinerary_images(self, context):
+        """
+        Return a list with all the itinerary days that have been
+        published.
+        """
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'image'))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        document_names = results.get_documents()
+        itinerary_images = []
+        for image in document_names:
+            path = Path(image.abspath)
+            handler = self.get_handler(path)
+            url = '%s/;icon220' % str(path)
+            itinerary_images.append({
+                'id': image.name,
+                'title': handler.get_title(),
+                'url': url,
+                'description': handler.get_property('dc:description')
+            })
+                
+        return itinerary_images
+
     add_itinerary_day_form__access__ = 'is_branch_manager_or_member'
     add_itinerary_day_form__label__ = u'Add an itinerary day'
     def add_itinerary_day_form(self, context):
@@ -185,9 +240,9 @@ class Itinerary(RoleAware, Folder):
         product = self.parent
         address = product.parent
         company = address.parent
-        #date the item was posted
+        # date the item was posted
         date = self.get_property('dc:date')
-        #namespace
+        # namespace
         namespace = {}
         namespace['company'] = company.get_property('dc:title')
         namespace['unique_id'] = self.get_property('abakuc:unique_id')
@@ -195,8 +250,6 @@ class Itinerary(RoleAware, Folder):
             namespace[key] = self.get_property(key)
 
         news_text = rest.to_html_events(self.get_property('abakuc:text'))
-        #news_text = self.get_property('abakuc:news_text')
-
         namespace['abakuc:news_text'] = news_text
         # Image
         namespace['image1'] = image1 = self.get_property('abakuc:image1')
@@ -245,7 +298,7 @@ class Itinerary(RoleAware, Folder):
         namespace['date'] = date
         namespace['posted'] = time_posted
 
-        # Person who added the job
+        # Person who added the itinerary 
         namespace['user'] = usertitle
         namespace['user_uri'] = userurl
         # if reviewer or members , show users who apply
@@ -304,36 +357,13 @@ class Itinerary(RoleAware, Folder):
         namespace['batch'] = messages_batch
         namespace['msg'] = msg
 
-        # Navigation in news
-        #Search the catalogue, list all news items in company
-        #root = context.root
-        #catalog = context.server.catalog
-        #query = []
-        #query.append(EqQuery('format', 'news'))
-        #today = (date.today()).strftime('%Y-%m-%d')
-        #query.append(RangeQuery('closing_date', today, None))
-        #query = AndQuery(*query)
-        #results = catalog.search(query)
-        #document_names = results.get_documents()
-        #doc_index = document_names.index(self.name)
-        #is_first_document = doc_index == 0
-        #is_last_document = doc_index == len(document_names) - 1
-        #namespace['next_doc'] = None
-        #namespace['prev_doc'] = None
-        #next_doc_img = self.get_handler('/ui/abakuc/images/next_doc.gif')
-        #namespace['next_doc_img'] = self.get_pathto(next_doc_img)
-        #prev_doc_img = self.get_handler('/ui/abakuc/images/prev_doc.gif')
-        #namespace['prev_doc_img'] = self.get_pathto(prev_doc_img)
-        #if document_names:
-        #    # Next document
-        #    if is_last_document:
-        #        namespace['next_doc'] = '../../;view'
-        #    else:
-        #        namespace['next_doc'] = (
-        #            '../%s/;view' % document_names[doc_index + 1])
-        #    # Previous document
+        namespace['itinerary_days'] = self.get_itinerary_days(context)
+        itinerary_images = self.get_itinerary_images(context)
+        itinerary_image = random.choice(itinerary_images)
+        print itinerary_image
+        namespace['itinerary_image'] = itinerary_image
 
-        handler = self.get_handler('/ui/abakuc/news/view.xml')
+        handler = self.get_handler('/ui/abakuc/product/itinerary/view.xml')
         return stl(handler, namespace)
 
     ###########################################################
@@ -564,7 +594,7 @@ class ItineraryDay(XHTMLFile):
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
 
-        goto = './%s/;%s' % (name, handler.get_firstview())
+        goto = './%s/;edit_form' % name
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
