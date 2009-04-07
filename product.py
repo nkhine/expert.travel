@@ -19,6 +19,7 @@ from itools.datatypes import Decimal
 from itools.stl import stl
 from itools.uri import Path, get_reference
 from itools.web import get_context
+from itools.cms.utils import reduce_string
 
 # Import from abakuc
 from utils import title_to_name
