@@ -225,6 +225,7 @@ class Itinerary(RoleAware, Folder):
     #######################################################################
     # View news details
     ###
+	
     view__access__ = True
     view__label__ = u'View itinerary'
     def view(self, context):
@@ -360,7 +361,6 @@ class Itinerary(RoleAware, Folder):
         namespace['itinerary_days'] = self.get_itinerary_days(context)
         itinerary_images = self.get_itinerary_images(context)
         itinerary_image = random.choice(itinerary_images)
-        print itinerary_image
         namespace['itinerary_image'] = itinerary_image
 
         handler = self.get_handler('/ui/abakuc/product/itinerary/view.xml')

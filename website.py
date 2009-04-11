@@ -19,8 +19,11 @@ from itools.cms.catalog import schedule_to_reindex
 from itools.uri import Path, get_reference
 from itools.handlers import get_handler
 from itools import get_abspath
+
 # Import from abakuc
 from base import Handler
+
+
 
 def crypt_captcha(captcha):
     return sha.new(captcha).digest()
@@ -77,6 +80,9 @@ class SiteRoot(Handler, BaseWebSite):
 
     login__access__ = True
     def login(self, context, goto=None):
+        """
+          Login action.
+        """
         email = context.get_form_value('username', type=Unicode)
         password = context.get_form_value('password')
 
@@ -187,7 +193,6 @@ class SiteRoot(Handler, BaseWebSite):
         path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
         sound_path = get_abspath(globals(), 'data/sound')
         sound_output_path = get_abspath(globals(), 'ui/sound')
-        print sound_output_path
         im=PILImage.open(path)
         draw=ImageDraw.Draw(im)
         font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
@@ -217,6 +222,8 @@ class SiteRoot(Handler, BaseWebSite):
         subprocess.call(['sox'] + sox_filenames + \
                         ['%s/%s' % (sound_output_path, (im_name + '.wav'))])
         namespace['sound_captcha'] = '/ui/abakuc/sound/%s' % (im_name + '.wav')
+	# build the swf file
+	#swf_template = 
         # we need to pass this path as we can then delete the file
         namespace['sound_path'] = 'ui/sound/%s' % (im_name + '.wav')
         print im_name

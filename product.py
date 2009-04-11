@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
-
 # Import from the Standard Library
 import locale
 import datetime
@@ -353,22 +352,19 @@ class Product(Folder, WorkflowAware):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
-
     itinerary__access__ = True
     itinerary__label__ = u'itinerary'
     def itinerary(self, context):
         #from itinerary import Itinerary
-        #namespace = {}
-        ##address = self.parent
-        #handlers = self.search_handlers(handler_class=Itinerary)
-        #for handler in handlers:
-        #    response = Itinerary.view(handler, context)
-        #    namespace['response'] = response
-        #    print namespace['response']
-        #handler = self.get_handler('/ui/abakuc/response.xml')
-        #return stl(handler, namespace)
-        pass
-    
+        namespace = {}
+        #address = self.parent
+        handlers = self.search_handlers(handler_class=Itinerary)
+        for handler in handlers:
+            response = Itinerary.view(handler, context)
+            namespace['response'] = response
+            print namespace['response']
+        handler = self.get_handler('/ui/abakuc/response.xml')
+        return stl(handler, namespace)
     
     documents__access__ = True
     documents__label__ = u'Overview'
