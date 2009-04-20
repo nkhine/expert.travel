@@ -18,9 +18,10 @@
         <li><a href="#fragment-1"><span>Manage</span></a></li>
         <li><a href="#fragment-2"><span>Hotel</span></a></li>
         <li><a href="#fragment-3"><span>Airline</span></a></li>
-        <li><a href="#fragment-4"><span>Documents</span></a></li>
-        <li><a href="#fragment-5"><span>Pre-view</span></a></li>
-        <li><a href="#fragment-6"><span>Publish</span></a></li>
+        <li><a href="#fragment-4"><span>Itinerary</span></a></li>
+        <li><a href="#fragment-5"><span>Documents</span></a></li>
+        <li><a href="#fragment-6"><span>Pre-view</span></a></li>
+        <li><a href="#fragment-7"><span>Publish</span></a></li>
     </ul>
     <div id="fragment-1">
       ${edit}
@@ -32,12 +33,15 @@
       ${airline}
     </div>
     <div id="fragment-4">
-      ${browse_content}
+      ${itinerary}
     </div>
     <div id="fragment-5">
-      ${view}
+      ${browse_content}
     </div>
     <div id="fragment-6">
+      ${view}
+    </div>
+    <div id="fragment-7">
       ${state}
     </div>
 </div>

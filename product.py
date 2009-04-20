@@ -81,6 +81,7 @@ class Product(Folder, WorkflowAware):
         namespace['view'] = self.overview(context)
         namespace['hotel'] = self.setup_hotel_form(context)
         namespace['airline'] = self.setup_airline_form(context)
+        namespace['itinerary'] = self.edit_itinerary_form(context)
         namespace['browse_content'] = self.browse_content(context)
         namespace['state'] = self.state_form(context)
 
@@ -362,7 +363,20 @@ class Product(Folder, WorkflowAware):
         for handler in handlers:
             response = Itinerary.view(handler, context)
             namespace['response'] = response
-            print namespace['response']
+        handler = self.get_handler('/ui/abakuc/response.xml')
+        return stl(handler, namespace)
+
+
+    edit_itinerary_form__access__ = 'is_branch_manager'
+    edit_itinerary_form__label__ = u'Edit itinerary'
+    def edit_itinerary_form(self, context):
+        #from itinerary import Itinerary
+        namespace = {}
+        #address = self.parent
+        handlers = self.search_handlers(handler_class=Itinerary)
+        for handler in handlers:
+            response = Itinerary.edit_metadata_form(handler, context)
+            namespace['response'] = response
         handler = self.get_handler('/ui/abakuc/response.xml')
         return stl(handler, namespace)
     
