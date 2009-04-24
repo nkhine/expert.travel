@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml" xmlns:stl="http://xml.itools.org/namespaces/stl">
-    <h1>Welcome <stl:block if="user/info">  ${user/info/title}  </stl:block>
-        to the UK.Expert.Travel on-line portal!</h1>
+    <h1>Welcome<stl:block if="user/info"> ${user/info/title}</stl:block> to the UK.Expert.Travel on-line portal!</h1>
     <p>
     An on-line directory of the UK Travel market covers: travel trade
     services; land and sea travel; air travel; travel trade information;
