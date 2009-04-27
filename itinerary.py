@@ -354,13 +354,16 @@ class Itinerary(RoleAware, Folder):
             msg = None
         else:
             messages_batch = None
-            msg = u"Currently we don't have any discussions for this news item."
+            msg = u"Currently we don't have any discussions for this itinerary item."
         namespace['batch'] = messages_batch
         namespace['msg'] = msg
 
         namespace['itinerary_days'] = self.get_itinerary_days(context)
         itinerary_images = self.get_itinerary_images(context)
-        itinerary_image = random.choice(itinerary_images)
+        if itinerary_images == []:
+          itinerary_image = None
+        else:  
+          itinerary_image = random.choice(itinerary_images)
         namespace['itinerary_image'] = itinerary_image
 
         handler = self.get_handler('/ui/abakuc/product/itinerary/view.xml')

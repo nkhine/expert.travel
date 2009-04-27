@@ -356,13 +356,13 @@ class Product(Folder, WorkflowAware):
     itinerary__access__ = True
     itinerary__label__ = u'itinerary'
     def itinerary(self, context):
-        #from itinerary import Itinerary
         namespace = {}
-        #address = self.parent
         handlers = self.search_handlers(handler_class=Itinerary)
-        for handler in handlers:
-            response = Itinerary.view(handler, context)
-            namespace['response'] = response
+        response = None
+        if handlers != []:
+          for handler in handlers:
+              response = Itinerary.view(handler, context)
+        namespace['response'] = response
         handler = self.get_handler('/ui/abakuc/response.xml')
         return stl(handler, namespace)
 

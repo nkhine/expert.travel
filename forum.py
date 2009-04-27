@@ -188,32 +188,28 @@ class Thread(Folder):
         unique_id = self.get_property('abakuc:unique_id')
         namespace['unique_id'] = unique_id
         if unique_id is not None:
-            # link back to news item
-            root = context.root
-	    forman = ['itinerary_day', 'news']
-            results = root.search(format='news', unique_id=unique_id)
-            results_days = root.search(format='itinerary_day', unique_id=unique_id)
-	    print results_days
             training = self.get_site_root()
             from training import Training
-            for item in results.get_documents():
-                news = self.get_handler(item.abspath)
-                namespace['item_title'] = news.get_property('dc:title')
-                if isinstance(training, Training):
-                    namespace['item_url'] = item.abspath
+            # link back to news item
+            root = context.root
+            formats = ['itinerary', 'news']
+            for x in formats:
+                results = root.search(format=x, unique_id=unique_id)
+                if results:
+                    result = results.get_documents()
+                    for item in result:
+                        print item.abspath
+                        item = self.get_handler(item.abspath)
+                        namespace['item_title'] = item.get_property('dc:title')
+                        if isinstance(training, Training):
+                            namespace['item_url'] = item.abspath
+                        else:
+                            # Need to strip the '/companies' from the path
+                            #namespace['item_url'] = Path(item.abspath)[1:]
+                            namespace['item_url'] = Path(item.abspath)
                 else:
-                    # Need to strip the '/companies' from the path
-                    #namespace['item_url'] = Path(item.abspath)[1:]
-                    namespace['item_url'] = Path(item.abspath)
-            for item in results_days.get_documents():
-                news = self.get_handler(item.abspath)
-                namespace['item_title'] = news.get_property('dc:title')
-                if isinstance(training, Training):
-                    namespace['item_url'] = item.abspath
-                else:
-                    # Need to strip the '/companies' from the path
-                    #namespace['item_url'] = Path(item.abspath)[1:]
-                    namespace['item_url'] = Path(item.abspath)
+                    namespace['item_title'] = None 
+                    namespace['item_url'] = None 
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 8

@@ -14,7 +14,7 @@
     <thead>
       <tr stl:if="unique_id">
         <th colspan="2">Viewing discussion in relation to <a
-        href="${item_url}">${item_title}</a> news item.</th>
+        href="${item_url}">${item_title}</a> item.</th>
       </tr>
       <tr>
         <th>

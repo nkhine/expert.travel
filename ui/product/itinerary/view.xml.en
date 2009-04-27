@@ -3,109 +3,102 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-<div class="yui-gc">
-    <div class="yui-u first news">
-        <h1>${dc:title}</h1>
-        <p>${dc:description}</p>
-        <table width="100%">
-            <tr>
-                <td>
-                <table stl:if="itinerary_image" class="yui-dt">
-                    <tr>
-                        <td>
-                            <img src="${itinerary_image/url}"
-                            alt="${itinerary_image/title}" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="yui-dt-title">
-                            ${itinerary_image/title}
-                        </td>
-                    </tr>
-                </table>
-                <p>${abakuc:news_text}</p>
-                </td>
-            </tr>
-            <tr>
-                <td class="info">
-                Posted on: ${date} <strong>by 
-                <stl:block stl:if="is_branch_manager_or_member">
-                <a href="${user_uri}" title="View
-                        ${user}'s profile">${user}</a>
-                        </stl:block>
-                        <stl:block stl:if="not is_branch_manager_or_member">
-                        ${user}
-                        </stl:block>
-
-                        </strong><br /> Time: <span
-                        stl:if="posted/weeks">${posted/weeks} weeks, ${posted/days}
-                        days ago</span>
-                        <stl:block stl:if="not posted/weeks">
-                            <span stl:if="posted/days">
-                        ${posted/days} days, ${posted/hours}
-                         hours ${posted/minutes} mins ago</span>
-                            <span stl:if="not posted/days">
-                        ${posted/hours} hours ${posted/minutes} mins ago</span>
-                        </stl:block>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                  <table class="tablesorter">
-                    <colgroup>
-                      <col width="20%" />
-                      <col width="80%" />
-                    </colgroup>
-                    <thead>
-                      <tr stl:if="not messages">
-                        <th colspan="2">
-                        <a
-                        href="${url}/;new_thread_form?unique_id=${unique_id}"
-                        class="create_discussion">Create a New Discussion »</a>
-                        </th>
-                      </tr>  
-                      <tr stl:if="messages">
-                        <th colspan="2"><a href="${url}/${thread}">View full
-                        discussion. »</a> located at the ${forum} forum.</th>
+  <div class="yui-gc">
+      <div class="yui-u first news">
+          <h1>${dc:title}</h1>
+          <p>${dc:description}</p>
+          <table width="100%">
+              <tr>
+                  <td>
+                  <table stl:if="itinerary_image" class="yui-dt">
+                      <tr>
+                          <td>
+                              <img src="${itinerary_image/url}"
+                              alt="${itinerary_image/title}" />
+                          </td>
                       </tr>
                       <tr>
-                        <th>
-                         <a href="${url}/;view">« Back to forum.</a>
-                        </th>
-                        <th>
-                          ${batch} ${msg}
-                        </th>
+                          <td class="yui-dt-title">
+                              ${itinerary_image/title}
+                          </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      <tr stl:repeat="message messages" class="${repeat/message/even}">
-                        <td valign="top" class="forum_message_info">
-                          <p class="forum_message_author">${message/author}</p>
-                          <p class="forum_message_date">${message/mtime}</p>
-                          <a stl:if="message/editable" href="${message/edit_form}">Edit</a>
-                        </td>
-                        <td valign="top" class="forum_message_body">
-                          <p>${message/body}</p>
-                        </td>
-                      </tr>
-                    </tbody>
                   </table>
+                  <p>${abakuc:news_text}</p>
                   </td>
               </tr>
-          </table>
-    </div> <!-- yui-u first -->
-    <div class="yui-u">
-        <span class="info">
-        <dl>
-            <dt>
-                <label for="title"><h3>Itinerary</h3></label>
-            </dt>
-            <dd stl:repeat="day itinerary_days">
-                <a href="${day/url}">${day/title}</a>
-            </dd>                
-        </dl>
-        </span>
-    </div> <!-- yui-u -->
-</div> <!-- yui-g -->
+            </table>
+      </div> <!-- yui-u first -->
+      <div class="yui-u">
+          <span class="info">
+          <dl>
+              <dt>
+                  <label for="title"><h3>Itinerary</h3></label>
+              </dt>
+              <dd stl:repeat="day itinerary_days">
+                  <a href="${day/url}">${day/title}</a>
+              </dd>                
+          </dl>
+          </span>
+      </div> <!-- yui-u -->
+  </div> <!-- yui-g -->
+  <table class="tablesorter">
+    <colgroup>
+      <col width="20%" />
+      <col width="80%" />
+    </colgroup>
+    <thead>
+      <tr stl:if="not messages">
+        <th colspan="2">
+        <a
+        href="${url}/;new_thread_form?unique_id=${unique_id}"
+        class="create_discussion">Create a New Discussion »</a>
+        </th>
+      </tr>  
+      <tr stl:if="messages">
+        <th colspan="2"><a href="${url}/${thread}">View full
+        discussion. »</a> located at the ${forum} forum.</th>
+      </tr>
+      <tr>
+        <th>
+         <a href="${url}/;view">« Back to forum.</a>
+        </th>
+        <th>
+          ${batch} ${msg}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr stl:repeat="message messages" class="${repeat/message/even}">
+        <td valign="top" class="forum_message_info">
+          <p class="forum_message_author">${message/author}</p>
+          <p class="forum_message_date">${message/mtime}</p>
+          <a stl:if="message/editable" href="${message/edit_form}">Edit</a>
+        </td>
+        <td valign="top" class="forum_message_body">
+          <p>${message/body}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="info">
+  Posted on: ${date} <strong>by 
+  <stl:block stl:if="is_branch_manager_or_member">
+  <a href="${user_uri}" title="View
+          ${user}'s profile">${user}</a>
+          </stl:block>
+          <stl:block stl:if="not is_branch_manager_or_member">
+          ${user}
+          </stl:block>
 
+          </strong><br /> Time: <span
+          stl:if="posted/weeks">${posted/weeks} weeks, ${posted/days}
+          days ago</span>
+          <stl:block stl:if="not posted/weeks">
+              <span stl:if="posted/days">
+          ${posted/days} days, ${posted/hours}
+           hours ${posted/minutes} mins ago</span>
+              <span stl:if="not posted/days">
+          ${posted/hours} hours ${posted/minutes} mins ago</span>
+          </stl:block>
+  </div>
 </stl:block>
