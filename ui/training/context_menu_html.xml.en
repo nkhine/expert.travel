@@ -4,11 +4,12 @@
   <dl>
     <stl:block repeat="menu1 menus/items">
         <dt>
-          <img stl:if="menu1/src" src="${menu1/src}" alt="" width="16" height="16" />
           <div stl:if="menu1/active" class="active">
+            <img stl:if="menu1/src" src="${menu1/src}" alt="" width="16" height="16" />
             <a title="${menu1/title}" href="${menu1/href}">${menu1/title}</a> 
           </div>
           <div stl:if="not menu1/active" class="inactive"> 
+            <img stl:if="menu1/src" src="${menu1/src}" alt="" width="16" height="16" />
             <a title="${menu1/title}" href="${menu1/href}">${menu1/title}</a> 
           </div>
         </dt>

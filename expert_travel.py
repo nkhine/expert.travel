@@ -690,7 +690,7 @@ class ExpertTravel(SiteRoot):
                     country = row[5]
                     region = row[7]
                     county = get('abakuc:county')
-            url = '%s/%s' % (self.get_pathto(job), job.name)
+            url = '%s' % self.get_pathto(job)
             apply = '%s/;application_form' % (url)
             description = reduce_string(get('dc:description'),
                                         word_treshold=90,

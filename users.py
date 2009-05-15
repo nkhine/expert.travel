@@ -1692,24 +1692,11 @@ class User(iUser, WorkflowAware, Handler):
                    ('description', u'Short description')]
         # Get all Training programmes
         items = training.search_handlers(handler_class=Training)
-        # List all training programmes the user belongs to
-        #is_current_programme = []
-        ## List all other training programmes
-        #other_programmes = []
-
-        #for item in items:
-        #    url = 'http://%s' % (item.get_vhosts())
-        #    ns = {'title': item.title_or_name,
-        #          'url': url}
-        #    if item.has_user_role(self.name, 'abakuc:branch_member'):
-        #        if item.name is office.name:
-        #            is_current_programme.append(ns)
-        #        else:
-        #            programmes.append(ns)
-        #    else:
-        #        other_programmes.append(ns)# Construct the lines of the table
         trainings = []
-        for item in list(items):
+        for item in items:
+            url = 'http://%s' % (item.get_vhosts())
+            ns = {'title': item.title_or_name,
+                  'url': url}
             is_open = item.get_property('ikaaro:website_is_open')
             if is_open is True:
                 get = item.get_property
@@ -1755,37 +1742,37 @@ class User(iUser, WorkflowAware, Handler):
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
-        items = trainings[batch_start:batch_fin]
+        training_items = trainings[batch_start:batch_fin]
         # Order
         sortby = context.get_form_value('sortby', 'id')
         sortorder = context.get_form_value('sortorder', 'up')
         reverse = (sortorder == 'down')
-        items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
+        training_items.sort(lambda x,y: cmp(x[sortby], y[sortby]))
         if reverse:
             trainings.reverse()
         # Set batch informations
         # Namespace
-        if trainings:
-            actions = [('select', u'Select All', 'button_select_all',
-                        "return select_checkboxes('browse_list', true);"),
-                       ('select', u'Select None', 'button_select_none',
-                        "return select_checkboxes('browse_list', false);"),
-                       ('create_training', u'Add new training', 'button_ok',
-                        None),
-                       ('remove_training', 'Delete training/s', 'button_delete', None)]
-            training_table = table(columns, items, [sortby], sortorder, actions)
+        if training_items:
+            #actions = [('select', u'Select All', 'button_select_all',
+            #            "return select_checkboxes('browse_list', true);"),
+            #           ('select', u'Select None', 'button_select_none',
+            #            "return select_checkboxes('browse_list', false);"),
+            #           ('create_training', u'Add new training', 'button_ok',
+            #            None),
+            #           ('remove_training', 'Delete training/s', 'button_delete', None)]
+            #training_table = table(columns, training_items, [sortby], sortorder, actions)
             msgs = (u'There is one training.', u'There are ${n} training programmes.')
             training_batch = batch(context.uri, batch_start, batch_size,
                               batch_total, msgs=msgs)
             msg = None
         else:
-            training_table = None
+            #training_table = None
             training_batch = None
-            msg = u'No training programmes'
+            msg = u'No training programmes!'
 
-        namespace['training_table'] = training_table
+        #namespace['training_table'] = training_table
         namespace['batch'] = training_batch
-        namespace['items'] = trainings
+        namespace['items'] = training_items
         namespace['msg'] = msg
         handler = self.get_handler('/ui/abakuc/training/list.xml')
         return stl(handler, namespace)

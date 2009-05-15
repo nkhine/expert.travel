@@ -22,6 +22,7 @@ from itools.stl import stl
 from itools.uri import Path, get_reference
 from itools.vfs import vfs
 from itools.web import get_context
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 
 # Import from abakuc
 from base import Handler, Folder
@@ -300,15 +301,18 @@ class News(RoleAware, Folder):
 
         # Navigation in news
         #Search the catalogue, list all news items in company
-        #root = context.root
-        #catalog = context.server.catalog
-        #query = []
-        #query.append(EqQuery('format', 'news'))
-        #today = (date.today()).strftime('%Y-%m-%d')
-        #query.append(RangeQuery('closing_date', today, None))
-        #query = AndQuery(*query)
-        #results = catalog.search(query)
-        #document_names = results.get_documents()
+        root = context.root
+        catalog = context.server.catalog
+        query = []
+        query.append(EqQuery('format', 'news'))
+        today = (date.today()).strftime('%Y-%m-%d')
+        query.append(RangeQuery('closing_date', today, None))
+        query = AndQuery(*query)
+        results = catalog.search(query)
+        document_names = results.get_documents()
+        print len(document_names)
+        #print [x for x in document_names]
+        #print [handler.get_handler(x) for x in document_names.get_handler_names()]
         #doc_index = document_names.index(self.name)
         #is_first_document = doc_index == 0
         #is_last_document = doc_index == len(document_names) - 1
