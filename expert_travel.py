@@ -142,7 +142,6 @@ class ExpertTravel(AccessControl, SiteRoot):
 
     def get_tabs_stl(self, context):
         # Add a script
-        #context.scripts.append('/ui/abakuc/js/jquery-1.3.2.min.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl

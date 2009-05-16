@@ -152,7 +152,7 @@ class FrontOffice(Skin):
         scripts.append('/ui/table/javascript.js')        
         # jQuery scripts
         scripts.append('/ui/abakuc/js/jquery-1.3.2.min.js')
-        scripts.append('/ui/abakuc/js/ui.tabs.js')
+        #scripts.append('/ui/abakuc/js/ui.tabs.js')
         # This skin's JavaScript
         if self.has_handler('javascript.js'):
             scripts.append('%s/javascript.js' % self.abspath)

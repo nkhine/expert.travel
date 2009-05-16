@@ -339,7 +339,7 @@ class User(iUser, WorkflowAware, Handler):
         # Set Style
         # Add a script
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/js/ui.tabs.js')
+        context.scripts.append('/ui/abakuc/ui.tabs.js')
         #context.scripts.append('/ui/abakuc/js/jquery-ui-1.7.1.custom.min.js')
         root = context.root
 
