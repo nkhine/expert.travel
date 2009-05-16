@@ -12,7 +12,7 @@ import mimetypes
 
 # Import from itools
 from itools.catalog import EqQuery, AndQuery, RangeQuery
-from itools.cms.access import AccessControl, RoleAware
+from itools.cms.access import RoleAware
 from itools.cms.binary import Image
 from itools.cms.catalog import schedule_to_reindex
 from itools.cms.csv import CSV
@@ -35,6 +35,7 @@ from itools import get_abspath
 from itools.handlers import get_handler
 
 # Import from abakuc
+from access import AccessControl
 from base import Handler, Folder
 from forum import Forum
 from handlers import EnquiriesLog, EnquiryType, AffiliationTable
@@ -119,7 +120,7 @@ class Companies(Folder):
         return stl(handler, namespace)
 
 
-class Company(SiteRoot, Folder):
+class Company(SiteRoot, Folder, AccessControl):
 
     class_id = 'company'
     class_title = u'Company'
@@ -200,21 +201,21 @@ class Company(SiteRoot, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_allowed_to_edit(self, user, object):
-        if user is not None:
-            address = user.get_address()
-            if address:
-                #for address in self.search_handlers(handler_class=Address):
-                return address.has_user_role(user.name, 'abakuc:branch_member')
-        else:
-            return False
+    #def is_allowed_to_edit(self, user, object):
+    #    if user is not None:
+    #        address = user.get_address()
+    #        if address:
+    #            #for address in self.search_handlers(handler_class=Address):
+    #            return address.has_user_role(user.name, 'abakuc:branch_member')
+    #    else:
+    #        return False
 
-    def is_branch_manager(self, user, object):
-        if user is not None:
-            for address in self.search_handlers(handler_class=Address):
-                if address.is_branch_manager(user, address):
-                    return True
-        return False
+    #def is_branch_manager(self, user, object):
+    #    if user is not None:
+    #        for address in self.search_handlers(handler_class=Address):
+    #            if address.is_branch_manager(user, address):
+    #                return True
+    #    return False
 
     #def is_branch_manager(self, user, object):
     #    address = user.get_address()
@@ -223,7 +224,6 @@ class Company(SiteRoot, Folder):
     #######################################################################
     # User Interface / View
     #######################################################################
-    #view__access__ = 'is_allowed_to_view'
     view__access__ = True 
     view__label__ = u'View'
     def view(self, context):
@@ -248,32 +248,32 @@ class Company(SiteRoot, Folder):
 
     ####################################################################
     # Users
-    get_members_namespace__access__ = 'is_allowed_to_edit'
-    get_members_namespace__label__ = u'Users'
-    def get_members_namespace(self, context):
-        """
-        Returns a namespace (list of dictionaries) to be used
-        in the branch view list.
-        """
-        # This works, but returns only the user's id
-        # and also don't know how to break it down
-        # into individual branches.
-        addresses = self.search_handlers(handler_class=Address)
-        members = []
-        for address in addresses:
-            branch_members = address.get_members()
-            for username in branch_members:
-                users = self.get_handler('/users')
-                user_exist = users.has_handler(username)
-                usertitle = (user_exist and
-                             users.get_handler(username).get_title() or username)
-                url = '/users/%s/;profile' % username
-                members.append({'id': username,
-                                'title': usertitle,
-                                'url': url})
-        # List users
+    #get_members_namespace__access__ = 'is_allowed_to_edit'
+    #get_members_namespace__label__ = u'Users'
+    #def get_members_namespace(self, context):
+    #    """
+    #    Returns a namespace (list of dictionaries) to be used
+    #    in the branch view list.
+    #    """
+    #    # This works, but returns only the user's id
+    #    # and also don't know how to break it down
+    #    # into individual branches.
+    #    addresses = self.search_handlers(handler_class=Address)
+    #    members = []
+    #    for address in addresses:
+    #        branch_members = address.get_members()
+    #        for username in branch_members:
+    #            users = self.get_handler('/users')
+    #            user_exist = users.has_handler(username)
+    #            usertitle = (user_exist and
+    #                         users.get_handler(username).get_title() or username)
+    #            url = '/users/%s/;profile' % username
+    #            members.append({'id': username,
+    #                            'title': usertitle,
+    #                            'url': url})
+    #    # List users
 
-        return members
+    #    return members
 
     def get_affiliations(self, context):
         addresses = self.search_handlers(handler_class=Address)
@@ -1096,7 +1096,7 @@ class Company(SiteRoot, Folder):
         return stl(handler, namespace)
 
 
-class Address(RoleAware, WorkflowAware, Folder):
+class Address(AccessControl, RoleAware, WorkflowAware, Folder):
 
     class_id = 'address'
     class_title = u'Address'
@@ -1129,8 +1129,8 @@ class Address(RoleAware, WorkflowAware, Folder):
     edit_membership__access__ = 'is_branch_manager'
     new_user_form__access__ = 'is_branch_manager'
     new_user__access__ = 'is_branch_manager'
-    new_resource_form__access__ = 'is_allowed_to_view'
-    new_resource__access__ = 'is_allowed_to_view'
+    new_resource_form__access__ = 'is_allowed_to_manage'
+    new_resource__access__ = 'is_allowed_to_manage'
 
 
     def new(self, **kw):
@@ -2094,6 +2094,19 @@ class Address(RoleAware, WorkflowAware, Folder):
     #######################################################################
     # Security / Access Control
     #######################################################################
+    def is_admin(self, user, object):
+        return self.is_branch_manager(user, object)
+
+    def is_branch_manager(self, user, object):
+        if not user:
+            return False
+        # Is global admin
+        root = object.get_root()
+        if root.is_admin(user, self):
+            return True
+        # Is reviewer or member
+        return self.has_user_role(user.name, 'abakuc:branch_manager')
+
     def is_branch_manager_or_member(self, user, object):
         if not user:
             return False
@@ -2105,19 +2118,6 @@ class Address(RoleAware, WorkflowAware, Folder):
         return (self.has_user_role(user.name, 'abakuc:branch_manager') or
                 self.has_user_role(user.name, 'abakuc:branch_member'))
 
-    def is_admin(self, user, object):
-        return self.is_branch_manager(user, object)
-
-
-    def is_branch_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:branch_manager')
 
 
 register_object_class(Companies)

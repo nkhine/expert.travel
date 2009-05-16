@@ -516,9 +516,6 @@ class Training(SiteRoot, WorkflowAware):
 
     def is_allowed_to_edit(self, user, object):
         root = object.get_site_root()
-        #if root.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member'):
-        #    return True
-        #return False
         return root.is_training_manager_or_member(user, object)
 
     def is_allowed_to_view(self, user, object):

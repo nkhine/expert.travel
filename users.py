@@ -337,11 +337,10 @@ class User(iUser, WorkflowAware, Handler):
         [Profile] [Company]
         """
         # Set Style
-        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        context.scripts.append('/ui/abakuc/js/ui.tabs.js')
+        #context.scripts.append('/ui/abakuc/js/jquery-ui-1.7.1.custom.min.js')
         root = context.root
 
         namespace = {}
@@ -1365,7 +1364,7 @@ class User(iUser, WorkflowAware, Handler):
                                             word_treshold=10,
                                             phrase_treshold=40)
                 news_to_add ={'id': news.name,
-                             'checkbox': is_branch_manager,
+                             'checkbox': is_branch_manager_or_member,
                              'img': '/ui/abakuc/images/News16.png',
                              'c1': (get('dc:title'),url),
                              'c2': get('abakuc:closing_date'),
@@ -1462,7 +1461,7 @@ class User(iUser, WorkflowAware, Handler):
                     if user.has_property('ikaaro:user_must_confirm') is False:
                             nb_candidatures += 1
                 job_to_add ={'id': item.name,
-                             'checkbox': is_branch_manager,
+                             'checkbox': is_branch_manager_or_member,
                              'img': '/ui/abakuc/images/JobBoard16.png',
                              'c1-2': (get('dc:title'),url),
                              'c2-2': get('abakuc:closing_date'),
@@ -1559,7 +1558,7 @@ class User(iUser, WorkflowAware, Handler):
                     closing_date = date.today()
                 #Get no of applicants
                 product_to_add ={'id': product.name,
-                             'checkbox': is_branch_manager,
+                             'checkbox': is_branch_manager_or_member,
                              'img': '/ui/abakuc/images/JobBoard16.png',
                              'c1-3': (get('dc:title'),url+';view'),
                              'c2-3': closing_date,
@@ -1627,7 +1626,8 @@ class User(iUser, WorkflowAware, Handler):
             company = address.parent
 
             csv = address.get_handler('log_enquiry.csv')
-            url = '/%s/%s/' % (company.name, address.name)
+            url = '/companies/%s/%s/' % (company.name, address.name)
+            print url
             results = []
             for row in csv.get_rows():
                 date, user_id, phone, type, enquiry_subject, enquiry, resolved = row

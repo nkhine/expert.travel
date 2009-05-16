@@ -122,12 +122,45 @@ class FrontOffice(Skin):
         # This skin's style
         if self.has_handler('style.css'):
             styles.append('%s/style.css' % self.abspath)
+        #if self.has_handler('images/custom-theme/jquery-ui-1.7.1.custom.css'):
         if self.has_handler('images/ui.tabs.css'):
             styles.append('%s/images/ui.tabs.css' % self.abspath)
+            #styles.append('%s/images/custom-theme/jquery-ui-1.7.1.custom.css' % self.abspath)
         # Dynamic styles
         for style in context.styles:
             styles.append(style)
         return styles
+
+    def get_scripts(self, context):
+        scripts = []
+        # Aruni (default skin)
+        scripts.append('/ui/browser.js')
+        scripts.append('/ui/main.js')
+        # Epoz
+        scripts.append('/ui/epoz/javascript.js')
+        # Calendar (http://dynarch.com/mishoo/calendar.epl)
+        scripts.append('/ui/calendar/calendar.js')
+        languages = [
+            'af', 'al', 'bg', 'br', 'ca', 'da', 'de', 'du', 'el', 'en', 'es',
+            'fi', 'fr', 'hr', 'hu', 'it', 'jp', 'ko', 'lt', 'lv', 'nl', 'no',
+            'pl', 'pt', 'ro', 'ru', 'si', 'sk', 'sp', 'sv', 'tr', 'zh']
+        accept = context.get_accept_language()
+        language = accept.select_language(languages)
+        scripts.append('/ui/calendar/lang/calendar-%s.js' % language)
+        scripts.append('/ui/calendar/calendar-setup.js')
+        # Table
+        scripts.append('/ui/table/javascript.js')        
+        # jQuery scripts
+        scripts.append('/ui/abakuc/js/jquery-1.3.2.min.js')
+        scripts.append('/ui/abakuc/js/ui.tabs.js')
+        # This skin's JavaScript
+        if self.has_handler('javascript.js'):
+            scripts.append('%s/javascript.js' % self.abspath)
+        # Dynamic scripts
+        for script in context.scripts:
+            scripts.append(script)
+
+        return scripts
 
     def get_template_title(self, context):
         """Return the title to give to the template document."""

@@ -20,6 +20,7 @@ from itools.utils import get_version
 from itools.xhtml import Document as XHTMLDocument
 
 # Import from abakuc
+from access import AccessControl 
 from metadata import JobTitle, SalaryRange
 from training import Training
 from website import SiteRoot
@@ -28,7 +29,7 @@ from news import News
 from utils import t1, t2, t3, t4, t5
 from forum import Forum
 
-class ExpertTravel(SiteRoot):
+class ExpertTravel(AccessControl, SiteRoot):
 
     class_id = 'expert_travel'
     class_title = u'Expert Travel Website'
@@ -81,25 +82,33 @@ class ExpertTravel(SiteRoot):
     #######################################################################
     # Security / Access Control
     #######################################################################
-    def is_allowed_to_edit(self, user, object):
-        if not user:
-            return False
-        address = user.get_address()
-        if address:
-            return address.has_user_role(user.name, 'abakuc:branch_member', 'abakuc:branch_manager')
+    #def is_allowed_to_edit(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    #to_user = users.get_handler(user)
+    #    address = user.get_address()
+    #    return (address.has_user_role(user.name, 'abakuc:branch_manager') or
+    #            address.has_user_role(user.name, 'abakuc:branch_member') or
+    #            address.has_user_role(user.name, 'abakuc:guest'))
 
-    def is_branch_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        address = user.get_address()
-        if address:
-            return address.has_user_role(user.name, 'abakuc:branch_manager',
-            'abakuc:branch_member')
+
+    #def is_branch_manager(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    address = user.get_address()
+    #    if address:
+    #        return address.has_user_role(user.name, 'abakuc:branch_manager',
+    #        'abakuc:branch_member')
 
 
     #######################################################################
@@ -133,7 +142,7 @@ class ExpertTravel(SiteRoot):
 
     def get_tabs_stl(self, context):
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        #context.scripts.append('/ui/abakuc/js/jquery-1.3.2.min.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
         context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl

@@ -483,28 +483,31 @@ class Forum(Folder):
 
         return context.come_back(u"Thread Created.", goto=name)
 
-
     def get_epoz_data(self):
         return None
 
-    def is_allowed_to_view(self, user, object):
-        # Protect the document
-        return self.is_training_manager_or_member(user, object)
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
 
-    def is_allowed_to_edit(self, user, object):
-        # Protect the document
-        return self.is_training_manager(user, object)
+    #def is_allowed_to_view(self, user, object):
+    #    # Protect the document
+    #    return self.is_training_manager_or_member(user, object)
 
-    def is_allowed_to_add(self, user, object):
-        # Protect the document
-        return self.is_training_manager(user, object)
+    ##def is_allowed_to_edit(self, user, object):
+    ##    # Protect the document
+    ##    return self.is_training_manager(user, object)
 
-    def is_allowed_to_move(self, user, object):
-        # Protect the document
-        return self.is_training_manager(user, object)
+    #def is_allowed_to_add(self, user, object):
+    #    # Protect the document
+    #    return self.is_training_manager(user, object)
 
-    def is_allowed_to_trans(self, user, object, name):
-        return self.is_training_manager(user, object)
+    #def is_allowed_to_move(self, user, object):
+    #    # Protect the document
+    #    return self.is_training_manager(user, object)
+
+    #def is_allowed_to_trans(self, user, object, name):
+    #    return self.is_training_manager(user, object)
 
 register_object_class(Forum)
 register_object_class(Thread)

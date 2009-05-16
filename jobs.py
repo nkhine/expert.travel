@@ -54,6 +54,7 @@ class Job(Folder, RoleAware):
     class_views = [
         ['view'],
         ['application_form'],
+        ['browse_content?mode=list'],
         ['edit_metadata_form'],
         ['view_candidatures'],
         ['add_job_form'],
@@ -795,8 +796,12 @@ class Candidature(RoleAware, Folder):
             address = job.parent
             subject = subject_template % job.title
             body = body_template % (job.title, firstname, lastname)
-            to_addrs = address.get_property('abakuc:branch_manager')
+            managers = address.get_property('abakuc:branch_manager')
+            to_addrs = [ users.get_handler(x).get_property('ikaaro:email')
+                       for x in address.get_members() ]
             for to_addr in to_addrs:
+                #user = users.get_handler(manager)
+                print to_addr
                 root.send_email(email, to_addr, subject, body)
 
 
