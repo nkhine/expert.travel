@@ -123,9 +123,9 @@ class FrontOffice(Skin):
         if self.has_handler('style.css'):
             styles.append('%s/style.css' % self.abspath)
         #if self.has_handler('images/custom-theme/jquery-ui-1.7.1.custom.css'):
-        if self.has_handler('images/ui.tabs.css'):
-            styles.append('%s/images/ui.tabs.css' % self.abspath)
-            #styles.append('%s/images/custom-theme/jquery-ui-1.7.1.custom.css' % self.abspath)
+        if self.has_handler('custom-theme/jquery-ui-1.7.1.custom.css'):
+            #styles.append('%s/images/ui.tabs.css' % self.abspath)
+            styles.append('%s/custom-theme/jquery-ui-1.7.1.custom.css' % self.abspath)
         # Dynamic styles
         for style in context.styles:
             styles.append(style)
@@ -152,7 +152,8 @@ class FrontOffice(Skin):
         scripts.append('/ui/table/javascript.js')        
         # jQuery scripts
         scripts.append('/ui/abakuc/js/jquery-1.3.2.min.js')
-        #scripts.append('/ui/abakuc/js/ui.tabs.js')
+        #scripts.append('/ui/abakuc/ui.tabs.js')
+        scripts.append('/ui/abakuc/js/jquery-ui-1.7.1.custom.min.js')
         # This skin's JavaScript
         if self.has_handler('javascript.js'):
             scripts.append('%s/javascript.js' % self.abspath)

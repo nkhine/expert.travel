@@ -143,7 +143,6 @@ class ExpertTravel(AccessControl, SiteRoot):
     def get_tabs_stl(self, context):
         # Add a script
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         namespace = {}
         namespace['news'] = self.list_news(context)
@@ -155,17 +154,12 @@ class ExpertTravel(AccessControl, SiteRoot):
         <stl:block xmlns="http://www.w3.org/1999/xhtml"
           xmlns:stl="http://xml.itools.org/namespaces/stl">
             <script type="text/javascript">
-                var TABS_COOKIE = 'company_cookie';
-                $(function() {
-                    $('#container-1 > ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal"
-                    });
-                });
+			$(function(){
+				// Tabs
+                $('#container-1').tabs({ cookie: { expires: 365 }}); 
+                $("#container-2").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+                $("#container-2 li").removeClass('ui-corner-top').addClass('ui-corner-right');
+			});
             </script>
         <div id="container-1">
             <ul>

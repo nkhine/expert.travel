@@ -24,19 +24,6 @@
     </div> <!-- yui-u first -->
     <!-- 1/3 column -->
     <div class="yui-u">
-                <script type="text/javascript">
-                var LOGIN_COOKIE = 'login-box-cookie';
-                $(function() {
-                    $('#login-box-1 > ul').tabs((parseInt($.cookie(LOGIN_COOKIE))) || 1,{click: function(clicked) {
-                        var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-                       $.cookie(LOGIN_COOKIE, lastTab, {path: '/'});
-                    },
-                    fxFade: true,
-                    fxSpeed: 'fast',
-                    fxSpeed: "normal"
-                    });
-                });
-            </script>
         <div id="login-box-1">
             <ul>
                 <stl:block stl:if="not user/info">
