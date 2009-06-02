@@ -157,8 +157,8 @@ class ExpertTravel(AccessControl, SiteRoot):
 			$(function(){
 				// Tabs
                 $('#container-1').tabs({ cookie: { expires: 365 }}); 
-                $("#container-2").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
-                $("#container-2 li").removeClass('ui-corner-top').addClass('ui-corner-right');
+                $("#container-2").tabs().addClass('ui-helper-clearfix');
+                $("#container-2 li").addClass('ui-corner-top');
 			});
             </script>
         <div id="container-1">

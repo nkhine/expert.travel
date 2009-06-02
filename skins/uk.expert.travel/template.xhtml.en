@@ -60,7 +60,7 @@
             </div><!-- hd -->
             <div id="bd">
                 <div class="yui-b">
-                    <div id="left">
+                    <div id="left" class="ui-corner-all">
                     <div stl:repeat="menu left_menus">
                             <stl:block if="level1">
                                 <ul stl:repeat="option level1">

@@ -180,6 +180,11 @@ class SiteRoot(Handler, BaseWebSite):
     register_form__access__ = 'is_allowed_to_register'
     register_form__label__ = u'Register'
     def register_form(self, context, functions=None):
+        '''
+        Registration Form for all the sites.
+        Remove the cookie containing the captcha id, if the user:
+        Refreshes the page.
+        '''
         root = get_context().root
         namespace = context.build_form_namespace(self.register_fields)
         namespace['functions'] = root.get_functions_namespace(functions)
@@ -190,12 +195,13 @@ class SiteRoot(Handler, BaseWebSite):
         crypt_imgtext = crypt_captcha(imgtext)
         encoded_imgtext = Password.encode('%s' % crypt_imgtext)
         # PIL "code" - open image, add text using font, save as new
-        path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+        #path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+        path = get_abspath(globals(), 'data/images/bg.jpg')
         sound_path = get_abspath(globals(), 'data/sound')
         sound_output_path = get_abspath(globals(), 'ui/sound')
         im=PILImage.open(path)
         draw=ImageDraw.Draw(im)
-        font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
+        font_path = get_abspath(globals(), 'data/fonts/SHERWOOD.TTF')
         font=ImageFont.truetype(font_path, 18)
         draw.text((10,10),imgtext, font=font, fill=(100,100,50))
         # save as a temporary image

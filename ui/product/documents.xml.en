@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<script type="text/javascript">
+  $(function() {
+      $('a.media').media();
+  });
+</script>
+<div class="yui-gc">
+    <div class="yui-u first">
+        <h1>Documents</h1>
+        <div stl:if="flash">
+            <h2>Videos and flash documents</h2>
+
+            <ul>
+                <li stl:repeat="item flash"><a href="${item/url}"><img src="${item/icon}" border="0"
+                name="${item/description}" keywords="${item/keywords}"
+                alt="${item/title}" /></a>
+                <a class="media {width:250, height:200}" href="${item/url}" alt="${item/title}">${item/title}</a></li>
+            </ul>
+        </div>
+    </div> <!-- yui-u first -->
+    <div class="yui-u">
+        <div stl:if="others">
+            <h2>Other document types</h2>
+            <ul>
+                <li stl:repeat="item others"><a href="${item/url}"><img src="${item/icon}" border="0"
+                name="${item/description}" keywords="${item/keywords}"
+                alt="${item/title}" /></a>
+                <a href="${item/url}" alt="${item/title}">${item/title}</a></li>
+            </ul>
+        </div>
+    </div> <!-- yui-u -->
+</div> <!-- yui-g -->
+
+</stl:block>

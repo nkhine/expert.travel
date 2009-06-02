@@ -69,11 +69,11 @@ class Product(Folder, WorkflowAware):
     # Tabs 
     def tabs(self, context):
         # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -89,13 +89,14 @@ class Product(Folder, WorkflowAware):
         template = root.get_handler(template_path)
         return stl(template, namespace)
 
+    view_tabs__access__ = True
     def view_tabs(self, context):
         # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
         #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -158,7 +159,7 @@ class Product(Folder, WorkflowAware):
     overview__access__ = True
     overview__label__ = u'Overview'
     def overview(self, context):
-        context.del_cookie('product_cookie')
+        #context.del_cookie('product_cookie')
         root = context.root
         namespace = {}
         for key in self.edit_fields:
@@ -380,11 +381,59 @@ class Product(Folder, WorkflowAware):
         handler = self.get_handler('/ui/abakuc/response.xml')
         return stl(handler, namespace)
     
-    documents__access__ = True
-    documents__label__ = u'Overview'
+    documents__access__ = 'is_branch_manager_or_member'
+    documents__label__ = u'Documents'
     def documents(self, context):
-        pass
+        context.scripts.append('/ui/abakuc/js/jquery.metadata.min.js')
+        context.scripts.append('/ui/abakuc/js/jquery.media.js')
+        namespace = {}
+        # Get all other documents
+        #query = AndQuery(OrQuery(EqQuery('format', 'news'),
+        #                 EqQuery('format', 'jobs'),
+        #                 EqQuery('state', 'public')))
+        
+        handlers = self.search_handlers(handler_class=File)
+        flash = []
+        others = []
+        for handler in handlers:
+            url = '%s' % handler.name
+            handler_state = handler.get_property('state')
+            if handler_state == 'public':
+                type = handler.get_content_type()
+                title = handler.get_property('dc:title')
+                if title == '':
+                    title = 'View document'
+                else:
+                    title = reduce_string(title, 10, 20)
+                icon = handler.get_path_to_icon(size=16)
+                mtime = handler.get_mtime().strftime('%Y-%m-%d %H:%M')
+                description = handler.get_property('dc:description')
+                keywords = handler.get_property('dc:subject')
+                if type == 'image':
+                    pass
+                elif type == 'application/x-shockwave-flash':
+                    item = {'url': url,
+                            'title': title,
+                            'icon': icon,
+                            'mtime': mtime,
+                            'description': description,
+                            'keywords': keywords}
+                    flash.append(item)
+                #else:
+                #    item = {'url': url,
+                #            'title': title,
+                #            'icon': icon,
+                #            'mtime': mtime,
+                #            'description': description,
+                #            'keywords': keywords}
+                #    others.append(item)
 
+        # Namespace
+        namespace['flash'] = flash
+        namespace['others'] = others
+
+        handler = self.get_handler('/ui/abakuc/product/documents.xml')
+        return stl(handler, namespace)
 
     contact__access__ = True
     contact__label__ = u'Overview'
@@ -751,7 +800,7 @@ class Product(Folder, WorkflowAware):
         context.styles.append('/ui/abakuc/media/thickbox.css')
         
         ## Add the js scripts
-        context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
+        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery/jquery.easing.1.3.js')
         context.scripts.append('/ui/abakuc/jquery/thickbox-modified.js')
         context.scripts.append('/ui/abakuc/jquery/jquery.scrollto.js')
@@ -905,6 +954,13 @@ class Product(Folder, WorkflowAware):
 
         handler = self.get_handler('/ui/abakuc/media/images.xml')
         return stl(handler, namespace)
+
+    #######################################################################
+    # Security / Access Control
+    #######################################################################
+    def is_allowed_to_view(self, user, object):
+        address = self.parent
+        return address.is_branch_manager_or_member(user, object)
 
 ###########################################################################
 # Register

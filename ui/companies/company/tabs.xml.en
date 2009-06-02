@@ -1,17 +1,10 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
     <script type="text/javascript">
-        var TABS_COOKIE = 'address_cookie';
         $(function() {
-            $('#container-1 ul').tabs((parseInt($.cookie(TABS_COOKIE))) || 1,{click: function(clicked) {
-                var lastTab = $(clicked).parents("ul").find("li").index(clicked.parentNode) + 1;
-               $.cookie(TABS_COOKIE, lastTab, {path: '/'});
-            },
-            fxFade: true,
-            fxSpeed: 'fast',
-            fxSpeed: "normal"
-            });
+          $('#container-1').tabs({ cookie: { expires: 365 }});
         });
+
     </script>
 <div id="container-1">
     <ul>

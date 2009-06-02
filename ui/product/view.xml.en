@@ -59,7 +59,7 @@
     </div> <!-- yui-u -->
 </div> <!-- yui-g -->
         <div stl:if="others">
-            <h2>Other document types</h2>
+            <h2>Other document types XXX</h2>
             <ul>
                 <li stl:repeat="item others"><a href="${item/url}"><img src="${item/icon}" border="0"
                 name="${item/description}" keywords="${item/keywords}"

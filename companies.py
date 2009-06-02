@@ -63,13 +63,16 @@ class Companies(Folder):
                    ['permissions_form', 'new_user_form'],
                    ['edit_metadata_form', 'anonymous_form', 'contact_options_form']]
 
+    browse_content__access__ = 'is_admin'
+    edit_metadata_form__access__ = 'is_admin'
+
     def get_document_types(self):
         return [Company]
 
     #######################################################################
     # User Interface
     #######################################################################
-    view__access__ = 'is_allowed_to_view'
+    view__access__ = 'is_admin'
     view__label__ = u'View'
     def view(self, context):
         here = context.handler
@@ -181,11 +184,11 @@ class Company(SiteRoot, Folder, AccessControl):
 
     def tabs(self, context):
         # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -1291,11 +1294,11 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
 
     def tabs(self, context):
         # Set Style
-        context.styles.append('/ui/abakuc/images/ui.tabs.css')
+        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
+        #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        context.scripts.append('/ui/abakuc/ui.tabs.js')
+        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -2119,6 +2122,10 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
                 self.has_user_role(user.name, 'abakuc:branch_member'))
 
 
+    def is_allowed_to_view(self, user, object):
+        if not user:
+          return True
+        return self.is_branch_manager_or_member(user, object)
 
 register_object_class(Companies)
 register_object_class(Company)
