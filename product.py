@@ -127,6 +127,22 @@ class Product(Folder, WorkflowAware):
 
     ########################################################################
     # API 
+    def get_hotels(self, name=None):
+        name = name.lower()
+        hotels = []
+        companies = self.get_handler('/companies')
+        for company in companies.search_handlers():
+            title = company.get_property('dc:title')
+            topic = company.get_property('abakuc:topic')
+            if name not in title.lower():
+                continue
+            if 'hotel' not in topic:
+                continue
+            hotels.append(company)
+            #hotels.append({'name': company.name, 'title': title})
+        hotels.sort()
+        return hotels
+
     def get_currency(self, context):
         """
         Used in skins.py to search for companies
@@ -408,7 +424,7 @@ class Product(Folder, WorkflowAware):
             hotel_address = self.get_address(address)
             hotel = hotel_address.parent
             namespace['is_hotel'] = True
-            namespace['hotel'] = hotel.get_property('dc:title')
+            namespace['hotel'] = hotel_address.get_property('abakuc:hotel')
             rating = hotel.get_property('abakuc:rating')
             hotel_rating = root.get_rating_types(rating)
             namespace['rating'] = hotel.get_property('abakuc:rating')
@@ -488,7 +504,7 @@ class Product(Folder, WorkflowAware):
 
 
     @staticmethod
-    def get_form(name=None, description=None, website=None, rating=None, subject=None):
+    def get_form(name=None, description=None, website=None, subject=None):
         root = get_context().root
 
         namespace = {}
@@ -496,13 +512,10 @@ class Product(Folder, WorkflowAware):
         namespace['description'] = description
         namespace['website'] = website
         namespace['subject'] = subject
-        # Hotel rating
-        rating = root.get_rating_types()
-        namespace['rating'] = rating
-
         handler = root.get_handler('ui/abakuc/product/form.xml')
         return stl(handler, namespace)
 
+    # We get the Hotel Address, linked to the product.
     def get_address(self, addr=None):
         from companies import Company, Address
         root = self.get_root()
@@ -535,18 +548,18 @@ class Product(Folder, WorkflowAware):
                 message = u'Please increase your search word!.'
                 return context.come_back(message)
             else:
-                name = name.lower()
                 found = []
-                companies = self.get_handler('/companies')
-                for company in companies.search_handlers():
+                hotels = self.get_hotels(name)
+                for company in hotels:
                     title = company.get_property('dc:title')
                     topic = company.get_property('abakuc:topic')
-                    if name not in title.lower():
-                        continue
-                    if 'hotel' not in topic:
-                        continue
                     found.append({'name': company.name, 'title': title})
-                found.sort()
+                    #addresses = company.get_addresses(context)[1]
+                    #for address in addresses:
+                    #    title = address.get_property('abakuc:hotel')
+                    #    if name not in title.lower():
+                    #        continue
+                    #    found.append({'name': address.name, 'title': title})
                 namespace['n_found'] = len(found)
                 namespace['found'] = found
                 namespace['form'] = self.get_form()
@@ -585,8 +598,6 @@ class Product(Folder, WorkflowAware):
         website = context.get_form_value('abakuc:website')
         topics = ['hotel']
         types = 'other'
-        # Board type
-        rating = context.get_form_value('abakuc:rating')
 
         metadata.set_property('dc:title', title, language='en')
         metadata.set_property('dc:description', description)
@@ -594,7 +605,6 @@ class Product(Folder, WorkflowAware):
         metadata.set_property('abakuc:website', website)
         metadata.set_property('abakuc:topic', tuple(topics))
         metadata.set_property('abakuc:type', types)
-        metadata.set_property('abakuc:rating', rating)
         metadata.set_property('ikaaro:website_is_open', False)
 
         # Set the Address..
@@ -606,7 +616,7 @@ class Product(Folder, WorkflowAware):
     #######################################################################
     @staticmethod
     def get_address_form(address=None, postcode=None, town=None, phone=None, fax=None,
-                 address_country=None, address_region=None,
+                 rating=None, address_country=None, address_region=None,
                  address_county=None):
         context = get_context()
         root = context.root
@@ -632,6 +642,11 @@ class Product(Folder, WorkflowAware):
         namespace['countries'] = countries
         namespace['regions'] = regions
         namespace['counties'] = county
+
+        # Hotel rating
+        rating = root.get_rating_types()
+        namespace['rating'] = rating
+        namespace['hotel'] = None
 
         # Add hotel contact
         register_fields = [('ikaaro:firstname', True),
@@ -772,7 +787,7 @@ class Product(Folder, WorkflowAware):
                 self.set_property('abakuc:hotel', name)
 
                 for name in ['address', 'county', 'town', 'postcode',
-                             'phone', 'fax']:
+                             'phone', 'fax', 'rating', 'hotel']:
                     name = 'abakuc:%s' % name
                     value = context.get_form_value(name)
                     address.set_property(name, value)

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <h1>${title}</h1>
+    <script type="text/javascript">
+        $(function(){
+            // Tabs
+            $("#tabs-vertical").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+            $("#tabs-vertical li").addClass('ui-corner-all');
+        });
+    </script>
+    <div id="tabs-vertical">
+        <ul>
+            <li><a href="#tabs-1">Location</a></li>
+            <li><a href="#tabs-2">Rooms amp Suites</a></li>
+            <li><a href="#tabs-3">Restaurants</a></li>
+            <li><a href="#tabs-4">Facilities</a></li>
+            <li><a href="#tabs-5">Special Features</a></li>
+        </ul>
+        <div id="tabs-1">
+          Locations
+        </div>
+        <div id="tabs-2">
+          Rooms amp Suites
+        </div>
+        <div id="tabs-3">
+          Restaurants
+        </div>
+        <div id="tabs-4">
+          Facilities
+        </div>
+        <div id="tabs-5">
+          Special Features
+        </div>
+    </div>
+</stl:block>

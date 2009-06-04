@@ -4,6 +4,17 @@
 
 <script type="text/javascript" src="/ui/abakuc/abakuc.js"></script>
 
+  <h2>Hotel local name</h2>
+  <dl>
+      <dt>
+        <label for="hotel">
+          e.g. Atria Novotel</label>
+      </dt>
+      <dd>
+        <input type="text" id="hotel" name="abakuc:hotel"
+          value="${hotel}" />
+      </dd>
+  </dl>
   <table>
     <tr>
       <td colspan="2">
@@ -55,6 +66,16 @@
       </td>
     </tr>
   </table>
+  <h2>Hotel rating</h2>
+  <dt>
+    <label for="rating">Hotel rating</label>
+  </dt>
+  <dd>
+  <select id="rating" name="abakuc:rating">
+    <option stl:repeat="item rating" value="${item/id}"
+    selected="${item/is_selected}">${item/title}</option>
+  </select>
+  </dd>
   <h2>Hotel contact details</h2>
   <dl>
       <dt>

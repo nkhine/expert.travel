@@ -24,15 +24,6 @@
         <input type="text" size="48" name="abakuc:website" id="website"
           value="${website}" />
       </dd>
-      <dt>
-        <label for="rating">Hotel rating</label>
-      </dt>
-      <dd>
-      <select id="rating" name="abakuc:rating">
-        <option stl:repeat="item rating" value="${item/id}"
-        selected="${item/is_selected}">${item/title}</option>
-      </select>
-      </dd>
       <dd>
         Used by search engines to index your entry.
       </dd>

@@ -176,19 +176,51 @@ class Company(SiteRoot, Folder, AccessControl):
             training = False
         return training
 
+
     def get_website(self):
         website = self.get_property('abakuc:website')
         if website.startswith('http://'):
             return website
         return 'http://' + website
 
+
+    def get_addresses(self, context):
+        root = context.site_root
+        here = context.handler or root
+        title = here.get_title()
+        namespace = {}
+        addresses = self.search_handlers(handler_class=Address)
+        items = []
+        item = []
+        for address in addresses:
+            item.append(address)
+            handler = root.get_handler(address.abspath)
+            url = '%s/' % here.get_pathto(handler)
+            address_to_add = {'url': url+';view',
+                               'enquire': url+';enquiry_form',
+                               'address': address.get_property('abakuc:address'),
+                               'town': address.get_property('abakuc:town'),
+                               'postcode': address.get_property('abakuc:postcode'),
+                               'phone': address.get_property('abakuc:phone'),
+                               'fax': address.get_property('abakuc:fax'),
+                               'title': address.title_or_name}
+
+            items.append(address_to_add)
+        return items, item
+
+
+    def is_hotel(self):
+        topic = self.get_property('abakuc:topic')
+        if 'hotel' in topic:
+            return True 
+        return False 
+
+    #######################################################################
+    # Tabs 
+    #######################################################################
     def tabs(self, context):
-        # Set Style
-        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -197,32 +229,21 @@ class Company(SiteRoot, Folder, AccessControl):
         namespace['products'] = self.products(context)
         namespace['branches'] = self.list_addresses(context)
 
+        # Is it a hotel, airline, restaurant
+        topic = self.get_property('abakuc:topic')
+        namespace['hotel'], namespace['airline'],  namespace['restaurant'] = None, None, None 
+        if 'hotel' in topic:
+            #namespace['hotel'] = self.hotel(context) 
+            namespace['hotel'] = self.hotel(context) 
+            print 'we have a hotel'
+        elif 'airline' in topic:
+            namespace['airline'] = self.airline(context) 
+        elif 'restaurant' in topic:
+            namespace['restaurant'] = self.restaurant(context) 
+
         template_path = 'ui/abakuc/companies/company/tabs.xml'
         template = root.get_handler(template_path)
         return stl(template, namespace)
-
-    #######################################################################
-    # Security / Access Control
-    #######################################################################
-    #def is_allowed_to_edit(self, user, object):
-    #    if user is not None:
-    #        address = user.get_address()
-    #        if address:
-    #            #for address in self.search_handlers(handler_class=Address):
-    #            return address.has_user_role(user.name, 'abakuc:branch_member')
-    #    else:
-    #        return False
-
-    #def is_branch_manager(self, user, object):
-    #    if user is not None:
-    #        for address in self.search_handlers(handler_class=Address):
-    #            if address.is_branch_manager(user, address):
-    #                return True
-    #    return False
-
-    #def is_branch_manager(self, user, object):
-    #    address = user.get_address()
-    #    return address.has_user_role(user.name, 'abakuc:training_manager', 'abakuc:branch_member')
 
     #######################################################################
     # User Interface / View
@@ -244,6 +265,8 @@ class Company(SiteRoot, Folder, AccessControl):
         affiliations = self.get_affiliations(context)
         
         namespace['affiliations'] = affiliations
+
+
 
         handler = self.get_handler('/ui/abakuc/companies/company/view.xml')
         return stl(handler, namespace)
@@ -311,6 +334,34 @@ class Company(SiteRoot, Folder, AccessControl):
         items.sort(key=lambda x: x['affiliation'])
         return items
 
+    hotel__access__ = True
+    hotel__label__ = u'Hotel'
+    def hotel(self, context):
+        namespace = {}
+        namespace['title'] = self.get_property('dc:title')
+        # Hotel rating depends on the address of the hotel.
+        namespace['items'] = self.get_property('abakuc:rating')
+        namespace['rooms'] = 250
+
+        handler = self.get_handler('/ui/abakuc/companies/company/address/hotel.xml')
+        return stl(handler, namespace)
+    
+    airline__access__ = True
+    airline__label__ = u'Airline'
+    def airline(self, context):
+        namespace = {}
+        namespace['items'] = items
+        handler = self.get_handler('/ui/abakuc/companies/company/address/airline.xml')
+        return stl(handler, namespace)
+
+    restaurant__access__ = True
+    restaurant__label__ = u'Restaurant'
+    def restaurant(self, context):
+        namespace = {}
+        namespace['items'] = items
+        handler = self.get_handler('/ui/abakuc/companies/company/address/restaurant.xml')
+        return stl(handler, namespace)
+
     ####################################################################
     # List addresses
     addresses__label__ = u'Branches'
@@ -320,22 +371,7 @@ class Company(SiteRoot, Folder, AccessControl):
         here = context.handler or root
         title = here.get_title()
         namespace = {}
-        addresses = self.search_handlers(handler_class=Address)
-        items = []
-        for address in addresses:
-            handler = root.get_handler(address.abspath)
-            url = '%s/' % here.get_pathto(handler)
-            address_to_add = {'url': url+';view',
-                               'enquire': url+';enquiry_form',
-                               'address': address.get_property('abakuc:address'),
-                               'town': address.get_property('abakuc:town'),
-                               'postcode': address.get_property('abakuc:postcode'),
-                               'phone': address.get_property('abakuc:phone'),
-                               'fax': address.get_property('abakuc:fax'),
-                               'title': address.title_or_name}
-
-            items.append(address_to_add)
-
+        items = self.get_addresses(context)[0]
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 2
@@ -371,23 +407,7 @@ class Company(SiteRoot, Folder, AccessControl):
         root = context.site_root
         here = context.handler or root
         namespace = {}
-        #namespace['title'] = company.title_or_name
-        addresses = self.search_handlers(handler_class=Address)
-        items = []
-        for address in addresses:
-            handler = root.get_handler(address.abspath)
-            url = '%s/' % here.get_pathto(handler)
-            address_to_add = {'url': url,
-                               'enquire': url+';enquiry_form',
-                               'address': address.get_property('abakuc:address'),
-                               'town': address.get_property('abakuc:town'),
-                               'postcode': address.get_property('abakuc:postcode'),
-                               'phone': address.get_property('abakuc:phone'),
-                               'fax': address.get_property('abakuc:fax'),
-                               'title': address.title_or_name}
-
-            items.append(address_to_add)
-
+        items = self.get_addresses(context)[0]
         # Set batch informations
         batch_start = int(context.get_form_value('batchstart', default=0))
         batch_size = 2
@@ -1198,6 +1218,7 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
     #######################################################################
     # API
     #######################################################################
+
     def get_title(self):
         address = self.get_property('abakuc:address')
         return address or self.name
@@ -1245,7 +1266,6 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
 
         return members
 
-
     def get_affiliations(self, context):
         root = get_context().root
         is_branch_manager = self.has_user_role(self.name, 'abakuc:branch_manager')
@@ -1292,20 +1312,32 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
             items_to_add = affiliations
         return items_to_add
 
+    #######################################################################
+    # Tabs 
+    #######################################################################
     def tabs(self, context):
-        # Set Style
-        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        #context.scripts.append('/ui/abakuc/jquery-1.2.1.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
+        company = self.parent
         namespace = {}
         namespace['news'] = self.news(context)
         namespace['jobs'] = self.jobs(context)
         namespace['products'] = self.products(context)
         namespace['branches'] = self.addresses(context)
+
+        # Is it a hotel, airline, restaurant
+        topic = company.get_property('abakuc:topic')
+        namespace['hotel'], namespace['airline'],  namespace['restaurant'] = None, None, None 
+        if 'hotel' in topic:
+            #namespace['hotel'] = self.hotel(context) 
+            namespace['hotel'] = company.hotel(context) 
+            print 'we have a hotel'
+        elif 'airline' in topic:
+            namespace['airline'] = company.airline(context) 
+        elif 'restaurant' in topic:
+            namespace['restaurant'] = company.restaurant(context) 
 
         template_path = 'ui/abakuc/companies/company/tabs.xml'
         template = root.get_handler(template_path)
@@ -1313,6 +1345,7 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
 
     #########################################################################
     # Affiliations 
+    #########################################################################
     affiliations__label__ = u'Affiliations'
     affiliations__access__ = 'is_branch_manager'
     def affiliations(self, context):
@@ -1635,7 +1668,6 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
 
     #######################################################################
     # User Interface / Edit
-    # /usr/sbin/python-updateruu
     #######################################################################
     @staticmethod
     def get_form(address=None, postcode=None, town=None, phone=None, fax=None,
@@ -1643,14 +1675,14 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
                  address_county=None, hotel=None):
         context = get_context()
         root = context.root
-        # List authorized countries
-        countries = [
-            {'name': y, 'title': x, 'selected': y == address_country}
-            for x, y in root.get_authorized_countries(context) ]
+        # List countries to populate Ajax, based on Company topic
+        loopvar = root.get_active_countries(context) \
+                  if hotel else root.get_authorized_countries(context)
+        countries = [ {'name': y, 'title': x, 'selected': y == address_country}
+                    for x, y in loopvar ]
         nb_countries = len(countries)
         if nb_countries < 1:
             raise ValueError, 'Number of countries is invalid'
-        # Show a list with all authorized countries
         countries.sort(key=lambda x: x['title'])
         regions = root.get_regions_stl(country_code=address_country,
                                        selected_region=address_region)
@@ -1695,9 +1727,12 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
                 row = world.get_row(row_number)
                 address_country = row[5]
                 address_region = row[7]
+        company = self.parent
+        hotel = company.is_hotel()
+        # Need to split the address form based on users's company type
         namespace['form'] = self.get_form(address, postcode, town, phone, fax,
                                           freephone, address_country, address_region,
-                                          address_county)
+                                          address_county, hotel)
 
         handler = self.get_handler('/ui/abakuc/companies/company/address/edit_metadata.xml')
         return stl(handler, namespace)
@@ -2100,15 +2135,19 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
     def is_admin(self, user, object):
         return self.is_branch_manager(user, object)
 
-    def is_branch_manager(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        return self.has_user_role(user.name, 'abakuc:branch_manager')
+    #def is_branch_manager(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    # We need to get the address users ACL's
+    #    address = user.get_address()
+    #    return address.has_user_role(user.name, 'abakuc:branch_manager')
+    #    #return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+    #    #        address.has_user_role(user.name, 'abakuc:branch_manager'))
 
     def is_branch_manager_or_member(self, user, object):
         if not user:

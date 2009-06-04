@@ -48,7 +48,9 @@ class AccessControl(AbakucAccessControl):
             return True
         # Is reviewer or member
         site_root = object.get_site_root()
-        return (site_root.has_user_role(user.name, 'abakuc:branch_manager'))
+        address = user.get_address()
+        return (site_root.has_user_role(user.name, 'abakuc:branch_manager') or
+                address.has_user_role(user.name, 'abakuc:branch_manager'))
 
     def is_branch_manager_or_member(self, user, object):
         if not user:

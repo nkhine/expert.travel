@@ -12,6 +12,9 @@
         <li><a href="#fragment-2"><span>Jobs</span></a></li>
         <li><a href="#fragment-3"><span>Marketplace</span></a></li>
         <li><a href="#fragment-4"><span>Branches</span></a></li>
+        <li stl:if="hotel"><a href="#fragment-5"><span>Hotel Overview</span></a></li>
+        <li stl:if="airline"><a href="#fragment-6"><span>Airline Overview</span></a></li>
+        <li stl:if="restaurant"><a href="#fragment-7"><span>Restaurant Overview</span></a></li>
     </ul>
     <div id="fragment-1">
       ${news}
@@ -24,6 +27,15 @@
     </div>
     <div id="fragment-4">
       ${branches}
+    </div>
+    <div id="fragment-5">
+      ${hotel}
+    </div>
+    <div id="fragment-6">
+      ${airline}
+    </div>
+    <div id="fragment-7">
+      ${restaurant}
     </div>
 </div>
 </stl:block>
