@@ -3,44 +3,44 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <div class="yui-gc">
-      <div class="yui-u first news">
-          <h1>${dc:title}</h1>
-          <p>${dc:description}</p>
-          <table width="100%">
-              <tr>
-                  <td>
-                  <table stl:if="itinerary_image" class="yui-dt">
-                      <tr>
-                          <td>
-                              <img src="${itinerary_image/url}"
-                              alt="${itinerary_image/title}" />
-                          </td>
-                      </tr>
-                      <tr>
-                          <td class="yui-dt-title">
-                              ${itinerary_image/title}
-                          </td>
-                      </tr>
-                  </table>
-                  <p>${abakuc:news_text}</p>
-                  </td>
-              </tr>
+    <h1>${dc:title}</h1>
+    <p>${dc:description}</p>
+    <script type="text/javascript">
+        $(function(){
+            // Tabs
+            $("#tabs-vertical").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+            $("#tabs-vertical li").addClass('ui-corner-all');
+        });
+    </script>
+    <div id="tabs-vertical">
+        <ul>
+            <li><a href="#tabs-100">Overview</a></li>
+            <li stl:repeat="day itinerary_days">
+                <a href="#tabs-1${day/tab_id}"><span>${day/title}</span></a>
+            </li>                
+        </ul>
+        <div id="tabs-100">
+            <table stl:if="itinerary_image" class="yui-dt">
+                <tr>
+                    <td>
+                        <img src="${itinerary_image/src}"
+                        alt="${itinerary_image/title}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="yui-dt-title">
+                        ${itinerary_image/title}
+                    </td>
+                </tr>
             </table>
-      </div> <!-- yui-u first -->
-      <div class="yui-u">
-          <span class="info">
-          <dl>
-              <dt>
-                  <label for="title"><h3>Itinerary</h3></label>
-              </dt>
-              <dd stl:repeat="day itinerary_days">
-                  <a href="${day/url}">${day/title}</a>
-              </dd>                
-          </dl>
-          </span>
-      </div> <!-- yui-u -->
-  </div> <!-- yui-g -->
+            <p>${abakuc:news_text}</p>
+        </div>
+        <stl:block stl:repeat="day itinerary_days">
+          <div id="tabs-1${day/tab_id}">
+            The jQuery Media Plugin supports unobtrusive conversion of standard markup into rich media content. It can be used to embed virtually any media type, including Flash, Quicktime, Windows Media Player, Real Player, MP3, Silverlight, PDF and more, into a web page. The plugin converts an elementject, embed or iframe tags neccessary to render the media content. ${day/title}
+          </div>  
+        </stl:block>
+    </div>
   <table class="tablesorter">
     <colgroup>
       <col width="20%" />

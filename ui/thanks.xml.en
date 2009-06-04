@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <h1>Thank you for registring!</h1>
+  <h2>Now check your email</h2>
+  <p>You should receive an email message from us in the next few minutes with a link to verify your account. Click that link to complete your registration.</p>
+  <p>Didn’t get the email?</p>
+  <p>Here are a few commons reasons why you might not have received the message:</p>
+  <ul>
+      <li>Sometimes it can take a few minutes for your email to arrive. Try checking back shortly.</li>
+      <li>The message might have been filtered as junk. Try checking your junk email folder.</li>
+      <li>Still having problems? Drop us a note at registration@expert.travel</li>
+  </ul>
+  <p>
+  expert.travel team.
+  </p>
+</stl:block>

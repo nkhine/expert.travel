@@ -3,8 +3,19 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-
-<h1>Edit News Form</h1>
+  <script type="text/javascript">
+      var format = 'yy-mm-dd';
+      $(function() {
+          // Date picker 
+          $("#datepicker").datepicker({
+          dateFormat: format,
+          changeMonth: true,
+          changeYear: true,
+          hideIfNoPrevNext: true,
+          minDate: 0});
+      });
+  </script>
+<h1>Edit itinerary</h1>
 <form action=";edit_metadata" method="post" enctype="multipart/form-data">
       <dl>  
         <dt>
@@ -14,15 +25,11 @@
           <input type="text" name="dc:title" value="${dc:title}"/>
         </dd>
         <dt>
-          <label for="abakuc:closing_date">Closing Date</label>
+          <label for="abakuc:closing_date">Archive date</label>
         </dt>
         <dd>
-          <input id="abakuc:closing_date" name="abakuc:closing_date" 
-                  type="text" value="${abakuc:closing_date}"/>
-          <input id="trigger_date" type="button" value="..."/>
-          <script language="javascript">
-          Calendar.setup({inputField: "abakuc:closing_date", ifFormat: "%Y-%m-%d", button: "trigger_date"});
-          </script>
+          <input id="datepicker" name="abakuc:closing_date" 
+                  type="text" size="10" value="${abakuc:closing_date}"/>
         </dd>
         <dt>
           <label for="dc:description">Short Description</label>

@@ -26,7 +26,7 @@
                 <tr stl:if="more_than">
                 <td>
                     <div id="views_block">
-                    <a id="view_scroll_left" title="Other views" href="javascript:{}">Next</a>
+                      <a id="view_scroll_left" title="Other views" href="javascript:{}">Next</a>
                         <div id="thumbs_list">
                           <ul style="width: 10000px">
                             <li>
@@ -43,13 +43,13 @@
                             </stl:block>
                           </ul>
                         </div>
-                    <a id="view_scroll_right" title="Other views" href="javascript:{}">Next</a>
+                      <a id="view_scroll_right" title="Other views" href="javascript:{}">Next</a>
                   </div>
                   </td>
                 </tr>
                 <tr>
                 <td>
-                <div id="image-block">
+                <div id="image_block">
                     <img id="bigpic" src="${image_1/url_220}"
                     alt="${image_1/description}" title="${image_1/title}" />
                 </div>

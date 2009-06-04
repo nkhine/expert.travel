@@ -13,7 +13,6 @@
         <h1>Documents</h1>
         <div stl:if="flash">
             <h2>Videos and flash documents</h2>
-
             <ul>
                 <li stl:repeat="item flash"><a href="${item/url}"><img src="${item/icon}" border="0"
                 name="${item/description}" keywords="${item/keywords}"

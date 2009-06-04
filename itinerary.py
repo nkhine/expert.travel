@@ -63,6 +63,19 @@ class Itinerary(RoleAware, Folder):
     ###################################################################
     # API 
     ###################################################################
+    def get_itinerary_day(self):
+        root = self.get_root()
+        handlers = self.search_handlers(handler_class=ItineraryDay)
+        for item in handlers:
+            return root.get_handler(item.abspath)
+        return None
+
+    def get_catalog_indexes(self):
+        indexes = Folder.get_catalog_indexes(self)
+        # We need to index the news, jobs and products
+        indexes['itinerary_day'] = self.get_itinerary_day()
+        return indexes
+
     #def is_training(self):
     #    """
     #    Check to see if the user is on a training site.
@@ -163,28 +176,28 @@ class Itinerary(RoleAware, Folder):
         message = u'Itinerary item has been added. Add some itinerary days now!'
         return context.come_back(message, goto=goto)
 
-    def get_itinerary_days(self, context):
+    def get_itinerary_days(self, context, path='.'):
         """
         Return a list with all the itinerary days that have been
         published.
         """
-        catalog = context.server.catalog
-        query = []
-        query.append(EqQuery('format', 'itinerary_day'))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        document_names = results.get_documents()
+        container = self.get_handler(path)
+        items = list(container.search_handlers(format=ItineraryDay.class_id))
+        items.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
         itinerary_days = []
-        for itinerary_day in document_names:
-            itinerary_day_path = Path(itinerary_day.abspath)
-            handler = self.get_handler(itinerary_day_path)
+        for i, item in enumerate(items):
+            path = Path(item.abspath)
+            handler = self.get_handler(path)
             description = handler.get_property('dc:description')
             itinerary_days.append({
-                'id': itinerary_day.name,
-                'title': handler.get_title(),
-                'url': self.get_pathto(handler),
+                'tab_id': i,
+                'id': item.name,
+                'title': item.get_title(),
+                'url': '%s/' % self.get_pathto(handler),
                 'description': handler.get_property('dc:description')
             })
+            # Collect all images for itinerary
         itinerary_days.sort(key=lambda x: x['id'])
         return itinerary_days
 
@@ -193,23 +206,24 @@ class Itinerary(RoleAware, Folder):
         Return a list with all the itinerary days that have been
         published.
         """
-        catalog = context.server.catalog
-        query = []
-        query.append(EqQuery('format', 'image'))
-        query = AndQuery(*query)
-        results = catalog.search(query)
-        document_names = results.get_documents()
+        handlers = self.search_handlers(handler_class=File)
         itinerary_images = []
-        for image in document_names:
-            path = Path(image.abspath)
-            handler = self.get_handler(path)
-            url = '%s/;icon220' % str(path)
-            itinerary_images.append({
-                'id': image.name,
-                'title': handler.get_title(),
-                'url': url,
-                'description': handler.get_property('dc:description')
-            })
+        here = context.handler
+        for item in handlers:
+            type = item.get_content_type()
+            if type == 'image':
+              path = Path(item.abspath)
+              handler = self.get_handler(path)
+              if isinstance(here, Itinerary):
+                  src = '%s/;icon220' % (item.name)
+              else:
+                  src = 'itinerary/%s/;icon220' % (item.name)
+              itinerary_images.append({
+                  'id': item.name,
+                  'title': handler.get_title(),
+                  'src': src,
+                  'description': handler.get_property('dc:description')
+              })
                 
         return itinerary_images
 
@@ -358,6 +372,7 @@ class Itinerary(RoleAware, Folder):
         namespace['batch'] = messages_batch
         namespace['msg'] = msg
 
+        # List all itinerary days.
         namespace['itinerary_days'] = self.get_itinerary_days(context)
         itinerary_images = self.get_itinerary_images(context)
         if itinerary_images == []:
@@ -384,6 +399,7 @@ class Itinerary(RoleAware, Folder):
         for key in self.edit_news_fields:
             namespace[key] = self.get_property(key)
         # Build namespace
+        namespace['name'] = self.name
         news_text = self.get_property('abakuc:news_text')
         namespace['abakuc:news_text'] = news_text
 
@@ -406,7 +422,7 @@ class Itinerary(RoleAware, Folder):
 
 
         # Return stl
-        handler = self.get_handler('/ui/abakuc/news/edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/product/itinerary/edit_metadata.xml')
         return stl(handler, namespace)
 
 
@@ -442,7 +458,7 @@ class Itinerary(RoleAware, Folder):
         subject = str(keywords[:20]).replace('[', '').replace(']', '').replace('u\'', '').replace('\'', '')
         self.set_property('dc:subject', subject)
         message = u'Changes Saved.'
-        return context.come_back(message, goto=';view')
+        return context.come_back(message, goto='../;view')
 
     # Edit / Inline / toolbox: add images
     document_image_form__access__ = 'is_allowed_to_edit'
@@ -599,6 +615,10 @@ class ItineraryDay(XHTMLFile):
 
         goto = './%s/;edit_form' % name
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+    view__access__ = True
+    def view(self, context):
+        pass
 
 
 register_object_class(Itinerary)

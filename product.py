@@ -23,6 +23,7 @@ from itools.cms.utils import reduce_string
 # Import from abakuc
 from utils import title_to_name
 from itinerary import Itinerary
+from utils import get_sort_name
 
 class Product(Folder, WorkflowAware):
 
@@ -68,12 +69,8 @@ class Product(Folder, WorkflowAware):
     ########################################################################
     # Tabs 
     def tabs(self, context):
-        # Set Style
-        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -91,12 +88,8 @@ class Product(Folder, WorkflowAware):
 
     view_tabs__access__ = True
     def view_tabs(self, context):
-        # Set Style
-        #context.styles.append('/ui/abakuc/images/ui.tabs.css')
         # Add a script
-        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        #context.scripts.append('/ui/abakuc/ui.tabs.js')
         # Build stl
         root = context.root
         namespace = {}
@@ -153,6 +146,97 @@ class Product(Folder, WorkflowAware):
                 return [(country_name, country_code)]
             return self.get_active_countries(context)
         return [(country_name, country_code)]
+
+    def get_itinerary(self, path='.'):
+        container = self.get_handler(path)
+        items = list(container.search_handlers(format=Itinerary.class_id))
+        items.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                     get_sort_name(y.name)))
+        return items
+
+    def get_itinerary_days(self):
+        itinerary = self.get_itinerary()
+        for item in itinerary:
+            items = list(item.search_handlers(format=File.class_id))
+            items.sort(lambda x, y: cmp(get_sort_name(x.name),
+                                         get_sort_name(y.name)))
+            return items
+
+    def get_files(self, context):
+        here = context.handler
+        itinerary = self.get_itinerary()
+        files = self.search_handlers(handler_class=File)
+        images = []
+        flash = []
+        others = []
+        for file in files:
+            state = file.get_property('state')
+            if state == 'public':
+                type = file.get_content_type()
+                url = '%s' % file.name
+                url_220 = '%s/;icon220' % file.name
+                url_70 = '%s/;icon70' % file.name
+                if type == 'image':
+                    item = {'url_220': url_220,
+                            'url_70': url_70,
+                            'name': file.name,
+                            'title': file.get_property('dc:title'),
+                            'icon': file.get_path_to_icon(size=16),
+                            'mtime': file.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': file.get_property('dc:description'),
+                            'keywords': file.get_property('dc:subject')}
+                    images.append(item)
+                elif type == 'application/x-shockwave-flash':
+                    item = {'url': url,
+                            'title': file.get_property('dc:title'),
+                            'icon': file.get_path_to_icon(size=16),
+                            'mtime': file.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': file.get_property('dc:description'),
+                            'keywords': file.get_property('dc:subject')}
+                    flash.append(item)
+                else:
+                    title = file.get_property('dc:title')
+                    if title == '':
+                        title = 'View document'
+                    else:
+                        title = reduce_string(title, 10, 20)
+                    item = {'url': url,
+                            'title': title,
+                            'icon': file.get_path_to_icon(size=16),
+                            'mtime': file.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                            'description': file.get_property('dc:description'),
+                            'keywords': file.get_property('dc:subject')}
+                    others.append(item)
+        for item in itinerary:
+            path = Path(item.abspath)
+            container = self.get_handler(path)
+            handlers = list(container.search_handlers(handler_class=File))
+            for image in handlers:
+                image_path = Path(image.abspath)
+                handler = image.get_handler(image_path)
+                type = image.get_content_type()
+                if type == 'image':
+                    if isinstance(here, Product):
+                        url = '%s/%s' % (item.name, image.name)
+                        src = '%s/;icon220' % url
+                        url_220 = '%s/;icon220' % url
+                        url_70 = '%s/;icon70' % url
+                    else:
+                        src = ';icon220' % (item.name)
+                    images.append({
+                        'name': item.name,
+                        'title': handler.get_title(),
+                        'src': src,
+                        'description': handler.get_property('dc:description'),
+                        'url_220': url_220,
+                        'url_70': url_70,
+                        'icon': item.get_path_to_icon(size=16),
+                        'mtime': item.get_mtime().strftime('%Y-%m-%d %H:%M'),
+                        'description': handler.get_property('dc:description'),
+                        'keywords': handler.get_property('dc:subject')
+                    })
+                    
+            return images, flash, others 
 
     ########################################################################
     # View 
@@ -220,7 +304,6 @@ class Product(Folder, WorkflowAware):
             namespace['airports'] = airport_list[:5]
         else:
             namespace['airports'] = airport_list
-        print namespace['airports']
 
         # Get phone number
         address = self.parent
@@ -371,9 +454,7 @@ class Product(Folder, WorkflowAware):
     edit_itinerary_form__access__ = 'is_branch_manager'
     edit_itinerary_form__label__ = u'Edit itinerary'
     def edit_itinerary_form(self, context):
-        #from itinerary import Itinerary
         namespace = {}
-        #address = self.parent
         handlers = self.search_handlers(handler_class=Itinerary)
         for handler in handlers:
             response = Itinerary.edit_metadata_form(handler, context)
@@ -384,50 +465,9 @@ class Product(Folder, WorkflowAware):
     documents__access__ = 'is_branch_manager_or_member'
     documents__label__ = u'Documents'
     def documents(self, context):
-        context.scripts.append('/ui/abakuc/js/jquery.metadata.min.js')
-        context.scripts.append('/ui/abakuc/js/jquery.media.js')
         namespace = {}
-        # Get all other documents
-        #query = AndQuery(OrQuery(EqQuery('format', 'news'),
-        #                 EqQuery('format', 'jobs'),
-        #                 EqQuery('state', 'public')))
-        
-        handlers = self.search_handlers(handler_class=File)
-        flash = []
-        others = []
-        for handler in handlers:
-            url = '%s' % handler.name
-            handler_state = handler.get_property('state')
-            if handler_state == 'public':
-                type = handler.get_content_type()
-                title = handler.get_property('dc:title')
-                if title == '':
-                    title = 'View document'
-                else:
-                    title = reduce_string(title, 10, 20)
-                icon = handler.get_path_to_icon(size=16)
-                mtime = handler.get_mtime().strftime('%Y-%m-%d %H:%M')
-                description = handler.get_property('dc:description')
-                keywords = handler.get_property('dc:subject')
-                if type == 'image':
-                    pass
-                elif type == 'application/x-shockwave-flash':
-                    item = {'url': url,
-                            'title': title,
-                            'icon': icon,
-                            'mtime': mtime,
-                            'description': description,
-                            'keywords': keywords}
-                    flash.append(item)
-                #else:
-                #    item = {'url': url,
-                #            'title': title,
-                #            'icon': icon,
-                #            'mtime': mtime,
-                #            'description': description,
-                #            'keywords': keywords}
-                #    others.append(item)
-
+        flash = self.get_files(context)[1]
+        others = self.get_files(context)[2]
         # Namespace
         namespace['flash'] = flash
         namespace['others'] = others
@@ -800,7 +840,6 @@ class Product(Folder, WorkflowAware):
         context.styles.append('/ui/abakuc/media/thickbox.css')
         
         ## Add the js scripts
-        #context.scripts.append('/ui/abakuc/jquery/jquery-nightly.pack.js')
         context.scripts.append('/ui/abakuc/jquery/jquery.easing.1.3.js')
         context.scripts.append('/ui/abakuc/jquery/thickbox-modified.js')
         context.scripts.append('/ui/abakuc/jquery/jquery.scrollto.js')
@@ -812,52 +851,14 @@ class Product(Folder, WorkflowAware):
         root = get_context().root
         # Build the namespace
         namespace = {}
-        # Get all other documents
-        handlers = self.search_handlers(handler_class=File)
-        images = []
-        flash = []
-        others = []
-        for handler in handlers:
-            handler_state = handler.get_property('state')
-            if handler_state == 'public':
-                type = handler.get_content_type()
-                url = '%s' % handler.name
-                url_220 = '%s/;icon220' % handler.name
-                url_70 = '%s/;icon70' % handler.name
-                if type == 'image':
-                    item = {'url_220': url_220,
-                            'url_70': url_70,
-                            'name': handler.name,
-                            'title': handler.get_property('dc:title'),
-                            'icon': handler.get_path_to_icon(size=16),
-                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
-                            'description': handler.get_property('dc:description'),
-                            'keywords': handler.get_property('dc:subject')}
-                    images.append(item)
-                elif type == 'application/x-shockwave-flash':
-                    item = {'url': url,
-                            'title': handler.get_property('dc:title'),
-                            'icon': handler.get_path_to_icon(size=16),
-                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
-                            'description': handler.get_property('dc:description'),
-                            'keywords': handler.get_property('dc:subject')}
-                    flash.append(item)
-                else:
-                    title = handler.get_property('dc:title')
-                    if title == '':
-                        title = 'View document'
-                    else:
-                        title = reduce_string(title, 10, 20)
-                    item = {'url': url,
-                            'title': title,
-                            'icon': handler.get_path_to_icon(size=16),
-                            'mtime': handler.get_mtime().strftime('%Y-%m-%d %H:%M'),
-                            'description': handler.get_property('dc:description'),
-                            'keywords': handler.get_property('dc:subject')}
-                    others.append(item)
-
+        # Get all the documents
+        images = self.get_files(context)[0]
+        flash = self.get_files(context)[1]
+        others = self.get_files(context)[2]
+        print 'XXX', images
         # Namespace
         have_image = len(images)
+        print have_image
         if have_image > 0:
             if have_image == 1:
                 namespace['more_than'] = False

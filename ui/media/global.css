@@ -104,6 +104,14 @@ div#more_info_sheets ul li{	margin-bottom:0.4em; }
 	margin:0pt auto;
 }
 
+#image_block img {
+	padding-left:15px;
+}
+
+#image_block{
+	overflow:hidden;
+}
+
 #thumbs_list{
 	overflow:hidden;
 	float:left;
@@ -129,7 +137,9 @@ div#more_info_sheets ul li{	margin-bottom:0.4em; }
 	height:18px;
 	float:left;
 	margin-top:30px;
+    outline: none;    
 }
+
 #view_scroll_right{
 	background-image: url('/ui/abakuc/images/thumbs_right.gif');
 }

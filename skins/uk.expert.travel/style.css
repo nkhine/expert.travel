@@ -520,6 +520,23 @@ span.image { float: right; }
  }
  #tab2 .ui-widget-content {
     margin-top: -5px;
-    font-size: 88%;
+    font-size: 93%; /* 12px */
     border-top: None;
  }
+ 
+/**************************************************************************
+ * Vertical Tabs
+ **************************************************************************/
+#tabs-vertical {
+    font-size: 93%;
+    border: 1px dashed #BBBBBB;
+ }
+ #tabs-vertical table {
+    float: left;
+ }
+
+.ui-tabs-vertical .ui-tabs-nav { list-style: none; position: relative; padding: .2em .2em .2em .2em; }
+.ui-tabs-vertical .ui-tabs-nav { float: right; width: 12em; border: none; }
+.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 0 !important; border-left-width: 0 !important;}
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { border-left-width: 0; border-right-width: 0; }

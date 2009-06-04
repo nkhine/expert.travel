@@ -97,6 +97,8 @@ class Root(Handler, BaseRoot):
             KeywordField('country', is_stored=True),
             KeywordField('region', is_stored=True),
             KeywordField('abakuc:county', is_stored=True),
+            TextField('itinerary', is_stored=True),
+            TextField('itinerary_day', is_stored=True),
             # XXX Fix this as is repeated in TP
             #KeywordField('function', is_stored=False),
             KeywordField('salary', is_stored=False),

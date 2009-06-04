@@ -5,7 +5,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h1>Edit product</h1>
-<form action=";edit_metadata" method="post" enctype="multipart/form-data">
+<form name="product" action=";edit_metadata" method="post" enctype="multipart/form-data">
       <dl>  
         <dt>
           <label for="dc:title">Title</label>

@@ -323,10 +323,8 @@ class SiteRoot(Handler, BaseWebSite):
         user.send_confirmation(context, email)
 
         # Bring the user to the login form
-        message = self.gettext(
-            u"An email has been sent to you, to finish the registration "
-            u"process follow the instructions detailed in it.")
-        return message.encode('utf-8')
+        handler = root.get_skin().get_handler('/ui/abakuc/thanks.xml')
+        return stl(handler)
 
     terms__access__ = True
     def terms(self, context):
