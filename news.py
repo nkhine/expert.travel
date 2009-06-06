@@ -310,8 +310,6 @@ class News(RoleAware, Folder):
         query = AndQuery(*query)
         results = catalog.search(query)
         document_names = results.get_documents()
-        print len(document_names)
-        #print [x for x in document_names]
         #print [handler.get_handler(x) for x in document_names.get_handler_names()]
         #doc_index = document_names.index(self.name)
         #is_first_document = doc_index == 0

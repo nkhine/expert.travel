@@ -964,7 +964,6 @@ class User(iUser, WorkflowAware, Handler):
             #        items_to_add.append(item)
             #items_to_add.sort(key=lambda x: x['id'])
             namespace['items_to_add'] = address.get_affiliations_to_add(context)
-            print namespace['items_to_add']
 
         handler = self.get_handler('/ui/abakuc/users/affiliations.xml')
         return stl(handler, namespace)
@@ -1627,7 +1626,6 @@ class User(iUser, WorkflowAware, Handler):
 
             csv = address.get_handler('log_enquiry.csv')
             url = '/companies/%s/%s/' % (company.name, address.name)
-            print url
             results = []
             for row in csv.get_rows():
                 date, user_id, phone, type, enquiry_subject, enquiry, resolved = row
@@ -1668,6 +1666,7 @@ class User(iUser, WorkflowAware, Handler):
                         continue
                     # Return my enquiries
                     if user_id == self.name:
+                        # XXX TODO users.py enquiry subject this
                         print enquiry_subject
 
     ########################################################################

@@ -801,7 +801,6 @@ class Candidature(RoleAware, Folder):
                        for x in address.get_members() ]
             for to_addr in to_addrs:
                 #user = users.get_handler(manager)
-                print to_addr
                 root.send_email(email, to_addr, subject, body)
 
 

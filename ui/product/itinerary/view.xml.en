@@ -23,7 +23,7 @@
             <table stl:if="itinerary_image" class="yui-dt">
                 <tr>
                     <td>
-                        <img src="${itinerary_image/src}"
+                        <img src="${itinerary_image/url_220}"
                         alt="${itinerary_image/title}" />
                     </td>
                 </tr>
@@ -37,7 +37,28 @@
         </div>
         <stl:block stl:repeat="day itinerary_days">
           <div id="tabs-1${day/tab_id}">
-            The jQuery Media Plugin supports unobtrusive conversion of standard markup into rich media content. It can be used to embed virtually any media type, including Flash, Quicktime, Windows Media Player, Real Player, MP3, Silverlight, PDF and more, into a web page. The plugin converts an elementject, embed or iframe tags neccessary to render the media content. ${day/title}
+            <stl:block stl:if="day/images">
+              <table stl:repeat="image day/images" class="yui-dt">
+                  <tr>
+                      <td>
+                          <img src="${image/url}"
+                          alt="${image/image_title}, ${image/credit}" />
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="yui-dt-title">
+                          ${image/image_title}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="yui-dt-title">
+                          ${image/credit}
+                      </td>
+                  </tr>
+              </table>
+            </stl:block>
+            <p>${day/description}</p>
+            <p>${day/body}</p>
           </div>  
         </stl:block>
     </div>

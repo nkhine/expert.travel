@@ -235,7 +235,6 @@ class Company(SiteRoot, Folder, AccessControl):
         if 'hotel' in topic:
             #namespace['hotel'] = self.hotel(context) 
             namespace['hotel'] = self.hotel(context) 
-            print 'we have a hotel'
         elif 'airline' in topic:
             namespace['airline'] = self.airline(context) 
         elif 'restaurant' in topic:
@@ -1333,7 +1332,6 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
         if 'hotel' in topic:
             #namespace['hotel'] = self.hotel(context) 
             namespace['hotel'] = company.hotel(context) 
-            print 'we have a hotel'
         elif 'airline' in topic:
             namespace['airline'] = company.airline(context) 
         elif 'restaurant' in topic:
@@ -1359,7 +1357,6 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
         for row in csv.get_rows():
             ids, affiliation_no = row
             #for row_number in root_csv.search(
-            #print ids
             #affiliations_list = root.get_affiliations_namespace(ids)
             for count, row in enumerate(rows):
                 id = row[0]

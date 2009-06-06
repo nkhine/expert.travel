@@ -232,9 +232,6 @@ class SiteRoot(Handler, BaseWebSite):
 	#swf_template = 
         # we need to pass this path as we can then delete the file
         namespace['sound_path'] = 'ui/sound/%s' % (im_name + '.wav')
-        print im_name
-        print namespace['captcha']
-        print namespace['sound_captcha']
         handler = self.get_handler('/ui/abakuc/register.xml')
         return stl(handler, namespace)
 

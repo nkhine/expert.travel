@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <form method="post" action=";new_resource">
+  <h1>Add Itinerary Day</h1>
+      <dl>  
+        <dt>
+          <label for="dc:title">Title</label>
+        </dt>
+        <dd>
+          <input type="text" name="dc:title" value=""/>
+        </dd>
+        <dt>
+          <label for="dc:description">Short Description</label>
+        </dt>
+        <dd>
+          <textarea  cols="100" id="dc:description" name="dc:description"
+          rows="8"></textarea>
+        </dd>
+        <dt>
+          <label for="abakuc:news_text">Text</label>
+        </dt>
+        <dd>
+          <textarea rows="20" cols="80" id="abakuc:news_text"
+          name="abakuc:news_text"></textarea>
+        </dd>
+        <dt>
+          <label for="abakuc:image1">Images</label>
+        </dt>
+        <dd>
+            You will be able to upload a news image once you create the news
+            item.
+        </dd>
+      </dl>
+      <!-- End message -->
+    <p>
+      <input name="class_id" type="hidden" value="${class_id}"/>
+      <input class="button_ok" type="submit" value="Ok"/>
+    </p>
+    </form>
+</stl:block>

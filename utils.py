@@ -2,6 +2,8 @@
 # Copyright (C) 2007 Norman Khine <norman@abakuc.com>
 
 # Import from the Standard Library
+import re
+import string
 from datetime import datetime
 from operator import itemgetter
 from string import Template
@@ -18,6 +20,15 @@ namespaces = {
     None: 'http://www.w3.org/1999/xhtml',
     'stl': 'http://xml.itools.org/namespaces/stl'}
 
+
+def abspath_to_relpath(path):
+    abspath = [ x for x in re.split(r'(/[^/]+)',\
+                        str(path)) if x ]
+    if abspath[0] == '/expert':
+        relpath = (abspath[1:])
+    else:
+        relpath = (abspath)
+    return string.join(relpath, '')
 
 def title_to_name(title):
     title = title.encode('ascii', 'replace')

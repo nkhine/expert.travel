@@ -198,7 +198,6 @@ class Thread(Folder):
                 if results:
                     result = results.get_documents()
                     for item in result:
-                        print item.abspath
                         item = self.get_handler(item.abspath)
                         namespace['item_title'] = item.get_property('dc:title')
                         if isinstance(training, Training):

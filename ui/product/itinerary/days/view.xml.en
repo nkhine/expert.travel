@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<div class="yui-ge">
+    <div class="yui-u first news">
+        <h1>${dc:title}</h1>
+        <p>${dc:description}</p>
+        <table width="100%">
+            <tr>
+                <td>
+                <table stl:if="image" class="yui-dt">
+                    <tr>
+                        <td>
+                            <img src="${image/url}" alt="${image/title}, credits to: {image/credit}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="yui-dt-title">
+                            {image1_title}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="yui-dt-credit">
+                            {image1_credit}
+                        </td>
+                    </tr>
+                </table>
+                <p>${abakuc:news_text}</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="info">
+                Posted on: ${date} <strong>by 
+                <stl:block stl:if="is_branch_manager_or_member">
+                  <a href="${user_uri}" title="View
+                          ${user}'s profile">${user}</a>
+                </stl:block>
+                <stl:block stl:if="not is_branch_manager_or_member">
+                  ${user}
+                </stl:block>
+
+                </strong><br /> Time: <span
+                stl:if="posted/weeks">${posted/weeks} weeks, ${posted/days}
+                days ago</span>
+                <stl:block stl:if="not posted/weeks">
+                    <span stl:if="posted/days">
+                ${posted/days} days, ${posted/hours}
+                 hours ${posted/minutes} mins ago</span>
+                    <span stl:if="not posted/days">
+                ${posted/hours} hours ${posted/minutes} mins ago</span>
+                </stl:block>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                  </td>
+              </tr>
+          </table>
+    </div> <!-- yui-u first -->
+    <div class="yui-u">
+     Put images here
+    </div> <!-- yui-u -->
+</div> <!-- yui-g -->
+
+</stl:block>
