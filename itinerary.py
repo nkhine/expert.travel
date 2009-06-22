@@ -14,28 +14,30 @@ from PIL import Image as PILImage
 
 # Import from itools
 #from itools.cms.access import RoleAware
+from itools import get_abspath
+from itools.catalog import EqQuery, AndQuery, RangeQuery
 from itools.cms.file import File
+from itools.cms.html import XHTMLFile
+from itools.cms.messages import *
 from itools.cms.registry import register_object_class, get_object_class
-from itools.cms.utils import generate_password
+from itools.cms.utils import generate_password, reduce_string
 from itools.cms.widgets import batch
+from itools.datatypes import Integer
+from itools.i18n import get_language_name
+from itools.rest import checkid
 from itools.rest import rest, to_html_events
 from itools.stl import stl
+from itools.uri import Path
 from itools.uri import Path, get_reference
 from itools.vfs import vfs
 from itools.web import get_context
-from itools.cms.messages import *
-from itools.cms.html import XHTMLFile
-from itools.i18n import get_language_name
-from itools.rest import checkid
-from itools.catalog import EqQuery, AndQuery, RangeQuery
-from itools import get_abspath
-from itools.uri import Path
 
+from itools.cms.workflow import WorkflowAware
 # Import from abakuc
 from base import Handler, Folder
 from utils import abspath_to_relpath, get_sort_name
 
-class Itinerary(Folder):
+class Itinerary(Folder, WorkflowAware):
     '''
         Folder with view and images from days containing
         day objects which are similar to the training
@@ -49,7 +51,8 @@ class Itinerary(Folder):
     class_views = [
         ['view'],
         ['browse_content?mode=list'],
-        ['edit_metadata_form'],
+        ['edit_form'],
+        ['state_form'],
         ['new_resource_form']]
 
     browse_content__access__ = 'is_admin'
@@ -222,6 +225,27 @@ class Itinerary(Folder):
 
 
     #######################################################################
+    # Tabs used in the management screen
+    #######################################################################
+    manage__access__ = 'is_branch_manager_or_member'
+    manage__label__ = 'Edit itinerary'
+    def manage(self, context):
+        # Add a script
+        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        # Build stl
+        root = context.root
+        namespace = {}
+        namespace['edit'] = self.edit_metadata_form(context)
+        namespace['itinerary'] = self.edit_itinerary_days_form(context)
+        namespace['browse_content'] = self.browse_content(context)
+        namespace['state'] = self.state_form(context)
+        namespace['view'] = self.view(context)
+
+        template_path = 'ui/abakuc/product/itinerary/tabs.xml'
+        template = root.get_handler(template_path)
+        return stl(template, namespace)
+
+    #######################################################################
     # View news details
     ###
 	
@@ -362,10 +386,14 @@ class Itinerary(Folder):
         handlers = self.get_itinerary_days()
         items = []
         for i, itinerary_day in enumerate(handlers):
+            # reduce the title so it fits the verticle tabs width max 15 charecters
+            title = reduce_string(itinerary_day.get_title(),
+                                        word_treshold=9,
+                                        phrase_treshold=240)
             day = {
                 'tab_id': i,
                 'name': itinerary_day.name,
-                'title': itinerary_day.get_title(),
+                'title': title,
                 'description': itinerary_day.get_property('dc:description'),
                 'body': itinerary_day.get_property('abakuc:news_text')
             }
@@ -408,6 +436,7 @@ class Itinerary(Folder):
     edit_metadata_form__access__ = 'is_branch_manager_or_member'
     edit_metadata_form__label__ = 'Edit itinerary'
     def edit_metadata_form(self, context):
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
         namespace = {}
         for key in self.edit_news_fields:
             namespace[key] = self.get_property(key)
@@ -419,7 +448,7 @@ class Itinerary(Folder):
         # Image
         get_property = self.get_metadata().get_property
         namespace['image1'] = image1 = get_property('abakuc:image1')
-        namespace['image1_url'] = '%s/;icon220' % image1
+        #namespace['image1_url'] = '%s/;icon220' % image1
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
@@ -429,11 +458,14 @@ class Itinerary(Folder):
             except:
                 pass
             else:
+                image_path = str(abspath_to_relpath(image1.abspath))
+                namespace['image1_url'] = '%s/;icon220' % image_path
                 namespace['image1_title'] = image1.get_property('dc:title')
                 namespace['image1_credit'] = image1.get_property('dc:description')
                 namespace['image1_keywords'] = image1.get_property('dc:subject')
 
 
+        namespace['url'] = str(abspath_to_relpath(self.abspath))
         # Return stl
         handler = self.get_handler('/ui/abakuc/product/itinerary/edit_metadata.xml')
         return stl(handler, namespace)
@@ -470,8 +502,8 @@ class Itinerary(Folder):
                 keywords.append(item)
         subject = str(keywords[:20]).replace('[', '').replace(']', '').replace('u\'', '').replace('\'', '')
         self.set_property('dc:subject', subject)
-        message = u'Changes Saved.'
-        return context.come_back(message, goto='../;view')
+        message = u'Changes saved.'
+        return context.come_back(message)
 
     # Edit / Inline / toolbox: add images
     document_image_form__access__ = 'is_allowed_to_edit'
@@ -515,6 +547,44 @@ class Itinerary(Folder):
                     """ % handler.abspath
 
         return context.come_back(message=uri.query['message'])
+
+    #######################################################################
+    ## Itinerary days
+    #######################################################################
+    edit_itinerary_days_form__access__ = 'is_branch_manager_or_member'
+    edit_itinerary_days_form__label__ = 'Edit itinerary'
+    def edit_itinerary_days_form(self, context):
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
+        namespace = {}
+        # Itiniraries
+        handlers = self.get_itinerary_days()
+        items = []
+        for i, itinerary_day in enumerate(handlers):
+            index = context.get_form_value('day', type=Integer)
+            if i == index:
+                selected = True
+                template = ItineraryDay.edit_metadata_form(itinerary_day, context)
+            else:
+                selected = False
+                template = None
+            day = {
+                'tab_id': i,
+                'name': itinerary_day.name,
+                'title': itinerary_day.get_title(),
+                'description': itinerary_day.get_property('dc:description'),
+                'selected': selected,
+                'template': template,
+                'body': itinerary_day.get_property('abakuc:news_text')
+            }
+            items.append(day)
+        items.sort(key=lambda x: x['name'])
+        namespace['days'] = items
+        namespace['url'] = str(abspath_to_relpath(self.abspath))
+        # Add new itinerary form - pull this from new_resource
+        namespace['class_id'] = ItineraryDay.class_id
+        # Return stl
+        handler = self.get_handler('/ui/abakuc/product/itinerary/edit_itinerary_days.xml')
+        return stl(handler, namespace)
 
     #######################################################################
     ## Indexes
@@ -679,8 +749,8 @@ class ItineraryDay(Folder):
 
     news_fields = [
         ('dc:title', True),
-        ('dc:description', True),
-        ('abakuc:news_text', True)]
+        ('dc:description', False),
+        ('abakuc:news_text', False)]
 
     @classmethod
     def new_instance_form(cls, context):
@@ -726,7 +796,7 @@ class ItineraryDay(Folder):
         # Set properties
         handler = cls()
         metadata = handler.build_metadata()
-        for key in ['dc:title' , 'dc:description', 'abakuc:news_text']:
+        for key in ['dc:title' ,]:
             try:
                 value = context.get_form_value(key)
                 if not value:
@@ -853,7 +923,9 @@ class ItineraryDay(Folder):
     edit_metadata_form__access__ = 'is_branch_manager_or_member'
     edit_metadata_form__label__ = 'Edit news'
     def edit_metadata_form(self, context):
+        context.styles.append('/ui/abakuc/jquery/css/jquery.tablesorter.css')
         namespace = {}
+        namespace['url'] = str(abspath_to_relpath(self.abspath))
         for key in self.edit_news_fields:
             namespace[key] = self.get_property(key)
         # Build namespace
@@ -863,7 +935,7 @@ class ItineraryDay(Folder):
         # Image
         get_property = self.get_metadata().get_property
         namespace['image1'] = image1 = get_property('abakuc:image1')
-        namespace['image1_url'] = '%s/;icon220' % image1
+        print namespace['image1']
         namespace['image1_title'] = ''
         namespace['image1_credit'] = ''
         namespace['image1_keywords'] = ''
@@ -873,13 +945,15 @@ class ItineraryDay(Folder):
             except:
                 pass
             else:
+                image_path = str(abspath_to_relpath(image1.abspath))
+                namespace['image1_url'] = '%s/;icon220' % image_path
                 namespace['image1_title'] = image1.get_property('dc:title')
                 namespace['image1_credit'] = image1.get_property('dc:description')
                 namespace['image1_keywords'] = image1.get_property('dc:subject')
 
 
         # Return stl
-        handler = self.get_handler('/ui/abakuc/news/edit_metadata.xml')
+        handler = self.get_handler('/ui/abakuc/product/itinerary/days/edit_metadata.xml')
         return stl(handler, namespace)
 
 

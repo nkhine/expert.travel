@@ -3,86 +3,112 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <script type="text/javascript">
-      var format = 'yy-mm-dd';
-      $(function() {
-          // Date picker 
-          $("#datepicker").datepicker({
-          dateFormat: format,
-          changeMonth: true,
-          changeYear: true,
-          hideIfNoPrevNext: true,
-          minDate: 0});
-      });
-  </script>
-<h1>Edit News Form</h1>
-<form action=";edit_metadata" method="post" enctype="multipart/form-data">
-      <dl>  
-        <dt>
-          <label for="dc:title">Title</label>
-        </dt>
-        <dd>
-          <input type="text" name="dc:title" value="${dc:title}"/>
-        </dd>
-        <dt>
-          <label for="abakuc:closing_date">Archive date</label>
-        </dt>
-        <dd>
-          <input id="datepicker" name="abakuc:closing_date" 
-                  type="text" size="10" value="${abakuc:closing_date}"/>
-        </dd>
-        <dt>
-          <label for="dc:description">Short Description</label>
-        </dt>
-        <dd>
-          <textarea  cols="100" id="dc:description" name="dc:description"
-          rows="8">${dc:description}</textarea>
-        </dd>
-        <dt>
-          <label for="abakuc:news_text">Text</label>
-        </dt>
-        <dd>
-          <textarea rows="20" cols="80" id="abakuc:news_text"
-          name="abakuc:news_text">${abakuc:news_text}</textarea>
-        </dd>
+<form action="${url}/;edit_metadata" method="post" enctype="multipart/form-data">
+<div class="yui-gc">
+    <div class="yui-u first">
+      <script type="text/javascript">
+          var format = 'yy-mm-dd';
+          $(function() {
+              // Date picker 
+              $("#daydatepicker").datepicker({
+              dateFormat: format,
+              changeMonth: true,
+              changeYear: true,
+              hideIfNoPrevNext: true,
+              minDate: 0});
+          });
+      </script>
+      <h1>Edit Itinerary Day ${dc:title}</h1>
+            <table width="100%" >
+              <colgroup>
+                <col width="80%" />
+                <col width="20%" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>
+                    Title 
+                  </th>
+                  <th>
+                    Archive date 
+                  </th>
+                </tr>
+              </thead>
+              <tfoot>
+              </tfoot>
+              <tbody>
+                <tr>
+                  <td>
+                    <input name="dc:title" type="text" style="width:95%" value="${dc:title}" />
+                  </td>
+                  <td>
+                    <input id="daydatepicker" name="abakuc:closing_date" 
+                            type="text" size="10" value="${abakuc:closing_date}"/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          <dl>  
             <dt>
-              <label for="abakuc:image1">Image 1</label>
+              <label for="dc:description">Short Description</label>
             </dt>
-            <stl:block if="image1_url">
-            <img src="${image1_url}" />
-            </stl:block>
             <dd>
-              <input value="${image1}" name="abakuc:image1" size="50" 
-                id="image1" type="text"/>
-              <a onclick="popup(';document_image_form?bc_id=image1', 640, 480); return false;"
-                href="#">Edit...</a><br />
-                please make sure the image has a maximum width of 250px
-
+              <textarea  id="dc:description" name="dc:description"
+              rows="8" >${dc:description}</textarea>
             </dd>
             <dt>
-              <label for="abakuc:image1">Title</label>
+              <label for="abakuc:news_text">Text</label>
             </dt>
-        <dd>
-          <input name="image1_title" size="50" type="text"
-            value="${image1_title}"/>
-        </dd>
-            <dt>
-              <label for="abakuc:image1">Credits</label>
-            </dt>
-        <dd>
-          <input name="image1_credit" size="50" type="text" 
-            value="${image1_credit}"/>
-        </dd>
-        <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
-      <dd>
-        <input id="dc:subject" name="image1_keywords" size="40" type="text"
-        value="${image1_keywords}" />
-      </dd>
+            <dd>
+              <textarea rows="20" id="abakuc:news_text"
+              name="abakuc:news_text">${abakuc:news_text}</textarea>
+            </dd>
+        </dl>
+      </div> <!-- yui-u first -->
+      <div class="yui-u">
+        <dl>
+          <dt>
+            <label for="abakuc:image1">Image 1</label>
+          </dt>
+          <stl:block if="image1">
+            <img src="${image1_url}" />
+          </stl:block>
+          <dd>
+            <input value="${image1}" name="abakuc:image1" 
+              id="image1" type="text"/>
+            <a onclick="popup('${url}/;document_image_form?bc_id=image1', 640, 480); return false;"
+              href="#">Edit...</a><br />
+              please make sure the image has a maximum width of 250px
 
-      </dl>
-    <p>
-      <input type="submit" value="Modify news" class="button_ok" />
-    </p>
-    </form>
+          </dd>
+          <dt>
+            <label for="abakuc:image1">Title</label>
+          </dt>
+          <dd>
+            <input name="image1_title" type="text"
+              value="${image1_title}"/>
+          </dd>
+              <dt>
+                <label for="abakuc:image1">Credits</label>
+              </dt>
+          <dd>
+            <input name="image1_credit" type="text" 
+              value="${image1_credit}"/>
+          </dd>
+          <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
+        <dd>
+          <input id="dc:subject" name="image1_keywords" size="40" type="text"
+          value="${image1_keywords}" />
+        </dd>
+        </dl>
+    </div> <!-- yui-u -->
+</div> <!-- yui-gc -->
+<span>
+    <input type="submit" value="Modify day" class="button_ok" />
+    <!--
+    <a href="../;enquiry_form" class="action"><span>Make an enquiry</span></a>
+    -->
+</span>
+</form>
 </stl:block>
 

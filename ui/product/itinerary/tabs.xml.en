@@ -1,0 +1,36 @@
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+    <script type="text/javascript">
+        $(function() {
+            $("#itinerary").tabs({ cookie: { expires: 365 }}).removeClass('ui-widget ui-widget-content').addClass('ui-tabs-embedded ui-tabs ui-tabs-nav ui-helper-clearfix');
+            $("#itinerary ul").removeClass('ui-corner-all');
+            $("#itinerary li").removeClass('ui-corner-top');
+            $("#itinerary div").removeClass('ui-corner-bottom');
+        });
+    </script>
+    <div id="itinerary">
+      <ul>
+          <li><a href="#fragment-21"><span>Overview</span></a></li>
+          <li><a href="#fragment-22"><span>Days</span></a></li>
+          <li><a href="#fragment-23"><span>Contents</span></a></li>
+          <li><a href="#fragment-24"><span>Preview</span></a></li>
+          <li><a href="#fragment-25"><span>Publish</span></a></li>
+      </ul>
+      <div id="fragment-21">
+        ${edit}
+      </div>
+      <div id="fragment-22">
+        ${itinerary}
+      </div>
+      <div id="fragment-23">
+        ${browse_content}
+      </div>
+      <div id="fragment-24">
+        ${view}
+      </div>
+      <div id="fragment-25">
+        ${state}
+      </div>
+    </div>
+</stl:block>
+

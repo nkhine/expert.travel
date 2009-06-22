@@ -73,7 +73,8 @@ class Root(Handler, BaseRoot):
     class_version = '20070218'
     class_domain = 'abakuc'
     class_description = (u'One back-office to bring them all and in the'
-                         u' darkness bind them.')
+                         u' darkness bind them, in an' 
+                         u' anarchically scalable information system.')
 
     class_views = [['view']] + BaseRoot.class_views + [['import_data_form']]
     site_format =''

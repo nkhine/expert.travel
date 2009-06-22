@@ -86,6 +86,20 @@ class AffiliationTable(CSV):
     schema = {'affiliation': String,
               'affiliation_no': Unicode}
 
+class PriceMatrix(CSV):
+
+    class_id = 'PriceMatrix'
+
+    columns = ['from_date', 'to_date', 'price']
+    schema = {'from_date': DateTime,
+              'to_date': DateTime,
+              'price': Unicode}
+
+
+    GET__access__ = 'is_branch_manager_or_member'
+    __view__access__ = 'is_branch_manager_or_member'
+
 register_object_class(EnquiriesLog)
 register_object_class(ApplicationsLog)
 register_object_class(AffiliationTable)
+register_object_class(PriceMatrix)

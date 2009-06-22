@@ -8,11 +8,13 @@
     <script type="text/javascript">
         $(function(){
             // Tabs
-            $("#tabs-vertical").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
-            $("#tabs-vertical li").addClass('ui-corner-all');
+            $("#ui-tabs-vertical").tabs({ cookie: { expires: 365 }}).removeClass('ui-tabs ui-widget ui-corner-all ui-tabs-embedded ui-widget-content ui-tabs-panel').addClass('ui-tabs-vertical ui-helper-clearfix');
+            $("#ui-tabs-vertical ul").removeClass('ui-widget-header ui-corner-all');
+            $("#ui-tabs-vertical li").removeClass('ui-corner-top').addClass('ui-corner-right');
+            $("#ui-tabs-vertical div").removeClass('ui-widget-content ui-tabs-panel');
         });
     </script>
-    <div id="tabs-vertical">
+    <div id="ui-tabs-vertical">
         <ul>
             <li><a href="#tabs-100">Overview</a></li>
             <li stl:repeat="day itinerary_days">

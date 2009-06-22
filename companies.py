@@ -38,13 +38,14 @@ from itools.handlers import get_handler
 from access import AccessControl
 from base import Handler, Folder
 from forum import Forum
-from handlers import EnquiriesLog, EnquiryType, AffiliationTable
+from handlers import EnquiriesLog, EnquiryType, AffiliationTable, PriceMatrix
 from jobs import Job
 from metadata import JobTitle, SalaryRange
 from news import News
 from product import Product
-from utils import get_sort_name, t1, t2, t3, t4, t5
+from utils import abspath_to_relpath, get_sort_name, t1, t2, t3, t4, t5
 from website import SiteRoot
+from rooms import Room
 
 def crypt_captcha(captcha):
     return sha.new(captcha).digest()
@@ -1156,16 +1157,19 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
 
 
     def new(self, **kw):
-        # Enquiry
         Folder.new(self, **kw)
+
+        # Enquiry log file
         handler = EnquiriesLog()
         cache = self.cache
         cache['log_enquiry.csv'] = handler
         cache['log_enquiry.csv.metadata'] = handler.build_metadata()
 
+        # Address affiliations
         affiliation = AffiliationTable()
         cache['affiliation.csv'] = affiliation
         cache['affiliation.csv.metadata'] = affiliation.build_metadata()
+
 
         # Jobs folder
         #title = u'Products folder'
@@ -1175,7 +1179,12 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
         #cache['products.metadata'] = products.build_metadata(**kw)
 
     def get_document_types(self):
-        return [News, Job, Product]
+        company = self.parent
+        topic = company.get_property('abakuc:topic')
+        if 'hotel' in topic:
+            return [News, Job, Product, Room]
+        else:
+            return [News, Job, Product, Room]
 
 
     get_epoz_data__access__ = 'is_branch_manager_or_member'
@@ -1217,6 +1226,13 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
     #######################################################################
     # API
     #######################################################################
+
+    #def get_company_type(self):
+    #    company = self.parent
+    #    topic = company.get_property('abakuc:topic')
+    #    if 'hotel' in topic:
+    #        continue
+    #    return address or self.name
 
     def get_title(self):
         address = self.get_property('abakuc:address')
@@ -1449,6 +1465,7 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
         batch_fin = batch_start + batch_size
         if batch_fin > batch_total:
             batch_fin = batch_total
+        # Returns a list items.
         news_items = news_items[batch_start:batch_fin]
         # Namespace
         if news_items:
@@ -1839,6 +1856,8 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
         enquiry_type = context.get_form_value('abakuc:enquiry_type')
         namespace['enquiry_type'] = EnquiryType.get_namespace(enquiry_type)
         namespace['company'] = self.parent.get_property('dc:title')
+        path = self.abspath
+        namespace['url'] = abspath_to_relpath(path) + '/;enquiry'
 
         handler = self.get_handler('/ui/abakuc/enquiries/enquiry_edit_metadata.xml')
         return stl(handler, namespace)

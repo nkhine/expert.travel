@@ -12,7 +12,7 @@
         <li><a href="#fragment-3"><span>Airline</span></a></li>
         <li><a href="#fragment-4"><span>Itinerary</span></a></li>
         <li><a href="#fragment-5"><span>Documents</span></a></li>
-        <li><a href="#fragment-6"><span>Pre-view</span></a></li>
+        <li><a href="#fragment-6"><span>Preview</span></a></li>
         <li><a href="#fragment-7"><span>Publish</span></a></li>
     </ul>
     <div id="fragment-1">
@@ -25,7 +25,7 @@
       ${airline}
     </div>
     <div id="fragment-4">
-      {itinerary}
+      ${itinerary}
     </div>
     <div id="fragment-5">
       ${browse_content}

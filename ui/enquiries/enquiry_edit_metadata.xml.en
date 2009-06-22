@@ -3,7 +3,7 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
 <h1>Submit your enquiry to ${company}</h1>
-<form action=";enquiry" method="post">
+<form action="${url}" method="post">
   <p>
     <label for="abakuc:enquiry_subject">Subject</label><br/>
     <input type="text" size="40" name="abakuc:enquiry_subject"

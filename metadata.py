@@ -28,6 +28,16 @@ class SubContinent(Enumerate):
     ]
 
 
+class RoomType(Enumerate):
+
+    options =  [
+        {'name': 'standard', 'label': u"Standard"},
+        {'name': 'executive', 'label': u"Executive"},
+        {'name': 'deluxe', 'label': u"Deluxe"},
+        {'name': 'family', 'label': u"Family"},
+        {'name': 'presidential', 'label': u"Presidential"}
+    ]
+
 class JobTitle(Enumerate):
 
     options = [

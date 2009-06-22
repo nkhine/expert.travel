@@ -5,6 +5,30 @@ font-weight:bold;
 }
 
 /**************************************************************************
+ * YUI overwrites 
+ **************************************************************************/
+.yui-dt {
+  float: left;
+  margin: 5px 10px;
+}
+
+.yui-dt-title {
+  padding-left: 5px;
+  font-weight: bold;
+  font-size: 85%
+}
+
+.yui-dt-credit {
+  padding-left: 8px;
+  font-style: italic;
+  font-size: 77%
+}
+
+.yui-gc .yui-u textarea {
+width: 98%;
+}
+
+/**************************************************************************
  * Header 
  **************************************************************************/
 #hd{ background:#6899FF;-moz-border-radius-bottomright: 5px; -webkit-border-bottom-right-radius: 5px; }
@@ -276,20 +300,6 @@ th a.sort_none {
 .news p {
 	margin: 0.5em;
 }
-.yui-dt {
-  float: left;
-  margin: 5px 10px;
-}
-.yui-dt-title {
-  padding-left: 5px;
-  font-weight: bold;
-  font-size: 85%
-}
-.yui-dt-credit {
-  padding-left: 8px;
-  font-style: italic;
-  font-size: 77%
-}
 
 .button {
   background-color: #ffffff;
@@ -326,27 +336,6 @@ th a.sort_none {
   width: 10px;
 }
 
-
-
-/**************************************************************************
- * Form   
- **************************************************************************/
-#form {
-	margin: 0.5em;
-  white-space: nowrap;
-}
-
-#form fieldset { border: 1px solid #000; }
-
-#form legend { padding: 0; color: #000; }
-
-#form label { color: #333fff; font-size: 77%; }
-#form input, textarea, select {
-	margin: 0;
-	padding: 1px;
-	}
-
-#form input:focus, textarea:focus { background: #efefef; color: #000; }
 /**************************************************************************
  * CJ   
  **************************************************************************/
@@ -524,19 +513,24 @@ span.image { float: right; }
     border-top: None;
  }
  
-/**************************************************************************
- * Vertical Tabs
- **************************************************************************/
-#tabs-vertical {
-    font-size: 93%;
-    border: 1px dashed #BBBBBB;
- }
- #tabs-vertical table {
-    float: left;
- }
+/* Embedded Tabs
+----------------------------------*/
+.ui-tabs-embedded .ui-widget-header { background: none; border-width: 0 0 1px !important; }
+.ui-tabs-embedded .ui-tabs-panel { padding: 1em 1.4em; display: block; border-width: 0 1px 1px 1px !important; background: none; }
+.ui-tabs-embedded .ui-tabs .ui-tabs-nav { list-style: none; position: relative; padding: .6em .2em 0; }
+.ui-tabs-embedded .ui-tabs .ui-tabs-nav li { position: relative; float: left; border-bottom-width: 1px !important; margin: 0 .2em -4px 0; padding: 0; }
+.ui-tabs-embedded .ui-tabs .ui-tabs-nav li a { float: right; text-decoration: none; padding: .5em 1em; }
+.ui-tabs-embedded .ui-tabs .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 1px; border-bottom-width: 1px; }
+.ui-tabs-embedded .ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
+.ui-tabs-embedded .ui-tabs .ui-tabs-nav li a, .ui-tabs-embedded .ui-tabs .ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs-embedded .ui-tabs .ui-tabs-hide { display: none !important; }
 
-.ui-tabs-vertical .ui-tabs-nav { list-style: none; position: relative; padding: .2em .2em .2em .2em; }
-.ui-tabs-vertical .ui-tabs-nav { float: right; width: 12em; border: none; }
-.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 0 !important; border-left-width: 0 !important;}
+/* Vertical Tabs
+----------------------------------*/
+.ui-tabs-vertical .ui-tabs-nav { float: right; width: 12em; }
+.ui-tabs-vertical .ui-tabs-nav li { width: 100%; border-bottom-width: 2px !important; border-right-width: 3px !important; padding: 0 0 0 1px; }
+.ui-tabs-vertical .ui-corner-right {  -moz-border-radius-topright: 0px; -webkit-border-top-right-radius: 0px; -moz-border-radius-bottomright: 10px; -webkit-border-bottom-right-radius: 10px; }
 .ui-tabs-vertical .ui-tabs-nav li a { display:block; }
-.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { border-left-width: 0; border-right-width: 0; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { padding: 0 0 0 .1em; border-left-width: 0; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { float: left; border-width: 0 !important; }
+

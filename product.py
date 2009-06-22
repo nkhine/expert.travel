@@ -499,7 +499,7 @@ class Product(Folder, WorkflowAware):
         namespace = {}
         handlers = self.search_handlers(handler_class=Itinerary)
         for handler in handlers:
-            response = Itinerary.edit_metadata_form(handler, context)
+            response = Itinerary.manage(handler, context)
             namespace['response'] = response
         handler = self.get_handler('/ui/abakuc/response.xml')
         return stl(handler, namespace)

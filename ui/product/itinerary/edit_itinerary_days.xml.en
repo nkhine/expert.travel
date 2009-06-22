@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+<h1>Days</h1>
+  <table class="tablesorter">
+    <colgroup>
+      <col width="1%" />
+      <col width="49%" />
+      <col width="20%" />
+      <col width="10%" />
+      <col width="10%" />
+      <col width="10%" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th colspan="6" align="right">
+          {batch}
+        <span>{msg}</span>
+        </th>
+      </tr>
+    </thead>
+    <tfoot>
+    <form action="${url}/;new_resource" method="post" enctype="multipart/form-data">
+          <tr>
+            <th><img alt="" src="../../../ui/images/new16.png" height="16"
+                                                                width="16" />
+            </th>
+            <th colspan="2">
+              <input type="text" name="dc:title" value=""/>
+            </th>
+            <th colspan="2">
+            <input type="text" name="affiliation_no" value="" size="10" />
+            </th>
+            <th>
+            <input name="class_id" type="hidden" value="${class_id}"/>
+            <input type="submit" value="[+] add" class="button_ok" />
+            </th>
+      </tr>
+    </form>
+    </tfoot>
+    <tbody>
+      <tr stl:repeat="day days">
+        <stl:block stl:if="not day/selected">
+            <td><img alt="" src="../../../ui/images/tracker16.png" height="16"
+            width="16" /></td>
+            <form action=";delete_affiliation" method="post" enctype="multipart/form-data">
+                <td colspan="3">
+                    <a href=";manage?day=${day/tab_id}">${day/title}</a> 
+                </td>
+                <td colspan="2">
+                    <input type="hidden" name="day" value="${day/tab_id}" />
+                    <input type="submit" value="[-] delete" class="button_ok" />
+                </td>
+            </form>
+        </stl:block>
+        <stl:block stl:if="day/selected">
+                <td colspan="6">
+                    ${day/template}
+                </td>
+        </stl:block>
+      </tr>
+    </tbody>
+  </table>
+</stl:block>
+

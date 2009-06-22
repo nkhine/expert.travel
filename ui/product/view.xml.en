@@ -16,7 +16,7 @@
     <div class="yui-u first">
         <h1>${title}</h1>
         <p>${description}</p>
-        ${view_tabs}
+           ${view_tabs}
     </div> <!-- yui-u first -->
     <div class="yui-u">
            <span stl:if="not have_image">
