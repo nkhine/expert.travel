@@ -36,21 +36,31 @@ class AccessControl(AbakucAccessControl):
         - View statistics
         - Download members etc...
     '''
-    #######################################################################
-    # Security / Access Control
-    #######################################################################
+
+
+    def access_groups(self, user, address):
+        if address:
+            company = address.parent
+            is_company_manager = company.has_user_role(user.name, 'abakuc:branch_manager')
+            is_branch_manager =  address.has_user_role(user.name, 'abakuc:branch_manager')
+            is_branch_member = address.has_user_role(user.name, 'abakuc:branch_member')
+            is_guest = address.has_user_role(user, 'abakuc:guest')
+            return is_company_manager, is_branch_manager, is_branch_member, is_guest
+        return False, False, False, False
+
     def is_branch_manager(self, user, object):
         if not user:
             return False
         # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
+        #root = object.get_root()
+        #if root.is_admin(user, self):
+        #    return True
         # Is reviewer or member
-        site_root = object.get_site_root()
+        #site_root = object.get_site_root()
         address = user.get_address()
-        return (site_root.has_user_role(user.name, 'abakuc:branch_manager') or
-                address.has_user_role(user.name, 'abakuc:branch_manager'))
+        #return (site_root.has_user_role(user.name, 'abakuc:branch_manager') or
+        #        address.has_user_role(user.name, 'abakuc:branch_manager'))
+        return address.has_user_role(user.name, 'abakuc:branch_manager')
 
     def is_branch_manager_or_member(self, user, object):
         if not user:

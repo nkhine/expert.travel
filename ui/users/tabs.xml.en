@@ -2,15 +2,19 @@
   xmlns:stl="http://xml.itools.org/namespaces/stl">
     <script type="text/javascript">
         $(function() {
-            $('#container-user-profile').tabs({ cookie: { expires: 365 }});
+            $('#profile').tabs({ cookie: { expires: 365 }});
+            $("#company").tabs({ cookie: { expires: 365 }}).removeClass('ui-widget ui-widget-content').addClass('ui-tabs-embedded ui-tabs ui-tabs-nav ui-helper-clearfix');
+            $("#company ul").removeClass('ui-corner-all');
+            $("#company li").removeClass('ui-corner-top');
+            $("#company div").removeClass('ui-corner-bottom');
             $('#container-user').tabs({ cookie: { expires: 365 }});
         });
     </script>
-    <div id="container-user-profile">
+    <div id="profile">
         <ul>
             <li><a href="#fragment-21"><span>Profile</span></a></li>
             <li><a href="#fragment-22"><span>Company</span></a></li>
-            <stl:block stl:if="has_address">
+            <stl:block stl:if="address">
                 <li><a href="#fragment-23"><span>Affiliations</span></a></li>
                 <li><a href="#fragment-24"><span>Branches</span></a></li>
             </stl:block>
@@ -22,7 +26,7 @@
             <div id="fragment-22">
               ${company}
             </div>
-            <stl:block stl:if="has_address">
+            <stl:block stl:if="address">
                 <div id="fragment-23">
                   ${affiliations}
                 </div>

@@ -504,9 +504,6 @@ span.image { float: right; }
  * jQuery Tabs overwrites 
  **************************************************************************/
 
- #tab1 .ui-widget-content {
-    border-bottom: None;
- }
  #tab2 .ui-widget-content {
     margin-top: -5px;
     font-size: 93%; /* 12px */

@@ -63,7 +63,7 @@
         <input type="file" name="logo" id="logo" size="36" />
         <stl:block if="logo">
           <br/>
-          <img src="logo" align="left" />
+          <img src="${logo_src}" align="left" />
           <input type="checkbox" name="remove_logo" value="1" />
           Check to remove the logo.
         </stl:block>

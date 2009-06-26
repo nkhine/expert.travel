@@ -10,7 +10,7 @@ from urllib import urlencode
 from itools import handlers
 from itools import uri
 from itools.catalog import EqQuery, AndQuery, RangeQuery
-from itools.cms.access import AccessControl
+#from itools.cms.access import AccessControl
 from itools.cms.base import Handler
 from itools.cms.binary import Image
 from itools.cms.folder import Folder
@@ -33,6 +33,7 @@ from itools.xhtml import Document as XHTMLDocument
 from itools.xml import Parser
 
 # Import from our product
+from access import AccessControl
 from bookings import Bookings
 from companies import Company, Address
 from training import Training, Module
@@ -115,7 +116,7 @@ register_object_class(UserFolder)
 ########################################################################
 # User
 ########################################################################
-class User(iUser, WorkflowAware, Handler):
+class User(iUser, AccessControl, WorkflowAware, Handler):
 
     class_id = 'user'
     class_version = '20040625'
@@ -181,19 +182,23 @@ class User(iUser, WorkflowAware, Handler):
 
 
     # FIXME 015 Check usage of this method and clean up
-    def is_tourist_office_manager(self, user, object):
-        root = self.get_site_root()
-        return root.has_user_role(self.name, 'abakuc:training_manager')
+    #def is_tourist_office_manager(self, user, object):
+    #    root = self.get_site_root()
+    #    return root.has_user_role(self.name, 'abakuc:training_manager')
 
-    # FIXME 015 Check usage of this method and clean up
-    def is_branch_member(self, user, object):
-        if user is None:
-            return False
-        if self.is_admin(user, object):
-            return False
-        if self.is_tourist_office_manager(user, object):
-            return False
-        return True
+    ## FIXME 015 Check usage of this method and clean up
+    #def is_branch_member(self, user, object):
+    #    if user is None:
+    #        return False
+    #    if self.is_admin(user, object):
+    #        return False
+    #    if self.is_tourist_office_manager(user, object):
+    #        return False
+    #    return True
+
+    def get_access(self):
+        address = self.get_address()
+        return AccessControl().access_groups(self, address)
 
     def is_training(self):
         """
@@ -264,33 +269,6 @@ class User(iUser, WorkflowAware, Handler):
             #root = context.root
             indexes['function'] = get_property('abakuc:functions')
             address = self.get_address()
-            #companies_handler = root.get_handler('companies')
-            #if companies_handler:
-            #    companies = \
-            #    list(companies_handler.search_handlers(handler_class=Company))
-            #    for company in companies:
-            #        company_title = company.get_handler(company.abspath)
-            #        addresses = \
-            #            list(company.search_handlers(handler_class=Address))
-            #        for address in addresses:
-            #            username = self.name
-            #            users = address.get_members()
-            #            if username in users:
-            #                indexes['address'] = address.get_property('abakuc:address')
-            #                county = address.get_property('abakuc:county')
-            #                indexes['abakuc:county'] = county
-            #                if county is not None:
-            #                    for row_number in world.search(county=county):
-            #                        row = world.get_row(row_number)
-            #                        country = row[5]
-            #                        region = row[7]
-            #                        indexes['country'] = country
-            #                        indexes['region'] = region
-            #                indexes['company'] = company.get_property('dc:title')
-            #                indexes['type'] = company.get_property('abakuc:type')
-            #                topics = company.get_property('abakuc:topic')
-            #                indexes['topic'] = tuple(topics)
-            # Optimise the company/address indexing
             if address:
                 company = address.parent
                 indexes['address'] = address.get_property('abakuc:address')
@@ -338,21 +316,22 @@ class User(iUser, WorkflowAware, Handler):
         # Set Style
         # Add a script
         context.scripts.append('/ui/abakuc/jquery.cookie.js')
-        #context.scripts.append('/ui/abakuc/ui.tabs.js')
-        #context.scripts.append('/ui/abakuc/js/jquery-ui-1.7.1.custom.min.js')
+
         root = context.root
+        address = self.get_address()
+        access = self.get_access()
 
         namespace = {}
         namespace['user'] = self.user(context)
-        #company = self.company(context)
         namespace['company'] = self.company(context)
-        address = self.get_address()
-        namespace['has_address'] = address
+        namespace['address'] = address
         # Manager tabs
-        namespace['is_branch_manager'] = None
+        namespace['is_branch_manager'] = access[1] 
         if address:
-            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-            namespace['is_branch_manager'] = is_branch_manager
+            namespace['is_company_manager'] = access[0]
+            namespace['is_branch_manager'] = access[1]
+            namespace['is_branch_member'] = access[2]
+            namespace['is_guest'] = access[3]
             affiliations = self.affiliations(context)
             namespace['affiliations'] = affiliations
             namespace['addresses'] = self.addresses(context)
@@ -400,17 +379,12 @@ class User(iUser, WorkflowAware, Handler):
         root = context.root
         users = root.get_handler('users')
         address = self.get_address()
-        #company = address.parent
-        if address:
-            is_branch_manager = address.has_user_role(self.name, 'abakuc:branch_manager')
-            is_branch_member = address.has_user_role(self.name, 'abakuc:branch_member')
-            is_guest = address.has_user_role(self.name, 'abakuc:guest')
-            is_branch_manager_or_member = is_branch_manager or is_branch_member
-        else:
-            is_branch_manager = False
-            is_branch_member = False
-            is_guest = False
-            is_branch_manager_or_member = False
+        access = self.get_access()
+        is_branch_manager = access[1]
+        is_branch_member = access[2]
+        is_guest = access[3]
+        is_branch_manager_or_member = is_branch_manager or is_branch_member
+
         namespace = {}
         namespace['is_branch_manager_or_member'] = is_branch_manager_or_member
         #  Training Office TABS
@@ -842,6 +816,12 @@ class User(iUser, WorkflowAware, Handler):
             is_guest = False
             is_branch_manager_or_member = False
 
+        if address.has_user_role(self.name, 'abakuc:branch_manager'):
+            access = 'branch_manager'
+        elif address.has_user_role(self.name, 'abakuc:branch_member'):
+            access = 'branch_member'
+        else:
+            access = None
         namespace['is_branch_manager'] = is_branch_manager
         namespace['is_branch_member'] = is_branch_member
         namespace['is_guest'] = is_guest
@@ -868,12 +848,18 @@ class User(iUser, WorkflowAware, Handler):
     # User's company pages 
     ########################################################################
     company__access__ = 'is_self_or_admin'
-    def company(self, context):
+    def company(self, context, access=None):
+        '''
+          Used in the profile tabs, add sub-tabs to link to company
+          management screens. so that:
+          [Edit Company] [Edit Address] [Manage Users]
+        '''
         root = context.site_root
         here = context.handler or root
         users = self.get_handler('/users')
         user = context.user
         address = self.get_address()
+        access = self.get_access()
         # Get Company and Address
         namespace = {}
         namespace['user'] = self.user(context)
@@ -882,13 +868,12 @@ class User(iUser, WorkflowAware, Handler):
         if user is None:
             return u'You need to be registered!'
         if address is not None:
-            is_guest = address.has_user_role(user.name, 'abakuc:guest')
-            namespace['is_guest'] = is_guest
-            if address.has_user_role(user.name, 'abakuc:guest'):
-                contacts = address.get_property('abakuc:branch_manager')
-                if contacts:
-                    contact = users.get_handler(contacts[0])
-                    namespace['contact'] = contact.get_property('ikaaro:email')
+            namespace['is_guest'] = access[3]
+            print address.get_branch_managers()
+            contacts = address.get_branch_managers()
+            if contacts:
+                contact = contacts[0]
+                namespace['contact'] = contact.get_property('ikaaro:email')
                 #else:
                 #    contact = '<span style="color:red;">the administrator</span>'
                 #    namespace['contact'] = Parser(contact)
@@ -898,6 +883,8 @@ class User(iUser, WorkflowAware, Handler):
                                     'title': company.get_property('dc:title'),
                                     'website': company.get_website(),
                                     'path': here.get_pathto(company)}
+            # Edit company form
+            namespace['edit_company'] = company.edit_metadata_form(context)
             # Address
             addr = {'name': address.name,
                     'address': address.get_property('abakuc:address'),
@@ -910,7 +897,9 @@ class User(iUser, WorkflowAware, Handler):
 
             namespace['address'] = addr
 
-        namespace['setup_company_form'] = '/users/%s/;setup_company_form' % (user.name)
+
+        namespace['setup_company_form'] = self.setup_company_form(context) 
+        #namespace['setup_company_form'] = '/users/%s/;setup_company_form' % (user.name)
         handler = self.get_handler('/ui/abakuc/users/company.xml')
         return stl(handler, namespace)
 

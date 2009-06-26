@@ -757,7 +757,8 @@ class Company(SiteRoot, Folder, AccessControl):
     #######################################################################
     @staticmethod
     def get_form(name=None, description=None, website=None, topics=None,\
-                types=None, logo=None, rating=None, subject=None):
+                types=None, logo=None, rating=None, subject=None, path=None):
+        print path
         root = get_context().root
 
         namespace = {}
@@ -771,6 +772,7 @@ class Company(SiteRoot, Folder, AccessControl):
         #if site is destinations guide select types with id = 2
         # etc....
         namespace['types'] = root.get_types_namespace(types)
+        namespace['logo_src'] = '%s/logo' % path
         namespace['logo'] = logo
         namespace['subject'] = subject
 
@@ -787,6 +789,7 @@ class Company(SiteRoot, Folder, AccessControl):
 
     edit_metadata_form__access__ = 'is_branch_manager'
     def edit_metadata_form(self, context):
+        here = context.handler
         namespace = {}
         namespace['referrer'] = None
         if context.get_form_value('referrer'):
@@ -801,9 +804,12 @@ class Company(SiteRoot, Folder, AccessControl):
         rating = self.get_property('abakuc:rating')
         logo = self.has_handler('logo')
         subject = self.get_property('dc:subject')
+        path = str(here.get_pathto(self))
         namespace['form'] = self.get_form(title, description, website,\
-                                        topics, types, logo, rating, subject)
+                                        topics, types, logo, rating, subject, path)
 
+        action = '%s/;edit_metadata' % path 
+        namespace['action'] = action
         handler = self.get_handler('/ui/abakuc/companies/company/edit_metadata.xml')
         return stl(handler, namespace)
 
@@ -884,7 +890,7 @@ class Company(SiteRoot, Folder, AccessControl):
         for address in self.search_handlers(handler_class=Address):
             schedule_to_reindex(address)
 
-        message = u'Changes Saved.'
+        message = u'Company details updated.'
         goto = context.get_form_value('referrer') or None
         return context.come_back(message, goto=goto)
 
@@ -1186,7 +1192,15 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
         else:
             return [News, Job, Product, Room]
 
-
+    def get_branch_managers(self):
+        users = self.get_handler('/users')
+        managers = self.get_property('abakuc:branch_manager')
+        items = []
+        for manager in managers:
+            user = users.get_handler(manager)
+            items.append(user)
+        return items
+        
     get_epoz_data__access__ = 'is_branch_manager_or_member'
     def get_epoz_data(self):
         # XXX don't works
@@ -2165,16 +2179,16 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
     #    #return (self.has_user_role(user.name, 'abakuc:branch_manager') or
     #    #        address.has_user_role(user.name, 'abakuc:branch_manager'))
 
-    def is_branch_manager_or_member(self, user, object):
-        if not user:
-            return False
-        # Is global admin
-        root = object.get_root()
-        if root.is_admin(user, self):
-            return True
-        # Is reviewer or member
-        return (self.has_user_role(user.name, 'abakuc:branch_manager') or
-                self.has_user_role(user.name, 'abakuc:branch_member'))
+    #def is_branch_manager_or_member(self, user, object):
+    #    if not user:
+    #        return False
+    #    # Is global admin
+    #    root = object.get_root()
+    #    if root.is_admin(user, self):
+    #        return True
+    #    # Is reviewer or member
+    #    return (self.has_user_role(user.name, 'abakuc:branch_manager') or
+    #            self.has_user_role(user.name, 'abakuc:branch_member'))
 
 
     def is_allowed_to_view(self, user, object):

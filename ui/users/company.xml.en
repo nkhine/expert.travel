@@ -7,18 +7,47 @@
               before proceeding.
     </stl:block>
     <stl:block if="address">
-        <h2><a href="${company/path}">${company/title}</a></h2>
-          <dt><a href="${company/website}">${company/website}</a></dt>
-          <dd>
-            <address>${address/address}<span><a
-            href="${address/address_path}/;view">Preview</a></span><br />
-            ${address/town}<br />
-            ${address/county}<br />
-            ${address/postcode}
-            </address>
-          </dd>
-          <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
-          <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
+              <div stl:if="contact">
+                To manage these records, please contact 
+                <a href="mailto:${contact}">${contact}</a>
+                who is the Manager for this record or contact
+                the site administrator.
+              </div>
+            <div id="company">
+              <ul>
+                  <li><a href="#company-21"><span>Overview</span></a></li>
+                  <li><a href="#company-22"><span>Edit</span></a></li>
+                  <li><a href="#company-23"><span>Change company</span></a></li>
+                  <li><a href="#company-24"><span>Preview</span></a></li>
+                  <li><a href="#company-25"><span>Publish</span></a></li>
+              </ul>
+              <div id="company-21">
+                <h2><a href="${company/path}">${company/title}</a></h2>
+                <dt><a href="${company/website}">${company/website}</a></dt>
+                <dd>
+                  <address>${address/address}<span><a
+                  href="${address/address_path}/;view">Preview</a></span><br />
+                  ${address/town}<br />
+                  ${address/county}<br />
+                  ${address/postcode}
+                  </address>
+                </dd>
+                <dd stl:if="address/phone">Tel:&nbsp;${address/phone}</dd>
+                <dd stl:if="address/fax">Fax:&nbsp;${address/fax}</dd>
+              </div>
+              <div id="company-22">
+                ${edit_company}
+              </div>
+              <div id="company-23">
+                ${setup_company_form}
+              </div>
+              <div id="company-24">
+                {view}
+              </div>
+              <div id="company-25">
+                {state}
+              </div>
+            </div>
           <dd>
             <a href="${setup_company_form}">Switch to another company</a>.
           </dd>
