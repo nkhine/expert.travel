@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" 
   xmlns:stl="http://xml.itools.org/namespaces/stl">
   <head>
-    <title>${title} ABAKUC</title>
+    <title>${title} ABAKUC XXX</title>
     <!-- Meta -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta stl:repeat="meta meta_tags" name="${meta/name}"

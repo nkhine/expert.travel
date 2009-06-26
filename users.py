@@ -201,11 +201,10 @@ class User(iUser, WorkflowAware, Handler):
         Return a bool
         """
         training = self.get_site_root()
-        if isinstance(training, Training):
-            training = True
-        else:
-            training = False
-        return training
+        if training.class_id == 'training':
+        #if isinstance(self.get_site_root(), Training):
+            return True
+        return False
 
     def get_company(self):
         root = self.get_root()
@@ -818,11 +817,15 @@ class User(iUser, WorkflowAware, Handler):
     # User's pages 
     user__access__ = 'is_self_or_admin'
     def user(self, context):
+        root = self.get_site_root()
         user = context.user
-        root = context.root
         address = self.get_address()
         portrait = self.has_handler('portrait')
         namespace = {}
+        # Are we viewing this on the User's profile page?
+        namespace['profile'] = None
+        if root.class_id == 'abakuc':
+            namespace['profile'] = True 
         # User Role
         is_self = user is not None and user.name == self.name
         is_admin = root.is_admin(user, self)

@@ -16,7 +16,7 @@
         <span stl:if="is_branch_member"><a href="${url};state_form">Member</a></span>
         <span stl:if="is_guest"><a href="${url};state_form">Guest</a></span>
         </p>
-        <ul>
+        <ul stl:if="not profile">
             <li><a href="${url};profile">My profile.</a></li>
             <li><a href="${url};portrait_form">Modify portrait.</a></li>
             <li><a href="${url};edit_account_form">Edit account details.</a></li>

@@ -142,7 +142,7 @@ class ExpertTravel(AccessControl, SiteRoot):
 
     def get_tabs_stl(self, context):
         # Add a script
-        context.scripts.append('/ui/abakuc/jquery.cookie.js')
+        #context.scripts.append('/ui/abakuc/jquery.cookie.js')
         # Build stl
         namespace = {}
         namespace['news'] = self.list_news(context)

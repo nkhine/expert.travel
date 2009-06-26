@@ -8,7 +8,7 @@ from itools.cms.skins import register_skin
 
 # Import from abakuc
 from root import Root
-from skins import countries, trainings, websites
+from skins import companies, countries, trainings, websites
 import document
 import exam
 import marketing
@@ -26,6 +26,11 @@ register_skin('abakuc', path)
 base = get_abspath(globals(), 'skins')
 for name, cls in websites.items():
     path = base + '/' + name
+    register_skin(name, cls(path))
+
+company = get_abspath(globals(), 'skins/companies')
+for name, cls in companies.items():
+    path = company + '/' + name
     register_skin(name, cls(path))
 
 country = get_abspath(globals(), 'skins/countries')

@@ -629,7 +629,7 @@ class CompanySkin(FrontOffice):
             return self.get_handler('template.xhtml')
         except LookupError:
             # Default
-            return self.get_handler('../.expert.travel/template.xhtml')
+            return self.get_handler('skins/companies/abakuc/template.xhtml')
 
 
 class CountrySkin(FrontOffice):
@@ -647,9 +647,14 @@ websites = {
     'destinationsguide.info': DestinationsSkin,
     'fr.expert.travel': FrontOffice,
     'uk.expert.travel': FrontOffice,
+    #'abakuc.expert.travel': CompanySkin,
+}
+
+companies = {
     # Companies
-    'abakuc.expert.travel': CompanySkin,
     '.expert.travel': CompanySkin,
+    'abakuc.expert.travel': CompanySkin,
+    'abakuc.com': CompanySkin,
 }
 
 countries = {
