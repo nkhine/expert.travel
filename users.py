@@ -816,12 +816,12 @@ class User(iUser, AccessControl, WorkflowAware, Handler):
             is_guest = False
             is_branch_manager_or_member = False
 
-        if address.has_user_role(self.name, 'abakuc:branch_manager'):
-            access = 'branch_manager'
-        elif address.has_user_role(self.name, 'abakuc:branch_member'):
-            access = 'branch_member'
-        else:
-            access = None
+        #if address.has_user_role(self.name, 'abakuc:branch_manager'):
+        #    access = 'branch_manager'
+        #elif address.has_user_role(self.name, 'abakuc:branch_member'):
+        #    access = 'branch_member'
+        #else:
+        #    access = None
         namespace['is_branch_manager'] = is_branch_manager
         namespace['is_branch_member'] = is_branch_member
         namespace['is_guest'] = is_guest
@@ -898,8 +898,8 @@ class User(iUser, AccessControl, WorkflowAware, Handler):
             namespace['address'] = addr
 
 
-        namespace['setup_company_form'] = self.setup_company_form(context) 
-        #namespace['setup_company_form'] = '/users/%s/;setup_company_form' % (user.name)
+        #namespace['setup_company_form'] = self.setup_company_form(context) 
+        namespace['setup_company_form'] = '/users/%s/;setup_company_form' % (user.name)
         handler = self.get_handler('/ui/abakuc/users/company.xml')
         return stl(handler, namespace)
 
