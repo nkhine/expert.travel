@@ -463,11 +463,11 @@ class Root(Handler, BaseRoot):
         rows = list(rows)
         print len(rows)
         # We don't want the header
-        rows = rows[1:]
+        #rows = rows[1:]
         #rows = rows[1:49]
         #rows = rows[1:1550]
         #rows = rows[5500:5605]
-        #rows = rows[5500:13346]
+        rows = rows[1:13346]
         # Load handlers
         users = self.get_handler('users')
         companies = self.get_handler('companies')
