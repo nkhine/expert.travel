@@ -15,8 +15,8 @@
               ${postcode}<br/>
               ${country}<br/><br/>
             </address>
-          P: ${phone}&nbsp;-&nbsp;F: ${fax} 
           <a href=";enquiry_form" class="action"><span>Make an enquiry</span></a>
+          P: ${phone}&nbsp;-&nbsp;F: ${fax} 
         ${tabs}
             <ul class="info">
                 <li stl:repeat="item affiliations">${item/title} -
