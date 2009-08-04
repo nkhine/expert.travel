@@ -1830,12 +1830,12 @@ class Address(AccessControl, RoleAware, WorkflowAware, Folder):
             crypt_imgtext = crypt_captcha(imgtext)
             encoded_imgtext = Password.encode('%s' % crypt_imgtext)
             # PIL "code" - open image, add text using font, save as new
-            path = get_abspath(globals(), 'ui/images/captcha/bg.jpg')
+            path = get_abspath(globals(), 'data/images/bg.jpg')
             sound_path = get_abspath(globals(), 'data/sound')
             sound_output_path = get_abspath(globals(), 'ui/sound')
             im=PILImage.open(path)
             draw=ImageDraw.Draw(im)
-            font_path = get_abspath(globals(), 'ui/fonts/SHERWOOD.TTF')
+            font_path = get_abspath(globals(), 'data/fonts/SHERWOOD.TTF')
             font=ImageFont.truetype(font_path, 18)
             draw.text((10,10),imgtext, font=font, fill=(100,100,50))
             # save as a temporary image

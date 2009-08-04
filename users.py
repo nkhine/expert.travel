@@ -265,8 +265,8 @@ class User(iUser, AccessControl, WorkflowAware, Handler):
             indexes['registration_year'] = registration_date.year
             indexes['registration_month'] = registration_date.month
             # Other user fields
-            root = get_context().root
-            #root = context.root
+            #root = get_context().root
+            root = context.root
             indexes['function'] = get_property('abakuc:functions')
             address = self.get_address()
             if address:
