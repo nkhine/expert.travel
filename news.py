@@ -189,8 +189,8 @@ class News(RoleAware, Folder):
         for key in ['dc:title' , 'dc:description', 'abakuc:closing_date']:
             namespace[key] = self.get_property(key)
 
-        news_text = rest.to_html_events(self.get_property('abakuc:news_text'))
-        #news_text = self.get_property('abakuc:news_text')
+        #news_text = rest.to_html_events(self.get_property('abakuc:news_text'))
+        news_text = self.get_property('abakuc:news_text')
 
         namespace['abakuc:news_text'] = news_text
         # Image
