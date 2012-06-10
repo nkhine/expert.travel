@@ -40,7 +40,12 @@ class ExpertTravel(AccessControl, SiteRoot):
                     'browse_content?mode=thumbnails'],
                    ['new_resource_form'],
                    ['permissions_form', 'new_user_form'],
-                   ['edit_metadata_form', 'contact_options_form']]
+                   ['edit_metadata_form',
+                    'virtual_hosts_form',
+                    'anonymous_form',
+                    'languages_form',
+                    'state_form',
+                    'contact_options_form']]
 
     def get_document_types(self):
         return [Forum]
