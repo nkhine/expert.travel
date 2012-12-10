@@ -2,6 +2,7 @@
 *.swp
 build
 MANIFEST
+PACKAGES
 version.txt
 locale/*.mo
 *.fr
