@@ -645,6 +645,7 @@ class CountrySkin(FrontOffice):
 websites = {
     # Main Sites
     'destinationsguide.info': DestinationsSkin,
+    'expert.travel': FrontOffice,
     'fr.expert.travel': FrontOffice,
     'uk.expert.travel': FrontOffice,
     #'abakuc.expert.travel': CompanySkin,
