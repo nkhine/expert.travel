@@ -230,11 +230,14 @@ class FrontOffice(Skin):
 
     def build_namespace(self, context, topics=None):
         root = context.root
+        print root
         # Level0 correspond to the country (uk, fr) ...
         level0 = [ x[1] for x in root.get_authorized_countries(context) ]
+        print level0
         # Navigation (level 1)
         site_root = context.handler.get_site_root()
         format = site_root.site_format
+        print format
         namespace = Skin.build_namespace(self, context)
         # Title & Meta
         level1 = []
@@ -246,6 +249,7 @@ class FrontOffice(Skin):
             #namespace['level1'] = root.get_topics_namespace(topics)
             #print namespace['level1']
             results = root.search(level0=level0, format=site_root.site_format)
+            print results
             # Flat
             # XXX Here is a bug #133 if you re-start
             # the server you no longer have a list
@@ -254,6 +258,7 @@ class FrontOffice(Skin):
             # are a list, but when you restart they are not?
             for x in results.get_documents():
                 x = x.level1
+                #print x
                 if isinstance(x, list):
                     level1.extend(x)
                 else:
@@ -269,9 +274,11 @@ class FrontOffice(Skin):
                        for x in level1 ]
             level1.sort(key=lambda x: x['title'])
             namespace['level1'] = level1
+            print level1
         else:
             # Navigation
-            namespace['level1'] = '' 
+            namespace['level1'] = ''
+            print 'level1 is none'
         # Returns the Module, for Training object
         context_menu_html = self.get_context_menu_html(context)
         if context_menu_html is None:
@@ -645,7 +652,7 @@ class CountrySkin(FrontOffice):
 websites = {
     # Main Sites
     'destinationsguide.info': DestinationsSkin,
-    'expert.travel': FrontOffice,
+    #'expert.travel': FrontOffice,
     'fr.expert.travel': FrontOffice,
     'uk.expert.travel': FrontOffice,
     #'abakuc.expert.travel': CompanySkin,
